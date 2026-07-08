@@ -88,5 +88,8 @@ class DatabaseSeeder extends Seeder
         $this->call(ProjectSeeder::class);
         $this->call(QuoteSeeder::class);
         $this->call(ClientSeeder::class);
+        $this->call(SupplierSeeder::class);
+        $this->call(ContractSeeder::class);
+        $this->call(InventorySeeder::class);
     }
 }

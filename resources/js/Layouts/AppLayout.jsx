@@ -3,6 +3,7 @@ import { Link, usePage } from '@inertiajs/react';
 import Sidebar from '@/Components/Sidebar';
 import Dropdown from '@/Components/Dropdown';
 import Icon from '@/Components/Icon';
+import Toast from '@/Components/Toast';
 
 /**
  * Layout principal de l'application ERP : sidebar adaptative + barre supérieure
@@ -72,6 +73,8 @@ export default function AppLayout({ header, children }) {
 
                 <main className="flex-1 p-4 sm:p-6">{children}</main>
             </div>
+
+            <Toast />
         </div>
     );
 }

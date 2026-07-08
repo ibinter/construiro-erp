@@ -3,12 +3,17 @@
 use App\Http\Controllers\Admin\CompanyController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ContractController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\SiteController;
+use App\Http\Controllers\StockController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\WarehouseController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -47,6 +52,47 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/quotes/{quote}/edit', [QuoteController::class, 'edit'])->middleware('can:quotes.update')->name('quotes.edit');
     Route::put('/quotes/{quote}',      [QuoteController::class, 'update'])->middleware('can:quotes.update')->name('quotes.update');
     Route::delete('/quotes/{quote}',   [QuoteController::class, 'destroy'])->middleware('can:quotes.delete')->name('quotes.destroy');
+
+    // --- Module Matériaux ------------------------------------------------------
+    Route::get('/materials',                [MaterialController::class, 'index'])->middleware('can:materials.view')->name('materials.index');
+    Route::get('/materials/create',         [MaterialController::class, 'create'])->middleware('can:materials.create')->name('materials.create');
+    Route::post('/materials',               [MaterialController::class, 'store'])->middleware('can:materials.create')->name('materials.store');
+    Route::get('/materials/{material}',     [MaterialController::class, 'show'])->middleware('can:materials.view')->name('materials.show');
+    Route::get('/materials/{material}/edit', [MaterialController::class, 'edit'])->middleware('can:materials.update')->name('materials.edit');
+    Route::put('/materials/{material}',     [MaterialController::class, 'update'])->middleware('can:materials.update')->name('materials.update');
+    Route::delete('/materials/{material}',  [MaterialController::class, 'destroy'])->middleware('can:materials.delete')->name('materials.destroy');
+
+    // --- Module Magasins -------------------------------------------------------
+    Route::get('/warehouses',                 [WarehouseController::class, 'index'])->middleware('can:warehouses.view')->name('warehouses.index');
+    Route::get('/warehouses/create',          [WarehouseController::class, 'create'])->middleware('can:warehouses.create')->name('warehouses.create');
+    Route::post('/warehouses',                [WarehouseController::class, 'store'])->middleware('can:warehouses.create')->name('warehouses.store');
+    Route::get('/warehouses/{warehouse}',     [WarehouseController::class, 'show'])->middleware('can:warehouses.view')->name('warehouses.show');
+    Route::get('/warehouses/{warehouse}/edit', [WarehouseController::class, 'edit'])->middleware('can:warehouses.update')->name('warehouses.edit');
+    Route::put('/warehouses/{warehouse}',     [WarehouseController::class, 'update'])->middleware('can:warehouses.update')->name('warehouses.update');
+    Route::delete('/warehouses/{warehouse}',  [WarehouseController::class, 'destroy'])->middleware('can:warehouses.delete')->name('warehouses.destroy');
+
+    // --- Module Stocks (niveaux + mouvements) ----------------------------------
+    Route::get('/stocks',            [StockController::class, 'index'])->middleware('can:stocks.view')->name('stocks.index');
+    Route::get('/stocks/movements',  [StockController::class, 'movements'])->middleware('can:stocks.view')->name('stocks.movements');
+    Route::post('/stocks/movements', [StockController::class, 'storeMovement'])->middleware('can:stocks.create')->name('stocks.movements.store');
+
+    // --- Module Contrats -------------------------------------------------------
+    Route::get('/contracts',                [ContractController::class, 'index'])->middleware('can:contracts.view')->name('contracts.index');
+    Route::get('/contracts/create',         [ContractController::class, 'create'])->middleware('can:contracts.create')->name('contracts.create');
+    Route::post('/contracts',               [ContractController::class, 'store'])->middleware('can:contracts.create')->name('contracts.store');
+    Route::get('/contracts/{contract}',     [ContractController::class, 'show'])->middleware('can:contracts.view')->name('contracts.show');
+    Route::get('/contracts/{contract}/edit', [ContractController::class, 'edit'])->middleware('can:contracts.update')->name('contracts.edit');
+    Route::put('/contracts/{contract}',     [ContractController::class, 'update'])->middleware('can:contracts.update')->name('contracts.update');
+    Route::delete('/contracts/{contract}',  [ContractController::class, 'destroy'])->middleware('can:contracts.delete')->name('contracts.destroy');
+
+    // --- Module Fournisseurs ---------------------------------------------------
+    Route::get('/suppliers',               [SupplierController::class, 'index'])->middleware('can:suppliers.view')->name('suppliers.index');
+    Route::get('/suppliers/create',        [SupplierController::class, 'create'])->middleware('can:suppliers.create')->name('suppliers.create');
+    Route::post('/suppliers',              [SupplierController::class, 'store'])->middleware('can:suppliers.create')->name('suppliers.store');
+    Route::get('/suppliers/{supplier}',    [SupplierController::class, 'show'])->middleware('can:suppliers.view')->name('suppliers.show');
+    Route::get('/suppliers/{supplier}/edit', [SupplierController::class, 'edit'])->middleware('can:suppliers.update')->name('suppliers.edit');
+    Route::put('/suppliers/{supplier}',    [SupplierController::class, 'update'])->middleware('can:suppliers.update')->name('suppliers.update');
+    Route::delete('/suppliers/{supplier}', [SupplierController::class, 'destroy'])->middleware('can:suppliers.delete')->name('suppliers.destroy');
 
     // --- Module Clients --------------------------------------------------------
     Route::get('/clients',              [ClientController::class, 'index'])->middleware('can:clients.view')->name('clients.index');

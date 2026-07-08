@@ -34,6 +34,11 @@ class Navigation
             'projects'       => '/projects',
             'quotes'         => '/quotes',
             'clients'        => '/clients',
+            'suppliers'      => '/suppliers',
+            'contracts'      => '/contracts',
+            'materials'      => '/materials',
+            'warehouses'     => '/warehouses',
+            'stocks'         => '/stocks',
             'administration' => '/admin/users',
         ];
 

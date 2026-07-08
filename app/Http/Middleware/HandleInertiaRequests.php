@@ -49,6 +49,11 @@ class HandleInertiaRequests extends Middleware
                 'navigation' => $user ? Navigation::for($user, $locale) : [],
             ],
             'locale' => $locale,
+            // Messages flash (notifications toast côté client).
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'error'   => fn () => $request->session()->get('error'),
+            ],
         ];
     }
 }
