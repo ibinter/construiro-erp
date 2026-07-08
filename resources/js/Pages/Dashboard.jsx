@@ -1,8 +1,9 @@
 import AppLayout from '@/Layouts/AppLayout';
 import Icon from '@/Components/Icon';
-import { Head, usePage } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
+import { PROJECT_STATUS, formatMoney } from '@/constants';
 
-export default function Dashboard({ stats = [] }) {
+export default function Dashboard({ stats = [], recentProjects = [] }) {
     const { auth } = usePage().props;
     const portal = auth?.portal;
     const user = auth?.user;
@@ -50,19 +51,47 @@ export default function Dashboard({ stats = [] }) {
                 ))}
             </div>
 
-            {/* Zone à venir */}
+            {/* Projets récents + rôles */}
             <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
                 <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900 lg:col-span-2">
-                    <h3 className="mb-1 font-semibold text-slate-800 dark:text-slate-100">
-                        Avancement des chantiers
-                    </h3>
-                    <p className="text-sm text-slate-500">
-                        Le graphique d'avancement s'affichera ici une fois le module
-                        Chantiers connecté (Phase 1).
-                    </p>
-                    <div className="mt-4 flex h-40 items-center justify-center rounded-lg border-2 border-dashed border-slate-200 text-slate-400 dark:border-slate-700">
-                        <Icon name="bar-chart-3" className="h-8 w-8" />
+                    <div className="mb-3 flex items-center justify-between">
+                        <h3 className="font-semibold text-slate-800 dark:text-slate-100">
+                            Projets récents
+                        </h3>
+                        <Link href="/projects" className="text-sm font-medium text-orange-600 hover:underline">
+                            Voir tout
+                        </Link>
                     </div>
+                    <ul className="divide-y divide-slate-100 dark:divide-slate-800">
+                        {recentProjects.map((project) => {
+                            const s = PROJECT_STATUS[project.status] ?? { label: project.status, color: 'bg-slate-100 text-slate-600' };
+                            return (
+                                <li key={project.id} className="flex items-center justify-between py-3">
+                                    <div className="min-w-0">
+                                        <Link href={`/projects/${project.id}`} className="font-medium text-slate-700 hover:text-orange-600 dark:text-slate-200">
+                                            {project.name}
+                                        </Link>
+                                        <div className="text-xs text-slate-400">
+                                            {project.code} · {formatMoney(project.budget_amount, project.currency)}
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <div className="hidden h-1.5 w-20 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700 sm:block">
+                                            <div className="h-full rounded-full bg-orange-500" style={{ width: `${project.progress}%` }} />
+                                        </div>
+                                        <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${s.color}`}>
+                                            {s.label}
+                                        </span>
+                                    </div>
+                                </li>
+                            );
+                        })}
+                        {recentProjects.length === 0 && (
+                            <li className="py-8 text-center text-sm text-slate-400">
+                                Aucun projet pour le moment.
+                            </li>
+                        )}
+                    </ul>
                 </div>
                 <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
                     <h3 className="mb-3 font-semibold text-slate-800 dark:text-slate-100">

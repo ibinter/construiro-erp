@@ -30,8 +30,11 @@ class Navigation
 
         // Modules déjà dotés d'écrans dédiés (route réelle au lieu du générique /app/*).
         $realRoutes = [
-            'dashboard' => '/dashboard',
-            'projects'  => '/projects',
+            'dashboard'      => '/dashboard',
+            'projects'       => '/projects',
+            'quotes'         => '/quotes',
+            'clients'        => '/clients',
+            'administration' => '/admin/users',
         ];
 
         foreach ($groups as $groupKey => $groupLabels) {

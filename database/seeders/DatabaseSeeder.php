@@ -84,7 +84,9 @@ class DatabaseSeeder extends Seeder
             $user->syncRoles([$role]);
         }
 
-        // 5) Projets + chantiers de démonstration.
+        // 5) Données métier de démonstration.
         $this->call(ProjectSeeder::class);
+        $this->call(QuoteSeeder::class);
+        $this->call(ClientSeeder::class);
     }
 }
