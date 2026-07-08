@@ -100,5 +100,14 @@ class DatabaseSeeder extends Seeder
         $this->call(InvoiceSeeder::class);        // factures (rattachées client + projet)
         $this->call(ContractSeeder::class);       // contrats (rattachés projet)
         $this->call(PurchaseSeeder::class);       // achats (fournisseur + matériaux + projet)
+
+        // Vague 5 — tous rattachés aux référentiels/documents déjà seedés.
+        $this->call(DesignOfficeSeeder::class);   // BPU + métré + DQE + études
+        $this->call(CrmSeeder::class);            // opportunités CRM + appels d'offres
+        $this->call(FleetSeeder::class);          // pleins de carburant (parc)
+        $this->call(AccountingSeeder::class);     // plan comptable + budget + analytique + journal
+        $this->call(PaymentsSeeder::class);       // encaissements + décaissements
+        $this->call(DocsLabSeeder::class);        // essais labo + documents + signatures
+        $this->call(AiSeeder::class);             // historique assistant IA (démo)
     }
 }
