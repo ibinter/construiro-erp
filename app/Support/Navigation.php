@@ -1,0 +1,82 @@
+<?php
+
+namespace App\Support;
+
+use App\Models\User;
+
+/**
+ * Construit la navigation du portail unique en fonction du rôle et des
+ * permissions de l'utilisateur. Source : config/construiro.php.
+ *
+ * Un seul portail, des menus adaptés : chaque module n'apparaît que si
+ * l'utilisateur possède au moins la permission « module.view ».
+ */
+class Navigation
+{
+    /**
+     * Retourne les groupes de modules autorisés pour l'utilisateur.
+     *
+     * @return array<int, array{key:string,label:string,items:array}>
+     */
+    public static function for(?User $user, string $locale = 'fr'): array
+    {
+        if (! $user) {
+            return [];
+        }
+
+        $modules = config('construiro.modules', []);
+        $groups  = config('construiro.module_groups', []);
+        $sections = [];
+
+        foreach ($groups as $groupKey => $groupLabels) {
+            $items = [];
+
+            foreach ($modules as $moduleKey => $def) {
+                if (($def['group'] ?? null) !== $groupKey) {
+                    continue;
+                }
+                // Le module est visible si l'utilisateur peut le consulter.
+                if (! $user->can("{$moduleKey}.view")) {
+                    continue;
+                }
+
+                $items[] = [
+                    'key'   => $moduleKey,
+                    'label' => $def['name'][$locale] ?? $def['name']['fr'] ?? $moduleKey,
+                    'icon'  => $def['icon'] ?? 'circle',
+                    // Le tableau de bord a sa route dédiée ; les autres passent par la route générique.
+                    'route' => $moduleKey === 'dashboard' ? '/dashboard' : "/app/{$moduleKey}",
+                ];
+            }
+
+            if ($items !== []) {
+                $sections[] = [
+                    'key'   => $groupKey,
+                    'label' => $groupLabels[$locale] ?? $groupLabels['fr'] ?? $groupKey,
+                    'items' => $items,
+                ];
+            }
+        }
+
+        return $sections;
+    }
+
+    /**
+     * Métadonnées du portail d'accueil de l'utilisateur.
+     *
+     * @return array{key:string,label:string,group:string,icon:string}
+     */
+    public static function portal(?User $user, string $locale = 'fr'): array
+    {
+        $key = $user?->primaryPortal() ?? 'direction_generale';
+        $portals = config('construiro.portals', []);
+        $def = $portals[$key] ?? ['name' => ['fr' => 'Portail'], 'group' => 'internal', 'icon' => 'building-2'];
+
+        return [
+            'key'   => $key,
+            'label' => $def['name'][$locale] ?? $def['name']['fr'] ?? $key,
+            'group' => $def['group'] ?? 'internal',
+            'icon'  => $def['icon'] ?? 'building-2',
+        ];
+    }
+}
