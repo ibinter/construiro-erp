@@ -18,6 +18,13 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\SubcontractorController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\WarehouseController;
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\HseIncidentController;
+use App\Http\Controllers\PayslipController;
+use App\Http\Controllers\PlanningController;
+use App\Http\Controllers\QualityController;
+use App\Http\Controllers\TreasuryController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -156,6 +163,54 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // --- Administration — Entreprise -------------------------------------------
     Route::get('/admin/company',            [CompanyController::class, 'edit'])->middleware('can:administration.view')->name('admin.company.edit');
     Route::put('/admin/company',            [CompanyController::class, 'update'])->middleware('can:administration.update')->name('admin.company.update');
+
+    // --- Module RH — Employés --------------------------------------------------
+    Route::get('/hr',                [EmployeeController::class, 'index'])->middleware('can:hr.view')->name('hr.index');
+    Route::get('/hr/create',         [EmployeeController::class, 'create'])->middleware('can:hr.create')->name('hr.create');
+    Route::post('/hr',               [EmployeeController::class, 'store'])->middleware('can:hr.create')->name('hr.store');
+    Route::get('/hr/{employee}',     [EmployeeController::class, 'show'])->middleware('can:hr.view')->name('hr.show');
+    Route::get('/hr/{employee}/edit', [EmployeeController::class, 'edit'])->middleware('can:hr.update')->name('hr.edit');
+    Route::put('/hr/{employee}',     [EmployeeController::class, 'update'])->middleware('can:hr.update')->name('hr.update');
+    Route::delete('/hr/{employee}',  [EmployeeController::class, 'destroy'])->middleware('can:hr.delete')->name('hr.destroy');
+
+    // --- Module Pointage -------------------------------------------------------
+    Route::get('/attendance',  [AttendanceController::class, 'index'])->middleware('can:attendance.view')->name('attendance.index');
+    Route::post('/attendance', [AttendanceController::class, 'store'])->middleware('can:attendance.create')->name('attendance.store');
+
+    // --- Module Paie -----------------------------------------------------------
+    Route::get('/payroll',                 [PayslipController::class, 'index'])->middleware('can:payroll.view')->name('payroll.index');
+    Route::post('/payroll',                [PayslipController::class, 'store'])->middleware('can:payroll.create')->name('payroll.store');
+    Route::post('/payroll/{payslip}/status', [PayslipController::class, 'updateStatus'])->middleware('can:payroll.update')->name('payroll.status');
+
+    // --- Module Planning & Gantt -----------------------------------------------
+    Route::get('/planning',          [PlanningController::class, 'index'])->middleware('can:planning.view')->name('planning.index');
+    Route::post('/planning',         [PlanningController::class, 'store'])->middleware('can:planning.create')->name('planning.store');
+    Route::put('/planning/{task}',   [PlanningController::class, 'update'])->middleware('can:planning.update')->name('planning.update');
+    Route::delete('/planning/{task}', [PlanningController::class, 'destroy'])->middleware('can:planning.delete')->name('planning.destroy');
+
+    // --- Module Trésorerie -----------------------------------------------------
+    Route::get('/treasury',                     [TreasuryController::class, 'index'])->middleware('can:treasury.view')->name('treasury.index');
+    Route::post('/treasury/accounts',           [TreasuryController::class, 'storeAccount'])->middleware('can:treasury.create')->name('treasury.accounts.store');
+    Route::get('/treasury/accounts/{account}',  [TreasuryController::class, 'showAccount'])->middleware('can:treasury.view')->name('treasury.accounts.show');
+    Route::post('/treasury/transactions',       [TreasuryController::class, 'storeTransaction'])->middleware('can:treasury.create')->name('treasury.transactions.store');
+
+    // --- Module QHSE (incidents / sécurité) ------------------------------------
+    Route::get('/hse',            [HseIncidentController::class, 'index'])->middleware('can:qhse.view')->name('hse.index');
+    Route::get('/hse/create',     [HseIncidentController::class, 'create'])->middleware('can:qhse.create')->name('hse.create');
+    Route::post('/hse',           [HseIncidentController::class, 'store'])->middleware('can:qhse.create')->name('hse.store');
+    Route::get('/hse/{hse}',      [HseIncidentController::class, 'show'])->middleware('can:qhse.view')->name('hse.show');
+    Route::get('/hse/{hse}/edit', [HseIncidentController::class, 'edit'])->middleware('can:qhse.update')->name('hse.edit');
+    Route::put('/hse/{hse}',      [HseIncidentController::class, 'update'])->middleware('can:qhse.update')->name('hse.update');
+    Route::delete('/hse/{hse}',   [HseIncidentController::class, 'destroy'])->middleware('can:qhse.delete')->name('hse.destroy');
+
+    // --- Module Qualité (contrôles) --------------------------------------------
+    Route::get('/quality',                [QualityController::class, 'index'])->middleware('can:quality.view')->name('quality.index');
+    Route::get('/quality/create',         [QualityController::class, 'create'])->middleware('can:quality.create')->name('quality.create');
+    Route::post('/quality',               [QualityController::class, 'store'])->middleware('can:quality.create')->name('quality.store');
+    Route::get('/quality/{quality}',      [QualityController::class, 'show'])->middleware('can:quality.view')->name('quality.show');
+    Route::get('/quality/{quality}/edit', [QualityController::class, 'edit'])->middleware('can:quality.update')->name('quality.edit');
+    Route::put('/quality/{quality}',      [QualityController::class, 'update'])->middleware('can:quality.update')->name('quality.update');
+    Route::delete('/quality/{quality}',   [QualityController::class, 'destroy'])->middleware('can:quality.delete')->name('quality.destroy');
 
     // Portail unique : accès générique aux modules non encore développés.
     Route::get('/app/{module}', [ModuleController::class, 'show'])->name('module.show');
