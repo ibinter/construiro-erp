@@ -43,6 +43,13 @@ class Navigation
             'purchases'      => '/purchases',
             'subcontractors' => '/subcontractors',
             'equipment'      => '/equipment',
+            'planning'       => '/planning',
+            'hr'             => '/hr',
+            'attendance'     => '/attendance',
+            'payroll'        => '/payroll',
+            'treasury'       => '/treasury',
+            'qhse'           => '/hse',
+            'quality'        => '/quality',
             'administration' => '/admin/users',
         ];
 

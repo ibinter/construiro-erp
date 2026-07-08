@@ -92,6 +92,10 @@ class DatabaseSeeder extends Seeder
         $this->call(SubcontractorSeeder::class);  // sous-traitants
         $this->call(InventorySeeder::class);      // matériaux + magasins + mouvements
         $this->call(EquipmentSeeder::class);      // parc matériel (rattaché aux chantiers)
+        $this->call(HrSeeder::class);             // employés + pointages + bulletins
+        $this->call(PlanningSeeder::class);       // tâches de planning (rattachées projet)
+        $this->call(TreasurySeeder::class);       // comptes + transactions de trésorerie
+        $this->call(QhseSeeder::class);           // incidents QHSE + contrôles qualité
         $this->call(QuoteSeeder::class);          // devis (rattachés projet)
         $this->call(InvoiceSeeder::class);        // factures (rattachées client + projet)
         $this->call(ContractSeeder::class);       // contrats (rattachés projet)
