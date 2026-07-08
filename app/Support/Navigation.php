@@ -28,6 +28,12 @@ class Navigation
         $groups  = config('construiro.module_groups', []);
         $sections = [];
 
+        // Modules déjà dotés d'écrans dédiés (route réelle au lieu du générique /app/*).
+        $realRoutes = [
+            'dashboard' => '/dashboard',
+            'projects'  => '/projects',
+        ];
+
         foreach ($groups as $groupKey => $groupLabels) {
             $items = [];
 
@@ -44,8 +50,8 @@ class Navigation
                     'key'   => $moduleKey,
                     'label' => $def['name'][$locale] ?? $def['name']['fr'] ?? $moduleKey,
                     'icon'  => $def['icon'] ?? 'circle',
-                    // Le tableau de bord a sa route dédiée ; les autres passent par la route générique.
-                    'route' => $moduleKey === 'dashboard' ? '/dashboard' : "/app/{$moduleKey}",
+                    // Route dédiée si l'écran existe, sinon route générique du module.
+                    'route' => $realRoutes[$moduleKey] ?? "/app/{$moduleKey}",
                 ];
             }
 

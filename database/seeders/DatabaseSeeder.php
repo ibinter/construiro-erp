@@ -83,5 +83,8 @@ class DatabaseSeeder extends Seeder
             );
             $user->syncRoles([$role]);
         }
+
+        // 5) Projets + chantiers de démonstration.
+        $this->call(ProjectSeeder::class);
     }
 }
