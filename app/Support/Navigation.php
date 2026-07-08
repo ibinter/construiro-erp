@@ -33,12 +33,16 @@ class Navigation
             'dashboard'      => '/dashboard',
             'projects'       => '/projects',
             'quotes'         => '/quotes',
+            'invoicing'      => '/invoices',
             'clients'        => '/clients',
             'suppliers'      => '/suppliers',
             'contracts'      => '/contracts',
             'materials'      => '/materials',
             'warehouses'     => '/warehouses',
             'stocks'         => '/stocks',
+            'purchases'      => '/purchases',
+            'subcontractors' => '/subcontractors',
+            'equipment'      => '/equipment',
             'administration' => '/admin/users',
         ];
 
