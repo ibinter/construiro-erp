@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ContractController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\ProfileController;
@@ -52,6 +53,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/quotes/{quote}/edit', [QuoteController::class, 'edit'])->middleware('can:quotes.update')->name('quotes.edit');
     Route::put('/quotes/{quote}',      [QuoteController::class, 'update'])->middleware('can:quotes.update')->name('quotes.update');
     Route::delete('/quotes/{quote}',   [QuoteController::class, 'destroy'])->middleware('can:quotes.delete')->name('quotes.destroy');
+
+    // --- Module Facturation ----------------------------------------------------
+    Route::get('/invoices',              [InvoiceController::class, 'index'])->middleware('can:invoicing.view')->name('invoices.index');
+    Route::get('/invoices/create',       [InvoiceController::class, 'create'])->middleware('can:invoicing.create')->name('invoices.create');
+    Route::post('/invoices',             [InvoiceController::class, 'store'])->middleware('can:invoicing.create')->name('invoices.store');
+    Route::get('/invoices/{invoice}',    [InvoiceController::class, 'show'])->middleware('can:invoicing.view')->name('invoices.show');
+    Route::get('/invoices/{invoice}/edit', [InvoiceController::class, 'edit'])->middleware('can:invoicing.update')->name('invoices.edit');
+    Route::put('/invoices/{invoice}',    [InvoiceController::class, 'update'])->middleware('can:invoicing.update')->name('invoices.update');
+    Route::delete('/invoices/{invoice}', [InvoiceController::class, 'destroy'])->middleware('can:invoicing.delete')->name('invoices.destroy');
+    Route::post('/invoices/{invoice}/payment', [InvoiceController::class, 'registerPayment'])->middleware('can:invoicing.update')->name('invoices.payment');
 
     // --- Module Matériaux ------------------------------------------------------
     Route::get('/materials',                [MaterialController::class, 'index'])->middleware('can:materials.view')->name('materials.index');

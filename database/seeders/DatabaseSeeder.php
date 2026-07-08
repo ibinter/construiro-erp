@@ -87,6 +87,7 @@ class DatabaseSeeder extends Seeder
         // 5) Données métier de démonstration.
         $this->call(ProjectSeeder::class);
         $this->call(QuoteSeeder::class);
+        $this->call(InvoiceSeeder::class);
         $this->call(ClientSeeder::class);
         $this->call(SupplierSeeder::class);
         $this->call(ContractSeeder::class);

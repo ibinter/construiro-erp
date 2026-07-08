@@ -33,6 +33,7 @@ class Navigation
             'dashboard'      => '/dashboard',
             'projects'       => '/projects',
             'quotes'         => '/quotes',
+            'invoicing'      => '/invoices',
             'clients'        => '/clients',
             'suppliers'      => '/suppliers',
             'contracts'      => '/contracts',
