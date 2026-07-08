@@ -5,14 +5,17 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ContractController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\StockController;
+use App\Http\Controllers\SubcontractorController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\WarehouseController;
 use Illuminate\Foundation\Application;
@@ -95,6 +98,34 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/contracts/{contract}/edit', [ContractController::class, 'edit'])->middleware('can:contracts.update')->name('contracts.edit');
     Route::put('/contracts/{contract}',     [ContractController::class, 'update'])->middleware('can:contracts.update')->name('contracts.update');
     Route::delete('/contracts/{contract}',  [ContractController::class, 'destroy'])->middleware('can:contracts.delete')->name('contracts.destroy');
+
+    // --- Module Achats (bons de commande) --------------------------------------
+    Route::get('/purchases',                 [PurchaseController::class, 'index'])->middleware('can:purchases.view')->name('purchases.index');
+    Route::get('/purchases/create',          [PurchaseController::class, 'create'])->middleware('can:purchases.create')->name('purchases.create');
+    Route::post('/purchases',                [PurchaseController::class, 'store'])->middleware('can:purchases.create')->name('purchases.store');
+    Route::get('/purchases/{purchase}',      [PurchaseController::class, 'show'])->middleware('can:purchases.view')->name('purchases.show');
+    Route::get('/purchases/{purchase}/edit', [PurchaseController::class, 'edit'])->middleware('can:purchases.update')->name('purchases.edit');
+    Route::put('/purchases/{purchase}',      [PurchaseController::class, 'update'])->middleware('can:purchases.update')->name('purchases.update');
+    Route::delete('/purchases/{purchase}',   [PurchaseController::class, 'destroy'])->middleware('can:purchases.delete')->name('purchases.destroy');
+
+    // --- Module Parc matériel --------------------------------------------------
+    Route::get('/equipment',                     [EquipmentController::class, 'index'])->middleware('can:equipment.view')->name('equipment.index');
+    Route::get('/equipment/create',              [EquipmentController::class, 'create'])->middleware('can:equipment.create')->name('equipment.create');
+    Route::post('/equipment',                    [EquipmentController::class, 'store'])->middleware('can:equipment.create')->name('equipment.store');
+    Route::get('/equipment/{equipment}',         [EquipmentController::class, 'show'])->middleware('can:equipment.view')->name('equipment.show');
+    Route::get('/equipment/{equipment}/edit',    [EquipmentController::class, 'edit'])->middleware('can:equipment.update')->name('equipment.edit');
+    Route::put('/equipment/{equipment}',         [EquipmentController::class, 'update'])->middleware('can:equipment.update')->name('equipment.update');
+    Route::delete('/equipment/{equipment}',      [EquipmentController::class, 'destroy'])->middleware('can:equipment.delete')->name('equipment.destroy');
+    Route::post('/equipment/{equipment}/maintenance', [EquipmentController::class, 'storeMaintenance'])->middleware('can:equipment.update')->name('equipment.maintenance.store');
+
+    // --- Module Sous-traitants -------------------------------------------------
+    Route::get('/subcontractors',                     [SubcontractorController::class, 'index'])->middleware('can:subcontractors.view')->name('subcontractors.index');
+    Route::get('/subcontractors/create',              [SubcontractorController::class, 'create'])->middleware('can:subcontractors.create')->name('subcontractors.create');
+    Route::post('/subcontractors',                    [SubcontractorController::class, 'store'])->middleware('can:subcontractors.create')->name('subcontractors.store');
+    Route::get('/subcontractors/{subcontractor}',     [SubcontractorController::class, 'show'])->middleware('can:subcontractors.view')->name('subcontractors.show');
+    Route::get('/subcontractors/{subcontractor}/edit', [SubcontractorController::class, 'edit'])->middleware('can:subcontractors.update')->name('subcontractors.edit');
+    Route::put('/subcontractors/{subcontractor}',     [SubcontractorController::class, 'update'])->middleware('can:subcontractors.update')->name('subcontractors.update');
+    Route::delete('/subcontractors/{subcontractor}',  [SubcontractorController::class, 'destroy'])->middleware('can:subcontractors.delete')->name('subcontractors.destroy');
 
     // --- Module Fournisseurs ---------------------------------------------------
     Route::get('/suppliers',               [SupplierController::class, 'index'])->middleware('can:suppliers.view')->name('suppliers.index');

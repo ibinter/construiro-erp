@@ -40,6 +40,9 @@ class Navigation
             'materials'      => '/materials',
             'warehouses'     => '/warehouses',
             'stocks'         => '/stocks',
+            'purchases'      => '/purchases',
+            'subcontractors' => '/subcontractors',
+            'equipment'      => '/equipment',
             'administration' => '/admin/users',
         ];
 

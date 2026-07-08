@@ -85,12 +85,16 @@ class DatabaseSeeder extends Seeder
         }
 
         // 5) Données métier de démonstration.
-        $this->call(ProjectSeeder::class);
-        $this->call(QuoteSeeder::class);
-        $this->call(InvoiceSeeder::class);
-        $this->call(ClientSeeder::class);
-        $this->call(SupplierSeeder::class);
-        $this->call(ContractSeeder::class);
-        $this->call(InventorySeeder::class);
+        //    Ordre = dépendances d'abord (référentiels), puis documents.
+        $this->call(ProjectSeeder::class);        // projets + chantiers
+        $this->call(ClientSeeder::class);         // clients
+        $this->call(SupplierSeeder::class);       // fournisseurs
+        $this->call(SubcontractorSeeder::class);  // sous-traitants
+        $this->call(InventorySeeder::class);      // matériaux + magasins + mouvements
+        $this->call(EquipmentSeeder::class);      // parc matériel (rattaché aux chantiers)
+        $this->call(QuoteSeeder::class);          // devis (rattachés projet)
+        $this->call(InvoiceSeeder::class);        // factures (rattachées client + projet)
+        $this->call(ContractSeeder::class);       // contrats (rattachés projet)
+        $this->call(PurchaseSeeder::class);       // achats (fournisseur + matériaux + projet)
     }
 }
