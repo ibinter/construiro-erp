@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    @include('pdf._styles')
+</head>
+@php
+    $dec = in_array($doc->currency, ['XOF', 'XAF']) ? 0 : 2;
+    $fmt = fn ($v) => number_format((float) $v, $dec, ',', ' ').' '.$doc->currency;
+    $d = fn ($v) => $v ? \Illuminate\Support\Carbon::parse($v)->format('d/m/Y') : '—';
+@endphp
+<body>
+<div class="wrap">
+    @include('pdf._header')
+
+    <table class="cols">
+        <tr>
+            <td style="padding-right:10px;">
+                <div class="box">
+                    <div class="lbl">{{ $partyLabel }}</div>
+                    <div class="val">{{ $partyName ?: '—' }}</div>
+                    @if($doc->project)<div class="meta-line">Projet : <strong>{{ $doc->project->name }}</strong></div>@endif
+                </div>
+            </td>
+            <td style="padding-left:10px;">
+                <div class="meta-line">Date d'émission : <strong>{{ $d($doc->issue_date) }}</strong></div>
+                <div class="meta-line">Échéance : <strong>{{ $d($doc->due_date) }}</strong></div>
+            </td>
+        </tr>
+    </table>
+
+    <table class="lines">
+        <thead>
+            <tr>
+                <th style="width:6%;">#</th>
+                <th>Désignation</th>
+                <th style="width:10%;">Unité</th>
+                <th class="r" style="width:12%;">Qté</th>
+                <th class="r" style="width:17%;">P.U.</th>
+                <th class="r" style="width:18%;">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($doc->lines as $i => $line)
+                <tr>
+                    <td>{{ $i + 1 }}</td>
+                    <td>{{ $line->designation }}</td>
+                    <td>{{ $line->unit }}</td>
+                    <td class="r">{{ rtrim(rtrim(number_format((float) $line->quantity, 3, ',', ' '), '0'), ',') }}</td>
+                    <td class="r">{{ $fmt($line->unit_price) }}</td>
+                    <td class="r">{{ $fmt($line->line_total) }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    <table class="totals">
+        <tr><td>Sous-total HT</td><td class="r">{{ $fmt($doc->subtotal) }}</td></tr>
+        <tr><td>TVA ({{ rtrim(rtrim(number_format((float) $doc->tax_rate, 2, ',', ' '), '0'), ',') }} %)</td><td class="r">{{ $fmt($doc->tax_amount) }}</td></tr>
+        <tr class="grand"><td>TOTAL TTC</td><td class="r">{{ $fmt($doc->total) }}</td></tr>
+        <tr class="paid"><td>Montant payé</td><td class="r">{{ $fmt($doc->amount_paid) }}</td></tr>
+        <tr class="balance"><td>Reste à payer</td><td class="r">{{ $fmt($doc->balance) }}</td></tr>
+    </table>
+
+    @if($doc->notes)<div class="notes">{{ $doc->notes }}</div>@endif
+
+    <div class="foot">
+        {{ $company->name ?? 'CONSTRUIRO' }} — Facture générée par CONSTRUIRO ERP le {{ now()->format('d/m/Y à H:i') }}
+    </div>
+</div>
+</body>
+</html>
