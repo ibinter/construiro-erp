@@ -31,6 +31,12 @@ class AiSetting extends Model
             'model'    => null,
             'docs'     => null,
         ],
+        'groq' => [
+            'label'    => 'Groq (gratuit — Llama, Mixtral…)',
+            'base_url' => 'https://api.groq.com/openai/v1',
+            'model'    => 'llama-3.3-70b-versatile',
+            'docs'     => 'https://console.groq.com/keys',
+        ],
         'grok' => [
             'label'    => 'Grok (xAI)',
             'base_url' => 'https://api.x.ai/v1',
