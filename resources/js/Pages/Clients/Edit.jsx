@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import ClientForm from './Partials/ClientForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Edit({ client, types }) {
+    const { t } = useTrans();
     const form = useForm({
         code: client.code ?? '',
         type: client.type ?? 'entreprise',
@@ -24,13 +26,13 @@ export default function Edit({ client, types }) {
 
     return (
         <AppLayout header={`Modifier — ${client.name}`}>
-            <Head title={`Modifier ${client.name}`} />
+            <Head title={`${t('Modifier')} ${client.name}`} />
             <div className="mx-auto max-w-4xl">
                 <ClientForm
                     form={form}
                     types={types}
                     onSubmit={submit}
-                    submitLabel="Enregistrer"
+                    submitLabel={t('Enregistrer')}
                 />
             </div>
         </AppLayout>

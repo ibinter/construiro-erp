@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import ProjectForm from './Partials/ProjectForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Create({ managers, types, statuses }) {
+    const { t } = useTrans();
     const form = useForm({
         code: '',
         name: '',
@@ -27,7 +29,7 @@ export default function Create({ managers, types, statuses }) {
 
     return (
         <AppLayout header="Nouveau projet">
-            <Head title="Nouveau projet" />
+            <Head title={t('Nouveau projet')} />
             <div className="mx-auto max-w-4xl">
                 <ProjectForm
                     form={form}
@@ -35,7 +37,7 @@ export default function Create({ managers, types, statuses }) {
                     types={types}
                     statuses={statuses}
                     onSubmit={submit}
-                    submitLabel="Créer le projet"
+                    submitLabel={t('Créer le projet')}
                 />
             </div>
         </AppLayout>

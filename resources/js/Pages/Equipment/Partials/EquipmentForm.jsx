@@ -3,6 +3,7 @@ import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
 import { Link } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 const CURRENCIES = ['XOF', 'XAF', 'EUR', 'USD', 'GHS', 'NGN'];
 
@@ -26,11 +27,12 @@ export const EQUIPMENT_STATUS = {
  * `form` est l'objet retourné par useForm() d'Inertia.
  */
 export default function EquipmentForm({ form, sites = [], categories = [], statuses = [], onSubmit, submitLabel }) {
+    const { t } = useTrans();
     const { data, setData, errors, processing } = form;
 
     const field = (name, label, props = {}) => (
         <div>
-            <InputLabel htmlFor={name} value={label} />
+            <InputLabel htmlFor={name} value={t(label)} />
             <TextInput
                 id={name}
                 className="mt-1 block w-full"
@@ -45,13 +47,13 @@ export default function EquipmentForm({ form, sites = [], categories = [], statu
     return (
         <form onSubmit={onSubmit} className="space-y-6">
             <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-                <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">Informations générales</h3>
+                <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">{t('Informations générales')}</h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     {field('code', 'Code équipement *', { placeholder: 'EQ-001' })}
                     {field('name', 'Désignation *', { placeholder: 'Grue à tour Potain' })}
 
                     <div>
-                        <InputLabel htmlFor="category" value="Catégorie *" />
+                        <InputLabel htmlFor="category" value={t('Catégorie *')} />
                         <select
                             id="category"
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
@@ -59,14 +61,14 @@ export default function EquipmentForm({ form, sites = [], categories = [], statu
                             onChange={(e) => setData('category', e.target.value)}
                         >
                             {(categories.length ? categories : Object.keys(EQUIPMENT_CATEGORY)).map((c) => (
-                                <option key={c} value={c}>{EQUIPMENT_CATEGORY[c] ?? c}</option>
+                                <option key={c} value={c}>{t(EQUIPMENT_CATEGORY[c] ?? c)}</option>
                             ))}
                         </select>
                         <InputError message={errors.category} className="mt-1" />
                     </div>
 
                     <div>
-                        <InputLabel htmlFor="status" value="Statut *" />
+                        <InputLabel htmlFor="status" value={t('Statut *')} />
                         <select
                             id="status"
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
@@ -74,7 +76,7 @@ export default function EquipmentForm({ form, sites = [], categories = [], statu
                             onChange={(e) => setData('status', e.target.value)}
                         >
                             {(statuses.length ? statuses : Object.keys(EQUIPMENT_STATUS)).map((s) => (
-                                <option key={s} value={s}>{EQUIPMENT_STATUS[s]?.label ?? s}</option>
+                                <option key={s} value={s}>{t(EQUIPMENT_STATUS[s]?.label ?? s)}</option>
                             ))}
                         </select>
                         <InputError message={errors.status} className="mt-1" />
@@ -85,14 +87,14 @@ export default function EquipmentForm({ form, sites = [], categories = [], statu
                     {field('registration', 'Immatriculation / N° série', { placeholder: '1234 AB 01' })}
 
                     <div>
-                        <InputLabel htmlFor="current_site_id" value="Chantier affecté" />
+                        <InputLabel htmlFor="current_site_id" value={t('Chantier affecté')} />
                         <select
                             id="current_site_id"
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                             value={data.current_site_id ?? ''}
                             onChange={(e) => setData('current_site_id', e.target.value || null)}
                         >
-                            <option value="">— Non affecté —</option>
+                            <option value="">{t('— Non affecté —')}</option>
                             {sites.map((s) => (
                                 <option key={s.id} value={s.id}>{s.name}{s.code ? ` (${s.code})` : ''}</option>
                             ))}
@@ -102,7 +104,7 @@ export default function EquipmentForm({ form, sites = [], categories = [], statu
                 </div>
 
                 <div className="mt-4">
-                    <InputLabel htmlFor="notes" value="Notes" />
+                    <InputLabel htmlFor="notes" value={t('Notes')} />
                     <textarea
                         id="notes"
                         rows={3}
@@ -115,12 +117,12 @@ export default function EquipmentForm({ form, sites = [], categories = [], statu
             </div>
 
             <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-                <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">Acquisition</h3>
+                <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">{t('Acquisition')}</h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     {field('acquisition_date', 'Date d\'acquisition', { type: 'date' })}
                     {field('acquisition_value', 'Valeur d\'acquisition *', { type: 'number', min: 0, step: '0.01' })}
                     <div>
-                        <InputLabel htmlFor="currency" value="Devise *" />
+                        <InputLabel htmlFor="currency" value={t('Devise *')} />
                         <select
                             id="currency"
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
@@ -138,7 +140,7 @@ export default function EquipmentForm({ form, sites = [], categories = [], statu
                             checked={!!data.is_active}
                             onChange={(e) => setData('is_active', e.target.checked)}
                         />
-                        Actif
+                        {t('Actif')}
                     </label>
                 </div>
             </div>
@@ -148,7 +150,7 @@ export default function EquipmentForm({ form, sites = [], categories = [], statu
                     href="/equipment"
                     className="rounded-md px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
                 >
-                    Annuler
+                    {t('Annuler')}
                 </Link>
                 <PrimaryButton disabled={processing} className="bg-orange-500 hover:bg-orange-600 focus:bg-orange-600">
                     {submitLabel}
