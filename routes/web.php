@@ -9,6 +9,7 @@ use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\PdfController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\PurchaseController;
@@ -371,6 +372,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/reports', [ReportController::class, 'index'])->middleware('can:reports.view')->name('reports.index');
     Route::get('/ai',      [AiAssistantController::class, 'index'])->middleware('can:ai.view')->name('ai.index');
     Route::post('/ai/ask', [AiAssistantController::class, 'ask'])->middleware('can:ai.view')->name('ai.ask');
+
+    // --- Exports PDF (documents professionnels) --------------------------------
+    Route::get('/quotes/{quote}/pdf',      [PdfController::class, 'quote'])->middleware('can:quotes.view')->name('quotes.pdf');
+    Route::get('/invoices/{invoice}/pdf',  [PdfController::class, 'invoice'])->middleware('can:invoicing.view')->name('invoices.pdf');
+    Route::get('/purchases/{purchase}/pdf', [PdfController::class, 'purchase'])->middleware('can:purchases.view')->name('purchases.pdf');
 
     // Portail unique : accès générique aux modules non encore développés.
     Route::get('/app/{module}', [ModuleController::class, 'show'])->name('module.show');
