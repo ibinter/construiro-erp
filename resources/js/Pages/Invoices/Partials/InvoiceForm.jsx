@@ -5,6 +5,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import Icon from '@/Components/Icon';
 import { Link } from '@inertiajs/react';
 import { formatMoney } from '@/constants';
+import { useTrans } from '@/i18n';
 
 const CURRENCIES = ['XOF', 'XAF', 'EUR', 'USD', 'GHS', 'NGN'];
 const UNITS = ['u', 'm2', 'm3', 'ml', 'kg', 't', 'forfait', 'j', 'h'];
@@ -26,6 +27,7 @@ const emptyLine = () => ({ designation: '', unit: 'u', quantity: 1, unit_price: 
  * `form` est l'objet retourné par useForm() d'Inertia (avec data.lines : array).
  */
 export default function InvoiceForm({ form, clients = [], projects = [], statuses = [], onSubmit, submitLabel }) {
+    const { t } = useTrans();
     const { data, setData, errors, processing } = form;
 
     // Recalcul temps réel (affichage uniquement — le serveur reste la source de vérité).
@@ -112,7 +114,7 @@ export default function InvoiceForm({ form, clients = [], projects = [], statuse
                             onChange={(e) => setData('status', e.target.value)}
                         >
                             {(statuses.length ? statuses : Object.keys(INVOICE_STATUS)).map((s) => (
-                                <option key={s} value={s}>{INVOICE_STATUS[s] ?? s}</option>
+                                <option key={s} value={s}>{t(INVOICE_STATUS[s] ?? s)}</option>
                             ))}
                         </select>
                         <InputError message={errors.status} className="mt-1" />

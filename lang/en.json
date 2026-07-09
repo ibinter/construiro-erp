@@ -935,5 +935,7 @@
     "Écrasement éprouvette 28 j": "Cylinder crushing 28 d",
     "Laboratoire GéoBTP": "GéoBTP Laboratory",
     "L'essai": "The test",
-    "Supprimer cet essai ?": "Delete this test?"
+    "Supprimer cet essai ?": "Delete this test?",
+    "Nouvel encaissement": "New incoming payment",
+    "Nouveau décaissement": "New outgoing payment"
 }

@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import PaymentForm from './Partials/PaymentForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Edit({ payment, suppliers, purchaseOrders, projects, categories, methods }) {
+    const { t } = useTrans();
     const fmtDate = (d) => (d ? String(d).slice(0, 10) : '');
 
     const form = useForm({
@@ -27,7 +29,7 @@ export default function Edit({ payment, suppliers, purchaseOrders, projects, cat
 
     return (
         <AppLayout header="Modifier le décaissement">
-            <Head title={`Modifier ${payment.code}`} />
+            <Head title={`${t('Modifier')} ${payment.code}`} />
             <div className="mx-auto max-w-4xl">
                 <PaymentForm
                     form={form}
@@ -37,7 +39,7 @@ export default function Edit({ payment, suppliers, purchaseOrders, projects, cat
                     categories={categories}
                     methods={methods}
                     onSubmit={submit}
-                    submitLabel="Enregistrer les modifications"
+                    submitLabel={t('Enregistrer les modifications')}
                 />
             </div>
         </AppLayout>
