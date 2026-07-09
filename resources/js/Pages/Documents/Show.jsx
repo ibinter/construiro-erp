@@ -46,6 +46,14 @@ export default function Show({ document, can }) {
                     <p className="ml-7 text-sm text-slate-400">{document.code} · v{document.version}</p>
                 </div>
                 <div className="flex gap-2">
+                    {(document.file_url || document.file_name) && (
+                        <a
+                            href={`/documents/${document.id}/download`}
+                            className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-3 py-2 text-sm font-medium text-white hover:bg-orange-600"
+                        >
+                            <Icon name="download" className="h-4 w-4" /> Télécharger
+                        </a>
+                    )}
                     {can.update && (
                         <Link
                             href={`/documents/${document.id}/edit`}

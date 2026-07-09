@@ -27,11 +27,13 @@ export const CATEGORY_ICON = {
 };
 
 /**
- * Formulaire partagé création / édition d'un document (métadonnées).
- * Pas d'upload réel : le chemin ou l'URL est saisi manuellement.
+ * Formulaire partagé création / édition d'un document.
+ * Upload réel optionnel (envoi multipart via forceFormData côté parent) ;
+ * les autres métadonnées restent saisissables manuellement.
  * `form` est l'objet retourné par useForm() d'Inertia.
+ * `currentFileName` = nom du fichier déjà attaché (édition).
  */
-export default function DocumentForm({ form, projects = [], categories = [], onSubmit, submitLabel }) {
+export default function DocumentForm({ form, projects = [], categories = [], onSubmit, submitLabel, currentFileName = null }) {
     const { data, setData, errors, processing } = form;
 
     const field = (name, label, props = {}) => (
@@ -97,10 +99,29 @@ export default function DocumentForm({ form, projects = [], categories = [], onS
             </div>
 
             <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-                <h3 className="mb-1 font-semibold text-slate-800 dark:text-slate-100">Fichier (métadonnées)</h3>
+                <h3 className="mb-1 font-semibold text-slate-800 dark:text-slate-100">Fichier</h3>
                 <p className="mb-4 text-xs text-slate-400">
-                    Pas d'upload : renseignez manuellement le chemin ou l'URL du fichier ainsi que ses caractéristiques.
+                    Téléversez un fichier (20 Mo max). Les nom, type et taille sont alors renseignés automatiquement.
+                    Vous pouvez aussi saisir manuellement le chemin ou l'URL.
                 </p>
+
+                <div className="mb-4">
+                    <InputLabel htmlFor="file" value="Téléverser un fichier" />
+                    <input
+                        id="file"
+                        type="file"
+                        className="mt-1 block w-full cursor-pointer rounded-md border border-slate-300 text-sm text-slate-600 file:mr-4 file:cursor-pointer file:border-0 file:bg-orange-500 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-orange-600 dark:border-slate-700 dark:text-slate-300"
+                        onChange={(e) => setData('file', e.target.files[0] ?? null)}
+                    />
+                    <InputError message={errors.file} className="mt-1" />
+                    {currentFileName && (
+                        <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+                            Fichier actuel : <span className="font-medium">{currentFileName}</span>
+                            {' '}— sélectionnez un nouveau fichier pour le remplacer.
+                        </p>
+                    )}
+                </div>
+
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     {field('file_name', 'Nom du fichier', { placeholder: 'plan-coffrage-r2.pdf' })}
                     {field('file_path', 'Chemin / URL', { placeholder: 'https://… ou /docs/…' })}

@@ -8,6 +8,7 @@ export default function Create({ projects, categories }) {
         title: '',
         category: 'plan',
         version: '1.0',
+        file: null,
         file_name: '',
         file_path: '',
         mime_type: '',
@@ -19,7 +20,7 @@ export default function Create({ projects, categories }) {
 
     const submit = (e) => {
         e.preventDefault();
-        form.post('/documents');
+        form.post('/documents', { forceFormData: true });
     };
 
     return (

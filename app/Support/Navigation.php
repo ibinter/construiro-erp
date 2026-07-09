@@ -32,6 +32,7 @@ class Navigation
         $realRoutes = [
             'dashboard'      => '/dashboard',
             'projects'       => '/projects',
+            'sites'          => '/sites',
             'quotes'         => '/quotes',
             'invoicing'      => '/invoices',
             'clients'        => '/clients',

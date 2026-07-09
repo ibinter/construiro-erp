@@ -119,6 +119,15 @@ export default function Index({ payslips, filters, employees, statuses, can }) {
                                 <td className="px-4 py-3 font-semibold text-slate-800 dark:text-slate-100">{formatMoney(p.net_salary, p.currency)}</td>
                                 <td className="px-4 py-3"><StatusBadge status={p.status} /></td>
                                 <td className="px-4 py-3 text-right">
+                                    <div className="flex items-center justify-end gap-2">
+                                        <a
+                                            href={`/payroll/${p.id}/pdf`}
+                                            target="_blank"
+                                            rel="noopener"
+                                            className="rounded-md border border-slate-200 px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                                        >
+                                            PDF
+                                        </a>
                                     {can.update && (
                                         <div className="flex justify-end gap-2">
                                             {p.status === 'draft' && (
@@ -142,6 +151,7 @@ export default function Index({ payslips, filters, employees, statuses, can }) {
                                             )}
                                         </div>
                                     )}
+                                    </div>
                                 </td>
                             </tr>
                         ))}
