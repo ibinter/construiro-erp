@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import AppLayout from '@/Layouts/AppLayout';
 import Icon from '@/Components/Icon';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 
 // Styles des tonalités d'insight.
 const TONE = {
@@ -10,7 +10,7 @@ const TONE = {
     danger:  'bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-300',
 };
 
-export default function AiIndex({ conversations = [], insights = [], suggestions = [] }) {
+export default function AiIndex({ conversations = [], insights = [], suggestions = [], provider = {} }) {
     const { data, setData, post, processing, reset } = useForm({ question: '' });
     const scrollRef = useRef(null);
 
@@ -50,14 +50,25 @@ export default function AiIndex({ conversations = [], insights = [], suggestions
                         <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-orange-100 text-orange-600 dark:bg-orange-500/10">
                             <Icon name="sparkles" className="h-5 w-5" />
                         </span>
-                        <div>
+                        <div className="flex-1">
                             <h2 className="font-semibold text-slate-800 dark:text-slate-100">
                                 Assistant d'analyse
                             </h2>
-                            <p className="text-xs text-slate-400">
-                                Réponses calculées depuis vos données (règles, sans IA externe).
+                            <p className="flex items-center gap-1.5 text-xs text-slate-400">
+                                <span className={`inline-block h-2 w-2 rounded-full ${provider.operational ? 'bg-green-500' : 'bg-slate-400'}`} />
+                                {provider.operational
+                                    ? `Propulsé par ${provider.label}`
+                                    : (provider.label || 'Moteur de règles interne')}
                             </p>
                         </div>
+                        {provider.canConfigure && (
+                            <Link
+                                href="/admin/ai-settings"
+                                className="inline-flex items-center gap-1.5 rounded-md border border-slate-300 px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                            >
+                                <Icon name="settings" className="h-3.5 w-3.5" /> Configurer
+                            </Link>
+                        )}
                     </div>
 
                     {/* Fil des échanges */}

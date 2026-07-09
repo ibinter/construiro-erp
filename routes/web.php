@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\CompanyController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\AiSettingController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ContractController;
 use App\Http\Controllers\DashboardController;
@@ -191,6 +192,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // --- Administration — Entreprise -------------------------------------------
     Route::get('/admin/company',            [CompanyController::class, 'edit'])->middleware('can:administration.view')->name('admin.company.edit');
     Route::put('/admin/company',            [CompanyController::class, 'update'])->middleware('can:administration.update')->name('admin.company.update');
+
+    // --- Administration — Paramétrage IA ---------------------------------------
+    Route::get('/admin/ai-settings',       [AiSettingController::class, 'edit'])->middleware('can:administration.view')->name('admin.ai.edit');
+    Route::put('/admin/ai-settings',       [AiSettingController::class, 'update'])->middleware('can:administration.update')->name('admin.ai.update');
+    Route::post('/admin/ai-settings/test', [AiSettingController::class, 'test'])->middleware('can:administration.update')->name('admin.ai.test');
 
     // --- Module RH — Employés --------------------------------------------------
     Route::get('/hr',                [EmployeeController::class, 'index'])->middleware('can:hr.view')->name('hr.index');

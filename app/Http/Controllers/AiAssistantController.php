@@ -3,19 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\AiConversation;
+use App\Models\AiSetting;
 use App\Models\Project;
 use App\Models\Site;
+use App\Services\LlmClient;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * Module Assistant IA — assistant d'analyse fondé sur des RÈGLES (pas d'appel
- * LLM externe, aucune clé API). L'assistant interroge les données de l'entreprise
- * de l'utilisateur (isolation multi-tenant stricte) et renvoie des observations
- * calculées : indicateurs, alertes et réponses par mots-clés.
+ * Module Assistant IA. Deux modes selon le paramétrage de l'entreprise :
+ *  - Si un fournisseur LLM est configuré (Grok, Claude, OpenAI…) avec la clé de
+ *    l'entreprise : l'assistant appelle le modèle en lui fournissant un contexte
+ *    calculé sur les données de l'entreprise (isolation multi-tenant stricte).
+ *  - Sinon : repli automatique sur le moteur de RÈGLES interne (aucune clé, gratuit).
  *
  * ROBUSTESSE : chaque accès à un modèle métier optionnel (Invoice, PurchaseOrder,
  * Employee, Material...) est gardé par une vérification d'existence de classe et
@@ -35,9 +39,18 @@ class AiAssistantController extends Controller
             ->reverse()
             ->values();
 
+        $setting = AiSetting::firstWhere('company_id', $user->company_id);
+
         return Inertia::render('Ai/Index', [
             'conversations' => $conversations,
             'insights'      => $this->insights($user->company_id),
+            'provider'      => [
+                'operational' => (bool) $setting?->isOperational(),
+                'label'       => $setting && $setting->isOperational()
+                    ? (AiSetting::PROVIDERS[$setting->provider]['label'] ?? $setting->provider)
+                    : 'Moteur de règles interne',
+                'canConfigure' => $user->can('administration.update'),
+            ],
             'suggestions'   => [
                 'Quel est le budget engagé sur les projets actifs ?',
                 'Y a-t-il des factures en retard ?',
@@ -56,7 +69,7 @@ class AiAssistantController extends Controller
         ]);
 
         $user = $request->user();
-        $answer = $this->answer($data['question'], $user->company_id);
+        $answer = $this->generate($data['question'], $user->company_id);
 
         AiConversation::create([
             'company_id' => $user->company_id,
@@ -66,6 +79,77 @@ class AiAssistantController extends Controller
         ]);
 
         return redirect()->route('ai.index')->with('success', 'Réponse générée.');
+    }
+
+    /**
+     * Aiguille vers le LLM configuré si opérationnel, sinon le moteur de règles.
+     * En cas d'erreur d'appel LLM, repli silencieux sur les règles (jamais d'échec visible).
+     */
+    private function generate(string $question, int $companyId): string
+    {
+        $setting = AiSetting::firstWhere('company_id', $companyId);
+
+        if ($setting && $setting->isOperational()) {
+            try {
+                $system = "Tu es l'assistant IA de CONSTRUIRO ERP, un logiciel de gestion "
+                    . "de chantiers et du BTP. Réponds en français, de façon concise et "
+                    . "professionnelle, en t'appuyant STRICTEMENT sur les données de "
+                    . "l'entreprise fournies ci-dessous. Si l'information manque, dis-le. "
+                    . "Montants en FCFA.\n\n=== DONNÉES DE L'ENTREPRISE ===\n"
+                    . $this->buildContext($companyId);
+
+                return app(LlmClient::class)->chat($setting, $system, $question);
+            } catch (\Throwable $e) {
+                Log::warning('Assistant IA : repli sur les règles ('.$e->getMessage().')');
+                // On retombe sur le moteur de règles ci-dessous.
+            }
+        }
+
+        return $this->answer($question, $companyId);
+    }
+
+    /**
+     * Construit un résumé chiffré des données de l'entreprise, fourni comme
+     * contexte au LLM. Réutilise les mêmes agrégats que le moteur de règles.
+     */
+    private function buildContext(int $companyId): string
+    {
+        $lines = [];
+
+        $projects = Project::where('company_id', $companyId);
+        $lines[] = 'Projets : '.(clone $projects)->count()
+            .' (en cours : '.(clone $projects)->where('status', 'in_progress')->count()
+            .', avancement moyen : '.(int) round((clone $projects)->where('status', 'in_progress')->avg('progress') ?? 0).' %)';
+        $lines[] = 'Budget total des projets : '.$this->money((float) (clone $projects)->sum('budget_amount'));
+        $lines[] = 'Budget engagé (en cours + en pause) : '.$this->money((float) (clone $projects)->whereIn('status', ['in_progress', 'on_hold'])->sum('budget_amount'));
+        $lines[] = 'Chantiers : '.Site::where('company_id', $companyId)->count()
+            .' (en cours : '.Site::where('company_id', $companyId)->where('status', 'in_progress')->count().')';
+
+        if ($this->modelReady(\App\Models\Invoice::class, 'invoices')) {
+            $base = \App\Models\Invoice::where('company_id', $companyId)->whereNotIn('status', ['cancelled']);
+            $invoiced = (float) (clone $base)->sum('total');
+            $paid = (float) (clone $base)->sum('amount_paid');
+            $overdue = (clone $base)->whereNotIn('status', ['paid'])->whereNotNull('due_date')->whereDate('due_date', '<', now())->count();
+            $lines[] = 'Facturation : facturé '.$this->money($invoiced).', encaissé '.$this->money($paid)
+                .', reste à recouvrer '.$this->money(max(0, $invoiced - $paid)).', factures en retard : '.$overdue;
+        }
+
+        if ($this->modelReady(\App\Models\PurchaseOrder::class, 'purchase_orders')) {
+            $total = (float) \App\Models\PurchaseOrder::where('company_id', $companyId)->whereNotIn('status', ['cancelled'])->sum('total');
+            $lines[] = 'Achats (bons de commande) : '.$this->money($total);
+        }
+
+        if ($this->modelReady(\App\Models\Employee::class, 'employees')) {
+            $active = \App\Models\Employee::where('company_id', $companyId)->where('status', 'active')->count();
+            $lines[] = 'Effectif actif : '.$active.' employé(s)';
+        }
+
+        $low = $this->lowStockCount($companyId);
+        if ($low !== null) {
+            $lines[] = 'Matériaux sous le seuil de stock : '.$low;
+        }
+
+        return implode("\n", $lines);
     }
 
     /**
