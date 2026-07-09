@@ -28,10 +28,10 @@ class DashboardController extends Controller
         $currency = $user->company?->base_currency ?? 'XOF';
 
         $stats = [
-            ['key' => 'projects', 'label' => 'Projets actifs',     'value' => $activeProjects,                       'icon' => 'folder-kanban', 'trend' => "{$totalProjects} au total"],
-            ['key' => 'sites',    'label' => 'Chantiers en cours',  'value' => $activeSites,                          'icon' => 'construction',  'trend' => 'en activité'],
-            ['key' => 'budget',   'label' => 'Budget engagé',       'value' => $this->shortMoney($engagedBudget, $currency), 'icon' => 'wallet',  'trend' => 'projets actifs'],
-            ['key' => 'progress', 'label' => 'Avancement moyen',    'value' => "{$avgProgress} %",                    'icon' => 'trending-up',   'trend' => 'projets en cours'],
+            ['key' => 'projects', 'label' => __('Projets actifs'),    'value' => $activeProjects,                       'icon' => 'folder-kanban', 'trend' => "{$totalProjects} ".__('au total')],
+            ['key' => 'sites',    'label' => __('Chantiers en cours'), 'value' => $activeSites,                          'icon' => 'construction',  'trend' => __('en activité')],
+            ['key' => 'budget',   'label' => __('Budget engagé'),      'value' => $this->shortMoney($engagedBudget, $currency), 'icon' => 'wallet',  'trend' => __('projets actifs')],
+            ['key' => 'progress', 'label' => __('Avancement moyen'),   'value' => "{$avgProgress} %",                    'icon' => 'trending-up',   'trend' => __('projets en cours')],
         ];
 
         // 5 derniers projets pour un aperçu rapide.

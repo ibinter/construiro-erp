@@ -49,11 +49,30 @@ class HandleInertiaRequests extends Middleware
                 'navigation' => $user ? Navigation::for($user, $locale) : [],
             ],
             'locale' => $locale,
+            // Dictionnaire de traduction de la langue courante (FR = identité).
+            'translations' => $this->translations($locale),
             // Messages flash (notifications toast côté client).
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error'   => fn () => $request->session()->get('error'),
             ],
         ];
+    }
+
+    /**
+     * Dictionnaire de traduction pour la langue donnée (fichier lang/{locale}.json).
+     * Le français est la langue source : dictionnaire vide (identité).
+     */
+    protected function translations(string $locale): array
+    {
+        if ($locale === 'fr') {
+            return [];
+        }
+
+        $path = lang_path("{$locale}.json");
+
+        return is_file($path)
+            ? (json_decode((string) file_get_contents($path), true) ?: [])
+            : [];
     }
 }
