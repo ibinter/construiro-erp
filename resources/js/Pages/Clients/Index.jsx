@@ -81,15 +81,21 @@ export default function Index({ clients, filters, types, can }) {
                     </select>
                 </form>
 
-                {can.create && (
-                    <Link
-                        href="/clients/create"
-                        className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600"
-                    >
-                        <Icon name="plus" className="h-4 w-4" />
-                        Nouveau client
-                    </Link>
-                )}
+                <div className="flex gap-2">
+                    <a href="/export/clients" target="_blank" rel="noopener"
+                        className="inline-flex items-center gap-2 rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">
+                        <Icon name="file-spreadsheet" className="h-4 w-4" /> Exporter
+                    </a>
+                    {can.create && (
+                        <Link
+                            href="/clients/create"
+                            className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600"
+                        >
+                            <Icon name="plus" className="h-4 w-4" />
+                            Nouveau client
+                        </Link>
+                    )}
+                </div>
             </div>
 
             {/* Tableau */}

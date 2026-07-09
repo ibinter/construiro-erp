@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 /**
- * Document (GED) — métadonnées d'un document (nom / chemin / type).
- * Pas d'upload réel : le chemin ou l'URL est saisi manuellement.
- * Rattachement optionnel à un projet. Isolation multi-tenant par entreprise.
+ * Document (GED) — métadonnées et fichier d'un document (nom / chemin / type).
+ * Upload réel sur le disque « public » ; rattachement optionnel à un projet.
+ * Isolation multi-tenant par entreprise.
  */
 class Document extends Model
 {
@@ -29,6 +30,15 @@ class Document extends Model
     protected $casts = [
         'size_kb' => 'integer',
     ];
+
+    /** URL publique du fichier attaché (exposée au front). */
+    protected $appends = ['file_url'];
+
+    /** URL publique du fichier stocké, ou null si aucun fichier. */
+    public function getFileUrlAttribute(): ?string
+    {
+        return $this->file_path ? Storage::disk('public')->url($this->file_path) : null;
+    }
 
     public function company(): BelongsTo
     {

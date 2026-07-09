@@ -8,6 +8,7 @@ export default function Edit({ document, projects, categories }) {
         title: document.title ?? '',
         category: document.category ?? 'plan',
         version: document.version ?? '1.0',
+        file: null,
         file_name: document.file_name ?? '',
         file_path: document.file_path ?? '',
         mime_type: document.mime_type ?? '',
@@ -19,7 +20,10 @@ export default function Edit({ document, projects, categories }) {
 
     const submit = (e) => {
         e.preventDefault();
-        form.put(`/documents/${document.id}`);
+        // Upload multipart : PUT n'accepte pas les fichiers → POST + spoofing _method.
+        form
+            .transform((d) => ({ ...d, _method: 'put' }))
+            .post(`/documents/${document.id}`, { forceFormData: true });
     };
 
     return (
@@ -32,6 +36,7 @@ export default function Edit({ document, projects, categories }) {
                     categories={categories}
                     onSubmit={submit}
                     submitLabel="Enregistrer"
+                    currentFileName={document.file_name}
                 />
             </div>
         </AppLayout>

@@ -2,20 +2,10 @@ import { useState } from 'react';
 import AppLayout from '@/Layouts/AppLayout';
 import Icon from '@/Components/Icon';
 import { Head, Link, router } from '@inertiajs/react';
-import { formatMoney } from '@/constants';
-
-// Libellés et styles des statuts de facture (FR).
-const INVOICE_STATUS = {
-    draft:     { label: 'Brouillon', color: 'bg-slate-100 text-slate-600' },
-    sent:      { label: 'Envoyée',   color: 'bg-blue-100 text-blue-700' },
-    partial:   { label: 'Partiel',   color: 'bg-amber-100 text-amber-700' },
-    paid:      { label: 'Payée',     color: 'bg-green-100 text-green-700' },
-    overdue:   { label: 'En retard', color: 'bg-red-100 text-red-700' },
-    cancelled: { label: 'Annulée',   color: 'bg-slate-200 text-slate-500' },
-};
+import { SITE_STATUS } from '@/constants';
 
 function StatusBadge({ status }) {
-    const s = INVOICE_STATUS[status] ?? { label: status, color: 'bg-slate-100 text-slate-600' };
+    const s = SITE_STATUS[status] ?? { label: status, color: 'bg-slate-100 text-slate-600' };
     return (
         <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${s.color}`}>
             {s.label}
@@ -23,21 +13,30 @@ function StatusBadge({ status }) {
     );
 }
 
-export default function Index({ invoices, filters, statuses, can }) {
+function ProgressBar({ value }) {
+    return (
+        <div className="flex items-center gap-2">
+            <div className="h-2 w-24 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+                <div className="h-full rounded-full bg-orange-500" style={{ width: `${value}%` }} />
+            </div>
+            <span className="text-xs text-slate-500">{value}%</span>
+        </div>
+    );
+}
+
+export default function Index({ sites, filters, statuses }) {
     const [search, setSearch] = useState(filters.search ?? '');
 
     const applyFilters = (next = {}) => {
-        router.get('/invoices', { search, status: filters.status, ...next }, {
+        router.get('/sites', { search, status: filters.status, ...next }, {
             preserveState: true,
             replace: true,
         });
     };
 
-    const fmtDate = (d) => (d ? new Date(d).toLocaleDateString('fr-FR') : '—');
-
     return (
-        <AppLayout header="Facturation">
-            <Head title="Facturation" />
+        <AppLayout header="Chantiers">
+            <Head title="Chantiers" />
 
             {/* Barre d'actions */}
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -51,7 +50,7 @@ export default function Index({ invoices, filters, statuses, can }) {
                             type="text"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Rechercher une facture…"
+                            placeholder="Rechercher un chantier…"
                             className="w-64 rounded-md border-slate-300 pl-9 text-sm focus:border-orange-500 focus:ring-orange-500 dark:border-slate-700 dark:bg-slate-900"
                         />
                     </div>
@@ -62,26 +61,15 @@ export default function Index({ invoices, filters, statuses, can }) {
                     >
                         <option value="">Tous les statuts</option>
                         {statuses.map((s) => (
-                            <option key={s} value={s}>{INVOICE_STATUS[s]?.label ?? s}</option>
+                            <option key={s} value={s}>{SITE_STATUS[s]?.label ?? s}</option>
                         ))}
                     </select>
                 </form>
 
-                <div className="flex gap-2">
-                    <a href="/export/invoices" target="_blank" rel="noopener"
-                        className="inline-flex items-center gap-2 rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">
-                        <Icon name="file-spreadsheet" className="h-4 w-4" /> Exporter
-                    </a>
-                    {can.create && (
-                        <Link
-                            href="/invoices/create"
-                            className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600"
-                        >
-                            <Icon name="plus" className="h-4 w-4" />
-                            Nouvelle facture
-                        </Link>
-                    )}
-                </div>
+                <p className="flex items-center gap-1.5 text-xs text-slate-400">
+                    <Icon name="info" className="h-3.5 w-3.5" />
+                    Les chantiers se créent depuis la fiche projet.
+                </p>
             </div>
 
             {/* Tableau */}
@@ -89,52 +77,52 @@ export default function Index({ invoices, filters, statuses, can }) {
                 <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800">
                     <thead className="bg-slate-50 dark:bg-slate-800/50">
                         <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                            <th className="px-4 py-3">Facture</th>
-                            <th className="px-4 py-3">Client</th>
+                            <th className="px-4 py-3">Chantier</th>
+                            <th className="px-4 py-3">Projet</th>
+                            <th className="px-4 py-3">Chef de chantier</th>
+                            <th className="px-4 py-3">Avancement</th>
                             <th className="px-4 py-3">Statut</th>
-                            <th className="px-4 py-3">Total TTC</th>
-                            <th className="px-4 py-3">Reste à payer</th>
-                            <th className="px-4 py-3">Échéance</th>
                             <th className="px-4 py-3"></th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                        {invoices.data.map((invoice) => (
-                            <tr key={invoice.id} className="text-sm hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        {sites.data.map((site) => (
+                            <tr key={site.id} className="text-sm hover:bg-slate-50 dark:hover:bg-slate-800/50">
                                 <td className="px-4 py-3">
-                                    <Link href={`/invoices/${invoice.id}`} className="font-medium text-slate-800 hover:text-orange-600 dark:text-slate-100">
-                                        {invoice.code}
+                                    <Link href={`/sites/${site.id}`} className="font-medium text-slate-800 hover:text-orange-600 dark:text-slate-100">
+                                        {site.name}
                                     </Link>
-                                    {invoice.project && (
-                                        <div className="text-xs text-slate-400">{invoice.project.name}</div>
+                                    <div className="text-xs text-slate-400">
+                                        {site.code}{site.city ? ` · ${site.city}` : ''}
+                                    </div>
+                                </td>
+                                <td className="px-4 py-3">
+                                    {site.project ? (
+                                        <Link href={`/projects/${site.project.id}`} className="text-slate-600 hover:text-orange-600 dark:text-slate-300">
+                                            {site.project.name}
+                                        </Link>
+                                    ) : (
+                                        <span className="text-slate-400">—</span>
                                     )}
                                 </td>
                                 <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
-                                    {invoice.client?.name ?? '—'}
+                                    {site.site_manager?.name ?? '—'}
                                 </td>
-                                <td className="px-4 py-3"><StatusBadge status={invoice.status} /></td>
-                                <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
-                                    {formatMoney(invoice.total, invoice.currency)}
-                                </td>
-                                <td className="px-4 py-3 font-medium text-slate-800 dark:text-slate-100">
-                                    {formatMoney(invoice.balance, invoice.currency)}
-                                </td>
-                                <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
-                                    {fmtDate(invoice.due_date)}
-                                </td>
+                                <td className="px-4 py-3"><ProgressBar value={site.progress} /></td>
+                                <td className="px-4 py-3"><StatusBadge status={site.status} /></td>
                                 <td className="px-4 py-3 text-right">
-                                    <Link href={`/invoices/${invoice.id}`} className="text-slate-400 hover:text-orange-600">
+                                    <Link href={`/sites/${site.id}`} className="text-slate-400 hover:text-orange-600">
                                         <Icon name="chevron-right" className="h-4 w-4" />
                                     </Link>
                                 </td>
                             </tr>
                         ))}
 
-                        {invoices.data.length === 0 && (
+                        {sites.data.length === 0 && (
                             <tr>
-                                <td colSpan={7} className="px-4 py-12 text-center text-slate-400">
-                                    <Icon name="receipt" className="mx-auto mb-2 h-8 w-8" />
-                                    Aucune facture trouvée.
+                                <td colSpan={6} className="px-4 py-12 text-center text-slate-400">
+                                    <Icon name="construction" className="mx-auto mb-2 h-8 w-8" />
+                                    Aucun chantier trouvé.
                                 </td>
                             </tr>
                         )}
@@ -143,9 +131,9 @@ export default function Index({ invoices, filters, statuses, can }) {
             </div>
 
             {/* Pagination */}
-            {invoices.last_page > 1 && (
+            {sites.last_page > 1 && (
                 <div className="mt-4 flex flex-wrap gap-1">
-                    {invoices.links.map((link, i) => (
+                    {sites.links.map((link, i) => (
                         <button
                             key={i}
                             disabled={!link.url}
