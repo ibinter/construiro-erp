@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import QuoteForm from './Partials/QuoteForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Edit({ quote, projects, statuses }) {
+    const { t } = useTrans();
     const fmtDate = (d) => (d ? String(d).slice(0, 10) : '');
 
     const form = useForm({
@@ -31,14 +33,14 @@ export default function Edit({ quote, projects, statuses }) {
 
     return (
         <AppLayout header="Modifier le devis">
-            <Head title={`Modifier ${quote.code}`} />
+            <Head title={`${t('Modifier')} ${quote.code}`} />
             <div className="mx-auto max-w-5xl">
                 <QuoteForm
                     form={form}
                     projects={projects}
                     statuses={statuses}
                     onSubmit={submit}
-                    submitLabel="Enregistrer les modifications"
+                    submitLabel={t('Enregistrer les modifications')}
                 />
             </div>
         </AppLayout>

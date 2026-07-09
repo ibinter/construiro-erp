@@ -2,6 +2,7 @@ import { useState } from 'react';
 import AppLayout from '@/Layouts/AppLayout';
 import Icon from '@/Components/Icon';
 import { Head, Link, router } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 // Libellés des types de client (FR) — local à ce module.
 const CLIENT_TYPE = {
@@ -19,27 +20,30 @@ const TYPE_COLOR = {
 };
 
 function TypeBadge({ type }) {
+    const { t } = useTrans();
     const color = TYPE_COLOR[type] ?? 'bg-slate-100 text-slate-600';
     return (
         <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${color}`}>
-            {CLIENT_TYPE[type] ?? type}
+            {t(CLIENT_TYPE[type] ?? type)}
         </span>
     );
 }
 
 function ActiveBadge({ active }) {
+    const { t } = useTrans();
     return active ? (
         <span className="inline-flex rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">
-            Actif
+            {t('Actif')}
         </span>
     ) : (
         <span className="inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-500">
-            Inactif
+            {t('Inactif')}
         </span>
     );
 }
 
 export default function Index({ clients, filters, types, can }) {
+    const { t } = useTrans();
     const [search, setSearch] = useState(filters.search ?? '');
 
     const applyFilters = (next = {}) => {
@@ -51,7 +55,7 @@ export default function Index({ clients, filters, types, can }) {
 
     return (
         <AppLayout header="Clients">
-            <Head title="Clients" />
+            <Head title={t('Clients')} />
 
             {/* Barre d'actions */}
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -65,7 +69,7 @@ export default function Index({ clients, filters, types, can }) {
                             type="text"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Rechercher un client…"
+                            placeholder={t('Rechercher un client…')}
                             className="w-64 rounded-md border-slate-300 pl-9 text-sm focus:border-orange-500 focus:ring-orange-500 dark:border-slate-700 dark:bg-slate-900"
                         />
                     </div>
@@ -74,9 +78,9 @@ export default function Index({ clients, filters, types, can }) {
                         onChange={(e) => applyFilters({ type: e.target.value })}
                         className="rounded-md border-slate-300 text-sm focus:border-orange-500 focus:ring-orange-500 dark:border-slate-700 dark:bg-slate-900"
                     >
-                        <option value="">Tous les types</option>
-                        {types.map((t) => (
-                            <option key={t} value={t}>{CLIENT_TYPE[t] ?? t}</option>
+                        <option value="">{t('Tous les types')}</option>
+                        {types.map((ct) => (
+                            <option key={ct} value={ct}>{t(CLIENT_TYPE[ct] ?? ct)}</option>
                         ))}
                     </select>
                 </form>
@@ -84,7 +88,7 @@ export default function Index({ clients, filters, types, can }) {
                 <div className="flex gap-2">
                     <a href="/export/clients" target="_blank" rel="noopener"
                         className="inline-flex items-center gap-2 rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">
-                        <Icon name="file-spreadsheet" className="h-4 w-4" /> Exporter
+                        <Icon name="file-spreadsheet" className="h-4 w-4" /> {t('Exporter')}
                     </a>
                     {can.create && (
                         <Link
@@ -92,7 +96,7 @@ export default function Index({ clients, filters, types, can }) {
                             className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600"
                         >
                             <Icon name="plus" className="h-4 w-4" />
-                            Nouveau client
+                            {t('Nouveau client')}
                         </Link>
                     )}
                 </div>
@@ -103,11 +107,11 @@ export default function Index({ clients, filters, types, can }) {
                 <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800">
                     <thead className="bg-slate-50 dark:bg-slate-800/50">
                         <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                            <th className="px-4 py-3">Client</th>
-                            <th className="px-4 py-3">Type</th>
-                            <th className="px-4 py-3">Contact</th>
-                            <th className="px-4 py-3">Ville</th>
-                            <th className="px-4 py-3">Statut</th>
+                            <th className="px-4 py-3">{t('Client')}</th>
+                            <th className="px-4 py-3">{t('Type')}</th>
+                            <th className="px-4 py-3">{t('Contact')}</th>
+                            <th className="px-4 py-3">{t('Ville')}</th>
+                            <th className="px-4 py-3">{t('Statut')}</th>
                             <th className="px-4 py-3"></th>
                         </tr>
                     </thead>
@@ -141,7 +145,7 @@ export default function Index({ clients, filters, types, can }) {
                             <tr>
                                 <td colSpan={6} className="px-4 py-12 text-center text-slate-400">
                                     <Icon name="users" className="mx-auto mb-2 h-8 w-8" />
-                                    Aucun client trouvé.
+                                    {t('Aucun client trouvé.')}
                                 </td>
                             </tr>
                         )}

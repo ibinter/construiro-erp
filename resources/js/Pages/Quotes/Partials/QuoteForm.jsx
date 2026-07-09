@@ -5,6 +5,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import Icon from '@/Components/Icon';
 import { Link } from '@inertiajs/react';
 import { formatMoney } from '@/constants';
+import { useTrans } from '@/i18n';
 
 const CURRENCIES = ['XOF', 'XAF', 'EUR', 'USD', 'GHS', 'NGN'];
 const UNITS = ['u', 'm2', 'm3', 'ml', 'kg', 't', 'forfait', 'j', 'h'];
@@ -25,6 +26,7 @@ const emptyLine = () => ({ designation: '', unit: 'u', quantity: 1, unit_price: 
  * `form` est l'objet retourné par useForm() d'Inertia (avec data.lines : array).
  */
 export default function QuoteForm({ form, projects = [], statuses = [], onSubmit, submitLabel }) {
+    const { t } = useTrans();
     const { data, setData, errors, processing } = form;
 
     // Recalcul temps réel (affichage uniquement — le serveur reste la source de vérité).
@@ -66,21 +68,21 @@ export default function QuoteForm({ form, projects = [], statuses = [], onSubmit
         <form onSubmit={onSubmit} className="space-y-6">
             {/* En-tête */}
             <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-                <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">Informations générales</h3>
+                <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">{t('Informations générales')}</h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    {field('code', 'Code devis *', { placeholder: 'DEV-2026-001' })}
-                    {field('title', 'Intitulé *', { placeholder: 'Construction villa R+1' })}
-                    {field('client_name', 'Client', { placeholder: 'Nom du client' })}
+                    {field('code', t('Code devis *'), { placeholder: 'DEV-2026-001' })}
+                    {field('title', t('Intitulé *'), { placeholder: 'Construction villa R+1' })}
+                    {field('client_name', t('Client'), { placeholder: t('Nom du client') })}
 
                     <div>
-                        <InputLabel htmlFor="project_id" value="Projet rattaché" />
+                        <InputLabel htmlFor="project_id" value={t('Projet rattaché')} />
                         <select
                             id="project_id"
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                             value={data.project_id ?? ''}
                             onChange={(e) => setData('project_id', e.target.value || null)}
                         >
-                            <option value="">— Aucun —</option>
+                            <option value="">{t('— Aucun —')}</option>
                             {projects.map((p) => (
                                 <option key={p.id} value={p.id}>{p.name}</option>
                             ))}
@@ -89,7 +91,7 @@ export default function QuoteForm({ form, projects = [], statuses = [], onSubmit
                     </div>
 
                     <div>
-                        <InputLabel htmlFor="status" value="Statut *" />
+                        <InputLabel htmlFor="status" value={t('Statut *')} />
                         <select
                             id="status"
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
@@ -97,14 +99,14 @@ export default function QuoteForm({ form, projects = [], statuses = [], onSubmit
                             onChange={(e) => setData('status', e.target.value)}
                         >
                             {(statuses.length ? statuses : Object.keys(QUOTE_STATUS)).map((s) => (
-                                <option key={s} value={s}>{QUOTE_STATUS[s] ?? s}</option>
+                                <option key={s} value={s}>{t(QUOTE_STATUS[s] ?? s)}</option>
                             ))}
                         </select>
                         <InputError message={errors.status} className="mt-1" />
                     </div>
 
                     <div>
-                        <InputLabel htmlFor="currency" value="Devise *" />
+                        <InputLabel htmlFor="currency" value={t('Devise *')} />
                         <select
                             id="currency"
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
@@ -116,13 +118,13 @@ export default function QuoteForm({ form, projects = [], statuses = [], onSubmit
                         <InputError message={errors.currency} className="mt-1" />
                     </div>
 
-                    {field('tax_rate', 'TVA (%) *', { type: 'number', min: 0, max: 100, step: '0.01' })}
-                    {field('date', 'Date du devis', { type: 'date' })}
-                    {field('valid_until', 'Valable jusqu\'au', { type: 'date' })}
+                    {field('tax_rate', t('TVA (%) *'), { type: 'number', min: 0, max: 100, step: '0.01' })}
+                    {field('date', t('Date du devis'), { type: 'date' })}
+                    {field('valid_until', t('Valable jusqu\'au'), { type: 'date' })}
                 </div>
 
                 <div className="mt-4">
-                    <InputLabel htmlFor="notes" value="Notes" />
+                    <InputLabel htmlFor="notes" value={t('Notes')} />
                     <textarea
                         id="notes"
                         rows={3}
@@ -137,13 +139,13 @@ export default function QuoteForm({ form, projects = [], statuses = [], onSubmit
             {/* Lignes du devis */}
             <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
                 <div className="mb-4 flex items-center justify-between">
-                    <h3 className="font-semibold text-slate-800 dark:text-slate-100">Lignes du devis</h3>
+                    <h3 className="font-semibold text-slate-800 dark:text-slate-100">{t('Lignes du devis')}</h3>
                     <button
                         type="button"
                         onClick={addLine}
                         className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-orange-600"
                     >
-                        <Icon name="plus" className="h-4 w-4" /> Ajouter une ligne
+                        <Icon name="plus" className="h-4 w-4" /> {t('Ajouter une ligne')}
                     </button>
                 </div>
 
@@ -153,11 +155,11 @@ export default function QuoteForm({ form, projects = [], statuses = [], onSubmit
                     <table className="min-w-full text-sm">
                         <thead>
                             <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                                <th className="pb-2 pr-2">Désignation</th>
-                                <th className="pb-2 px-2 w-24">Unité</th>
-                                <th className="pb-2 px-2 w-28">Quantité</th>
-                                <th className="pb-2 px-2 w-36">P.U.</th>
-                                <th className="pb-2 px-2 w-36 text-right">Total</th>
+                                <th className="pb-2 pr-2">{t('Désignation')}</th>
+                                <th className="pb-2 px-2 w-24">{t('Unité')}</th>
+                                <th className="pb-2 px-2 w-28">{t('Quantité')}</th>
+                                <th className="pb-2 px-2 w-36">{t('P.U.')}</th>
+                                <th className="pb-2 px-2 w-36 text-right">{t('Total')}</th>
                                 <th className="pb-2 pl-2 w-10"></th>
                             </tr>
                         </thead>
@@ -171,7 +173,7 @@ export default function QuoteForm({ form, projects = [], statuses = [], onSubmit
                                                 className="block w-full"
                                                 value={line.designation}
                                                 onChange={(e) => setLine(i, 'designation', e.target.value)}
-                                                placeholder="Béton dosé 350 kg/m3"
+                                                placeholder={t('Béton dosé 350 kg/m3')}
                                             />
                                             <InputError message={errors[`lines.${i}.designation`]} className="mt-1" />
                                         </td>
@@ -225,15 +227,15 @@ export default function QuoteForm({ form, projects = [], statuses = [], onSubmit
                 <div className="mt-6 flex justify-end">
                     <div className="w-full max-w-xs space-y-2 text-sm">
                         <div className="flex justify-between text-slate-600 dark:text-slate-300">
-                            <span>Sous-total HT</span>
+                            <span>{t('Sous-total HT')}</span>
                             <span>{formatMoney(subtotal, data.currency)}</span>
                         </div>
                         <div className="flex justify-between text-slate-600 dark:text-slate-300">
-                            <span>TVA ({Number(data.tax_rate) || 0} %)</span>
+                            <span>{t('TVA')} ({Number(data.tax_rate) || 0} %)</span>
                             <span>{formatMoney(taxAmount, data.currency)}</span>
                         </div>
                         <div className="flex justify-between border-t border-slate-200 pt-2 text-base font-semibold text-slate-800 dark:border-slate-700 dark:text-slate-100">
-                            <span>Total TTC</span>
+                            <span>{t('Total TTC')}</span>
                             <span>{formatMoney(total, data.currency)}</span>
                         </div>
                     </div>
@@ -245,7 +247,7 @@ export default function QuoteForm({ form, projects = [], statuses = [], onSubmit
                     href="/quotes"
                     className="rounded-md px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
                 >
-                    Annuler
+                    {t('Annuler')}
                 </Link>
                 <PrimaryButton disabled={processing} className="bg-orange-500 hover:bg-orange-600 focus:bg-orange-600">
                     {submitLabel}

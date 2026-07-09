@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import ClientForm from './Partials/ClientForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Create({ types }) {
+    const { t } = useTrans();
     const form = useForm({
         code: '',
         type: 'entreprise',
@@ -24,13 +26,13 @@ export default function Create({ types }) {
 
     return (
         <AppLayout header="Nouveau client">
-            <Head title="Nouveau client" />
+            <Head title={t('Nouveau client')} />
             <div className="mx-auto max-w-4xl">
                 <ClientForm
                     form={form}
                     types={types}
                     onSubmit={submit}
-                    submitLabel="Créer le client"
+                    submitLabel={t('Créer le client')}
                 />
             </div>
         </AppLayout>

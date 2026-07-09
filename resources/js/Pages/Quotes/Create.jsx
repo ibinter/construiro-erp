@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import QuoteForm from './Partials/QuoteForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Create({ projects, statuses }) {
+    const { t } = useTrans();
     const form = useForm({
         code: '',
         title: '',
@@ -26,14 +28,14 @@ export default function Create({ projects, statuses }) {
 
     return (
         <AppLayout header="Nouveau devis">
-            <Head title="Nouveau devis" />
+            <Head title={t('Nouveau devis')} />
             <div className="mx-auto max-w-5xl">
                 <QuoteForm
                     form={form}
                     projects={projects}
                     statuses={statuses}
                     onSubmit={submit}
-                    submitLabel="Créer le devis"
+                    submitLabel={t('Créer le devis')}
                 />
             </div>
         </AppLayout>

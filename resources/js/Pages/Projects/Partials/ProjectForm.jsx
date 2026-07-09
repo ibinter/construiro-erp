@@ -4,6 +4,7 @@ import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
 import { Link } from '@inertiajs/react';
 import { PROJECT_STATUS, PROJECT_TYPE } from '@/constants';
+import { useTrans } from '@/i18n';
 
 const CURRENCIES = ['XOF', 'XAF', 'EUR', 'USD', 'GHS', 'NGN'];
 
@@ -12,6 +13,7 @@ const CURRENCIES = ['XOF', 'XAF', 'EUR', 'USD', 'GHS', 'NGN'];
  * `form` est l'objet retourné par useForm() d'Inertia.
  */
 export default function ProjectForm({ form, managers = [], types = [], statuses = [], onSubmit, submitLabel }) {
+    const { t } = useTrans();
     const { data, setData, errors, processing } = form;
 
     const field = (name, label, props = {}) => (
@@ -31,29 +33,29 @@ export default function ProjectForm({ form, managers = [], types = [], statuses 
     return (
         <form onSubmit={onSubmit} className="space-y-6">
             <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-                <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">Informations générales</h3>
+                <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">{t('Informations générales')}</h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    {field('code', 'Code projet *', { placeholder: 'PRJ-2026-001' })}
-                    {field('name', 'Nom du projet *', { placeholder: 'Construction siège social' })}
-                    {field('client_name', 'Maître d\'ouvrage', { placeholder: 'Nom du client' })}
+                    {field('code', t('Code projet *'), { placeholder: 'PRJ-2026-001' })}
+                    {field('name', t('Nom du projet *'), { placeholder: t('Construction siège social') })}
+                    {field('client_name', t('Maître d\'ouvrage'), { placeholder: t('Nom du client') })}
 
                     <div>
-                        <InputLabel htmlFor="type" value="Type d'ouvrage *" />
+                        <InputLabel htmlFor="type" value={t('Type d\'ouvrage *')} />
                         <select
                             id="type"
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                             value={data.type}
                             onChange={(e) => setData('type', e.target.value)}
                         >
-                            {(types.length ? types : Object.keys(PROJECT_TYPE)).map((t) => (
-                                <option key={t} value={t}>{PROJECT_TYPE[t] ?? t}</option>
+                            {(types.length ? types : Object.keys(PROJECT_TYPE)).map((tp) => (
+                                <option key={tp} value={tp}>{t(PROJECT_TYPE[tp] ?? tp)}</option>
                             ))}
                         </select>
                         <InputError message={errors.type} className="mt-1" />
                     </div>
 
                     <div>
-                        <InputLabel htmlFor="status" value="Statut *" />
+                        <InputLabel htmlFor="status" value={t('Statut *')} />
                         <select
                             id="status"
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"

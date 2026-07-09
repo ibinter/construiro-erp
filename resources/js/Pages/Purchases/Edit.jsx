@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import PurchaseForm from './Partials/PurchaseForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Edit({ order, suppliers, materials, projects, statuses }) {
+    const { t } = useTrans();
     const fmtDate = (d) => (d ? String(d).slice(0, 10) : '');
 
     const form = useForm({
@@ -31,7 +33,7 @@ export default function Edit({ order, suppliers, materials, projects, statuses }
 
     return (
         <AppLayout header="Modifier le bon de commande">
-            <Head title={`Modifier ${order.code}`} />
+            <Head title={`${t('Modifier')} ${order.code}`} />
             <div className="mx-auto max-w-5xl">
                 <PurchaseForm
                     form={form}
@@ -40,7 +42,7 @@ export default function Edit({ order, suppliers, materials, projects, statuses }
                     projects={projects}
                     statuses={statuses}
                     onSubmit={submit}
-                    submitLabel="Enregistrer les modifications"
+                    submitLabel={t('Enregistrer les modifications')}
                 />
             </div>
         </AppLayout>

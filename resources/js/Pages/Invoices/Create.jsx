@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import InvoiceForm from './Partials/InvoiceForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Create({ clients, projects, statuses }) {
+    const { t } = useTrans();
     const form = useForm({
         code: '',
         client_id: '',
@@ -25,7 +27,7 @@ export default function Create({ clients, projects, statuses }) {
 
     return (
         <AppLayout header="Nouvelle facture">
-            <Head title="Nouvelle facture" />
+            <Head title={t('Nouvelle facture')} />
             <div className="mx-auto max-w-5xl">
                 <InvoiceForm
                     form={form}
@@ -33,7 +35,7 @@ export default function Create({ clients, projects, statuses }) {
                     projects={projects}
                     statuses={statuses}
                     onSubmit={submit}
-                    submitLabel="Créer la facture"
+                    submitLabel={t('Créer la facture')}
                 />
             </div>
         </AppLayout>

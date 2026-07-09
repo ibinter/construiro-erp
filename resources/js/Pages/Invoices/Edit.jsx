@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import InvoiceForm from './Partials/InvoiceForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Edit({ invoice, clients, projects, statuses }) {
+    const { t } = useTrans();
     const fmtDate = (d) => (d ? String(d).slice(0, 10) : '');
 
     const form = useForm({
@@ -30,7 +32,7 @@ export default function Edit({ invoice, clients, projects, statuses }) {
 
     return (
         <AppLayout header="Modifier la facture">
-            <Head title={`Modifier ${invoice.code}`} />
+            <Head title={`${t('Modifier')} ${invoice.code}`} />
             <div className="mx-auto max-w-5xl">
                 <InvoiceForm
                     form={form}
@@ -38,7 +40,7 @@ export default function Edit({ invoice, clients, projects, statuses }) {
                     projects={projects}
                     statuses={statuses}
                     onSubmit={submit}
-                    submitLabel="Enregistrer les modifications"
+                    submitLabel={t('Enregistrer les modifications')}
                 />
             </div>
         </AppLayout>

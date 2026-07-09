@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import PurchaseForm from './Partials/PurchaseForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Create({ suppliers, materials, projects, statuses }) {
+    const { t } = useTrans();
     const form = useForm({
         code: '',
         supplier_id: '',
@@ -25,7 +27,7 @@ export default function Create({ suppliers, materials, projects, statuses }) {
 
     return (
         <AppLayout header="Nouveau bon de commande">
-            <Head title="Nouveau bon de commande" />
+            <Head title={t('Nouveau bon de commande')} />
             <div className="mx-auto max-w-5xl">
                 <PurchaseForm
                     form={form}
@@ -34,7 +36,7 @@ export default function Create({ suppliers, materials, projects, statuses }) {
                     projects={projects}
                     statuses={statuses}
                     onSubmit={submit}
-                    submitLabel="Créer le bon de commande"
+                    submitLabel={t('Créer le bon de commande')}
                 />
             </div>
         </AppLayout>
