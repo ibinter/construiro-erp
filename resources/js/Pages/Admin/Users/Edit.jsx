@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import UserForm from './Partials/UserForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Edit({ user, roles, agencies }) {
+    const { t } = useTrans();
     const form = useForm({
         name: user.name ?? '',
         email: user.email ?? '',
@@ -27,7 +29,7 @@ export default function Edit({ user, roles, agencies }) {
                     roles={roles}
                     agencies={agencies}
                     onSubmit={submit}
-                    submitLabel="Enregistrer"
+                    submitLabel={t('Enregistrer')}
                 />
             </div>
         </AppLayout>

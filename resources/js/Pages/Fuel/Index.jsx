@@ -9,6 +9,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import { Head, router, useForm } from '@inertiajs/react';
 import { formatMoney } from '@/constants';
+import { useTrans } from '@/i18n';
 
 // Journal des pleins de carburant du parc roulant.
 
@@ -28,6 +29,7 @@ function StatCard({ icon, label, value }) {
 }
 
 export default function Index({ logs, filters, equipments, totals, can }) {
+    const { t } = useTrans();
     const [showModal, setShowModal] = useState(false);
 
     const form = useForm({
@@ -57,12 +59,12 @@ export default function Index({ logs, filters, equipments, totals, can }) {
 
     return (
         <AppLayout header="Carburant">
-            <Head title="Carburant" />
+            <Head title={t('Carburant')} />
 
             {/* Cartes de synthèse */}
             <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <StatCard icon="fuel" label="Total consommé" value={fmtLitres(totals.quantity)} />
-                <StatCard icon="wallet" label="Coût total" value={formatMoney(totals.cost, 'XOF')} />
+                <StatCard icon="fuel" label={t('Total consommé')} value={fmtLitres(totals.quantity)} />
+                <StatCard icon="wallet" label={t('Coût total')} value={formatMoney(totals.cost, 'XOF')} />
             </div>
 
             {/* Barre d'actions */}
@@ -72,7 +74,7 @@ export default function Index({ logs, filters, equipments, totals, can }) {
                     onChange={(e) => applyFilter(e.target.value)}
                     className="rounded-md border-slate-300 text-sm focus:border-orange-500 focus:ring-orange-500 dark:border-slate-700 dark:bg-slate-900"
                 >
-                    <option value="">Tous les équipements</option>
+                    <option value="">{t('Tous les équipements')}</option>
                     {equipments.map((eq) => (
                         <option key={eq.id} value={eq.id}>{eq.name} ({eq.code})</option>
                     ))}
@@ -84,7 +86,7 @@ export default function Index({ logs, filters, equipments, totals, can }) {
                         className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600"
                     >
                         <Icon name="plus" className="h-4 w-4" />
-                        Nouveau plein
+                        {t('Nouveau plein')}
                     </button>
                 )}
             </div>
@@ -94,13 +96,13 @@ export default function Index({ logs, filters, equipments, totals, can }) {
                 <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800">
                     <thead className="bg-slate-50 dark:bg-slate-800/50">
                         <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                            <th className="px-4 py-3">Date</th>
-                            <th className="px-4 py-3">Équipement</th>
-                            <th className="px-4 py-3">Quantité</th>
-                            <th className="px-4 py-3">Prix / L</th>
-                            <th className="px-4 py-3">Coût total</th>
-                            <th className="px-4 py-3">Compteur</th>
-                            <th className="px-4 py-3">Station</th>
+                            <th className="px-4 py-3">{t('Date')}</th>
+                            <th className="px-4 py-3">{t('Équipement')}</th>
+                            <th className="px-4 py-3">{t('Quantité')}</th>
+                            <th className="px-4 py-3">{t('Prix / L')}</th>
+                            <th className="px-4 py-3">{t('Coût total')}</th>
+                            <th className="px-4 py-3">{t('Compteur')}</th>
+                            <th className="px-4 py-3">{t('Station')}</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -127,7 +129,7 @@ export default function Index({ logs, filters, equipments, totals, can }) {
                             <tr>
                                 <td colSpan={7} className="px-4 py-12 text-center text-slate-400">
                                     <Icon name="fuel" className="mx-auto mb-2 h-8 w-8" />
-                                    Aucun plein enregistré.
+                                    {t('Aucun plein enregistré.')}
                                 </td>
                             </tr>
                         )}
@@ -157,14 +159,14 @@ export default function Index({ logs, filters, equipments, totals, can }) {
             {/* Modal nouveau plein */}
             <Modal show={showModal} onClose={() => setShowModal(false)}>
                 <form onSubmit={submit} className="p-6">
-                    <h3 className="mb-4 text-lg font-semibold text-slate-800 dark:text-slate-100">Nouveau plein</h3>
+                    <h3 className="mb-4 text-lg font-semibold text-slate-800 dark:text-slate-100">{t('Nouveau plein')}</h3>
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div className="sm:col-span-2">
-                            <InputLabel htmlFor="fl_equipment" value="Équipement *" />
+                            <InputLabel htmlFor="fl_equipment" value={t('Équipement *')} />
                             <select id="fl_equipment"
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                                 value={form.data.equipment_id} onChange={(e) => form.setData('equipment_id', e.target.value)}>
-                                <option value="">— Sélectionner —</option>
+                                <option value="">{t('— Sélectionner —')}</option>
                                 {equipments.map((eq) => (
                                     <option key={eq.id} value={eq.id}>{eq.name} ({eq.code})</option>
                                 ))}
@@ -172,52 +174,52 @@ export default function Index({ logs, filters, equipments, totals, can }) {
                             <InputError message={form.errors.equipment_id} className="mt-1" />
                         </div>
                         <div>
-                            <InputLabel htmlFor="fl_date" value="Date *" />
+                            <InputLabel htmlFor="fl_date" value={t('Date *')} />
                             <TextInput id="fl_date" type="date" className="mt-1 block w-full"
                                 value={form.data.date} onChange={(e) => form.setData('date', e.target.value)} />
                             <InputError message={form.errors.date} className="mt-1" />
                         </div>
                         <div>
-                            <InputLabel htmlFor="fl_station" value="Station" />
+                            <InputLabel htmlFor="fl_station" value={t('Station')} />
                             <TextInput id="fl_station" className="mt-1 block w-full" placeholder="Total Marcory"
                                 value={form.data.station} onChange={(e) => form.setData('station', e.target.value)} />
                             <InputError message={form.errors.station} className="mt-1" />
                         </div>
                         <div>
-                            <InputLabel htmlFor="fl_quantity" value="Quantité (L) *" />
+                            <InputLabel htmlFor="fl_quantity" value={t('Quantité (L) *')} />
                             <TextInput id="fl_quantity" type="number" min={0} step="0.01" className="mt-1 block w-full"
                                 value={form.data.quantity} onChange={(e) => form.setData('quantity', e.target.value)} />
                             <InputError message={form.errors.quantity} className="mt-1" />
                         </div>
                         <div>
-                            <InputLabel htmlFor="fl_unit_price" value="Prix au litre *" />
+                            <InputLabel htmlFor="fl_unit_price" value={t('Prix au litre *')} />
                             <TextInput id="fl_unit_price" type="number" min={0} step="0.01" className="mt-1 block w-full"
                                 value={form.data.unit_price} onChange={(e) => form.setData('unit_price', e.target.value)} />
                             <InputError message={form.errors.unit_price} className="mt-1" />
                         </div>
                         <div>
-                            <InputLabel htmlFor="fl_odometer" value="Compteur (km/h)" />
+                            <InputLabel htmlFor="fl_odometer" value={t('Compteur (km/h)')} />
                             <TextInput id="fl_odometer" type="number" min={0} step="0.1" className="mt-1 block w-full"
                                 value={form.data.odometer} onChange={(e) => form.setData('odometer', e.target.value)} />
                             <InputError message={form.errors.odometer} className="mt-1" />
                         </div>
                         <div className="flex items-end">
                             <div className="w-full rounded-md bg-slate-50 px-3 py-2 text-sm dark:bg-slate-800">
-                                <span className="text-slate-400">Coût total : </span>
+                                <span className="text-slate-400">{t('Coût total :')} </span>
                                 <span className="font-semibold text-slate-800 dark:text-slate-100">{formatMoney(previewCost, 'XOF')}</span>
                             </div>
                         </div>
                         <div className="sm:col-span-2">
-                            <InputLabel htmlFor="fl_notes" value="Notes" />
+                            <InputLabel htmlFor="fl_notes" value={t('Notes')} />
                             <textarea id="fl_notes" rows={2}
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                                 value={form.data.notes} onChange={(e) => form.setData('notes', e.target.value)} />
                         </div>
                     </div>
                     <div className="mt-6 flex justify-end gap-3">
-                        <SecondaryButton type="button" onClick={() => setShowModal(false)}>Annuler</SecondaryButton>
+                        <SecondaryButton type="button" onClick={() => setShowModal(false)}>{t('Annuler')}</SecondaryButton>
                         <PrimaryButton disabled={form.processing} className="bg-orange-500 hover:bg-orange-600 focus:bg-orange-600">
-                            Enregistrer le plein
+                            {t('Enregistrer le plein')}
                         </PrimaryButton>
                     </div>
                 </form>

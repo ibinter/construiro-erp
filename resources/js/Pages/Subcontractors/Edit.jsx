@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import SubcontractorForm from './Partials/SubcontractorForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Edit({ subcontractor, specialties }) {
+    const { t } = useTrans();
     const form = useForm({
         code: subcontractor.code ?? '',
         name: subcontractor.name ?? '',
@@ -25,13 +27,13 @@ export default function Edit({ subcontractor, specialties }) {
 
     return (
         <AppLayout header={`Modifier — ${subcontractor.name}`}>
-            <Head title={`Modifier ${subcontractor.name}`} />
+            <Head title={`${t('Modifier')} ${subcontractor.name}`} />
             <div className="mx-auto max-w-4xl">
                 <SubcontractorForm
                     form={form}
                     specialties={specialties}
                     onSubmit={submit}
-                    submitLabel="Enregistrer"
+                    submitLabel={t('Enregistrer')}
                 />
             </div>
         </AppLayout>

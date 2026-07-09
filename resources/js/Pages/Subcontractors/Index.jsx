@@ -2,6 +2,7 @@ import { useState } from 'react';
 import AppLayout from '@/Layouts/AppLayout';
 import Icon from '@/Components/Icon';
 import { Head, Link, router } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 // Libellés des spécialités de sous-traitant (FR) — local à ce module.
 const SPECIALTY = {
@@ -27,22 +28,24 @@ const SPECIALTY_COLOR = {
 };
 
 function SpecialtyBadge({ specialty }) {
+    const { t } = useTrans();
     const color = SPECIALTY_COLOR[specialty] ?? 'bg-slate-100 text-slate-600';
     return (
         <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${color}`}>
-            {SPECIALTY[specialty] ?? specialty}
+            {t(SPECIALTY[specialty] ?? specialty)}
         </span>
     );
 }
 
 function ActiveBadge({ active }) {
+    const { t } = useTrans();
     return active ? (
         <span className="inline-flex rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">
-            Actif
+            {t('Actif')}
         </span>
     ) : (
         <span className="inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-500">
-            Inactif
+            {t('Inactif')}
         </span>
     );
 }
@@ -61,6 +64,7 @@ function RatingStars({ rating }) {
 }
 
 export default function Index({ subcontractors, filters, specialties, can }) {
+    const { t } = useTrans();
     const [search, setSearch] = useState(filters.search ?? '');
 
     const applyFilters = (next = {}) => {
@@ -72,7 +76,7 @@ export default function Index({ subcontractors, filters, specialties, can }) {
 
     return (
         <AppLayout header="Sous-traitants">
-            <Head title="Sous-traitants" />
+            <Head title={t('Sous-traitants')} />
 
             {/* Barre d'actions */}
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -86,7 +90,7 @@ export default function Index({ subcontractors, filters, specialties, can }) {
                             type="text"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Rechercher un sous-traitant…"
+                            placeholder={t('Rechercher un sous-traitant…')}
                             className="w-64 rounded-md border-slate-300 pl-9 text-sm focus:border-orange-500 focus:ring-orange-500 dark:border-slate-700 dark:bg-slate-900"
                         />
                     </div>
@@ -95,9 +99,9 @@ export default function Index({ subcontractors, filters, specialties, can }) {
                         onChange={(e) => applyFilters({ specialty: e.target.value })}
                         className="rounded-md border-slate-300 text-sm focus:border-orange-500 focus:ring-orange-500 dark:border-slate-700 dark:bg-slate-900"
                     >
-                        <option value="">Toutes les spécialités</option>
+                        <option value="">{t('Toutes les spécialités')}</option>
                         {specialties.map((s) => (
-                            <option key={s} value={s}>{SPECIALTY[s] ?? s}</option>
+                            <option key={s} value={s}>{t(SPECIALTY[s] ?? s)}</option>
                         ))}
                     </select>
                 </form>
@@ -108,7 +112,7 @@ export default function Index({ subcontractors, filters, specialties, can }) {
                         className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600"
                     >
                         <Icon name="plus" className="h-4 w-4" />
-                        Nouveau sous-traitant
+                        {t('Nouveau sous-traitant')}
                     </Link>
                 )}
             </div>
@@ -118,12 +122,12 @@ export default function Index({ subcontractors, filters, specialties, can }) {
                 <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800">
                     <thead className="bg-slate-50 dark:bg-slate-800/50">
                         <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                            <th className="px-4 py-3">Sous-traitant</th>
-                            <th className="px-4 py-3">Spécialité</th>
-                            <th className="px-4 py-3">Contact</th>
-                            <th className="px-4 py-3">Ville</th>
-                            <th className="px-4 py-3">Note</th>
-                            <th className="px-4 py-3">Statut</th>
+                            <th className="px-4 py-3">{t('Sous-traitant')}</th>
+                            <th className="px-4 py-3">{t('Spécialité')}</th>
+                            <th className="px-4 py-3">{t('Contact')}</th>
+                            <th className="px-4 py-3">{t('Ville')}</th>
+                            <th className="px-4 py-3">{t('Note')}</th>
+                            <th className="px-4 py-3">{t('Statut')}</th>
                             <th className="px-4 py-3"></th>
                         </tr>
                     </thead>
@@ -158,7 +162,7 @@ export default function Index({ subcontractors, filters, specialties, can }) {
                             <tr>
                                 <td colSpan={7} className="px-4 py-12 text-center text-slate-400">
                                     <Icon name="hard-hat" className="mx-auto mb-2 h-8 w-8" />
-                                    Aucun sous-traitant trouvé.
+                                    {t('Aucun sous-traitant trouvé.')}
                                 </td>
                             </tr>
                         )}

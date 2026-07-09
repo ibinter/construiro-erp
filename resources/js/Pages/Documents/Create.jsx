@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import DocumentForm from './Partials/DocumentForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Create({ projects, categories }) {
+    const { t } = useTrans();
     const form = useForm({
         code: '',
         title: '',
@@ -25,14 +27,14 @@ export default function Create({ projects, categories }) {
 
     return (
         <AppLayout header="Nouveau document">
-            <Head title="Nouveau document" />
+            <Head title={t('Nouveau document')} />
             <div className="mx-auto max-w-4xl">
                 <DocumentForm
                     form={form}
                     projects={projects}
                     categories={categories}
                     onSubmit={submit}
-                    submitLabel="Enregistrer le document"
+                    submitLabel={t('Enregistrer le document')}
                 />
             </div>
         </AppLayout>

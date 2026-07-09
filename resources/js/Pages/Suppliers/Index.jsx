@@ -2,6 +2,7 @@ import { useState } from 'react';
 import AppLayout from '@/Layouts/AppLayout';
 import Icon from '@/Components/Icon';
 import { Head, Link, router } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 // Libellés des catégories de fournisseur (FR) — local à ce module.
 const SUPPLIER_CATEGORY = {
@@ -21,27 +22,30 @@ const CATEGORY_COLOR = {
 };
 
 function CategoryBadge({ category }) {
+    const { t } = useTrans();
     const color = CATEGORY_COLOR[category] ?? 'bg-slate-100 text-slate-600';
     return (
         <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${color}`}>
-            {SUPPLIER_CATEGORY[category] ?? category}
+            {t(SUPPLIER_CATEGORY[category] ?? category)}
         </span>
     );
 }
 
 function ActiveBadge({ active }) {
+    const { t } = useTrans();
     return active ? (
         <span className="inline-flex rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">
-            Actif
+            {t('Actif')}
         </span>
     ) : (
         <span className="inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-500">
-            Inactif
+            {t('Inactif')}
         </span>
     );
 }
 
 export default function Index({ suppliers, filters, categories, can }) {
+    const { t } = useTrans();
     const [search, setSearch] = useState(filters.search ?? '');
 
     const applyFilters = (next = {}) => {
@@ -53,7 +57,7 @@ export default function Index({ suppliers, filters, categories, can }) {
 
     return (
         <AppLayout header="Fournisseurs">
-            <Head title="Fournisseurs" />
+            <Head title={t('Fournisseurs')} />
 
             {/* Barre d'actions */}
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -67,7 +71,7 @@ export default function Index({ suppliers, filters, categories, can }) {
                             type="text"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Rechercher un fournisseur…"
+                            placeholder={t('Rechercher un fournisseur…')}
                             className="w-64 rounded-md border-slate-300 pl-9 text-sm focus:border-orange-500 focus:ring-orange-500 dark:border-slate-700 dark:bg-slate-900"
                         />
                     </div>
@@ -76,9 +80,9 @@ export default function Index({ suppliers, filters, categories, can }) {
                         onChange={(e) => applyFilters({ category: e.target.value })}
                         className="rounded-md border-slate-300 text-sm focus:border-orange-500 focus:ring-orange-500 dark:border-slate-700 dark:bg-slate-900"
                     >
-                        <option value="">Toutes les catégories</option>
+                        <option value="">{t('Toutes les catégories')}</option>
                         {categories.map((c) => (
-                            <option key={c} value={c}>{SUPPLIER_CATEGORY[c] ?? c}</option>
+                            <option key={c} value={c}>{t(SUPPLIER_CATEGORY[c] ?? c)}</option>
                         ))}
                     </select>
                 </form>
@@ -89,7 +93,7 @@ export default function Index({ suppliers, filters, categories, can }) {
                         className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600"
                     >
                         <Icon name="plus" className="h-4 w-4" />
-                        Nouveau fournisseur
+                        {t('Nouveau fournisseur')}
                     </Link>
                 )}
             </div>
@@ -99,11 +103,11 @@ export default function Index({ suppliers, filters, categories, can }) {
                 <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800">
                     <thead className="bg-slate-50 dark:bg-slate-800/50">
                         <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                            <th className="px-4 py-3">Fournisseur</th>
-                            <th className="px-4 py-3">Catégorie</th>
-                            <th className="px-4 py-3">Contact</th>
-                            <th className="px-4 py-3">Ville</th>
-                            <th className="px-4 py-3">Statut</th>
+                            <th className="px-4 py-3">{t('Fournisseur')}</th>
+                            <th className="px-4 py-3">{t('Catégorie')}</th>
+                            <th className="px-4 py-3">{t('Contact')}</th>
+                            <th className="px-4 py-3">{t('Ville')}</th>
+                            <th className="px-4 py-3">{t('Statut')}</th>
                             <th className="px-4 py-3"></th>
                         </tr>
                     </thead>
@@ -137,7 +141,7 @@ export default function Index({ suppliers, filters, categories, can }) {
                             <tr>
                                 <td colSpan={6} className="px-4 py-12 text-center text-slate-400">
                                     <Icon name="truck" className="mx-auto mb-2 h-8 w-8" />
-                                    Aucun fournisseur trouvé.
+                                    {t('Aucun fournisseur trouvé.')}
                                 </td>
                             </tr>
                         )}

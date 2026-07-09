@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import BoqForm from './Partials/BoqForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Edit({ boq, projects, statuses, unitPrices }) {
+    const { t } = useTrans();
     const form = useForm({
         code: boq.code ?? '',
         title: boq.title ?? '',
@@ -25,7 +27,7 @@ export default function Edit({ boq, projects, statuses, unitPrices }) {
 
     return (
         <AppLayout header={`Modifier — ${boq.title}`}>
-            <Head title={`Modifier ${boq.title}`} />
+            <Head title={`${t('Modifier')} ${boq.title}`} />
             <div className="mx-auto max-w-5xl">
                 <BoqForm
                     form={form}
@@ -33,7 +35,7 @@ export default function Edit({ boq, projects, statuses, unitPrices }) {
                     statuses={statuses}
                     unitPrices={unitPrices}
                     onSubmit={submit}
-                    submitLabel="Enregistrer"
+                    submitLabel={t('Enregistrer')}
                 />
             </div>
         </AppLayout>

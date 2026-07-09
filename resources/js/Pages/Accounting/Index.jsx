@@ -9,12 +9,14 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { formatMoney } from '@/constants';
+import { useTrans } from '@/i18n';
 
 const today = () => new Date().toISOString().slice(0, 10);
 
 const emptyLine = () => ({ account_id: '', label: '', debit: 0, credit: 0 });
 
 export default function Index({ entries, accounts, can }) {
+    const { t } = useTrans();
     const [showModal, setShowModal] = useState(false);
 
     const form = useForm({
@@ -61,7 +63,7 @@ export default function Index({ entries, accounts, can }) {
 
     return (
         <AppLayout header="Comptabilité générale">
-            <Head title="Comptabilité générale — Journal" />
+            <Head title={t('Comptabilité générale — Journal')} />
 
             {/* Barre d'actions */}
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -70,7 +72,7 @@ export default function Index({ entries, accounts, can }) {
                     className="inline-flex items-center gap-2 rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
                 >
                     <Icon name="book" className="h-4 w-4" />
-                    Plan comptable
+                    {t('Plan comptable')}
                 </Link>
 
                 {can.create && (
@@ -80,7 +82,7 @@ export default function Index({ entries, accounts, can }) {
                         className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600 disabled:opacity-40"
                     >
                         <Icon name="plus" className="h-4 w-4" />
-                        Nouvelle écriture
+                        {t('Nouvelle écriture')}
                     </button>
                 )}
             </div>
@@ -95,7 +97,7 @@ export default function Index({ entries, accounts, can }) {
                                 <div>
                                     <span className="font-semibold text-slate-800 dark:text-slate-100">{entry.label}</span>
                                     <span className="ml-2 text-xs text-slate-400">
-                                        {fmtDate(entry.date)}{entry.piece_number ? ` · Pièce ${entry.piece_number}` : ''}
+                                        {fmtDate(entry.date)}{entry.piece_number ? ` · ${t('Pièce')} ${entry.piece_number}` : ''}
                                     </span>
                                 </div>
                                 <span className="text-sm font-medium text-slate-600 dark:text-slate-300">{formatMoney(debit)}</span>
@@ -103,10 +105,10 @@ export default function Index({ entries, accounts, can }) {
                             <table className="min-w-full divide-y divide-slate-100 dark:divide-slate-800">
                                 <thead className="bg-slate-50 dark:bg-slate-800/50">
                                     <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                                        <th className="px-5 py-2">Compte</th>
-                                        <th className="px-5 py-2">Libellé</th>
-                                        <th className="px-5 py-2 text-right">Débit</th>
-                                        <th className="px-5 py-2 text-right">Crédit</th>
+                                        <th className="px-5 py-2">{t('Compte')}</th>
+                                        <th className="px-5 py-2">{t('Libellé')}</th>
+                                        <th className="px-5 py-2 text-right">{t('Débit')}</th>
+                                        <th className="px-5 py-2 text-right">{t('Crédit')}</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -134,7 +136,7 @@ export default function Index({ entries, accounts, can }) {
                 {entries.data.length === 0 && (
                     <div className="rounded-xl border border-dashed border-slate-300 p-12 text-center text-slate-400 dark:border-slate-700">
                         <Icon name="book" className="mx-auto mb-2 h-8 w-8" />
-                        Aucune écriture au journal.
+                        {t('Aucune écriture au journal.')}
                     </div>
                 )}
             </div>
@@ -161,23 +163,23 @@ export default function Index({ entries, accounts, can }) {
             {/* Modal nouvelle écriture (lignes débit / crédit + vérif équilibre) */}
             <Modal show={showModal} onClose={() => setShowModal(false)} maxWidth="2xl">
                 <form onSubmit={submit} className="p-6">
-                    <h3 className="mb-4 text-lg font-semibold text-slate-800 dark:text-slate-100">Nouvelle écriture</h3>
+                    <h3 className="mb-4 text-lg font-semibold text-slate-800 dark:text-slate-100">{t('Nouvelle écriture')}</h3>
 
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                         <div className="sm:col-span-2">
-                            <InputLabel htmlFor="je_label" value="Libellé *" />
-                            <TextInput id="je_label" className="mt-1 block w-full" placeholder="Achat de matériaux"
+                            <InputLabel htmlFor="je_label" value={t('Libellé *')} />
+                            <TextInput id="je_label" className="mt-1 block w-full" placeholder={t('Achat de matériaux')}
                                 value={data.label} onChange={(e) => setData('label', e.target.value)} />
                             <InputError message={form.errors.label} className="mt-1" />
                         </div>
                         <div>
-                            <InputLabel htmlFor="je_date" value="Date *" />
+                            <InputLabel htmlFor="je_date" value={t('Date *')} />
                             <TextInput id="je_date" type="date" className="mt-1 block w-full"
                                 value={data.date} onChange={(e) => setData('date', e.target.value)} />
                             <InputError message={form.errors.date} className="mt-1" />
                         </div>
                         <div>
-                            <InputLabel htmlFor="je_piece" value="N° de pièce" />
+                            <InputLabel htmlFor="je_piece" value={t('N° de pièce')} />
                             <TextInput id="je_piece" className="mt-1 block w-full" placeholder="PC-2026-001"
                                 value={data.piece_number} onChange={(e) => setData('piece_number', e.target.value)} />
                             <InputError message={form.errors.piece_number} className="mt-1" />
@@ -187,13 +189,13 @@ export default function Index({ entries, accounts, can }) {
                     {/* Lignes de l'écriture */}
                     <div className="mt-4">
                         <div className="mb-2 flex items-center justify-between">
-                            <InputLabel value="Lignes (débit / crédit)" />
+                            <InputLabel value={t('Lignes (débit / crédit)')} />
                             <button
                                 type="button"
                                 onClick={addLine}
                                 className="inline-flex items-center gap-1 rounded-md bg-orange-500 px-2.5 py-1 text-xs font-medium text-white hover:bg-orange-600"
                             >
-                                <Icon name="plus" className="h-3.5 w-3.5" /> Ligne
+                                <Icon name="plus" className="h-3.5 w-3.5" /> {t('Ligne')}
                             </button>
                         </div>
                         <InputError message={form.errors.lines} className="mb-2" />
@@ -202,10 +204,10 @@ export default function Index({ entries, accounts, can }) {
                             <table className="min-w-full text-sm">
                                 <thead>
                                     <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                                        <th className="pb-2 pr-2">Compte</th>
-                                        <th className="pb-2 px-2">Libellé</th>
-                                        <th className="pb-2 px-2 w-32">Débit</th>
-                                        <th className="pb-2 px-2 w-32">Crédit</th>
+                                        <th className="pb-2 pr-2">{t('Compte')}</th>
+                                        <th className="pb-2 px-2">{t('Libellé')}</th>
+                                        <th className="pb-2 px-2 w-32">{t('Débit')}</th>
+                                        <th className="pb-2 px-2 w-32">{t('Crédit')}</th>
                                         <th className="pb-2 pl-2 w-8"></th>
                                     </tr>
                                 </thead>
@@ -218,7 +220,7 @@ export default function Index({ entries, accounts, can }) {
                                                     value={line.account_id}
                                                     onChange={(e) => setLine(i, 'account_id', e.target.value)}
                                                 >
-                                                    <option value="">— Compte —</option>
+                                                    <option value="">{t('— Compte —')}</option>
                                                     {accounts.map((a) => (
                                                         <option key={a.id} value={a.id}>{a.code} · {a.label}</option>
                                                     ))}
@@ -250,7 +252,7 @@ export default function Index({ entries, accounts, can }) {
                                 </tbody>
                                 <tfoot>
                                     <tr className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-                                        <td className="pt-2 pr-2 text-right" colSpan={2}>Totaux</td>
+                                        <td className="pt-2 pr-2 text-right" colSpan={2}>{t('Totaux')}</td>
                                         <td className="pt-2 px-2 text-right">{formatMoney(totalDebit)}</td>
                                         <td className="pt-2 px-2 text-right">{formatMoney(totalCredit)}</td>
                                         <td></td>
@@ -267,15 +269,15 @@ export default function Index({ entries, accounts, can }) {
                         }`}>
                             <Icon name={balanced ? 'check-circle' : 'alert-circle'} className="h-4 w-4" />
                             {balanced
-                                ? 'Écriture équilibrée.'
-                                : `Écriture déséquilibrée : débit ${formatMoney(totalDebit)} ≠ crédit ${formatMoney(totalCredit)}.`}
+                                ? t('Écriture équilibrée.')
+                                : `${t('Écriture déséquilibrée : débit')} ${formatMoney(totalDebit)} ≠ ${t('crédit')} ${formatMoney(totalCredit)}.`}
                         </div>
                     </div>
 
                     <div className="mt-6 flex justify-end gap-3">
-                        <SecondaryButton type="button" onClick={() => setShowModal(false)}>Annuler</SecondaryButton>
+                        <SecondaryButton type="button" onClick={() => setShowModal(false)}>{t('Annuler')}</SecondaryButton>
                         <PrimaryButton disabled={form.processing || !balanced} className="bg-orange-500 hover:bg-orange-600 focus:bg-orange-600">
-                            Enregistrer l'écriture
+                            {t("Enregistrer l'écriture")}
                         </PrimaryButton>
                     </div>
                 </form>

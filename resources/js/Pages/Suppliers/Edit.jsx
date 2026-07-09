@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import SupplierForm from './Partials/SupplierForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Edit({ supplier, categories }) {
+    const { t } = useTrans();
     const form = useForm({
         code: supplier.code ?? '',
         category: supplier.category ?? 'materiaux',
@@ -25,13 +27,13 @@ export default function Edit({ supplier, categories }) {
 
     return (
         <AppLayout header={`Modifier — ${supplier.name}`}>
-            <Head title={`Modifier ${supplier.name}`} />
+            <Head title={`${t('Modifier')} ${supplier.name}`} />
             <div className="mx-auto max-w-4xl">
                 <SupplierForm
                     form={form}
                     categories={categories}
                     onSubmit={submit}
-                    submitLabel="Enregistrer"
+                    submitLabel={t('Enregistrer')}
                 />
             </div>
         </AppLayout>

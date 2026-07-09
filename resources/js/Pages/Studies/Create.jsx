@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import StudyForm from './Partials/StudyForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Create({ projects, types, statuses }) {
+    const { t } = useTrans();
     const form = useForm({
         code: '',
         title: '',
@@ -20,7 +22,7 @@ export default function Create({ projects, types, statuses }) {
 
     return (
         <AppLayout header="Nouvelle étude">
-            <Head title="Nouvelle étude" />
+            <Head title={t('Nouvelle étude')} />
             <div className="mx-auto max-w-4xl">
                 <StudyForm
                     form={form}
@@ -28,7 +30,7 @@ export default function Create({ projects, types, statuses }) {
                     types={types}
                     statuses={statuses}
                     onSubmit={submit}
-                    submitLabel="Créer l'étude"
+                    submitLabel={t("Créer l'étude")}
                 />
             </div>
         </AppLayout>

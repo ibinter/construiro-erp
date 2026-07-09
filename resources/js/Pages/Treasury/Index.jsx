@@ -9,6 +9,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { formatMoney } from '@/constants';
+import { useTrans } from '@/i18n';
 
 // Libellés et styles des types de compte de trésorerie (FR).
 export const ACCOUNT_TYPE = {
@@ -37,6 +38,7 @@ const CATEGORY_KEYS = Object.keys(TRANSACTION_CATEGORY);
 const today = () => new Date().toISOString().slice(0, 10);
 
 export default function Index({ accounts, totalBalance, transactions, types, accountTypes, can }) {
+    const { t } = useTrans();
     const [showAccountModal, setShowAccountModal] = useState(false);
     const [showTxModal, setShowTxModal] = useState(false);
 
@@ -90,7 +92,7 @@ export default function Index({ accounts, totalBalance, transactions, types, acc
                             className="inline-flex items-center gap-2 rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
                         >
                             <Icon name="plus" className="h-4 w-4" />
-                            Nouveau compte
+                            {t('Nouveau compte')}
                         </button>
                         <button
                             onClick={() => setShowTxModal(true)}
@@ -98,7 +100,7 @@ export default function Index({ accounts, totalBalance, transactions, types, acc
                             className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600 disabled:opacity-40"
                         >
                             <Icon name="plus" className="h-4 w-4" />
-                            Nouvelle transaction
+                            {t('Nouvelle transaction')}
                         </button>
                     </div>
                 )}
@@ -110,18 +112,18 @@ export default function Index({ accounts, totalBalance, transactions, types, acc
                 <div className="rounded-xl border border-orange-200 bg-orange-50 p-5 dark:border-orange-900/50 dark:bg-orange-950/30">
                     <div className="flex items-center gap-2 text-sm font-medium text-orange-700 dark:text-orange-300">
                         <Icon name="wallet" className="h-5 w-5" />
-                        Solde total consolidé
+                        {t('Solde total consolidé')}
                     </div>
                     <div className="mt-3 text-2xl font-bold text-orange-700 dark:text-orange-300">
                         {formatMoney(totalBalance)}
                     </div>
                     <div className="mt-1 text-xs text-orange-600/70 dark:text-orange-400/70">
-                        {accounts.length} compte{accounts.length > 1 ? 's' : ''}
+                        {accounts.length} {accounts.length > 1 ? t('comptes') : t('compte')}
                     </div>
                 </div>
 
                 {accounts.map((acc) => {
-                    const t = ACCOUNT_TYPE[acc.type] ?? { label: acc.type, color: 'bg-slate-100 text-slate-600', icon: 'wallet' };
+                    const ty = ACCOUNT_TYPE[acc.type] ?? { label: acc.type, color: 'bg-slate-100 text-slate-600', icon: 'wallet' };
                     return (
                         <Link
                             key={acc.id}
@@ -130,10 +132,10 @@ export default function Index({ accounts, totalBalance, transactions, types, acc
                         >
                             <div className="flex items-start justify-between">
                                 <div className="flex items-center gap-2">
-                                    <Icon name={t.icon} className="h-5 w-5 text-slate-400" />
+                                    <Icon name={ty.icon} className="h-5 w-5 text-slate-400" />
                                     <span className="font-semibold text-slate-800 dark:text-slate-100">{acc.name}</span>
                                 </div>
-                                <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${t.color}`}>{t.label}</span>
+                                <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${ty.color}`}>{t(ty.label)}</span>
                             </div>
                             {acc.bank_name && (
                                 <div className="mt-1 text-xs text-slate-400">{acc.bank_name}</div>
@@ -142,7 +144,7 @@ export default function Index({ accounts, totalBalance, transactions, types, acc
                                 {formatMoney(acc.balance, acc.currency)}
                             </div>
                             <div className="mt-1 text-xs text-slate-400">
-                                Ouverture : {formatMoney(acc.opening_balance, acc.currency)}
+                                {t('Ouverture')} : {formatMoney(acc.opening_balance, acc.currency)}
                             </div>
                         </Link>
                     );
@@ -151,7 +153,7 @@ export default function Index({ accounts, totalBalance, transactions, types, acc
                 {accounts.length === 0 && (
                     <div className="col-span-full rounded-xl border border-dashed border-slate-300 p-12 text-center text-slate-400 dark:border-slate-700">
                         <Icon name="wallet" className="mx-auto mb-2 h-8 w-8" />
-                        Aucun compte de trésorerie. Créez-en un pour commencer.
+                        {t('Aucun compte de trésorerie. Créez-en un pour commencer.')}
                     </div>
                 )}
             </div>

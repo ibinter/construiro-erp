@@ -9,6 +9,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import { Head, router, useForm } from '@inertiajs/react';
 import { formatMoney } from '@/constants';
+import { useTrans } from '@/i18n';
 
 // Libellés locaux au module Paie (FR).
 const STATUS = {
@@ -18,11 +19,13 @@ const STATUS = {
 };
 
 function StatusBadge({ status }) {
+    const { t } = useTrans();
     const s = STATUS[status] ?? { label: status, color: 'bg-slate-100 text-slate-600' };
-    return <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${s.color}`}>{s.label}</span>;
+    return <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${s.color}`}>{t(s.label)}</span>;
 }
 
 export default function Index({ payslips, filters, employees, statuses, can }) {
+    const { t } = useTrans();
     const [showModal, setShowModal] = useState(false);
 
     const applyFilters = (next = {}) => {
@@ -65,7 +68,7 @@ export default function Index({ payslips, filters, employees, statuses, can }) {
 
     return (
         <AppLayout header="Paie">
-            <Head title="Paie" />
+            <Head title={t('Paie')} />
 
             {/* Barre d'actions */}
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -85,7 +88,7 @@ export default function Index({ payslips, filters, employees, statuses, can }) {
                         className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600"
                     >
                         <Icon name="plus" className="h-4 w-4" />
-                        Générer un bulletin
+                        {t('Générer un bulletin')}
                     </button>
                 )}
             </div>
@@ -95,13 +98,13 @@ export default function Index({ payslips, filters, employees, statuses, can }) {
                 <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800">
                     <thead className="bg-slate-50 dark:bg-slate-800/50">
                         <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                            <th className="px-4 py-3">Employé</th>
-                            <th className="px-4 py-3">Période</th>
-                            <th className="px-4 py-3">Brut</th>
-                            <th className="px-4 py-3">Retenues</th>
-                            <th className="px-4 py-3">Net</th>
-                            <th className="px-4 py-3">Statut</th>
-                            <th className="px-4 py-3 text-right">Actions</th>
+                            <th className="px-4 py-3">{t('Employé')}</th>
+                            <th className="px-4 py-3">{t('Période')}</th>
+                            <th className="px-4 py-3">{t('Brut')}</th>
+                            <th className="px-4 py-3">{t('Retenues')}</th>
+                            <th className="px-4 py-3">{t('Net')}</th>
+                            <th className="px-4 py-3">{t('Statut')}</th>
+                            <th className="px-4 py-3 text-right">{t('Actions')}</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -135,7 +138,7 @@ export default function Index({ payslips, filters, employees, statuses, can }) {
                                                     onClick={() => changeStatus(p, 'validated')}
                                                     className="rounded-md border border-blue-200 px-2 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50 dark:border-blue-900/50"
                                                 >
-                                                    Valider
+                                                    {t('Valider')}
                                                 </button>
                                             )}
                                             {p.status === 'validated' && (
@@ -143,7 +146,7 @@ export default function Index({ payslips, filters, employees, statuses, can }) {
                                                     onClick={() => changeStatus(p, 'paid')}
                                                     className="rounded-md border border-green-200 px-2 py-1 text-xs font-medium text-green-600 hover:bg-green-50 dark:border-green-900/50"
                                                 >
-                                                    Marquer payé
+                                                    {t('Marquer payé')}
                                                 </button>
                                             )}
                                             {p.status === 'paid' && (
@@ -160,7 +163,7 @@ export default function Index({ payslips, filters, employees, statuses, can }) {
                             <tr>
                                 <td colSpan={7} className="px-4 py-12 text-center text-slate-400">
                                     <Icon name="banknote" className="mx-auto mb-2 h-8 w-8" />
-                                    Aucun bulletin pour cette période.
+                                    {t('Aucun bulletin pour cette période.')}
                                 </td>
                             </tr>
                         )}
@@ -190,17 +193,17 @@ export default function Index({ payslips, filters, employees, statuses, can }) {
             {/* Modal génération de bulletin */}
             <Modal show={showModal} onClose={() => setShowModal(false)}>
                 <form onSubmit={submit} className="p-6">
-                    <h3 className="mb-4 text-lg font-semibold text-slate-800 dark:text-slate-100">Générer un bulletin</h3>
+                    <h3 className="mb-4 text-lg font-semibold text-slate-800 dark:text-slate-100">{t('Générer un bulletin')}</h3>
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div className="sm:col-span-2">
-                            <InputLabel htmlFor="pay_employee" value="Employé *" />
+                            <InputLabel htmlFor="pay_employee" value={t('Employé *')} />
                             <select
                                 id="pay_employee"
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                                 value={form.data.employee_id}
                                 onChange={(e) => onEmployeeChange(e.target.value)}
                             >
-                                <option value="">— Sélectionner —</option>
+                                <option value="">{t('— Sélectionner —')}</option>
                                 {employees.map((emp) => (
                                     <option key={emp.id} value={emp.id}>{emp.matricule} · {emp.first_name} {emp.last_name}</option>
                                 ))}
@@ -208,13 +211,13 @@ export default function Index({ payslips, filters, employees, statuses, can }) {
                             <InputError message={form.errors.employee_id} className="mt-1" />
                         </div>
                         <div>
-                            <InputLabel htmlFor="pay_period" value="Période *" />
+                            <InputLabel htmlFor="pay_period" value={t('Période *')} />
                             <TextInput id="pay_period" type="month" className="mt-1 block w-full"
                                 value={form.data.period} onChange={(e) => form.setData('period', e.target.value)} />
                             <InputError message={form.errors.period} className="mt-1" />
                         </div>
                         <div>
-                            <InputLabel htmlFor="pay_currency" value="Devise *" />
+                            <InputLabel htmlFor="pay_currency" value={t('Devise *')} />
                             <select id="pay_currency"
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                                 value={form.data.currency} onChange={(e) => form.setData('currency', e.target.value)}>
@@ -222,28 +225,28 @@ export default function Index({ payslips, filters, employees, statuses, can }) {
                             </select>
                         </div>
                         <div>
-                            <InputLabel htmlFor="pay_gross" value="Salaire brut *" />
+                            <InputLabel htmlFor="pay_gross" value={t('Salaire brut *')} />
                             <TextInput id="pay_gross" type="number" min={0} step="0.01" className="mt-1 block w-full"
                                 value={form.data.gross_salary} onChange={(e) => form.setData('gross_salary', e.target.value)} />
                             <InputError message={form.errors.gross_salary} className="mt-1" />
                         </div>
                         <div>
-                            <InputLabel htmlFor="pay_deductions" value="Retenues" />
+                            <InputLabel htmlFor="pay_deductions" value={t('Retenues')} />
                             <TextInput id="pay_deductions" type="number" min={0} step="0.01" className="mt-1 block w-full"
                                 value={form.data.deductions} onChange={(e) => form.setData('deductions', e.target.value)} />
                             <InputError message={form.errors.deductions} className="mt-1" />
                         </div>
                         <div className="sm:col-span-2 rounded-md bg-slate-50 px-4 py-3 text-sm dark:bg-slate-800/50">
-                            <span className="text-slate-500">Net estimé : </span>
+                            <span className="text-slate-500">{t('Net estimé :')} </span>
                             <span className="font-semibold text-slate-800 dark:text-slate-100">
                                 {formatMoney(Number(form.data.gross_salary || 0) - Number(form.data.deductions || 0), form.data.currency)}
                             </span>
                         </div>
                     </div>
                     <div className="mt-6 flex justify-end gap-3">
-                        <SecondaryButton type="button" onClick={() => setShowModal(false)}>Annuler</SecondaryButton>
+                        <SecondaryButton type="button" onClick={() => setShowModal(false)}>{t('Annuler')}</SecondaryButton>
                         <PrimaryButton disabled={form.processing} className="bg-orange-500 hover:bg-orange-600 focus:bg-orange-600">
-                            Générer le bulletin
+                            {t('Générer le bulletin')}
                         </PrimaryButton>
                     </div>
                 </form>

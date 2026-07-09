@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import TenderForm from './Partials/TenderForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Edit({ tender, types, statuses, projects }) {
+    const { t } = useTrans();
     const form = useForm({
         code: tender.code ?? '',
         title: tender.title ?? '',
@@ -24,7 +26,7 @@ export default function Edit({ tender, types, statuses, projects }) {
 
     return (
         <AppLayout header={`Modifier — ${tender.title}`}>
-            <Head title={`Modifier ${tender.title}`} />
+            <Head title={`${t('Modifier')} ${tender.title}`} />
             <div className="mx-auto max-w-4xl">
                 <TenderForm
                     form={form}
@@ -32,7 +34,7 @@ export default function Edit({ tender, types, statuses, projects }) {
                     statuses={statuses}
                     projects={projects}
                     onSubmit={submit}
-                    submitLabel="Enregistrer"
+                    submitLabel={t('Enregistrer')}
                 />
             </div>
         </AppLayout>

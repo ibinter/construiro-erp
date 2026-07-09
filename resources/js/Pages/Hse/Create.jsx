@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import IncidentForm from './Partials/IncidentForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Create({ projects, sites, types, severities, statuses }) {
+    const { t } = useTrans();
     const form = useForm({
         code: '',
         title: '',
@@ -25,7 +27,7 @@ export default function Create({ projects, sites, types, severities, statuses })
 
     return (
         <AppLayout header="Déclarer un incident QHSE">
-            <Head title="Nouvel incident QHSE" />
+            <Head title={t('Nouvel incident QHSE')} />
             <div className="mx-auto max-w-4xl">
                 <IncidentForm
                     form={form}
@@ -35,7 +37,7 @@ export default function Create({ projects, sites, types, severities, statuses })
                     severities={severities}
                     statuses={statuses}
                     onSubmit={submit}
-                    submitLabel="Déclarer l'incident"
+                    submitLabel={t("Déclarer l'incident")}
                 />
             </div>
         </AppLayout>

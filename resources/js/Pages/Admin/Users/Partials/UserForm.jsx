@@ -5,6 +5,7 @@ import Checkbox from '@/Components/Checkbox';
 import PrimaryButton from '@/Components/PrimaryButton';
 import Icon from '@/Components/Icon';
 import { Link } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 /**
  * Formulaire partagé création / édition d'un utilisateur.
@@ -12,6 +13,7 @@ import { Link } from '@inertiajs/react';
  * `showPasswordNotice` affiche l'encart du mot de passe initial (création).
  */
 export default function UserForm({ form, roles = [], agencies = [], onSubmit, submitLabel, showPasswordNotice = false }) {
+    const { t } = useTrans();
     const { data, setData, errors, processing } = form;
 
     const field = (name, label, props = {}) => (

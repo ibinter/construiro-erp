@@ -9,6 +9,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import DangerButton from '@/Components/DangerButton';
 import { Head, router, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 // Statuts de tâche (libellés + styles) locaux au module planning.
 const TASK_STATUS = {
@@ -24,10 +25,11 @@ const fmtDate = (d) => (d ? new Date(d).toLocaleDateString('fr-FR') : '—');
 const parseDate = (d) => (d ? new Date(`${String(d).slice(0, 10)}T00:00:00`) : null);
 
 function StatusBadge({ status }) {
+    const { t } = useTrans();
     const s = TASK_STATUS[status] ?? { label: status, color: 'bg-slate-100 text-slate-600' };
     return (
         <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${s.color}`}>
-            {s.label}
+            {t(s.label)}
         </span>
     );
 }
@@ -56,6 +58,7 @@ function monthsBetween(start, end) {
 }
 
 function GanttChart({ tasks, bounds }) {
+    const { t } = useTrans();
     const start = parseDate(bounds.start);
     const end = parseDate(bounds.end);
     const months = useMemo(() => monthsBetween(start, end), [bounds.start, bounds.end]);
@@ -76,7 +79,7 @@ function GanttChart({ tasks, bounds }) {
     if (!start || !end) {
         return (
             <div className="px-5 py-10 text-center text-sm text-slate-400">
-                Renseignez des dates de début et de fin sur les tâches pour afficher le diagramme de Gantt.
+                {t('Renseignez des dates de début et de fin sur les tâches pour afficher le diagramme de Gantt.')}
             </div>
         );
     }
@@ -87,7 +90,7 @@ function GanttChart({ tasks, bounds }) {
                 {/* En-tête d'échelle (mois) */}
                 <div className="flex border-b border-slate-100 dark:border-slate-800">
                     <div className="w-56 shrink-0 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
-                        Tâche
+                        {t('Tâche')}
                     </div>
                     <div className="relative h-8 flex-1">
                         {months.map((m) => (
@@ -122,7 +125,7 @@ function GanttChart({ tasks, bounds }) {
                                         <div className="h-full bg-black/20" style={{ width: `${task.progress}%` }} />
                                     </div>
                                 ) : (
-                                    <span className="absolute top-2 left-0 text-[11px] italic text-slate-300">sans dates</span>
+                                    <span className="absolute top-2 left-0 text-[11px] italic text-slate-300">{t('sans dates')}</span>
                                 )}
                             </div>
                         </div>
@@ -131,7 +134,7 @@ function GanttChart({ tasks, bounds }) {
 
                 {tasks.length === 0 && (
                     <div className="px-5 py-10 text-center text-sm text-slate-400">
-                        Aucune tâche pour ce projet.
+                        {t('Aucune tâche pour ce projet.')}
                     </div>
                 )}
             </div>
@@ -146,6 +149,7 @@ const emptyTask = {
 };
 
 export default function Index({ projects, selectedProject, tasks, bounds, members, statuses, can }) {
+    const { t } = useTrans();
     const [showModal, setShowModal] = useState(false);
     const [editing, setEditing] = useState(null); // tâche en cours d'édition, ou null (création)
     const [confirmDelete, setConfirmDelete] = useState(null);
@@ -203,7 +207,7 @@ export default function Index({ projects, selectedProject, tasks, bounds, member
 
     return (
         <AppLayout header="Planning & Gantt">
-            <Head title="Planning" />
+            <Head title={t('Planning')} />
 
             {/* Sélecteur de projet */}
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -214,7 +218,7 @@ export default function Index({ projects, selectedProject, tasks, bounds, member
                         onChange={(e) => selectProject(e.target.value)}
                         className="w-72 rounded-md border-slate-300 text-sm focus:border-orange-500 focus:ring-orange-500 dark:border-slate-700 dark:bg-slate-900"
                     >
-                        <option value="">— Sélectionner un projet —</option>
+                        <option value="">{t('— Sélectionner un projet —')}</option>
                         {projects.map((p) => (
                             <option key={p.id} value={p.id}>{p.code} · {p.name}</option>
                         ))}
@@ -227,7 +231,7 @@ export default function Index({ projects, selectedProject, tasks, bounds, member
                         className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600"
                     >
                         <Icon name="plus" className="h-4 w-4" />
-                        Nouvelle tâche
+                        {t('Nouvelle tâche')}
                     </button>
                 )}
             </div>
@@ -236,7 +240,7 @@ export default function Index({ projects, selectedProject, tasks, bounds, member
                 <div className="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center dark:border-slate-700 dark:bg-slate-900">
                     <Icon name="calendar-clock" className="mx-auto mb-3 h-10 w-10 text-slate-300" />
                     <p className="text-sm text-slate-500">
-                        Sélectionnez un projet ci-dessus pour afficher son planning et son diagramme de Gantt.
+                        {t('Sélectionnez un projet ci-dessus pour afficher son planning et son diagramme de Gantt.')}
                     </p>
                 </div>
             ) : (
@@ -245,7 +249,7 @@ export default function Index({ projects, selectedProject, tasks, bounds, member
                     <div className="rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
                         <div className="flex items-center gap-2 border-b border-slate-100 px-5 py-4 dark:border-slate-800">
                             <Icon name="gantt-chart" className="h-5 w-5 text-orange-500" />
-                            <h3 className="font-semibold text-slate-800 dark:text-slate-100">Diagramme de Gantt</h3>
+                            <h3 className="font-semibold text-slate-800 dark:text-slate-100">{t('Diagramme de Gantt')}</h3>
                         </div>
                         <GanttChart tasks={tasks} bounds={bounds} />
                     </div>
@@ -254,16 +258,16 @@ export default function Index({ projects, selectedProject, tasks, bounds, member
                     <div className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
                         <div className="flex items-center gap-2 border-b border-slate-100 px-5 py-4 dark:border-slate-800">
                             <Icon name="list-checks" className="h-5 w-5 text-orange-500" />
-                            <h3 className="font-semibold text-slate-800 dark:text-slate-100">Tâches ({tasks.length})</h3>
+                            <h3 className="font-semibold text-slate-800 dark:text-slate-100">{t('Tâches')} ({tasks.length})</h3>
                         </div>
                         <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800">
                             <thead className="bg-slate-50 dark:bg-slate-800/50">
                                 <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                                    <th className="px-4 py-3">Tâche</th>
-                                    <th className="px-4 py-3">Responsable</th>
-                                    <th className="px-4 py-3">Début → Fin</th>
-                                    <th className="px-4 py-3">Avancement</th>
-                                    <th className="px-4 py-3">Statut</th>
+                                    <th className="px-4 py-3">{t('Tâche')}</th>
+                                    <th className="px-4 py-3">{t('Responsable')}</th>
+                                    <th className="px-4 py-3">{t('Début → Fin')}</th>
+                                    <th className="px-4 py-3">{t('Avancement')}</th>
+                                    <th className="px-4 py-3">{t('Statut')}</th>
                                     <th className="px-4 py-3"></th>
                                 </tr>
                             </thead>
@@ -305,7 +309,7 @@ export default function Index({ projects, selectedProject, tasks, bounds, member
                                     <tr>
                                         <td colSpan={6} className="px-4 py-12 text-center text-slate-400">
                                             <Icon name="list-plus" className="mx-auto mb-2 h-8 w-8" />
-                                            Aucune tâche. Créez la première tâche de ce projet.
+                                            {t('Aucune tâche. Créez la première tâche de ce projet.')}
                                         </td>
                                     </tr>
                                 )}
@@ -319,57 +323,57 @@ export default function Index({ projects, selectedProject, tasks, bounds, member
             <Modal show={showModal} onClose={() => setShowModal(false)}>
                 <form onSubmit={submit} className="p-6">
                     <h3 className="mb-4 text-lg font-semibold text-slate-800 dark:text-slate-100">
-                        {editing ? 'Modifier la tâche' : 'Nouvelle tâche'}
+                        {editing ? t('Modifier la tâche') : t('Nouvelle tâche')}
                     </h3>
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div className="sm:col-span-2">
-                            <InputLabel htmlFor="task_name" value="Nom *" />
+                            <InputLabel htmlFor="task_name" value={t('Nom *')} />
                             <TextInput id="task_name" className="mt-1 block w-full" value={form.data.name}
                                 onChange={(e) => form.setData('name', e.target.value)} />
                             <InputError message={form.errors.name} className="mt-1" />
                         </div>
 
                         <div>
-                            <InputLabel htmlFor="task_assignee" value="Responsable" />
+                            <InputLabel htmlFor="task_assignee" value={t('Responsable')} />
                             <select id="task_assignee"
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                                 value={form.data.assignee_id ?? ''}
                                 onChange={(e) => form.setData('assignee_id', e.target.value || '')}>
-                                <option value="">— Aucun —</option>
+                                <option value="">{t('— Aucun —')}</option>
                                 {members.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
                             </select>
                             <InputError message={form.errors.assignee_id} className="mt-1" />
                         </div>
 
                         <div>
-                            <InputLabel htmlFor="task_status" value="Statut *" />
+                            <InputLabel htmlFor="task_status" value={t('Statut *')} />
                             <select id="task_status"
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                                 value={form.data.status}
                                 onChange={(e) => form.setData('status', e.target.value)}>
                                 {(statuses.length ? statuses : Object.keys(TASK_STATUS)).map((s) => (
-                                    <option key={s} value={s}>{TASK_STATUS[s]?.label ?? s}</option>
+                                    <option key={s} value={s}>{t(TASK_STATUS[s]?.label ?? s)}</option>
                                 ))}
                             </select>
                             <InputError message={form.errors.status} className="mt-1" />
                         </div>
 
                         <div>
-                            <InputLabel htmlFor="task_start" value="Date de début" />
+                            <InputLabel htmlFor="task_start" value={t('Date de début')} />
                             <TextInput id="task_start" type="date" className="mt-1 block w-full" value={form.data.start_date}
                                 onChange={(e) => form.setData('start_date', e.target.value)} />
                             <InputError message={form.errors.start_date} className="mt-1" />
                         </div>
 
                         <div>
-                            <InputLabel htmlFor="task_end" value="Date de fin" />
+                            <InputLabel htmlFor="task_end" value={t('Date de fin')} />
                             <TextInput id="task_end" type="date" className="mt-1 block w-full" value={form.data.end_date}
                                 onChange={(e) => form.setData('end_date', e.target.value)} />
                             <InputError message={form.errors.end_date} className="mt-1" />
                         </div>
 
                         <div>
-                            <InputLabel htmlFor="task_progress" value="Avancement (%)" />
+                            <InputLabel htmlFor="task_progress" value={t('Avancement (%)')} />
                             <TextInput id="task_progress" type="number" min={0} max={100} className="mt-1 block w-full"
                                 value={form.data.progress}
                                 onChange={(e) => form.setData('progress', e.target.value)} />
@@ -377,7 +381,7 @@ export default function Index({ projects, selectedProject, tasks, bounds, member
                         </div>
 
                         <div>
-                            <InputLabel htmlFor="task_position" value="Ordre" />
+                            <InputLabel htmlFor="task_position" value={t('Ordre')} />
                             <TextInput id="task_position" type="number" min={0} className="mt-1 block w-full"
                                 value={form.data.position}
                                 onChange={(e) => form.setData('position', e.target.value)} />
@@ -385,7 +389,7 @@ export default function Index({ projects, selectedProject, tasks, bounds, member
                         </div>
 
                         <div className="sm:col-span-2">
-                            <InputLabel htmlFor="task_description" value="Description" />
+                            <InputLabel htmlFor="task_description" value={t('Description')} />
                             <textarea id="task_description" rows={3}
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                                 value={form.data.description ?? ''}
@@ -394,9 +398,9 @@ export default function Index({ projects, selectedProject, tasks, bounds, member
                         </div>
                     </div>
                     <div className="mt-6 flex justify-end gap-3">
-                        <SecondaryButton type="button" onClick={() => setShowModal(false)}>Annuler</SecondaryButton>
+                        <SecondaryButton type="button" onClick={() => setShowModal(false)}>{t('Annuler')}</SecondaryButton>
                         <PrimaryButton disabled={form.processing} className="bg-orange-500 hover:bg-orange-600 focus:bg-orange-600">
-                            {editing ? 'Enregistrer' : 'Créer la tâche'}
+                            {editing ? t('Enregistrer') : t('Créer la tâche')}
                         </PrimaryButton>
                     </div>
                 </form>
@@ -405,13 +409,13 @@ export default function Index({ projects, selectedProject, tasks, bounds, member
             {/* Confirmation suppression */}
             <Modal show={!!confirmDelete} onClose={() => setConfirmDelete(null)} maxWidth="md">
                 <div className="p-6">
-                    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Supprimer cette tâche ?</h3>
+                    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">{t('Supprimer cette tâche ?')}</h3>
                     <p className="mt-2 text-sm text-slate-500">
-                        La tâche « {confirmDelete?.name} » sera supprimée. Cette action est réversible (corbeille).
+                        {t('La tâche')} « {confirmDelete?.name} » {t('sera supprimée. Cette action est réversible (corbeille).')}
                     </p>
                     <div className="mt-6 flex justify-end gap-3">
-                        <SecondaryButton type="button" onClick={() => setConfirmDelete(null)}>Annuler</SecondaryButton>
-                        <DangerButton onClick={doDelete}>Supprimer</DangerButton>
+                        <SecondaryButton type="button" onClick={() => setConfirmDelete(null)}>{t('Annuler')}</SecondaryButton>
+                        <DangerButton onClick={doDelete}>{t('Supprimer')}</DangerButton>
                     </div>
                 </div>
             </Modal>

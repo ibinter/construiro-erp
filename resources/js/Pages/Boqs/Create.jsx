@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import BoqForm from './Partials/BoqForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Create({ projects, statuses, unitPrices }) {
+    const { t } = useTrans();
     const form = useForm({
         code: '',
         title: '',
@@ -22,7 +24,7 @@ export default function Create({ projects, statuses, unitPrices }) {
 
     return (
         <AppLayout header="Nouveau DQE">
-            <Head title="Nouveau DQE" />
+            <Head title={t('Nouveau DQE')} />
             <div className="mx-auto max-w-5xl">
                 <BoqForm
                     form={form}
@@ -30,7 +32,7 @@ export default function Create({ projects, statuses, unitPrices }) {
                     statuses={statuses}
                     unitPrices={unitPrices}
                     onSubmit={submit}
-                    submitLabel="Créer le DQE"
+                    submitLabel={t('Créer le DQE')}
                 />
             </div>
         </AppLayout>

@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import OpportunityForm from './Partials/OpportunityForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Create({ stages, clients, users }) {
+    const { t } = useTrans();
     const form = useForm({
         code: '',
         title: '',
@@ -25,7 +27,7 @@ export default function Create({ stages, clients, users }) {
 
     return (
         <AppLayout header="Nouvelle opportunité">
-            <Head title="Nouvelle opportunité" />
+            <Head title={t('Nouvelle opportunité')} />
             <div className="mx-auto max-w-4xl">
                 <OpportunityForm
                     form={form}
@@ -33,7 +35,7 @@ export default function Create({ stages, clients, users }) {
                     clients={clients}
                     users={users}
                     onSubmit={submit}
-                    submitLabel="Créer l'opportunité"
+                    submitLabel={t("Créer l'opportunité")}
                 />
             </div>
         </AppLayout>

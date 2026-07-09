@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import IncidentForm from './Partials/IncidentForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Edit({ incident, projects, sites, types, severities, statuses }) {
+    const { t } = useTrans();
     const form = useForm({
         code: incident.code ?? '',
         title: incident.title ?? '',
@@ -35,7 +37,7 @@ export default function Edit({ incident, projects, sites, types, severities, sta
                     severities={severities}
                     statuses={statuses}
                     onSubmit={submit}
-                    submitLabel="Enregistrer"
+                    submitLabel={t('Enregistrer')}
                 />
             </div>
         </AppLayout>

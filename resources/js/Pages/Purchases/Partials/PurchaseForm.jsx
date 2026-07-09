@@ -5,6 +5,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import Icon from '@/Components/Icon';
 import { Link } from '@inertiajs/react';
 import { formatMoney } from '@/constants';
+import { useTrans } from '@/i18n';
 
 const CURRENCIES = ['XOF', 'XAF', 'EUR', 'USD', 'GHS', 'NGN'];
 const UNITS = ['u', 'kg', 'm', 'm2', 'm3', 'ml', 'sac', 'tonne', 'forfait'];
@@ -26,6 +27,7 @@ const emptyLine = () => ({ material_id: '', designation: '', unit: 'u', quantity
  * `form` est l'objet retourné par useForm() d'Inertia (avec data.lines : array).
  */
 export default function PurchaseForm({ form, suppliers = [], materials = [], projects = [], statuses = [], onSubmit, submitLabel }) {
+    const { t } = useTrans();
     const { data, setData, errors, processing } = form;
 
     // Recalcul temps réel (affichage uniquement — le serveur reste la source de vérité).
@@ -126,7 +128,7 @@ export default function PurchaseForm({ form, suppliers = [], materials = [], pro
                             onChange={(e) => setData('status', e.target.value)}
                         >
                             {(statuses.length ? statuses : Object.keys(PURCHASE_STATUS)).map((s) => (
-                                <option key={s} value={s}>{PURCHASE_STATUS[s] ?? s}</option>
+                                <option key={s} value={s}>{t(PURCHASE_STATUS[s] ?? s)}</option>
                             ))}
                         </select>
                         <InputError message={errors.status} className="mt-1" />

@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import WarehouseForm from './Partials/WarehouseForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Edit({ warehouse }) {
+    const { t } = useTrans();
     const form = useForm({
         code: warehouse.code ?? '',
         name: warehouse.name ?? '',
@@ -19,9 +21,9 @@ export default function Edit({ warehouse }) {
 
     return (
         <AppLayout header={`Modifier — ${warehouse.name}`}>
-            <Head title={`Modifier ${warehouse.name}`} />
+            <Head title={`${t('Modifier')} ${warehouse.name}`} />
             <div className="mx-auto max-w-4xl">
-                <WarehouseForm form={form} onSubmit={submit} submitLabel="Enregistrer" />
+                <WarehouseForm form={form} onSubmit={submit} submitLabel={t('Enregistrer')} />
             </div>
         </AppLayout>
     );

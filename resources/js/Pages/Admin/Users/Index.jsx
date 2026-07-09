@@ -2,8 +2,10 @@ import { useState } from 'react';
 import AppLayout from '@/Layouts/AppLayout';
 import Icon from '@/Components/Icon';
 import { Head, Link, router } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Index({ users, filters, roles, can }) {
+    const { t } = useTrans();
     const [search, setSearch] = useState(filters.search ?? '');
 
     const applyFilters = (next = {}) => {
@@ -22,7 +24,7 @@ export default function Index({ users, filters, roles, can }) {
 
     return (
         <AppLayout header="Administration — Utilisateurs">
-            <Head title="Utilisateurs" />
+            <Head title={t('Utilisateurs')} />
 
             {/* Barre d'actions */}
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -36,7 +38,7 @@ export default function Index({ users, filters, roles, can }) {
                             type="text"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Rechercher un utilisateur…"
+                            placeholder={t('Rechercher un utilisateur…')}
                             className="w-64 rounded-md border-slate-300 pl-9 text-sm focus:border-orange-500 focus:ring-orange-500 dark:border-slate-700 dark:bg-slate-900"
                         />
                     </div>
@@ -48,7 +50,7 @@ export default function Index({ users, filters, roles, can }) {
                         className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600"
                     >
                         <Icon name="plus" className="h-4 w-4" />
-                        Nouvel utilisateur
+                        {t('Nouvel utilisateur')}
                     </Link>
                 )}
             </div>
@@ -58,10 +60,10 @@ export default function Index({ users, filters, roles, can }) {
                 <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800">
                     <thead className="bg-slate-50 dark:bg-slate-800/50">
                         <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                            <th className="px-4 py-3">Utilisateur</th>
-                            <th className="px-4 py-3">Fonction</th>
-                            <th className="px-4 py-3">Rôle</th>
-                            <th className="px-4 py-3">Statut</th>
+                            <th className="px-4 py-3">{t('Utilisateur')}</th>
+                            <th className="px-4 py-3">{t('Fonction')}</th>
+                            <th className="px-4 py-3">{t('Rôle')}</th>
+                            <th className="px-4 py-3">{t('Statut')}</th>
                             <th className="px-4 py-3"></th>
                         </tr>
                     </thead>
@@ -93,11 +95,11 @@ export default function Index({ users, filters, roles, can }) {
                                 <td className="px-4 py-3">
                                     {user.is_active ? (
                                         <span className="inline-flex rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
-                                            Actif
+                                            {t('Actif')}
                                         </span>
                                     ) : (
                                         <span className="inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-500 dark:bg-slate-700 dark:text-slate-300">
-                                            Inactif
+                                            {t('Inactif')}
                                         </span>
                                     )}
                                 </td>
@@ -122,7 +124,7 @@ export default function Index({ users, filters, roles, can }) {
                             <tr>
                                 <td colSpan={5} className="px-4 py-12 text-center text-slate-400">
                                     <Icon name="users" className="mx-auto mb-2 h-8 w-8" />
-                                    Aucun utilisateur trouvé.
+                                    {t('Aucun utilisateur trouvé.')}
                                 </td>
                             </tr>
                         )}

@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import WarehouseForm from './Partials/WarehouseForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Create() {
+    const { t } = useTrans();
     const form = useForm({
         code: '',
         name: '',
@@ -19,9 +21,9 @@ export default function Create() {
 
     return (
         <AppLayout header="Nouveau magasin">
-            <Head title="Nouveau magasin" />
+            <Head title={t('Nouveau magasin')} />
             <div className="mx-auto max-w-4xl">
-                <WarehouseForm form={form} onSubmit={submit} submitLabel="Créer le magasin" />
+                <WarehouseForm form={form} onSubmit={submit} submitLabel={t('Créer le magasin')} />
             </div>
         </AppLayout>
     );

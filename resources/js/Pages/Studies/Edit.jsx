@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import StudyForm from './Partials/StudyForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Edit({ study, projects, types, statuses }) {
+    const { t } = useTrans();
     const form = useForm({
         code: study.code ?? '',
         title: study.title ?? '',
@@ -20,7 +22,7 @@ export default function Edit({ study, projects, types, statuses }) {
 
     return (
         <AppLayout header={`Modifier — ${study.title}`}>
-            <Head title={`Modifier ${study.title}`} />
+            <Head title={`${t('Modifier')} ${study.title}`} />
             <div className="mx-auto max-w-4xl">
                 <StudyForm
                     form={form}
@@ -28,7 +30,7 @@ export default function Edit({ study, projects, types, statuses }) {
                     types={types}
                     statuses={statuses}
                     onSubmit={submit}
-                    submitLabel="Enregistrer"
+                    submitLabel={t('Enregistrer')}
                 />
             </div>
         </AppLayout>

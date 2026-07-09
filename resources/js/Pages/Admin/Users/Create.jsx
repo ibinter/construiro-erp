@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import UserForm from './Partials/UserForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Create({ roles, agencies }) {
+    const { t } = useTrans();
     const form = useForm({
         name: '',
         email: '',
@@ -20,14 +22,14 @@ export default function Create({ roles, agencies }) {
 
     return (
         <AppLayout header="Nouvel utilisateur">
-            <Head title="Nouvel utilisateur" />
+            <Head title={t('Nouvel utilisateur')} />
             <div className="mx-auto max-w-4xl">
                 <UserForm
                     form={form}
                     roles={roles}
                     agencies={agencies}
                     onSubmit={submit}
-                    submitLabel="Créer l'utilisateur"
+                    submitLabel={t('Créer l\'utilisateur')}
                     showPasswordNotice
                 />
             </div>

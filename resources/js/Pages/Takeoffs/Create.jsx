@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import TakeoffForm from './Partials/TakeoffForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Create({ projects, statuses }) {
+    const { t } = useTrans();
     const form = useForm({
         code: '',
         title: '',
@@ -21,14 +23,14 @@ export default function Create({ projects, statuses }) {
 
     return (
         <AppLayout header="Nouveau métré">
-            <Head title="Nouveau métré" />
+            <Head title={t('Nouveau métré')} />
             <div className="mx-auto max-w-5xl">
                 <TakeoffForm
                     form={form}
                     projects={projects}
                     statuses={statuses}
                     onSubmit={submit}
-                    submitLabel="Créer le métré"
+                    submitLabel={t('Créer le métré')}
                 />
             </div>
         </AppLayout>

@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import UnitPriceForm from './Partials/UnitPriceForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Edit({ unitPrice, units, categories }) {
+    const { t } = useTrans();
     const form = useForm({
         code: unitPrice.code ?? '',
         designation: unitPrice.designation ?? '',
@@ -20,14 +22,14 @@ export default function Edit({ unitPrice, units, categories }) {
 
     return (
         <AppLayout header={`Modifier — ${unitPrice.designation}`}>
-            <Head title={`Modifier ${unitPrice.designation}`} />
+            <Head title={`${t('Modifier')} ${unitPrice.designation}`} />
             <div className="mx-auto max-w-4xl">
                 <UnitPriceForm
                     form={form}
                     units={units}
                     categories={categories}
                     onSubmit={submit}
-                    submitLabel="Enregistrer"
+                    submitLabel={t('Enregistrer')}
                 />
             </div>
         </AppLayout>

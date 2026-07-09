@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import EmployeeForm from './Partials/EmployeeForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Edit({ employee, sites, agencies, departments, contractTypes, statuses }) {
+    const { t } = useTrans();
     const form = useForm({
         matricule: employee.matricule ?? '',
         first_name: employee.first_name ?? '',
@@ -39,7 +41,7 @@ export default function Edit({ employee, sites, agencies, departments, contractT
                     contractTypes={contractTypes}
                     statuses={statuses}
                     onSubmit={submit}
-                    submitLabel="Enregistrer"
+                    submitLabel={t('Enregistrer')}
                 />
             </div>
         </AppLayout>

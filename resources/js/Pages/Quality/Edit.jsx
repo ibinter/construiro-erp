@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import QualityForm from './Partials/QualityForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Edit({ control, projects, sites, controlTypes, results }) {
+    const { t } = useTrans();
     const form = useForm({
         code: control.code ?? '',
         title: control.title ?? '',
@@ -32,7 +34,7 @@ export default function Edit({ control, projects, sites, controlTypes, results }
                     controlTypes={controlTypes}
                     results={results}
                     onSubmit={submit}
-                    submitLabel="Enregistrer"
+                    submitLabel={t('Enregistrer')}
                 />
             </div>
         </AppLayout>

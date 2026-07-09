@@ -3,6 +3,7 @@ import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
 import { Link } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 // Libellés FR des catégories — locaux à ce module.
 export const CATEGORY = {
@@ -34,6 +35,7 @@ export const CATEGORY_ICON = {
  * `currentFileName` = nom du fichier déjà attaché (édition).
  */
 export default function DocumentForm({ form, projects = [], categories = [], onSubmit, submitLabel, currentFileName = null }) {
+    const { t } = useTrans();
     const { data, setData, errors, processing } = form;
 
     const field = (name, label, props = {}) => (
@@ -56,13 +58,13 @@ export default function DocumentForm({ form, projects = [], categories = [], onS
     return (
         <form onSubmit={onSubmit} className="space-y-6">
             <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-                <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">Document</h3>
+                <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">{t('Document')}</h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    {field('code', 'Référence *', { placeholder: 'DOC-2026-001' })}
-                    {field('title', 'Titre *', { placeholder: 'Plan de coffrage R+2' })}
+                    {field('code', t('Référence *'), { placeholder: 'DOC-2026-001' })}
+                    {field('title', t('Titre *'), { placeholder: 'Plan de coffrage R+2' })}
 
                     <div>
-                        <InputLabel htmlFor="category" value="Catégorie *" />
+                        <InputLabel htmlFor="category" value={t('Catégorie *')} />
                         <select
                             id="category"
                             className={selectClass}
@@ -70,23 +72,23 @@ export default function DocumentForm({ form, projects = [], categories = [], onS
                             onChange={(e) => setData('category', e.target.value)}
                         >
                             {(categories.length ? categories : Object.keys(CATEGORY)).map((c) => (
-                                <option key={c} value={c}>{CATEGORY[c] ?? c}</option>
+                                <option key={c} value={c}>{t(CATEGORY[c] ?? c)}</option>
                             ))}
                         </select>
                         <InputError message={errors.category} className="mt-1" />
                     </div>
 
-                    {field('version', 'Version *', { placeholder: '1.0' })}
+                    {field('version', t('Version *'), { placeholder: '1.0' })}
 
                     <div>
-                        <InputLabel htmlFor="project_id" value="Projet" />
+                        <InputLabel htmlFor="project_id" value={t('Projet')} />
                         <select
                             id="project_id"
                             className={selectClass}
                             value={data.project_id ?? ''}
                             onChange={(e) => setData('project_id', e.target.value)}
                         >
-                            <option value="">— Aucun —</option>
+                            <option value="">{t('— Aucun —')}</option>
                             {projects.map((p) => (
                                 <option key={p.id} value={p.id}>{p.code} · {p.name}</option>
                             ))}
@@ -94,19 +96,18 @@ export default function DocumentForm({ form, projects = [], categories = [], onS
                         <InputError message={errors.project_id} className="mt-1" />
                     </div>
 
-                    {field('uploaded_by', 'Déposé par', { placeholder: 'Bureau d\'études' })}
+                    {field('uploaded_by', t('Déposé par'), { placeholder: 'Bureau d\'études' })}
                 </div>
             </div>
 
             <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-                <h3 className="mb-1 font-semibold text-slate-800 dark:text-slate-100">Fichier</h3>
+                <h3 className="mb-1 font-semibold text-slate-800 dark:text-slate-100">{t('Fichier')}</h3>
                 <p className="mb-4 text-xs text-slate-400">
-                    Téléversez un fichier (20 Mo max). Les nom, type et taille sont alors renseignés automatiquement.
-                    Vous pouvez aussi saisir manuellement le chemin ou l'URL.
+                    {t('Téléversez un fichier (20 Mo max). Les nom, type et taille sont alors renseignés automatiquement. Vous pouvez aussi saisir manuellement le chemin ou l\'URL.')}
                 </p>
 
                 <div className="mb-4">
-                    <InputLabel htmlFor="file" value="Téléverser un fichier" />
+                    <InputLabel htmlFor="file" value={t('Téléverser un fichier')} />
                     <input
                         id="file"
                         type="file"
@@ -116,21 +117,21 @@ export default function DocumentForm({ form, projects = [], categories = [], onS
                     <InputError message={errors.file} className="mt-1" />
                     {currentFileName && (
                         <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-                            Fichier actuel : <span className="font-medium">{currentFileName}</span>
-                            {' '}— sélectionnez un nouveau fichier pour le remplacer.
+                            {t('Fichier actuel :')} <span className="font-medium">{currentFileName}</span>
+                            {' '}{t('— sélectionnez un nouveau fichier pour le remplacer.')}
                         </p>
                     )}
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    {field('file_name', 'Nom du fichier', { placeholder: 'plan-coffrage-r2.pdf' })}
-                    {field('file_path', 'Chemin / URL', { placeholder: 'https://… ou /docs/…' })}
-                    {field('mime_type', 'Type MIME', { placeholder: 'application/pdf' })}
-                    {field('size_kb', 'Taille (Ko)', { type: 'number', min: 0, placeholder: '1024' })}
+                    {field('file_name', t('Nom du fichier'), { placeholder: 'plan-coffrage-r2.pdf' })}
+                    {field('file_path', t('Chemin / URL'), { placeholder: 'https://… ou /docs/…' })}
+                    {field('mime_type', t('Type MIME'), { placeholder: 'application/pdf' })}
+                    {field('size_kb', t('Taille (Ko)'), { type: 'number', min: 0, placeholder: '1024' })}
                 </div>
 
                 <div className="mt-4">
-                    <InputLabel htmlFor="description" value="Description" />
+                    <InputLabel htmlFor="description" value={t('Description')} />
                     <textarea
                         id="description"
                         rows={3}
@@ -147,7 +148,7 @@ export default function DocumentForm({ form, projects = [], categories = [], onS
                     href="/documents"
                     className="rounded-md px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
                 >
-                    Annuler
+                    {t('Annuler')}
                 </Link>
                 <PrimaryButton disabled={processing} className="bg-orange-500 hover:bg-orange-600 focus:bg-orange-600">
                     {submitLabel}

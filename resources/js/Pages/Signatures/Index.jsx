@@ -8,6 +8,7 @@ import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import { Head, router, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 // Libellés et couleurs des statuts (FR) — locaux à ce module.
 const STATUS = {
@@ -18,11 +19,13 @@ const STATUS = {
 };
 
 function StatusBadge({ status }) {
+    const { t } = useTrans();
     const s = STATUS[status] ?? { label: status, color: 'bg-slate-100 text-slate-600' };
-    return <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${s.color}`}>{s.label}</span>;
+    return <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${s.color}`}>{t(s.label)}</span>;
 }
 
 export default function Index({ requests, filters, statuses, documents, can }) {
+    const { t } = useTrans();
     const [showModal, setShowModal] = useState(false);
 
     const form = useForm({
@@ -57,7 +60,7 @@ export default function Index({ requests, filters, statuses, documents, can }) {
 
     return (
         <AppLayout header="Signature électronique">
-            <Head title="Signature électronique" />
+            <Head title={t('Signature électronique')} />
 
             {/* Barre d'actions */}
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -66,9 +69,9 @@ export default function Index({ requests, filters, statuses, documents, can }) {
                     onChange={(e) => applyFilters({ status: e.target.value })}
                     className="rounded-md border-slate-300 text-sm focus:border-orange-500 focus:ring-orange-500 dark:border-slate-700 dark:bg-slate-900"
                 >
-                    <option value="">Tous les statuts</option>
+                    <option value="">{t('Tous les statuts')}</option>
                     {statuses.map((s) => (
-                        <option key={s} value={s}>{STATUS[s]?.label ?? s}</option>
+                        <option key={s} value={s}>{t(STATUS[s]?.label ?? s)}</option>
                     ))}
                 </select>
 
@@ -78,7 +81,7 @@ export default function Index({ requests, filters, statuses, documents, can }) {
                         className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600"
                     >
                         <Icon name="pen-line" className="h-4 w-4" />
-                        Nouvelle demande
+                        {t('Nouvelle demande')}
                     </button>
                 )}
             </div>
@@ -88,12 +91,12 @@ export default function Index({ requests, filters, statuses, documents, can }) {
                 <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800">
                     <thead className="bg-slate-50 dark:bg-slate-800/50">
                         <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                            <th className="px-4 py-3">Demande</th>
-                            <th className="px-4 py-3">Signataire</th>
-                            <th className="px-4 py-3">Document</th>
-                            <th className="px-4 py-3">Envoyée</th>
-                            <th className="px-4 py-3">Statut</th>
-                            <th className="px-4 py-3 text-right">Actions</th>
+                            <th className="px-4 py-3">{t('Demande')}</th>
+                            <th className="px-4 py-3">{t('Signataire')}</th>
+                            <th className="px-4 py-3">{t('Document')}</th>
+                            <th className="px-4 py-3">{t('Envoyée')}</th>
+                            <th className="px-4 py-3">{t('Statut')}</th>
+                            <th className="px-4 py-3 text-right">{t('Actions')}</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -114,13 +117,13 @@ export default function Index({ requests, filters, statuses, documents, can }) {
                                                 onClick={() => act(req, 'sign')}
                                                 className="inline-flex items-center gap-1 rounded-md border border-green-200 px-2.5 py-1 text-xs font-medium text-green-700 hover:bg-green-50 dark:border-green-900/50"
                                             >
-                                                <Icon name="check" className="h-3.5 w-3.5" /> Signer
+                                                <Icon name="check" className="h-3.5 w-3.5" /> {t('Signer')}
                                             </button>
                                             <button
                                                 onClick={() => act(req, 'refuse')}
                                                 className="inline-flex items-center gap-1 rounded-md border border-red-200 px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-50 dark:border-red-900/50"
                                             >
-                                                <Icon name="x" className="h-3.5 w-3.5" /> Refuser
+                                                <Icon name="x" className="h-3.5 w-3.5" /> {t('Refuser')}
                                             </button>
                                         </div>
                                     ) : (
@@ -134,7 +137,7 @@ export default function Index({ requests, filters, statuses, documents, can }) {
                             <tr>
                                 <td colSpan={6} className="px-4 py-12 text-center text-slate-400">
                                     <Icon name="pen-line" className="mx-auto mb-2 h-8 w-8" />
-                                    Aucune demande de signature.
+                                    {t('Aucune demande de signature.')}
                                 </td>
                             </tr>
                         )}
@@ -164,34 +167,34 @@ export default function Index({ requests, filters, statuses, documents, can }) {
             {/* Modal nouvelle demande */}
             <Modal show={showModal} onClose={() => setShowModal(false)}>
                 <form onSubmit={submit} className="p-6">
-                    <h3 className="mb-4 text-lg font-semibold text-slate-800 dark:text-slate-100">Nouvelle demande de signature</h3>
+                    <h3 className="mb-4 text-lg font-semibold text-slate-800 dark:text-slate-100">{t('Nouvelle demande de signature')}</h3>
                     <div className="grid grid-cols-1 gap-4">
                         <div>
-                            <InputLabel htmlFor="sig_title" value="Intitulé *" />
+                            <InputLabel htmlFor="sig_title" value={t('Intitulé *')} />
                             <TextInput id="sig_title" className="mt-1 block w-full" value={form.data.title}
-                                onChange={(e) => form.setData('title', e.target.value)} placeholder="Signature du contrat de sous-traitance" />
+                                onChange={(e) => form.setData('title', e.target.value)} placeholder={t('Signature du contrat de sous-traitance')} />
                             <InputError message={form.errors.title} className="mt-1" />
                         </div>
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <div>
-                                <InputLabel htmlFor="sig_signer" value="Signataire *" />
+                                <InputLabel htmlFor="sig_signer" value={t('Signataire *')} />
                                 <TextInput id="sig_signer" className="mt-1 block w-full" value={form.data.signer_name}
                                     onChange={(e) => form.setData('signer_name', e.target.value)} placeholder="M. Koffi Yao" />
                                 <InputError message={form.errors.signer_name} className="mt-1" />
                             </div>
                             <div>
-                                <InputLabel htmlFor="sig_email" value="E-mail du signataire" />
+                                <InputLabel htmlFor="sig_email" value={t('E-mail du signataire')} />
                                 <TextInput id="sig_email" type="email" className="mt-1 block w-full" value={form.data.signer_email}
                                     onChange={(e) => form.setData('signer_email', e.target.value)} placeholder="signataire@exemple.ci" />
                                 <InputError message={form.errors.signer_email} className="mt-1" />
                             </div>
                         </div>
                         <div>
-                            <InputLabel htmlFor="sig_document" value="Document (GED)" />
+                            <InputLabel htmlFor="sig_document" value={t('Document (GED)')} />
                             <select id="sig_document"
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                                 value={form.data.document_id} onChange={(e) => form.setData('document_id', e.target.value)}>
-                                <option value="">— Aucun —</option>
+                                <option value="">{t('— Aucun —')}</option>
                                 {documents.map((d) => (
                                     <option key={d.id} value={d.id}>{d.code} · {d.title}</option>
                                 ))}
@@ -199,7 +202,7 @@ export default function Index({ requests, filters, statuses, documents, can }) {
                             <InputError message={form.errors.document_id} className="mt-1" />
                         </div>
                         <div>
-                            <InputLabel htmlFor="sig_notes" value="Notes" />
+                            <InputLabel htmlFor="sig_notes" value={t('Notes')} />
                             <textarea id="sig_notes" rows={3}
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                                 value={form.data.notes} onChange={(e) => form.setData('notes', e.target.value)} />
@@ -207,9 +210,9 @@ export default function Index({ requests, filters, statuses, documents, can }) {
                         </div>
                     </div>
                     <div className="mt-6 flex justify-end gap-3">
-                        <SecondaryButton type="button" onClick={() => setShowModal(false)}>Annuler</SecondaryButton>
+                        <SecondaryButton type="button" onClick={() => setShowModal(false)}>{t('Annuler')}</SecondaryButton>
                         <PrimaryButton disabled={form.processing} className="bg-orange-500 hover:bg-orange-600 focus:bg-orange-600">
-                            Créer la demande
+                            {t('Créer la demande')}
                         </PrimaryButton>
                     </div>
                 </form>

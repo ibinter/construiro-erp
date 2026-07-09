@@ -3,6 +3,7 @@ import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
 import { Link } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 // Libellés locaux (FR) du module Qualité.
 export const CONTROL_TYPE = {
@@ -31,11 +32,12 @@ export default function QualityForm({
     onSubmit,
     submitLabel,
 }) {
+    const { t } = useTrans();
     const { data, setData, errors, processing } = form;
 
     const field = (name, label, props = {}) => (
         <div>
-            <InputLabel htmlFor={name} value={label} />
+            <InputLabel htmlFor={name} value={t(label)} />
             <TextInput
                 id={name}
                 className="mt-1 block w-full"
@@ -53,37 +55,37 @@ export default function QualityForm({
     return (
         <form onSubmit={onSubmit} className="space-y-6">
             <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-                <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">Informations générales</h3>
+                <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">{t('Informations générales')}</h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     {field('code', 'Code contrôle *', { placeholder: 'QC-2026-001' })}
-                    {field('title', 'Intitulé *', { placeholder: 'Réception béton fondations' })}
+                    {field('title', 'Intitulé *', { placeholder: t('Réception béton fondations') })}
 
                     <div>
-                        <InputLabel htmlFor="control_type" value="Type de contrôle *" />
+                        <InputLabel htmlFor="control_type" value={t('Type de contrôle *')} />
                         <select id="control_type" className={selectClass} value={data.control_type} onChange={(e) => setData('control_type', e.target.value)}>
-                            {(controlTypes.length ? controlTypes : Object.keys(CONTROL_TYPE)).map((t) => (
-                                <option key={t} value={t}>{CONTROL_TYPE[t] ?? t}</option>
+                            {(controlTypes.length ? controlTypes : Object.keys(CONTROL_TYPE)).map((ty) => (
+                                <option key={ty} value={ty}>{t(CONTROL_TYPE[ty] ?? ty)}</option>
                             ))}
                         </select>
                         <InputError message={errors.control_type} className="mt-1" />
                     </div>
 
                     <div>
-                        <InputLabel htmlFor="result" value="Résultat *" />
+                        <InputLabel htmlFor="result" value={t('Résultat *')} />
                         <select id="result" className={selectClass} value={data.result} onChange={(e) => setData('result', e.target.value)}>
                             {(results.length ? results : Object.keys(CONTROL_RESULT)).map((r) => (
-                                <option key={r} value={r}>{CONTROL_RESULT[r]?.label ?? r}</option>
+                                <option key={r} value={r}>{t(CONTROL_RESULT[r]?.label ?? r)}</option>
                             ))}
                         </select>
                         <InputError message={errors.result} className="mt-1" />
                     </div>
 
                     {field('control_date', 'Date du contrôle *', { type: 'date' })}
-                    {field('inspector', 'Inspecteur', { placeholder: 'Nom du contrôleur' })}
+                    {field('inspector', 'Inspecteur', { placeholder: t('Nom du contrôleur') })}
                 </div>
 
                 <div className="mt-4">
-                    <InputLabel htmlFor="description" value="Description" />
+                    <InputLabel htmlFor="description" value={t('Description')} />
                     <textarea
                         id="description"
                         rows={3}
@@ -96,17 +98,17 @@ export default function QualityForm({
             </div>
 
             <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-                <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">Rattachement & observations</h3>
+                <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">{t('Rattachement & observations')}</h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
-                        <InputLabel htmlFor="project_id" value="Projet" />
+                        <InputLabel htmlFor="project_id" value={t('Projet')} />
                         <select
                             id="project_id"
                             className={selectClass}
                             value={data.project_id ?? ''}
                             onChange={(e) => setData('project_id', e.target.value || null)}
                         >
-                            <option value="">— Aucun —</option>
+                            <option value="">{t('— Aucun —')}</option>
                             {projects.map((p) => (
                                 <option key={p.id} value={p.id}>{p.name}</option>
                             ))}
@@ -115,14 +117,14 @@ export default function QualityForm({
                     </div>
 
                     <div>
-                        <InputLabel htmlFor="site_id" value="Chantier" />
+                        <InputLabel htmlFor="site_id" value={t('Chantier')} />
                         <select
                             id="site_id"
                             className={selectClass}
                             value={data.site_id ?? ''}
                             onChange={(e) => setData('site_id', e.target.value || null)}
                         >
-                            <option value="">— Aucun —</option>
+                            <option value="">{t('— Aucun —')}</option>
                             {sites.map((s) => (
                                 <option key={s.id} value={s.id}>{s.name}</option>
                             ))}
@@ -132,7 +134,7 @@ export default function QualityForm({
                 </div>
 
                 <div className="mt-4">
-                    <InputLabel htmlFor="observations" value="Observations" />
+                    <InputLabel htmlFor="observations" value={t('Observations')} />
                     <textarea
                         id="observations"
                         rows={3}
@@ -149,7 +151,7 @@ export default function QualityForm({
                     href="/quality"
                     className="rounded-md px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
                 >
-                    Annuler
+                    {t('Annuler')}
                 </Link>
                 <PrimaryButton disabled={processing} className="bg-orange-500 hover:bg-orange-600 focus:bg-orange-600">
                     {submitLabel}

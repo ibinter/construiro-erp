@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import MaterialForm from './Partials/MaterialForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Edit({ material, categories, units }) {
+    const { t } = useTrans();
     const form = useForm({
         code: material.code ?? '',
         name: material.name ?? '',
@@ -21,14 +23,14 @@ export default function Edit({ material, categories, units }) {
 
     return (
         <AppLayout header={`Modifier — ${material.name}`}>
-            <Head title={`Modifier ${material.name}`} />
+            <Head title={`${t('Modifier')} ${material.name}`} />
             <div className="mx-auto max-w-4xl">
                 <MaterialForm
                     form={form}
                     categories={categories}
                     units={units}
                     onSubmit={submit}
-                    submitLabel="Enregistrer"
+                    submitLabel={t('Enregistrer')}
                 />
             </div>
         </AppLayout>

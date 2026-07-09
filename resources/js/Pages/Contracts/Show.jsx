@@ -6,6 +6,7 @@ import SecondaryButton from '@/Components/SecondaryButton';
 import DangerButton from '@/Components/DangerButton';
 import { Head, Link, router } from '@inertiajs/react';
 import { formatMoney } from '@/constants';
+import { useTrans } from '@/i18n';
 
 // Libellés et styles des contrats (FR).
 const CONTRACT_STATUS = {
@@ -24,8 +25,9 @@ const CONTRACT_TYPE = {
 };
 
 function StatusBadge({ status }) {
+    const { t } = useTrans();
     const s = CONTRACT_STATUS[status] ?? { label: status, color: 'bg-slate-100 text-slate-600' };
-    return <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${s.color}`}>{s.label}</span>;
+    return <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${s.color}`}>{t(s.label)}</span>;
 }
 
 function InfoTile({ icon, label, value }) {
@@ -41,6 +43,7 @@ function InfoTile({ icon, label, value }) {
 }
 
 export default function Show({ contract, can }) {
+    const { t } = useTrans();
     const [confirmDelete, setConfirmDelete] = useState(false);
 
     const deleteContract = () => {
@@ -64,7 +67,7 @@ export default function Show({ contract, can }) {
                         <StatusBadge status={contract.status} />
                     </div>
                     <p className="ml-7 text-sm text-slate-400">
-                        {contract.code} · {CONTRACT_TYPE[contract.type] ?? contract.type}
+                        {contract.code} · {t(CONTRACT_TYPE[contract.type] ?? contract.type)}
                         {contract.party_name ? ` · ${contract.party_name}` : ''}
                     </p>
                 </div>
@@ -74,7 +77,7 @@ export default function Show({ contract, can }) {
                             href={`/contracts/${contract.id}/edit`}
                             className="inline-flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
                         >
-                            <Icon name="pencil" className="h-4 w-4" /> Modifier
+                            <Icon name="pencil" className="h-4 w-4" /> {t('Modifier')}
                         </Link>
                     )}
                     {can.delete && (
@@ -82,7 +85,7 @@ export default function Show({ contract, can }) {
                             onClick={() => setConfirmDelete(true)}
                             className="inline-flex items-center gap-2 rounded-md border border-red-200 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:border-red-900/50"
                         >
-                            <Icon name="trash-2" className="h-4 w-4" /> Supprimer
+                            <Icon name="trash-2" className="h-4 w-4" /> {t('Supprimer')}
                         </button>
                     )}
                 </div>
@@ -90,10 +93,10 @@ export default function Show({ contract, can }) {
 
             {/* Tuiles d'info */}
             <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-                <InfoTile icon="wallet" label="Montant" value={formatMoney(contract.amount, contract.currency)} />
-                <InfoTile icon="calendar" label="Début → Fin" value={`${fmtDate(contract.start_date)} → ${fmtDate(contract.end_date)}`} />
-                <InfoTile icon="pen-line" label="Signé le" value={fmtDate(contract.signed_date)} />
-                <InfoTile icon="folder" label="Projet" value={contract.project?.name ?? '—'} />
+                <InfoTile icon="wallet" label={t('Montant')} value={formatMoney(contract.amount, contract.currency)} />
+                <InfoTile icon="calendar" label={t('Début → Fin')} value={`${fmtDate(contract.start_date)} → ${fmtDate(contract.end_date)}`} />
+                <InfoTile icon="pen-line" label={t('Signé le')} value={fmtDate(contract.signed_date)} />
+                <InfoTile icon="folder" label={t('Projet')} value={contract.project?.name ?? '—'} />
             </div>
 
             {contract.notes && (
@@ -105,13 +108,13 @@ export default function Show({ contract, can }) {
             {/* Confirmation suppression contrat */}
             <Modal show={confirmDelete} onClose={() => setConfirmDelete(false)} maxWidth="md">
                 <div className="p-6">
-                    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Supprimer ce contrat ?</h3>
+                    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">{t('Supprimer ce contrat ?')}</h3>
                     <p className="mt-2 text-sm text-slate-500">
-                        Le contrat « {contract.title} » sera supprimé. Cette action est réversible (corbeille).
+                        {t('Le contrat')} « {contract.title} » {t('sera supprimé. Cette action est réversible (corbeille).')}
                     </p>
                     <div className="mt-6 flex justify-end gap-3">
-                        <SecondaryButton type="button" onClick={() => setConfirmDelete(false)}>Annuler</SecondaryButton>
-                        <DangerButton onClick={deleteContract}>Supprimer définitivement</DangerButton>
+                        <SecondaryButton type="button" onClick={() => setConfirmDelete(false)}>{t('Annuler')}</SecondaryButton>
+                        <DangerButton onClick={deleteContract}>{t('Supprimer définitivement')}</DangerButton>
                     </div>
                 </div>
             </Modal>

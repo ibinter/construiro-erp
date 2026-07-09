@@ -6,11 +6,13 @@ import SecondaryButton from '@/Components/SecondaryButton';
 import DangerButton from '@/Components/DangerButton';
 import { Head, Link, router } from '@inertiajs/react';
 import { formatMoney } from '@/constants';
+import { useTrans } from '@/i18n';
 import { STAGE } from './Index';
 
 function StageBadge({ stage }) {
+    const { t } = useTrans();
     const s = STAGE[stage] ?? { label: stage, color: 'bg-slate-100 text-slate-600' };
-    return <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${s.color}`}>{s.label}</span>;
+    return <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${s.color}`}>{t(s.label)}</span>;
 }
 
 function InfoTile({ icon, label, value }) {
@@ -26,6 +28,7 @@ function InfoTile({ icon, label, value }) {
 }
 
 export default function Show({ opportunity, can }) {
+    const { t } = useTrans();
     const [confirmDelete, setConfirmDelete] = useState(false);
 
     const deleteOpportunity = () => {
@@ -59,7 +62,7 @@ export default function Show({ opportunity, can }) {
                             href={`/crm/${opportunity.id}/edit`}
                             className="inline-flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
                         >
-                            <Icon name="pencil" className="h-4 w-4" /> Modifier
+                            <Icon name="pencil" className="h-4 w-4" /> {t('Modifier')}
                         </Link>
                     )}
                     {can.delete && (
@@ -67,7 +70,7 @@ export default function Show({ opportunity, can }) {
                             onClick={() => setConfirmDelete(true)}
                             className="inline-flex items-center gap-2 rounded-md border border-red-200 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:border-red-900/50"
                         >
-                            <Icon name="trash-2" className="h-4 w-4" /> Supprimer
+                            <Icon name="trash-2" className="h-4 w-4" /> {t('Supprimer')}
                         </button>
                     )}
                 </div>
@@ -75,21 +78,21 @@ export default function Show({ opportunity, can }) {
 
             {/* Tuiles d'info */}
             <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-                <InfoTile icon="wallet" label="Montant estimé" value={formatMoney(opportunity.estimated_amount, opportunity.currency)} />
-                <InfoTile icon="percent" label="Probabilité" value={`${opportunity.probability} %`} />
-                <InfoTile icon="calendar" label="Clôture prévue" value={fmtDate(opportunity.expected_close_date)} />
-                <InfoTile icon="user" label="Commercial" value={opportunity.assignee?.name ?? '—'} />
+                <InfoTile icon="wallet" label={t('Montant estimé')} value={formatMoney(opportunity.estimated_amount, opportunity.currency)} />
+                <InfoTile icon="percent" label={t('Probabilité')} value={`${opportunity.probability} %`} />
+                <InfoTile icon="calendar" label={t('Clôture prévue')} value={fmtDate(opportunity.expected_close_date)} />
+                <InfoTile icon="user" label={t('Commercial')} value={opportunity.assignee?.name ?? '—'} />
             </div>
 
             {opportunity.source && (
                 <div className="mb-6">
-                    <InfoTile icon="compass" label="Source" value={opportunity.source} />
+                    <InfoTile icon="compass" label={t('Source')} value={opportunity.source} />
                 </div>
             )}
 
             {opportunity.notes && (
                 <div className="rounded-xl border border-slate-200 bg-white p-5 text-sm text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
-                    <h3 className="mb-2 font-semibold text-slate-800 dark:text-slate-100">Notes</h3>
+                    <h3 className="mb-2 font-semibold text-slate-800 dark:text-slate-100">{t('Notes')}</h3>
                     {opportunity.notes}
                 </div>
             )}
@@ -97,13 +100,13 @@ export default function Show({ opportunity, can }) {
             {/* Confirmation suppression */}
             <Modal show={confirmDelete} onClose={() => setConfirmDelete(false)} maxWidth="md">
                 <div className="p-6">
-                    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Supprimer cette opportunité ?</h3>
+                    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">{t('Supprimer cette opportunité ?')}</h3>
                     <p className="mt-2 text-sm text-slate-500">
-                        L'opportunité « {opportunity.title} » sera supprimée. Cette action est réversible (corbeille).
+                        {t("L'opportunité")} « {opportunity.title} » {t('sera supprimée. Cette action est réversible (corbeille).')}
                     </p>
                     <div className="mt-6 flex justify-end gap-3">
-                        <SecondaryButton type="button" onClick={() => setConfirmDelete(false)}>Annuler</SecondaryButton>
-                        <DangerButton onClick={deleteOpportunity}>Supprimer définitivement</DangerButton>
+                        <SecondaryButton type="button" onClick={() => setConfirmDelete(false)}>{t('Annuler')}</SecondaryButton>
+                        <DangerButton onClick={deleteOpportunity}>{t('Supprimer définitivement')}</DangerButton>
                     </div>
                 </div>
             </Modal>

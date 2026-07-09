@@ -6,6 +6,7 @@ import SecondaryButton from '@/Components/SecondaryButton';
 import DangerButton from '@/Components/DangerButton';
 import { Head, Link, router } from '@inertiajs/react';
 import { SAMPLE_TYPE, RESULT } from './Partials/LabTestForm';
+import { useTrans } from '@/i18n';
 
 const RESULT_COLOR = {
     conforme:     'bg-green-100 text-green-700',
@@ -26,6 +27,7 @@ function InfoTile({ icon, label, value }) {
 }
 
 export default function Show({ test, can }) {
+    const { t } = useTrans();
     const [confirmDelete, setConfirmDelete] = useState(false);
 
     const deleteTest = () => {
@@ -48,11 +50,11 @@ export default function Show({ test, can }) {
                         </Link>
                         <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">{test.test_name}</h2>
                         <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${resultColor}`}>
-                            {RESULT[test.result] ?? test.result}
+                            {t(RESULT[test.result] ?? test.result)}
                         </span>
                     </div>
                     <p className="ml-7 text-sm text-slate-400">
-                        {test.code} · {SAMPLE_TYPE[test.sample_type] ?? test.sample_type}
+                        {test.code} · {t(SAMPLE_TYPE[test.sample_type] ?? test.sample_type)}
                     </p>
                 </div>
                 <div className="flex gap-2">
@@ -61,7 +63,7 @@ export default function Show({ test, can }) {
                             href={`/laboratory/${test.id}/edit`}
                             className="inline-flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
                         >
-                            <Icon name="pencil" className="h-4 w-4" /> Modifier
+                            <Icon name="pencil" className="h-4 w-4" /> {t('Modifier')}
                         </Link>
                     )}
                     {can.delete && (
@@ -69,7 +71,7 @@ export default function Show({ test, can }) {
                             onClick={() => setConfirmDelete(true)}
                             className="inline-flex items-center gap-2 rounded-md border border-red-200 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:border-red-900/50"
                         >
-                            <Icon name="trash-2" className="h-4 w-4" /> Supprimer
+                            <Icon name="trash-2" className="h-4 w-4" /> {t('Supprimer')}
                         </button>
                     )}
                 </div>
@@ -79,51 +81,51 @@ export default function Show({ test, can }) {
             <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
                 <InfoTile
                     icon="gauge"
-                    label="Valeur mesurée"
+                    label={t('Valeur mesurée')}
                     value={test.result_value != null ? `${test.result_value}${test.unit ? ` ${test.unit}` : ''}` : '—'}
                 />
                 <InfoTile
                     icon="target"
-                    label="Seuil requis"
+                    label={t('Seuil requis')}
                     value={test.threshold != null ? `${test.threshold}${test.unit ? ` ${test.unit}` : ''}` : '—'}
                 />
-                <InfoTile icon="calendar" label="Prélèvement → Essai" value={`${fmtDate(test.sample_date)} → ${fmtDate(test.test_date)}`} />
-                <InfoTile icon="user" label="Technicien" value={test.technician || '—'} />
+                <InfoTile icon="calendar" label={t('Prélèvement → Essai')} value={`${fmtDate(test.sample_date)} → ${fmtDate(test.test_date)}`} />
+                <InfoTile icon="user" label={t('Technicien')} value={test.technician || '—'} />
             </div>
 
             {/* Détails & rattachement */}
             <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
                 <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
                     <h3 className="mb-3 flex items-center gap-2 font-semibold text-slate-800 dark:text-slate-100">
-                        <Icon name="flask-conical" className="h-5 w-5 text-orange-500" /> Essai
+                        <Icon name="flask-conical" className="h-5 w-5 text-orange-500" /> {t('Essai')}
                     </h3>
                     <dl className="space-y-2 text-sm">
                         <div className="flex justify-between">
-                            <dt className="text-slate-400">Type d'échantillon</dt>
-                            <dd className="text-slate-700 dark:text-slate-200">{SAMPLE_TYPE[test.sample_type] ?? test.sample_type}</dd>
+                            <dt className="text-slate-400">{t("Type d'échantillon")}</dt>
+                            <dd className="text-slate-700 dark:text-slate-200">{t(SAMPLE_TYPE[test.sample_type] ?? test.sample_type)}</dd>
                         </div>
                         <div className="flex justify-between">
-                            <dt className="text-slate-400">Unité</dt>
+                            <dt className="text-slate-400">{t('Unité')}</dt>
                             <dd className="text-slate-700 dark:text-slate-200">{test.unit || '—'}</dd>
                         </div>
                         <div className="flex justify-between">
-                            <dt className="text-slate-400">Résultat</dt>
-                            <dd className="text-slate-700 dark:text-slate-200">{RESULT[test.result] ?? test.result}</dd>
+                            <dt className="text-slate-400">{t('Résultat')}</dt>
+                            <dd className="text-slate-700 dark:text-slate-200">{t(RESULT[test.result] ?? test.result)}</dd>
                         </div>
                     </dl>
                 </div>
 
                 <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
                     <h3 className="mb-3 flex items-center gap-2 font-semibold text-slate-800 dark:text-slate-100">
-                        <Icon name="folder-kanban" className="h-5 w-5 text-orange-500" /> Rattachement
+                        <Icon name="folder-kanban" className="h-5 w-5 text-orange-500" /> {t('Rattachement')}
                     </h3>
                     <dl className="space-y-2 text-sm">
                         <div className="flex justify-between">
-                            <dt className="text-slate-400">Projet</dt>
+                            <dt className="text-slate-400">{t('Projet')}</dt>
                             <dd className="text-slate-700 dark:text-slate-200">{test.project?.name ?? '—'}</dd>
                         </div>
                         <div className="flex justify-between">
-                            <dt className="text-slate-400">Chantier</dt>
+                            <dt className="text-slate-400">{t('Chantier')}</dt>
                             <dd className="text-slate-700 dark:text-slate-200">{test.site?.name ?? '—'}</dd>
                         </div>
                     </dl>
@@ -139,13 +141,13 @@ export default function Show({ test, can }) {
             {/* Confirmation suppression */}
             <Modal show={confirmDelete} onClose={() => setConfirmDelete(false)} maxWidth="md">
                 <div className="p-6">
-                    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Supprimer cet essai ?</h3>
+                    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">{t('Supprimer cet essai ?')}</h3>
                     <p className="mt-2 text-sm text-slate-500">
-                        L'essai « {test.test_name} » sera supprimé. Cette action est réversible (corbeille).
+                        {t("L'essai")} « {test.test_name} » {t('sera supprimé. Cette action est réversible (corbeille).')}
                     </p>
                     <div className="mt-6 flex justify-end gap-3">
-                        <SecondaryButton type="button" onClick={() => setConfirmDelete(false)}>Annuler</SecondaryButton>
-                        <DangerButton onClick={deleteTest}>Supprimer définitivement</DangerButton>
+                        <SecondaryButton type="button" onClick={() => setConfirmDelete(false)}>{t('Annuler')}</SecondaryButton>
+                        <DangerButton onClick={deleteTest}>{t('Supprimer définitivement')}</DangerButton>
                     </div>
                 </div>
             </Modal>

@@ -6,6 +6,7 @@ import SecondaryButton from '@/Components/SecondaryButton';
 import DangerButton from '@/Components/DangerButton';
 import { Head, Link, router } from '@inertiajs/react';
 import { formatMoney } from '@/constants';
+import { useTrans } from '@/i18n';
 
 // Libellés locaux au module RH (FR).
 const DEPARTMENT = {
@@ -36,8 +37,9 @@ const PAY_STATUS = {
 };
 
 function Badge({ map, status }) {
+    const { t } = useTrans();
     const s = map[status] ?? { label: status, color: 'bg-slate-100 text-slate-600' };
-    return <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${s.color}`}>{s.label}</span>;
+    return <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${s.color}`}>{t(s.label)}</span>;
 }
 
 function InfoTile({ icon, label, value }) {
@@ -53,6 +55,7 @@ function InfoTile({ icon, label, value }) {
 }
 
 export default function Show({ employee, attendances, payslips, can }) {
+    const { t } = useTrans();
     const [confirmDelete, setConfirmDelete] = useState(false);
 
     const deleteEmployee = () => {
@@ -87,7 +90,7 @@ export default function Show({ employee, attendances, payslips, can }) {
                             href={`/hr/${employee.id}/edit`}
                             className="inline-flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
                         >
-                            <Icon name="pencil" className="h-4 w-4" /> Modifier
+                            <Icon name="pencil" className="h-4 w-4" /> {t('Modifier')}
                         </Link>
                     )}
                     {can.delete && (
@@ -95,7 +98,7 @@ export default function Show({ employee, attendances, payslips, can }) {
                             onClick={() => setConfirmDelete(true)}
                             className="inline-flex items-center gap-2 rounded-md border border-red-200 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:border-red-900/50"
                         >
-                            <Icon name="trash-2" className="h-4 w-4" /> Supprimer
+                            <Icon name="trash-2" className="h-4 w-4" /> {t('Supprimer')}
                         </button>
                     )}
                 </div>
@@ -103,17 +106,17 @@ export default function Show({ employee, attendances, payslips, can }) {
 
             {/* Tuiles d'info */}
             <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-                <InfoTile icon="wallet" label="Salaire de base" value={formatMoney(employee.base_salary, employee.currency)} />
-                <InfoTile icon="file-text" label="Contrat" value={CONTRACT_TYPE[employee.contract_type] ?? employee.contract_type} />
-                <InfoTile icon="calendar" label="Embauche" value={fmtDate(employee.hire_date)} />
-                <InfoTile icon="construction" label="Chantier" value={employee.site?.name ?? '—'} />
+                <InfoTile icon="wallet" label={t('Salaire de base')} value={formatMoney(employee.base_salary, employee.currency)} />
+                <InfoTile icon="file-text" label={t('Contrat')} value={t(CONTRACT_TYPE[employee.contract_type] ?? employee.contract_type)} />
+                <InfoTile icon="calendar" label={t('Embauche')} value={fmtDate(employee.hire_date)} />
+                <InfoTile icon="construction" label={t('Chantier')} value={employee.site?.name ?? '—'} />
             </div>
 
             {/* Coordonnées */}
             <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-                <InfoTile icon="phone" label="Téléphone" value={employee.phone || '—'} />
-                <InfoTile icon="mail" label="Email" value={employee.email || '—'} />
-                <InfoTile icon="building-2" label="Agence" value={employee.agency?.name ?? '—'} />
+                <InfoTile icon="phone" label={t('Téléphone')} value={employee.phone || '—'} />
+                <InfoTile icon="mail" label={t('Email')} value={employee.email || '—'} />
+                <InfoTile icon="building-2" label={t('Agence')} value={employee.agency?.name ?? '—'} />
             </div>
 
             {employee.notes && (
@@ -128,7 +131,7 @@ export default function Show({ employee, attendances, payslips, can }) {
                     <div className="border-b border-slate-100 px-5 py-4 dark:border-slate-800">
                         <h3 className="flex items-center gap-2 font-semibold text-slate-800 dark:text-slate-100">
                             <Icon name="fingerprint" className="h-5 w-5 text-orange-500" />
-                            Pointages récents
+                            {t('Pointages récents')}
                         </h3>
                     </div>
                     <ul className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -144,7 +147,7 @@ export default function Show({ employee, attendances, payslips, can }) {
                             </li>
                         ))}
                         {attendances.length === 0 && (
-                            <li className="px-5 py-8 text-center text-sm text-slate-400">Aucun pointage enregistré.</li>
+                            <li className="px-5 py-8 text-center text-sm text-slate-400">{t('Aucun pointage enregistré.')}</li>
                         )}
                     </ul>
                 </div>
@@ -154,7 +157,7 @@ export default function Show({ employee, attendances, payslips, can }) {
                     <div className="border-b border-slate-100 px-5 py-4 dark:border-slate-800">
                         <h3 className="flex items-center gap-2 font-semibold text-slate-800 dark:text-slate-100">
                             <Icon name="banknote" className="h-5 w-5 text-orange-500" />
-                            Bulletins de paie
+                            {t('Bulletins de paie')}
                         </h3>
                     </div>
                     <ul className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -162,13 +165,13 @@ export default function Show({ employee, attendances, payslips, can }) {
                             <li key={p.id} className="flex items-center justify-between px-5 py-3 text-sm">
                                 <div>
                                     <div className="font-medium text-slate-800 dark:text-slate-100">{p.period}</div>
-                                    <div className="text-xs text-slate-400">Net : {formatMoney(p.net_salary, p.currency)}</div>
+                                    <div className="text-xs text-slate-400">{t('Net :')} {formatMoney(p.net_salary, p.currency)}</div>
                                 </div>
                                 <Badge map={PAY_STATUS} status={p.status} />
                             </li>
                         ))}
                         {payslips.length === 0 && (
-                            <li className="px-5 py-8 text-center text-sm text-slate-400">Aucun bulletin de paie.</li>
+                            <li className="px-5 py-8 text-center text-sm text-slate-400">{t('Aucun bulletin de paie.')}</li>
                         )}
                     </ul>
                 </div>
@@ -177,13 +180,13 @@ export default function Show({ employee, attendances, payslips, can }) {
             {/* Confirmation suppression employé */}
             <Modal show={confirmDelete} onClose={() => setConfirmDelete(false)} maxWidth="md">
                 <div className="p-6">
-                    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Supprimer cet employé ?</h3>
+                    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">{t('Supprimer cet employé ?')}</h3>
                     <p className="mt-2 text-sm text-slate-500">
-                        L'employé « {employee.full_name} » sera supprimé. Cette action est réversible (corbeille).
+                        {t("L'employé")} « {employee.full_name} » {t('sera supprimé. Cette action est réversible (corbeille).')}
                     </p>
                     <div className="mt-6 flex justify-end gap-3">
-                        <SecondaryButton type="button" onClick={() => setConfirmDelete(false)}>Annuler</SecondaryButton>
-                        <DangerButton onClick={deleteEmployee}>Supprimer définitivement</DangerButton>
+                        <SecondaryButton type="button" onClick={() => setConfirmDelete(false)}>{t('Annuler')}</SecondaryButton>
+                        <DangerButton onClick={deleteEmployee}>{t('Supprimer définitivement')}</DangerButton>
                     </div>
                 </div>
             </Modal>

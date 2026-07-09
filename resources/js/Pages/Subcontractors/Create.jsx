@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import SubcontractorForm from './Partials/SubcontractorForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Create({ specialties }) {
+    const { t } = useTrans();
     const form = useForm({
         code: '',
         name: '',
@@ -25,13 +27,13 @@ export default function Create({ specialties }) {
 
     return (
         <AppLayout header="Nouveau sous-traitant">
-            <Head title="Nouveau sous-traitant" />
+            <Head title={t('Nouveau sous-traitant')} />
             <div className="mx-auto max-w-4xl">
                 <SubcontractorForm
                     form={form}
                     specialties={specialties}
                     onSubmit={submit}
-                    submitLabel="Créer le sous-traitant"
+                    submitLabel={t('Créer le sous-traitant')}
                 />
             </div>
         </AppLayout>

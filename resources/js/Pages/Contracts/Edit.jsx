@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import ContractForm from './Partials/ContractForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Edit({ contract, projects, types, statuses }) {
+    const { t } = useTrans();
     const form = useForm({
         code: contract.code ?? '',
         title: contract.title ?? '',
@@ -25,7 +27,7 @@ export default function Edit({ contract, projects, types, statuses }) {
 
     return (
         <AppLayout header={`Modifier — ${contract.title}`}>
-            <Head title={`Modifier ${contract.title}`} />
+            <Head title={`${t('Modifier')} ${contract.title}`} />
             <div className="mx-auto max-w-4xl">
                 <ContractForm
                     form={form}
@@ -33,7 +35,7 @@ export default function Edit({ contract, projects, types, statuses }) {
                     types={types}
                     statuses={statuses}
                     onSubmit={submit}
-                    submitLabel="Enregistrer"
+                    submitLabel={t('Enregistrer')}
                 />
             </div>
         </AppLayout>

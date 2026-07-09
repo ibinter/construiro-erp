@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import ContractForm from './Partials/ContractForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Create({ projects, types, statuses }) {
+    const { t } = useTrans();
     const form = useForm({
         code: '',
         title: '',
@@ -25,7 +27,7 @@ export default function Create({ projects, types, statuses }) {
 
     return (
         <AppLayout header="Nouveau contrat">
-            <Head title="Nouveau contrat" />
+            <Head title={t('Nouveau contrat')} />
             <div className="mx-auto max-w-4xl">
                 <ContractForm
                     form={form}
@@ -33,7 +35,7 @@ export default function Create({ projects, types, statuses }) {
                     types={types}
                     statuses={statuses}
                     onSubmit={submit}
-                    submitLabel="Créer le contrat"
+                    submitLabel={t('Créer le contrat')}
                 />
             </div>
         </AppLayout>

@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import MaterialForm from './Partials/MaterialForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Create({ categories, units }) {
+    const { t } = useTrans();
     const form = useForm({
         code: '',
         name: '',
@@ -21,14 +23,14 @@ export default function Create({ categories, units }) {
 
     return (
         <AppLayout header="Nouveau matériau">
-            <Head title="Nouveau matériau" />
+            <Head title={t('Nouveau matériau')} />
             <div className="mx-auto max-w-4xl">
                 <MaterialForm
                     form={form}
                     categories={categories}
                     units={units}
                     onSubmit={submit}
-                    submitLabel="Créer le matériau"
+                    submitLabel={t('Créer le matériau')}
                 />
             </div>
         </AppLayout>

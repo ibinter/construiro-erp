@@ -6,10 +6,12 @@ import SecondaryButton from '@/Components/SecondaryButton';
 import DangerButton from '@/Components/DangerButton';
 import { Head, Link, router } from '@inertiajs/react';
 import { CONTROL_TYPE, CONTROL_RESULT } from './Partials/QualityForm';
+import { useTrans } from '@/i18n';
 
 function Badge({ map, value }) {
+    const { t } = useTrans();
     const s = map[value] ?? { label: value, color: 'bg-slate-100 text-slate-600' };
-    return <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${s.color}`}>{s.label}</span>;
+    return <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${s.color}`}>{t(s.label)}</span>;
 }
 
 function InfoTile({ icon, label, value }) {
@@ -25,6 +27,7 @@ function InfoTile({ icon, label, value }) {
 }
 
 export default function Show({ control, can }) {
+    const { t } = useTrans();
     const [confirmDelete, setConfirmDelete] = useState(false);
 
     const deleteControl = () => {
@@ -48,7 +51,7 @@ export default function Show({ control, can }) {
                         <Badge map={CONTROL_RESULT} value={control.result} />
                     </div>
                     <p className="ml-7 text-sm text-slate-400">
-                        {control.code} · {CONTROL_TYPE[control.control_type] ?? control.control_type}
+                        {control.code} · {t(CONTROL_TYPE[control.control_type] ?? control.control_type)}
                         {control.project ? ` · ${control.project.name}` : ''}
                     </p>
                 </div>
@@ -58,7 +61,7 @@ export default function Show({ control, can }) {
                             href={`/quality/${control.id}/edit`}
                             className="inline-flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
                         >
-                            <Icon name="pencil" className="h-4 w-4" /> Modifier
+                            <Icon name="pencil" className="h-4 w-4" /> {t('Modifier')}
                         </Link>
                     )}
                     {can.delete && (
@@ -66,7 +69,7 @@ export default function Show({ control, can }) {
                             onClick={() => setConfirmDelete(true)}
                             className="inline-flex items-center gap-2 rounded-md border border-red-200 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:border-red-900/50"
                         >
-                            <Icon name="trash-2" className="h-4 w-4" /> Supprimer
+                            <Icon name="trash-2" className="h-4 w-4" /> {t('Supprimer')}
                         </button>
                     )}
                 </div>
@@ -74,17 +77,17 @@ export default function Show({ control, can }) {
 
             {/* Tuiles d'info */}
             <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-                <InfoTile icon="calendar" label="Date" value={fmtDate(control.control_date)} />
-                <InfoTile icon="user-check" label="Inspecteur" value={control.inspector ?? '—'} />
-                <InfoTile icon="construction" label="Chantier" value={control.site?.name ?? '—'} />
-                <InfoTile icon="clipboard-list" label="Type" value={CONTROL_TYPE[control.control_type] ?? control.control_type} />
+                <InfoTile icon="calendar" label={t('Date')} value={fmtDate(control.control_date)} />
+                <InfoTile icon="user-check" label={t('Inspecteur')} value={control.inspector ?? '—'} />
+                <InfoTile icon="construction" label={t('Chantier')} value={control.site?.name ?? '—'} />
+                <InfoTile icon="clipboard-list" label={t('Type')} value={t(CONTROL_TYPE[control.control_type] ?? control.control_type)} />
             </div>
 
             {control.description && (
                 <div className="mb-6 rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
                     <h3 className="mb-2 flex items-center gap-2 font-semibold text-slate-800 dark:text-slate-100">
                         <Icon name="file-text" className="h-5 w-5 text-orange-500" />
-                        Description
+                        {t('Description')}
                     </h3>
                     <p className="text-sm text-slate-600 dark:text-slate-300">{control.description}</p>
                 </div>
@@ -94,23 +97,23 @@ export default function Show({ control, can }) {
             <div className="mb-6 rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
                 <h3 className="mb-2 flex items-center gap-2 font-semibold text-slate-800 dark:text-slate-100">
                     <Icon name="clipboard-check" className="h-5 w-5 text-orange-500" />
-                    Observations
+                    {t('Observations')}
                 </h3>
                 <p className="text-sm text-slate-600 dark:text-slate-300">
-                    {control.observations || 'Aucune observation renseignée.'}
+                    {control.observations || t('Aucune observation renseignée.')}
                 </p>
             </div>
 
             {/* Confirmation suppression */}
             <Modal show={confirmDelete} onClose={() => setConfirmDelete(false)} maxWidth="md">
                 <div className="p-6">
-                    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Supprimer ce contrôle ?</h3>
+                    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">{t('Supprimer ce contrôle ?')}</h3>
                     <p className="mt-2 text-sm text-slate-500">
-                        Le contrôle « {control.title} » sera supprimé. Cette action est réversible (corbeille).
+                        {t('Le contrôle')} « {control.title} » {t('sera supprimé. Cette action est réversible (corbeille).')}
                     </p>
                     <div className="mt-6 flex justify-end gap-3">
-                        <SecondaryButton type="button" onClick={() => setConfirmDelete(false)}>Annuler</SecondaryButton>
-                        <DangerButton onClick={deleteControl}>Supprimer définitivement</DangerButton>
+                        <SecondaryButton type="button" onClick={() => setConfirmDelete(false)}>{t('Annuler')}</SecondaryButton>
+                        <DangerButton onClick={deleteControl}>{t('Supprimer définitivement')}</DangerButton>
                     </div>
                 </div>
             </Modal>

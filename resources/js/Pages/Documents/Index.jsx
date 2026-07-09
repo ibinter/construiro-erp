@@ -3,8 +3,10 @@ import AppLayout from '@/Layouts/AppLayout';
 import Icon from '@/Components/Icon';
 import { Head, Link, router } from '@inertiajs/react';
 import { CATEGORY, CATEGORY_ICON } from './Partials/DocumentForm';
+import { useTrans } from '@/i18n';
 
 export default function Index({ documents, filters, categories, can }) {
+    const { t } = useTrans();
     const [search, setSearch] = useState(filters.search ?? '');
 
     const applyFilters = (next = {}) => {
@@ -16,7 +18,7 @@ export default function Index({ documents, filters, categories, can }) {
 
     return (
         <AppLayout header="Gestion documentaire">
-            <Head title="Documents" />
+            <Head title={t('Documents')} />
 
             {/* Barre d'actions */}
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -30,7 +32,7 @@ export default function Index({ documents, filters, categories, can }) {
                             type="text"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Rechercher un document…"
+                            placeholder={t('Rechercher un document…')}
                             className="w-64 rounded-md border-slate-300 pl-9 text-sm focus:border-orange-500 focus:ring-orange-500 dark:border-slate-700 dark:bg-slate-900"
                         />
                     </div>
@@ -39,9 +41,9 @@ export default function Index({ documents, filters, categories, can }) {
                         onChange={(e) => applyFilters({ category: e.target.value })}
                         className="rounded-md border-slate-300 text-sm focus:border-orange-500 focus:ring-orange-500 dark:border-slate-700 dark:bg-slate-900"
                     >
-                        <option value="">Toutes les catégories</option>
+                        <option value="">{t('Toutes les catégories')}</option>
                         {categories.map((c) => (
-                            <option key={c} value={c}>{CATEGORY[c] ?? c}</option>
+                            <option key={c} value={c}>{t(CATEGORY[c] ?? c)}</option>
                         ))}
                     </select>
                 </form>
@@ -52,7 +54,7 @@ export default function Index({ documents, filters, categories, can }) {
                         className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600"
                     >
                         <Icon name="plus" className="h-4 w-4" />
-                        Nouveau document
+                        {t('Nouveau document')}
                     </Link>
                 )}
             </div>
@@ -62,10 +64,10 @@ export default function Index({ documents, filters, categories, can }) {
                 <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800">
                     <thead className="bg-slate-50 dark:bg-slate-800/50">
                         <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                            <th className="px-4 py-3">Document</th>
-                            <th className="px-4 py-3">Catégorie</th>
-                            <th className="px-4 py-3">Version</th>
-                            <th className="px-4 py-3">Projet</th>
+                            <th className="px-4 py-3">{t('Document')}</th>
+                            <th className="px-4 py-3">{t('Catégorie')}</th>
+                            <th className="px-4 py-3">{t('Version')}</th>
+                            <th className="px-4 py-3">{t('Projet')}</th>
                             <th className="px-4 py-3"></th>
                         </tr>
                     </thead>
@@ -86,7 +88,7 @@ export default function Index({ documents, filters, categories, can }) {
                                     </div>
                                 </td>
                                 <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
-                                    {CATEGORY[doc.category] ?? doc.category}
+                                    {t(CATEGORY[doc.category] ?? doc.category)}
                                 </td>
                                 <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{doc.version}</td>
                                 <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{doc.project?.name || '—'}</td>
@@ -102,7 +104,7 @@ export default function Index({ documents, filters, categories, can }) {
                             <tr>
                                 <td colSpan={5} className="px-4 py-12 text-center text-slate-400">
                                     <Icon name="files" className="mx-auto mb-2 h-8 w-8" />
-                                    Aucun document trouvé.
+                                    {t('Aucun document trouvé.')}
                                 </td>
                             </tr>
                         )}

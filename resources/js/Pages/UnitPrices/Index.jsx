@@ -3,6 +3,7 @@ import AppLayout from '@/Layouts/AppLayout';
 import Icon from '@/Components/Icon';
 import { Head, Link, router } from '@inertiajs/react';
 import { formatMoney } from '@/constants';
+import { useTrans } from '@/i18n';
 
 // Libellés des catégories de prix (FR) — local à ce module.
 const CATEGORY_LABEL = {
@@ -24,15 +25,17 @@ const CATEGORY_COLOR = {
 };
 
 function CategoryBadge({ category }) {
+    const { t } = useTrans();
     const color = CATEGORY_COLOR[category] ?? 'bg-slate-100 text-slate-600';
     return (
         <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${color}`}>
-            {CATEGORY_LABEL[category] ?? category}
+            {t(CATEGORY_LABEL[category] ?? category)}
         </span>
     );
 }
 
 export default function Index({ unitPrices, filters, categories, can }) {
+    const { t } = useTrans();
     const [search, setSearch] = useState(filters.search ?? '');
 
     const applyFilters = (next = {}) => {
@@ -44,7 +47,7 @@ export default function Index({ unitPrices, filters, categories, can }) {
 
     return (
         <AppLayout header="BPU — Prix unitaires">
-            <Head title="BPU — Prix unitaires" />
+            <Head title={t('BPU — Prix unitaires')} />
 
             {/* Barre d'actions */}
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -58,7 +61,7 @@ export default function Index({ unitPrices, filters, categories, can }) {
                             type="text"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Rechercher un prix…"
+                            placeholder={t('Rechercher un prix…')}
                             className="w-64 rounded-md border-slate-300 pl-9 text-sm focus:border-orange-500 focus:ring-orange-500 dark:border-slate-700 dark:bg-slate-900"
                         />
                     </div>
@@ -67,9 +70,9 @@ export default function Index({ unitPrices, filters, categories, can }) {
                         onChange={(e) => applyFilters({ category: e.target.value })}
                         className="rounded-md border-slate-300 text-sm focus:border-orange-500 focus:ring-orange-500 dark:border-slate-700 dark:bg-slate-900"
                     >
-                        <option value="">Toutes les catégories</option>
+                        <option value="">{t('Toutes les catégories')}</option>
                         {categories.map((c) => (
-                            <option key={c} value={c}>{CATEGORY_LABEL[c] ?? c}</option>
+                            <option key={c} value={c}>{t(CATEGORY_LABEL[c] ?? c)}</option>
                         ))}
                     </select>
                 </form>
@@ -80,7 +83,7 @@ export default function Index({ unitPrices, filters, categories, can }) {
                         className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600"
                     >
                         <Icon name="plus" className="h-4 w-4" />
-                        Nouveau prix
+                        {t('Nouveau prix')}
                     </Link>
                 )}
             </div>
@@ -90,11 +93,11 @@ export default function Index({ unitPrices, filters, categories, can }) {
                 <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800">
                     <thead className="bg-slate-50 dark:bg-slate-800/50">
                         <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                            <th className="px-4 py-3">Désignation</th>
-                            <th className="px-4 py-3">Catégorie</th>
-                            <th className="px-4 py-3">Unité</th>
-                            <th className="px-4 py-3 text-right">Prix unitaire</th>
-                            <th className="px-4 py-3">Statut</th>
+                            <th className="px-4 py-3">{t('Désignation')}</th>
+                            <th className="px-4 py-3">{t('Catégorie')}</th>
+                            <th className="px-4 py-3">{t('Unité')}</th>
+                            <th className="px-4 py-3 text-right">{t('Prix unitaire')}</th>
+                            <th className="px-4 py-3">{t('Statut')}</th>
                             <th className="px-4 py-3"></th>
                         </tr>
                     </thead>
@@ -114,9 +117,9 @@ export default function Index({ unitPrices, filters, categories, can }) {
                                 </td>
                                 <td className="px-4 py-3">
                                     {price.is_active ? (
-                                        <span className="inline-flex rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">Actif</span>
+                                        <span className="inline-flex rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">{t('Actif')}</span>
                                     ) : (
-                                        <span className="inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-500">Inactif</span>
+                                        <span className="inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-500">{t('Inactif')}</span>
                                     )}
                                 </td>
                                 <td className="px-4 py-3 text-right">
@@ -131,7 +134,7 @@ export default function Index({ unitPrices, filters, categories, can }) {
                             <tr>
                                 <td colSpan={6} className="px-4 py-12 text-center text-slate-400">
                                     <Icon name="tags" className="mx-auto mb-2 h-8 w-8" />
-                                    Aucun prix unitaire trouvé.
+                                    {t('Aucun prix unitaire trouvé.')}
                                 </td>
                             </tr>
                         )}

@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import BudgetForm from './Partials/BudgetForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Edit({ budget, projects, statuses }) {
+    const { t } = useTrans();
     const form = useForm({
         code: budget.code ?? '',
         title: budget.title ?? '',
@@ -26,14 +28,14 @@ export default function Edit({ budget, projects, statuses }) {
 
     return (
         <AppLayout header="Modifier le budget">
-            <Head title={`Modifier ${budget.code}`} />
+            <Head title={`${t('Modifier')} ${budget.code}`} />
             <div className="mx-auto max-w-5xl">
                 <BudgetForm
                     form={form}
                     projects={projects}
                     statuses={statuses}
                     onSubmit={submit}
-                    submitLabel="Enregistrer les modifications"
+                    submitLabel={t('Enregistrer les modifications')}
                 />
             </div>
         </AppLayout>

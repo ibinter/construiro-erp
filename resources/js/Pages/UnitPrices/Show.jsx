@@ -6,6 +6,7 @@ import SecondaryButton from '@/Components/SecondaryButton';
 import DangerButton from '@/Components/DangerButton';
 import { Head, Link, router } from '@inertiajs/react';
 import { formatMoney } from '@/constants';
+import { useTrans } from '@/i18n';
 
 // Libellés des catégories (FR) — local à ce module.
 const CATEGORY_LABEL = {
@@ -30,6 +31,7 @@ function InfoTile({ icon, label, value }) {
 }
 
 export default function Show({ unitPrice, can }) {
+    const { t } = useTrans();
     const [confirmDelete, setConfirmDelete] = useState(false);
 
     const deleteUnitPrice = () => {
@@ -50,7 +52,7 @@ export default function Show({ unitPrice, can }) {
                         <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">{unitPrice.designation}</h2>
                         {!unitPrice.is_active && (
                             <span className="inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-500">
-                                Inactif
+                                {t('Inactif')}
                             </span>
                         )}
                     </div>
@@ -62,7 +64,7 @@ export default function Show({ unitPrice, can }) {
                             href={`/unit-prices/${unitPrice.id}/edit`}
                             className="inline-flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
                         >
-                            <Icon name="pencil" className="h-4 w-4" /> Modifier
+                            <Icon name="pencil" className="h-4 w-4" /> {t('Modifier')}
                         </Link>
                     )}
                     {can.delete && (
@@ -70,7 +72,7 @@ export default function Show({ unitPrice, can }) {
                             onClick={() => setConfirmDelete(true)}
                             className="inline-flex items-center gap-2 rounded-md border border-red-200 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:border-red-900/50"
                         >
-                            <Icon name="trash-2" className="h-4 w-4" /> Supprimer
+                            <Icon name="trash-2" className="h-4 w-4" /> {t('Supprimer')}
                         </button>
                     )}
                 </div>
@@ -78,22 +80,22 @@ export default function Show({ unitPrice, can }) {
 
             {/* Tuiles d'info */}
             <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-                <InfoTile icon="tags" label="Catégorie" value={CATEGORY_LABEL[unitPrice.category] ?? unitPrice.category} />
-                <InfoTile icon="ruler" label="Unité" value={unitPrice.unit} />
-                <InfoTile icon="wallet" label="Prix unitaire" value={formatMoney(unitPrice.unit_price, unitPrice.currency)} />
-                <InfoTile icon="circle-dollar-sign" label="Devise" value={unitPrice.currency} />
+                <InfoTile icon="tags" label={t('Catégorie')} value={t(CATEGORY_LABEL[unitPrice.category] ?? unitPrice.category)} />
+                <InfoTile icon="ruler" label={t('Unité')} value={unitPrice.unit} />
+                <InfoTile icon="wallet" label={t('Prix unitaire')} value={formatMoney(unitPrice.unit_price, unitPrice.currency)} />
+                <InfoTile icon="circle-dollar-sign" label={t('Devise')} value={unitPrice.currency} />
             </div>
 
             {/* Confirmation suppression */}
             <Modal show={confirmDelete} onClose={() => setConfirmDelete(false)} maxWidth="md">
                 <div className="p-6">
-                    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Supprimer ce prix ?</h3>
+                    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">{t('Supprimer ce prix ?')}</h3>
                     <p className="mt-2 text-sm text-slate-500">
-                        Le prix « {unitPrice.designation} » sera supprimé. Cette action est réversible (corbeille).
+                        {t('Le prix')} « {unitPrice.designation} » {t('sera supprimé. Cette action est réversible (corbeille).')}
                     </p>
                     <div className="mt-6 flex justify-end gap-3">
-                        <SecondaryButton type="button" onClick={() => setConfirmDelete(false)}>Annuler</SecondaryButton>
-                        <DangerButton onClick={deleteUnitPrice}>Supprimer définitivement</DangerButton>
+                        <SecondaryButton type="button" onClick={() => setConfirmDelete(false)}>{t('Annuler')}</SecondaryButton>
+                        <DangerButton onClick={deleteUnitPrice}>{t('Supprimer définitivement')}</DangerButton>
                     </div>
                 </div>
             </Modal>

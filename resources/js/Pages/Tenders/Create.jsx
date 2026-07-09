@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import TenderForm from './Partials/TenderForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Create({ types, statuses, projects }) {
+    const { t } = useTrans();
     const form = useForm({
         code: '',
         title: '',
@@ -24,7 +26,7 @@ export default function Create({ types, statuses, projects }) {
 
     return (
         <AppLayout header="Nouvel appel d'offres">
-            <Head title="Nouvel appel d'offres" />
+            <Head title={t("Nouvel appel d'offres")} />
             <div className="mx-auto max-w-4xl">
                 <TenderForm
                     form={form}
@@ -32,7 +34,7 @@ export default function Create({ types, statuses, projects }) {
                     statuses={statuses}
                     projects={projects}
                     onSubmit={submit}
-                    submitLabel="Créer l'appel d'offres"
+                    submitLabel={t("Créer l'appel d'offres")}
                 />
             </div>
         </AppLayout>

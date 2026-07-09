@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import BudgetForm from './Partials/BudgetForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Create({ projects, statuses }) {
+    const { t } = useTrans();
     const form = useForm({
         code: '',
         title: '',
@@ -23,14 +25,14 @@ export default function Create({ projects, statuses }) {
 
     return (
         <AppLayout header="Nouveau budget">
-            <Head title="Nouveau budget" />
+            <Head title={t('Nouveau budget')} />
             <div className="mx-auto max-w-5xl">
                 <BudgetForm
                     form={form}
                     projects={projects}
                     statuses={statuses}
                     onSubmit={submit}
-                    submitLabel="Créer le budget"
+                    submitLabel={t('Créer le budget')}
                 />
             </div>
         </AppLayout>

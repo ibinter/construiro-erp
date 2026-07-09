@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import DocumentForm from './Partials/DocumentForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Edit({ document, projects, categories }) {
+    const { t } = useTrans();
     const form = useForm({
         code: document.code ?? '',
         title: document.title ?? '',
@@ -35,7 +37,7 @@ export default function Edit({ document, projects, categories }) {
                     projects={projects}
                     categories={categories}
                     onSubmit={submit}
-                    submitLabel="Enregistrer"
+                    submitLabel={t('Enregistrer')}
                     currentFileName={document.file_name}
                 />
             </div>

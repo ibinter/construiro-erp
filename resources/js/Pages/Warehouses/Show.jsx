@@ -5,6 +5,7 @@ import Modal from '@/Components/Modal';
 import SecondaryButton from '@/Components/SecondaryButton';
 import DangerButton from '@/Components/DangerButton';
 import { Head, Link, router } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 function InfoTile({ icon, label, value }) {
     return (
@@ -19,6 +20,7 @@ function InfoTile({ icon, label, value }) {
 }
 
 export default function Show({ warehouse, can }) {
+    const { t } = useTrans();
     const [confirmDelete, setConfirmDelete] = useState(false);
 
     const deleteWarehouse = () => router.delete(`/warehouses/${warehouse.id}`);
@@ -36,9 +38,9 @@ export default function Show({ warehouse, can }) {
                         </Link>
                         <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">{warehouse.name}</h2>
                         {warehouse.is_active ? (
-                            <span className="inline-flex rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">Actif</span>
+                            <span className="inline-flex rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">{t('Actif')}</span>
                         ) : (
-                            <span className="inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">Inactif</span>
+                            <span className="inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">{t('Inactif')}</span>
                         )}
                     </div>
                     <p className="ml-7 text-sm text-slate-400">{warehouse.code}</p>
@@ -49,7 +51,7 @@ export default function Show({ warehouse, can }) {
                             href={`/warehouses/${warehouse.id}/edit`}
                             className="inline-flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
                         >
-                            <Icon name="pencil" className="h-4 w-4" /> Modifier
+                            <Icon name="pencil" className="h-4 w-4" /> {t('Modifier')}
                         </Link>
                     )}
                     {can.delete && (
@@ -57,7 +59,7 @@ export default function Show({ warehouse, can }) {
                             onClick={() => setConfirmDelete(true)}
                             className="inline-flex items-center gap-2 rounded-md border border-red-200 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:border-red-900/50"
                         >
-                            <Icon name="trash-2" className="h-4 w-4" /> Supprimer
+                            <Icon name="trash-2" className="h-4 w-4" /> {t('Supprimer')}
                         </button>
                     )}
                 </div>
@@ -65,21 +67,21 @@ export default function Show({ warehouse, can }) {
 
             {/* Tuiles d'info */}
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
-                <InfoTile icon="map-pin" label="Ville" value={warehouse.city ?? '—'} />
-                <InfoTile icon="user" label="Responsable" value={warehouse.manager_name ?? '—'} />
-                <InfoTile icon="map" label="Adresse" value={warehouse.address ?? '—'} />
+                <InfoTile icon="map-pin" label={t('Ville')} value={warehouse.city ?? '—'} />
+                <InfoTile icon="user" label={t('Responsable')} value={warehouse.manager_name ?? '—'} />
+                <InfoTile icon="map" label={t('Adresse')} value={warehouse.address ?? '—'} />
             </div>
 
             {/* Confirmation suppression */}
             <Modal show={confirmDelete} onClose={() => setConfirmDelete(false)} maxWidth="md">
                 <div className="p-6">
-                    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Supprimer ce magasin ?</h3>
+                    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">{t('Supprimer ce magasin ?')}</h3>
                     <p className="mt-2 text-sm text-slate-500">
-                        Le magasin « {warehouse.name} » sera supprimé. Cette action est réversible (corbeille).
+                        {t('Le magasin « :name » sera supprimé. Cette action est réversible (corbeille).').replace(':name', warehouse.name)}
                     </p>
                     <div className="mt-6 flex justify-end gap-3">
-                        <SecondaryButton type="button" onClick={() => setConfirmDelete(false)}>Annuler</SecondaryButton>
-                        <DangerButton onClick={deleteWarehouse}>Supprimer définitivement</DangerButton>
+                        <SecondaryButton type="button" onClick={() => setConfirmDelete(false)}>{t('Annuler')}</SecondaryButton>
+                        <DangerButton onClick={deleteWarehouse}>{t('Supprimer définitivement')}</DangerButton>
                     </div>
                 </div>
             </Modal>

@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import TakeoffForm from './Partials/TakeoffForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Edit({ takeoff, projects, statuses }) {
+    const { t } = useTrans();
     const form = useForm({
         code: takeoff.code ?? '',
         title: takeoff.title ?? '',
@@ -28,14 +30,14 @@ export default function Edit({ takeoff, projects, statuses }) {
 
     return (
         <AppLayout header={`Modifier — ${takeoff.title}`}>
-            <Head title={`Modifier ${takeoff.title}`} />
+            <Head title={`${t('Modifier')} ${takeoff.title}`} />
             <div className="mx-auto max-w-5xl">
                 <TakeoffForm
                     form={form}
                     projects={projects}
                     statuses={statuses}
                     onSubmit={submit}
-                    submitLabel="Enregistrer"
+                    submitLabel={t('Enregistrer')}
                 />
             </div>
         </AppLayout>

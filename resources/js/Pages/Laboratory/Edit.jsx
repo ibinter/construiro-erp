@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import LabTestForm from './Partials/LabTestForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Edit({ test, projects, sites, sampleTypes, results }) {
+    const { t } = useTrans();
     const form = useForm({
         code: test.code ?? '',
         sample_type: test.sample_type ?? 'beton',
@@ -35,7 +37,7 @@ export default function Edit({ test, projects, sites, sampleTypes, results }) {
                     sampleTypes={sampleTypes}
                     results={results}
                     onSubmit={submit}
-                    submitLabel="Enregistrer"
+                    submitLabel={t('Enregistrer')}
                 />
             </div>
         </AppLayout>

@@ -10,6 +10,7 @@ import SecondaryButton from '@/Components/SecondaryButton';
 import DangerButton from '@/Components/DangerButton';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { formatMoney } from '@/constants';
+import { useTrans } from '@/i18n';
 import { EQUIPMENT_CATEGORY, EQUIPMENT_STATUS } from './Partials/EquipmentForm';
 
 // Libellés des types d'entretien (FR) — locaux au module.
@@ -20,8 +21,9 @@ const MAINTENANCE_TYPE = {
 };
 
 function StatusBadge({ status }) {
+    const { t } = useTrans();
     const s = EQUIPMENT_STATUS[status] ?? { label: status, color: 'bg-slate-100 text-slate-600' };
-    return <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${s.color}`}>{s.label}</span>;
+    return <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${s.color}`}>{t(s.label)}</span>;
 }
 
 function InfoTile({ icon, label, value }) {
@@ -37,6 +39,7 @@ function InfoTile({ icon, label, value }) {
 }
 
 export default function Show({ equipment, types = [], can }) {
+    const { t } = useTrans();
     const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
     const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -80,7 +83,7 @@ export default function Show({ equipment, types = [], can }) {
                         <StatusBadge status={equipment.status} />
                     </div>
                     <p className="ml-7 text-sm text-slate-400">
-                        {equipment.code} · {EQUIPMENT_CATEGORY[equipment.category] ?? equipment.category}
+                        {equipment.code} · {t(EQUIPMENT_CATEGORY[equipment.category] ?? equipment.category)}
                         {equipment.registration ? ` · ${equipment.registration}` : ''}
                     </p>
                 </div>
@@ -141,7 +144,7 @@ export default function Show({ equipment, types = [], can }) {
                             <div>
                                 <div className="font-medium text-slate-800 dark:text-slate-100">{record.description}</div>
                                 <div className="text-xs text-slate-400">
-                                    {MAINTENANCE_TYPE[record.type] ?? record.type} · {fmtDate(record.performed_at)}
+                                    {t(MAINTENANCE_TYPE[record.type] ?? record.type)} · {fmtDate(record.performed_at)}
                                 </div>
                             </div>
                             <div className="text-slate-600 dark:text-slate-300">
@@ -167,7 +170,7 @@ export default function Show({ equipment, types = [], can }) {
                             <select id="mt_type"
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                                 value={maintenanceForm.data.type} onChange={(e) => maintenanceForm.setData('type', e.target.value)}>
-                                {typeOptions.map((t) => <option key={t} value={t}>{MAINTENANCE_TYPE[t] ?? t}</option>)}
+                                {typeOptions.map((ty) => <option key={ty} value={ty}>{t(MAINTENANCE_TYPE[ty] ?? ty)}</option>)}
                             </select>
                             <InputError message={maintenanceForm.errors.type} className="mt-1" />
                         </div>

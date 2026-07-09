@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import SupplierForm from './Partials/SupplierForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Create({ categories }) {
+    const { t } = useTrans();
     const form = useForm({
         code: '',
         category: 'materiaux',
@@ -25,13 +27,13 @@ export default function Create({ categories }) {
 
     return (
         <AppLayout header="Nouveau fournisseur">
-            <Head title="Nouveau fournisseur" />
+            <Head title={t('Nouveau fournisseur')} />
             <div className="mx-auto max-w-4xl">
                 <SupplierForm
                     form={form}
                     categories={categories}
                     onSubmit={submit}
-                    submitLabel="Créer le fournisseur"
+                    submitLabel={t('Créer le fournisseur')}
                 />
             </div>
         </AppLayout>

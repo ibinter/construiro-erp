@@ -3,6 +3,7 @@ import AppLayout from '@/Layouts/AppLayout';
 import Icon from '@/Components/Icon';
 import { Head, Link, router } from '@inertiajs/react';
 import { SAMPLE_TYPE, RESULT } from './Partials/LabTestForm';
+import { useTrans } from '@/i18n';
 
 // Couleurs des badges de résultat (conforme vert / non conforme rouge / en attente ambre).
 const RESULT_COLOR = {
@@ -12,15 +13,17 @@ const RESULT_COLOR = {
 };
 
 function ResultBadge({ result }) {
+    const { t } = useTrans();
     const color = RESULT_COLOR[result] ?? 'bg-slate-100 text-slate-600';
     return (
         <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${color}`}>
-            {RESULT[result] ?? result}
+            {t(RESULT[result] ?? result)}
         </span>
     );
 }
 
 export default function Index({ tests, filters, sampleTypes, results, can }) {
+    const { t } = useTrans();
     const [search, setSearch] = useState(filters.search ?? '');
 
     const applyFilters = (next = {}) => {
@@ -32,7 +35,7 @@ export default function Index({ tests, filters, sampleTypes, results, can }) {
 
     return (
         <AppLayout header="Laboratoire">
-            <Head title="Laboratoire" />
+            <Head title={t('Laboratoire')} />
 
             {/* Barre d'actions */}
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -46,7 +49,7 @@ export default function Index({ tests, filters, sampleTypes, results, can }) {
                             type="text"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Rechercher un essai…"
+                            placeholder={t('Rechercher un essai…')}
                             className="w-64 rounded-md border-slate-300 pl-9 text-sm focus:border-orange-500 focus:ring-orange-500 dark:border-slate-700 dark:bg-slate-900"
                         />
                     </div>
@@ -55,9 +58,9 @@ export default function Index({ tests, filters, sampleTypes, results, can }) {
                         onChange={(e) => applyFilters({ sample_type: e.target.value })}
                         className="rounded-md border-slate-300 text-sm focus:border-orange-500 focus:ring-orange-500 dark:border-slate-700 dark:bg-slate-900"
                     >
-                        <option value="">Tous les types</option>
-                        {sampleTypes.map((t) => (
-                            <option key={t} value={t}>{SAMPLE_TYPE[t] ?? t}</option>
+                        <option value="">{t('Tous les types')}</option>
+                        {sampleTypes.map((ty) => (
+                            <option key={ty} value={ty}>{t(SAMPLE_TYPE[ty] ?? ty)}</option>
                         ))}
                     </select>
                     <select
@@ -65,9 +68,9 @@ export default function Index({ tests, filters, sampleTypes, results, can }) {
                         onChange={(e) => applyFilters({ result: e.target.value })}
                         className="rounded-md border-slate-300 text-sm focus:border-orange-500 focus:ring-orange-500 dark:border-slate-700 dark:bg-slate-900"
                     >
-                        <option value="">Tous les résultats</option>
+                        <option value="">{t('Tous les résultats')}</option>
                         {results.map((r) => (
-                            <option key={r} value={r}>{RESULT[r] ?? r}</option>
+                            <option key={r} value={r}>{t(RESULT[r] ?? r)}</option>
                         ))}
                     </select>
                 </form>
@@ -78,7 +81,7 @@ export default function Index({ tests, filters, sampleTypes, results, can }) {
                         className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600"
                     >
                         <Icon name="plus" className="h-4 w-4" />
-                        Nouvel essai
+                        {t('Nouvel essai')}
                     </Link>
                 )}
             </div>
@@ -88,11 +91,11 @@ export default function Index({ tests, filters, sampleTypes, results, can }) {
                 <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800">
                     <thead className="bg-slate-50 dark:bg-slate-800/50">
                         <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                            <th className="px-4 py-3">Essai</th>
-                            <th className="px-4 py-3">Type</th>
-                            <th className="px-4 py-3">Valeur</th>
-                            <th className="px-4 py-3">Date</th>
-                            <th className="px-4 py-3">Résultat</th>
+                            <th className="px-4 py-3">{t('Essai')}</th>
+                            <th className="px-4 py-3">{t('Type')}</th>
+                            <th className="px-4 py-3">{t('Valeur')}</th>
+                            <th className="px-4 py-3">{t('Date')}</th>
+                            <th className="px-4 py-3">{t('Résultat')}</th>
                             <th className="px-4 py-3"></th>
                         </tr>
                     </thead>
@@ -108,7 +111,7 @@ export default function Index({ tests, filters, sampleTypes, results, can }) {
                                     </div>
                                 </td>
                                 <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
-                                    {SAMPLE_TYPE[test.sample_type] ?? test.sample_type}
+                                    {t(SAMPLE_TYPE[test.sample_type] ?? test.sample_type)}
                                 </td>
                                 <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
                                     {test.result_value != null ? `${test.result_value}${test.unit ? ` ${test.unit}` : ''}` : '—'}
@@ -129,7 +132,7 @@ export default function Index({ tests, filters, sampleTypes, results, can }) {
                             <tr>
                                 <td colSpan={6} className="px-4 py-12 text-center text-slate-400">
                                     <Icon name="flask-conical" className="mx-auto mb-2 h-8 w-8" />
-                                    Aucun essai trouvé.
+                                    {t('Aucun essai trouvé.')}
                                 </td>
                             </tr>
                         )}

@@ -5,6 +5,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import Icon from '@/Components/Icon';
 import { Link } from '@inertiajs/react';
 import { formatMoney } from '@/constants';
+import { useTrans } from '@/i18n';
 
 const CURRENCIES = ['XOF', 'XAF', 'EUR', 'USD', 'GHS', 'NGN'];
 const UNITS = ['u', 'm2', 'm3', 'ml', 'kg', 'forfait'];
@@ -23,6 +24,7 @@ const emptyLine = () => ({ designation: '', unit: 'u', quantity: 1, unit_price: 
  * `form` est l'objet retourné par useForm() d'Inertia (avec data.lines : array).
  */
 export default function BoqForm({ form, projects = [], statuses = [], unitPrices = [], onSubmit, submitLabel }) {
+    const { t } = useTrans();
     const { data, setData, errors, processing } = form;
 
     // Recalcul temps réel (affichage uniquement — le serveur reste la source de vérité).
@@ -77,20 +79,20 @@ export default function BoqForm({ form, projects = [], statuses = [], unitPrices
         <form onSubmit={onSubmit} className="space-y-6">
             {/* En-tête */}
             <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-                <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">Informations générales</h3>
+                <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">{t('Informations générales')}</h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    {field('code', 'Code DQE *', { placeholder: 'DQE-2026-001' })}
-                    {field('title', 'Intitulé *', { placeholder: 'Devis quantitatif — Villa R+1' })}
+                    {field('code', t('Code DQE *'), { placeholder: 'DQE-2026-001' })}
+                    {field('title', t('Intitulé *'), { placeholder: t('Devis quantitatif — Villa R+1') })}
 
                     <div>
-                        <InputLabel htmlFor="project_id" value="Projet rattaché" />
+                        <InputLabel htmlFor="project_id" value={t('Projet rattaché')} />
                         <select
                             id="project_id"
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                             value={data.project_id ?? ''}
                             onChange={(e) => setData('project_id', e.target.value || null)}
                         >
-                            <option value="">— Aucun —</option>
+                            <option value="">{t('— Aucun —')}</option>
                             {projects.map((p) => (
                                 <option key={p.id} value={p.id}>{p.name}</option>
                             ))}
@@ -99,7 +101,7 @@ export default function BoqForm({ form, projects = [], statuses = [], unitPrices
                     </div>
 
                     <div>
-                        <InputLabel htmlFor="status" value="Statut *" />
+                        <InputLabel htmlFor="status" value={t('Statut *')} />
                         <select
                             id="status"
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
@@ -107,14 +109,14 @@ export default function BoqForm({ form, projects = [], statuses = [], unitPrices
                             onChange={(e) => setData('status', e.target.value)}
                         >
                             {(statuses.length ? statuses : Object.keys(BOQ_STATUS)).map((s) => (
-                                <option key={s} value={s}>{BOQ_STATUS[s] ?? s}</option>
+                                <option key={s} value={s}>{t(BOQ_STATUS[s] ?? s)}</option>
                             ))}
                         </select>
                         <InputError message={errors.status} className="mt-1" />
                     </div>
 
                     <div>
-                        <InputLabel htmlFor="currency" value="Devise *" />
+                        <InputLabel htmlFor="currency" value={t('Devise *')} />
                         <select
                             id="currency"
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
@@ -128,7 +130,7 @@ export default function BoqForm({ form, projects = [], statuses = [], unitPrices
                 </div>
 
                 <div className="mt-4">
-                    <InputLabel htmlFor="notes" value="Notes" />
+                    <InputLabel htmlFor="notes" value={t('Notes')} />
                     <textarea
                         id="notes"
                         rows={3}
@@ -143,13 +145,13 @@ export default function BoqForm({ form, projects = [], statuses = [], unitPrices
             {/* Lignes du DQE */}
             <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
                 <div className="mb-4 flex items-center justify-between">
-                    <h3 className="font-semibold text-slate-800 dark:text-slate-100">Lignes du DQE</h3>
+                    <h3 className="font-semibold text-slate-800 dark:text-slate-100">{t('Lignes du DQE')}</h3>
                     <button
                         type="button"
                         onClick={addLine}
                         className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-orange-600"
                     >
-                        <Icon name="plus" className="h-4 w-4" /> Ajouter une ligne
+                        <Icon name="plus" className="h-4 w-4" /> {t('Ajouter une ligne')}
                     </button>
                 </div>
 
@@ -159,12 +161,12 @@ export default function BoqForm({ form, projects = [], statuses = [], unitPrices
                     <table className="min-w-full text-sm">
                         <thead>
                             <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                                <th className="pb-2 pr-2">Désignation</th>
-                                {unitPrices.length > 0 && <th className="pb-2 px-2 w-44">BPU</th>}
-                                <th className="pb-2 px-2 w-24">Unité</th>
-                                <th className="pb-2 px-2 w-28">Quantité</th>
-                                <th className="pb-2 px-2 w-36">P.U.</th>
-                                <th className="pb-2 px-2 w-36 text-right">Total</th>
+                                <th className="pb-2 pr-2">{t('Désignation')}</th>
+                                {unitPrices.length > 0 && <th className="pb-2 px-2 w-44">{t('BPU')}</th>}
+                                <th className="pb-2 px-2 w-24">{t('Unité')}</th>
+                                <th className="pb-2 px-2 w-28">{t('Quantité')}</th>
+                                <th className="pb-2 px-2 w-36">{t('P.U.')}</th>
+                                <th className="pb-2 px-2 w-36 text-right">{t('Total')}</th>
                                 <th className="pb-2 pl-2 w-10"></th>
                             </tr>
                         </thead>
@@ -178,7 +180,7 @@ export default function BoqForm({ form, projects = [], statuses = [], unitPrices
                                                 className="block w-full"
                                                 value={line.designation}
                                                 onChange={(e) => setLine(i, 'designation', e.target.value)}
-                                                placeholder="Béton dosé 350 kg/m3"
+                                                placeholder={t('Béton dosé 350 kg/m3')}
                                             />
                                             <InputError message={errors[`lines.${i}.designation`]} className="mt-1" />
                                         </td>
@@ -189,7 +191,7 @@ export default function BoqForm({ form, projects = [], statuses = [], unitPrices
                                                     value=""
                                                     onChange={(e) => applyUnitPrice(i, e.target.value)}
                                                 >
-                                                    <option value="">— Depuis BPU —</option>
+                                                    <option value="">{t('— Depuis BPU —')}</option>
                                                     {unitPrices.map((up) => (
                                                         <option key={up.id} value={up.id}>{up.code} · {up.designation}</option>
                                                     ))}
@@ -246,7 +248,7 @@ export default function BoqForm({ form, projects = [], statuses = [], unitPrices
                 <div className="mt-6 flex justify-end">
                     <div className="w-full max-w-xs space-y-2 text-sm">
                         <div className="flex justify-between border-t border-slate-200 pt-2 text-base font-semibold text-slate-800 dark:border-slate-700 dark:text-slate-100">
-                            <span>Total</span>
+                            <span>{t('Total')}</span>
                             <span>{formatMoney(total, data.currency)}</span>
                         </div>
                     </div>
@@ -258,7 +260,7 @@ export default function BoqForm({ form, projects = [], statuses = [], unitPrices
                     href="/boq"
                     className="rounded-md px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
                 >
-                    Annuler
+                    {t('Annuler')}
                 </Link>
                 <PrimaryButton disabled={processing} className="bg-orange-500 hover:bg-orange-600 focus:bg-orange-600">
                     {submitLabel}

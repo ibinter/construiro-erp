@@ -8,6 +8,7 @@ import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import { Head, router, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 // Libellés locaux au module Pointage (FR).
 const STATUS = {
@@ -18,11 +19,13 @@ const STATUS = {
 };
 
 function StatusBadge({ status }) {
+    const { t } = useTrans();
     const s = STATUS[status] ?? { label: status, color: 'bg-slate-100 text-slate-600' };
-    return <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${s.color}`}>{s.label}</span>;
+    return <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${s.color}`}>{t(s.label)}</span>;
 }
 
 export default function Index({ attendances, filters, employees, sites, statuses, can }) {
+    const { t } = useTrans();
     const [showModal, setShowModal] = useState(false);
 
     const applyFilters = (next = {}) => {
@@ -54,7 +57,7 @@ export default function Index({ attendances, filters, employees, sites, statuses
 
     return (
         <AppLayout header="Pointage">
-            <Head title="Pointage" />
+            <Head title={t('Pointage')} />
 
             {/* Barre d'actions */}
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -73,7 +76,7 @@ export default function Index({ attendances, filters, employees, sites, statuses
                         onChange={(e) => applyFilters({ site_id: e.target.value })}
                         className="rounded-md border-slate-300 text-sm focus:border-orange-500 focus:ring-orange-500 dark:border-slate-700 dark:bg-slate-900"
                     >
-                        <option value="">Tous les chantiers</option>
+                        <option value="">{t('Tous les chantiers')}</option>
                         {sites.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
                     </select>
                 </div>
@@ -84,7 +87,7 @@ export default function Index({ attendances, filters, employees, sites, statuses
                         className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600"
                     >
                         <Icon name="plus" className="h-4 w-4" />
-                        Saisir un pointage
+                        {t('Saisir un pointage')}
                     </button>
                 )}
             </div>
@@ -94,12 +97,12 @@ export default function Index({ attendances, filters, employees, sites, statuses
                 <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800">
                     <thead className="bg-slate-50 dark:bg-slate-800/50">
                         <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                            <th className="px-4 py-3">Date</th>
-                            <th className="px-4 py-3">Employé</th>
-                            <th className="px-4 py-3">Chantier</th>
-                            <th className="px-4 py-3">Heures</th>
-                            <th className="px-4 py-3">Heures sup.</th>
-                            <th className="px-4 py-3">Statut</th>
+                            <th className="px-4 py-3">{t('Date')}</th>
+                            <th className="px-4 py-3">{t('Employé')}</th>
+                            <th className="px-4 py-3">{t('Chantier')}</th>
+                            <th className="px-4 py-3">{t('Heures')}</th>
+                            <th className="px-4 py-3">{t('Heures sup.')}</th>
+                            <th className="px-4 py-3">{t('Statut')}</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -123,7 +126,7 @@ export default function Index({ attendances, filters, employees, sites, statuses
                             <tr>
                                 <td colSpan={6} className="px-4 py-12 text-center text-slate-400">
                                     <Icon name="fingerprint" className="mx-auto mb-2 h-8 w-8" />
-                                    Aucun pointage pour cette date.
+                                    {t('Aucun pointage pour cette date.')}
                                 </td>
                             </tr>
                         )}
@@ -153,17 +156,17 @@ export default function Index({ attendances, filters, employees, sites, statuses
             {/* Modal saisie de pointage */}
             <Modal show={showModal} onClose={() => setShowModal(false)}>
                 <form onSubmit={submit} className="p-6">
-                    <h3 className="mb-4 text-lg font-semibold text-slate-800 dark:text-slate-100">Saisir un pointage</h3>
+                    <h3 className="mb-4 text-lg font-semibold text-slate-800 dark:text-slate-100">{t('Saisir un pointage')}</h3>
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div className="sm:col-span-2">
-                            <InputLabel htmlFor="att_employee" value="Employé *" />
+                            <InputLabel htmlFor="att_employee" value={t('Employé *')} />
                             <select
                                 id="att_employee"
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                                 value={form.data.employee_id}
                                 onChange={(e) => form.setData('employee_id', e.target.value)}
                             >
-                                <option value="">— Sélectionner —</option>
+                                <option value="">{t('— Sélectionner —')}</option>
                                 {employees.map((emp) => (
                                     <option key={emp.id} value={emp.id}>{emp.matricule} · {emp.first_name} {emp.last_name}</option>
                                 ))}
@@ -171,44 +174,44 @@ export default function Index({ attendances, filters, employees, sites, statuses
                             <InputError message={form.errors.employee_id} className="mt-1" />
                         </div>
                         <div>
-                            <InputLabel htmlFor="att_date" value="Date *" />
+                            <InputLabel htmlFor="att_date" value={t('Date *')} />
                             <TextInput id="att_date" type="date" className="mt-1 block w-full"
                                 value={form.data.date} onChange={(e) => form.setData('date', e.target.value)} />
                             <InputError message={form.errors.date} className="mt-1" />
                         </div>
                         <div>
-                            <InputLabel htmlFor="att_status" value="Statut *" />
+                            <InputLabel htmlFor="att_status" value={t('Statut *')} />
                             <select id="att_status"
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                                 value={form.data.status} onChange={(e) => form.setData('status', e.target.value)}>
-                                {statuses.map((s) => <option key={s} value={s}>{STATUS[s]?.label ?? s}</option>)}
+                                {statuses.map((s) => <option key={s} value={s}>{t(STATUS[s]?.label ?? s)}</option>)}
                             </select>
                         </div>
                         <div>
-                            <InputLabel htmlFor="att_hours" value="Heures travaillées *" />
+                            <InputLabel htmlFor="att_hours" value={t('Heures travaillées *')} />
                             <TextInput id="att_hours" type="number" min={0} max={24} step="0.5" className="mt-1 block w-full"
                                 value={form.data.hours_worked} onChange={(e) => form.setData('hours_worked', e.target.value)} />
                             <InputError message={form.errors.hours_worked} className="mt-1" />
                         </div>
                         <div>
-                            <InputLabel htmlFor="att_ot" value="Heures supplémentaires" />
+                            <InputLabel htmlFor="att_ot" value={t('Heures supplémentaires')} />
                             <TextInput id="att_ot" type="number" min={0} max={24} step="0.5" className="mt-1 block w-full"
                                 value={form.data.overtime_hours} onChange={(e) => form.setData('overtime_hours', e.target.value)} />
                         </div>
                         <div className="sm:col-span-2">
-                            <InputLabel htmlFor="att_site" value="Chantier" />
+                            <InputLabel htmlFor="att_site" value={t('Chantier')} />
                             <select id="att_site"
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                                 value={form.data.site_id} onChange={(e) => form.setData('site_id', e.target.value)}>
-                                <option value="">— Aucun —</option>
+                                <option value="">{t('— Aucun —')}</option>
                                 {sites.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
                             </select>
                         </div>
                     </div>
                     <div className="mt-6 flex justify-end gap-3">
-                        <SecondaryButton type="button" onClick={() => setShowModal(false)}>Annuler</SecondaryButton>
+                        <SecondaryButton type="button" onClick={() => setShowModal(false)}>{t('Annuler')}</SecondaryButton>
                         <PrimaryButton disabled={form.processing} className="bg-orange-500 hover:bg-orange-600 focus:bg-orange-600">
-                            Enregistrer le pointage
+                            {t('Enregistrer le pointage')}
                         </PrimaryButton>
                     </div>
                 </form>

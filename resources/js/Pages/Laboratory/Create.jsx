@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import LabTestForm from './Partials/LabTestForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Create({ projects, sites, sampleTypes, results }) {
+    const { t } = useTrans();
     const form = useForm({
         code: '',
         sample_type: 'beton',
@@ -26,7 +28,7 @@ export default function Create({ projects, sites, sampleTypes, results }) {
 
     return (
         <AppLayout header="Nouvel essai">
-            <Head title="Nouvel essai" />
+            <Head title={t('Nouvel essai')} />
             <div className="mx-auto max-w-4xl">
                 <LabTestForm
                     form={form}
@@ -35,7 +37,7 @@ export default function Create({ projects, sites, sampleTypes, results }) {
                     sampleTypes={sampleTypes}
                     results={results}
                     onSubmit={submit}
-                    submitLabel="Créer l'essai"
+                    submitLabel={t("Créer l'essai")}
                 />
             </div>
         </AppLayout>

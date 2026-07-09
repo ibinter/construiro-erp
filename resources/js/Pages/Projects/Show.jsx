@@ -10,10 +10,12 @@ import SecondaryButton from '@/Components/SecondaryButton';
 import DangerButton from '@/Components/DangerButton';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { PROJECT_STATUS, SITE_STATUS, PROJECT_TYPE, formatMoney } from '@/constants';
+import { useTrans } from '@/i18n';
 
 function StatusBadge({ map, status }) {
+    const { t } = useTrans();
     const s = map[status] ?? { label: status, color: 'bg-slate-100 text-slate-600' };
-    return <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${s.color}`}>{s.label}</span>;
+    return <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${s.color}`}>{t(s.label)}</span>;
 }
 
 function InfoTile({ icon, label, value }) {
@@ -29,6 +31,7 @@ function InfoTile({ icon, label, value }) {
 }
 
 export default function Show({ project, can }) {
+    const { t } = useTrans();
     const [showSiteModal, setShowSiteModal] = useState(false);
     const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -72,7 +75,7 @@ export default function Show({ project, can }) {
                         <StatusBadge map={PROJECT_STATUS} status={project.status} />
                     </div>
                     <p className="ml-7 text-sm text-slate-400">
-                        {project.code} · {PROJECT_TYPE[project.type] ?? project.type}
+                        {project.code} · {t(PROJECT_TYPE[project.type] ?? project.type)}
                         {project.client_name ? ` · ${project.client_name}` : ''}
                     </p>
                 </div>
@@ -82,7 +85,7 @@ export default function Show({ project, can }) {
                             href={`/projects/${project.id}/edit`}
                             className="inline-flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
                         >
-                            <Icon name="pencil" className="h-4 w-4" /> Modifier
+                            <Icon name="pencil" className="h-4 w-4" /> {t('Modifier')}
                         </Link>
                     )}
                     {can.delete && (
@@ -90,7 +93,7 @@ export default function Show({ project, can }) {
                             onClick={() => setConfirmDelete(true)}
                             className="inline-flex items-center gap-2 rounded-md border border-red-200 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:border-red-900/50"
                         >
-                            <Icon name="trash-2" className="h-4 w-4" /> Supprimer
+                            <Icon name="trash-2" className="h-4 w-4" /> {t('Supprimer')}
                         </button>
                     )}
                 </div>
@@ -98,10 +101,10 @@ export default function Show({ project, can }) {
 
             {/* Tuiles d'info */}
             <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-                <InfoTile icon="wallet" label="Budget" value={formatMoney(project.budget_amount, project.currency)} />
-                <InfoTile icon="trending-up" label="Avancement" value={`${project.progress} %`} />
-                <InfoTile icon="calendar" label="Début → Fin" value={`${fmtDate(project.start_date)} → ${fmtDate(project.end_date)}`} />
-                <InfoTile icon="user" label="Directeur" value={project.manager?.name ?? '—'} />
+                <InfoTile icon="wallet" label={t('Budget')} value={formatMoney(project.budget_amount, project.currency)} />
+                <InfoTile icon="trending-up" label={t('Avancement')} value={`${project.progress} %`} />
+                <InfoTile icon="calendar" label={t('Début → Fin')} value={`${fmtDate(project.start_date)} → ${fmtDate(project.end_date)}`} />
+                <InfoTile icon="user" label={t('Directeur')} value={project.manager?.name ?? '—'} />
             </div>
 
             {project.description && (
@@ -115,14 +118,14 @@ export default function Show({ project, can }) {
                 <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
                     <h3 className="flex items-center gap-2 font-semibold text-slate-800 dark:text-slate-100">
                         <Icon name="construction" className="h-5 w-5 text-orange-500" />
-                        Chantiers ({project.sites.length})
+                        {t('Chantiers')} ({project.sites.length})
                     </h3>
                     {can.createSite && (
                         <button
                             onClick={() => setShowSiteModal(true)}
                             className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-orange-600"
                         >
-                            <Icon name="plus" className="h-4 w-4" /> Ajouter
+                            <Icon name="plus" className="h-4 w-4" /> {t('Ajouter')}
                         </button>
                     )}
                 </div>
@@ -149,7 +152,7 @@ export default function Show({ project, can }) {
                     ))}
                     {project.sites.length === 0 && (
                         <li className="px-5 py-8 text-center text-sm text-slate-400">
-                            Aucun chantier. Ajoutez le premier chantier de ce projet.
+                            {t('Aucun chantier. Ajoutez le premier chantier de ce projet.')}
                         </li>
                     )}
                 </ul>
@@ -158,48 +161,48 @@ export default function Show({ project, can }) {
             {/* Modal ajout chantier */}
             <Modal show={showSiteModal} onClose={() => setShowSiteModal(false)}>
                 <form onSubmit={submitSite} className="p-6">
-                    <h3 className="mb-4 text-lg font-semibold text-slate-800 dark:text-slate-100">Nouveau chantier</h3>
+                    <h3 className="mb-4 text-lg font-semibold text-slate-800 dark:text-slate-100">{t('Nouveau chantier')}</h3>
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div>
-                            <InputLabel htmlFor="site_code" value="Code *" />
+                            <InputLabel htmlFor="site_code" value={t('Code *')} />
                             <TextInput id="site_code" className="mt-1 block w-full" value={siteForm.data.code}
                                 onChange={(e) => siteForm.setData('code', e.target.value)} />
                             <InputError message={siteForm.errors.code} className="mt-1" />
                         </div>
                         <div>
-                            <InputLabel htmlFor="site_name" value="Nom *" />
+                            <InputLabel htmlFor="site_name" value={t('Nom *')} />
                             <TextInput id="site_name" className="mt-1 block w-full" value={siteForm.data.name}
                                 onChange={(e) => siteForm.setData('name', e.target.value)} />
                             <InputError message={siteForm.errors.name} className="mt-1" />
                         </div>
                         <div>
-                            <InputLabel htmlFor="site_status" value="Statut *" />
+                            <InputLabel htmlFor="site_status" value={t('Statut *')} />
                             <select id="site_status"
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                                 value={siteForm.data.status} onChange={(e) => siteForm.setData('status', e.target.value)}>
-                                {Object.entries(SITE_STATUS).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
+                                {Object.entries(SITE_STATUS).map(([k, v]) => <option key={k} value={k}>{t(v.label)}</option>)}
                             </select>
                         </div>
                         <div>
-                            <InputLabel htmlFor="site_progress" value="Avancement (%)" />
+                            <InputLabel htmlFor="site_progress" value={t('Avancement (%)')} />
                             <TextInput id="site_progress" type="number" min={0} max={100} className="mt-1 block w-full"
                                 value={siteForm.data.progress} onChange={(e) => siteForm.setData('progress', e.target.value)} />
                         </div>
                         <div>
-                            <InputLabel htmlFor="site_city" value="Ville" />
+                            <InputLabel htmlFor="site_city" value={t('Ville')} />
                             <TextInput id="site_city" className="mt-1 block w-full" value={siteForm.data.city}
                                 onChange={(e) => siteForm.setData('city', e.target.value)} />
                         </div>
                         <div>
-                            <InputLabel htmlFor="site_start" value="Date de début" />
+                            <InputLabel htmlFor="site_start" value={t('Date de début')} />
                             <TextInput id="site_start" type="date" className="mt-1 block w-full" value={siteForm.data.start_date}
                                 onChange={(e) => siteForm.setData('start_date', e.target.value)} />
                         </div>
                     </div>
                     <div className="mt-6 flex justify-end gap-3">
-                        <SecondaryButton type="button" onClick={() => setShowSiteModal(false)}>Annuler</SecondaryButton>
+                        <SecondaryButton type="button" onClick={() => setShowSiteModal(false)}>{t('Annuler')}</SecondaryButton>
                         <PrimaryButton disabled={siteForm.processing} className="bg-orange-500 hover:bg-orange-600 focus:bg-orange-600">
-                            Ajouter le chantier
+                            {t('Ajouter le chantier')}
                         </PrimaryButton>
                     </div>
                 </form>
@@ -208,13 +211,13 @@ export default function Show({ project, can }) {
             {/* Confirmation suppression projet */}
             <Modal show={confirmDelete} onClose={() => setConfirmDelete(false)} maxWidth="md">
                 <div className="p-6">
-                    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Supprimer ce projet ?</h3>
+                    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">{t('Supprimer ce projet ?')}</h3>
                     <p className="mt-2 text-sm text-slate-500">
-                        Le projet « {project.name} » et ses chantiers seront supprimés. Cette action est réversible (corbeille).
+                        {t('Le projet')} « {project.name} » {t('et ses chantiers seront supprimés. Cette action est réversible (corbeille).')}
                     </p>
                     <div className="mt-6 flex justify-end gap-3">
-                        <SecondaryButton type="button" onClick={() => setConfirmDelete(false)}>Annuler</SecondaryButton>
-                        <DangerButton onClick={deleteProject}>Supprimer définitivement</DangerButton>
+                        <SecondaryButton type="button" onClick={() => setConfirmDelete(false)}>{t('Annuler')}</SecondaryButton>
+                        <DangerButton onClick={deleteProject}>{t('Supprimer définitivement')}</DangerButton>
                     </div>
                 </div>
             </Modal>

@@ -2,6 +2,7 @@ import AppLayout from '@/Layouts/AppLayout';
 import Icon from '@/Components/Icon';
 import { Head } from '@inertiajs/react';
 import { PROJECT_STATUS, SITE_STATUS, formatMoney } from '@/constants';
+import { useTrans } from '@/i18n';
 
 // Palette des statuts pour les graphiques SVG (couleurs hex, pas de dépendance).
 const STATUS_COLORS = {
@@ -21,6 +22,7 @@ const statusLabel = (status) =>
 /*  Donut SVG fait main — répartition par statut                       */
 /* ------------------------------------------------------------------ */
 function DonutChart({ data, title }) {
+    const { t } = useTrans();
     const total = data.reduce((sum, d) => sum + d.total, 0);
     const size = 180;
     const stroke = 26;
@@ -96,7 +98,7 @@ function DonutChart({ data, title }) {
                                 className="inline-block h-3 w-3 rounded-sm"
                                 style={{ backgroundColor: STATUS_COLORS[d.status] ?? '#cbd5e1' }}
                             />
-                            {statusLabel(d.status)}
+                            {t(statusLabel(d.status))}
                         </span>
                         <span className="font-semibold text-slate-700 dark:text-slate-200">
                             {d.total}
@@ -112,10 +114,11 @@ function DonutChart({ data, title }) {
 /*  Barres horizontales SVG — top projets par budget                   */
 /* ------------------------------------------------------------------ */
 function BudgetBars({ projects, currency }) {
+    const { t } = useTrans();
     if (!projects.length) {
         return (
             <p className="py-8 text-center text-sm text-slate-400">
-                Aucun projet à afficher.
+                {t('Aucun projet à afficher.')}
             </p>
         );
     }
@@ -186,20 +189,21 @@ function BudgetBars({ projects, currency }) {
 /*  Barres verticales SVG — finances                                   */
 /* ------------------------------------------------------------------ */
 function FinanceBars({ finance, currency }) {
+    const { t } = useTrans();
     const bars = [];
     if (finance.has_invoices) {
-        bars.push({ label: 'Facturé', value: finance.invoiced, color: '#3b82f6' });
-        bars.push({ label: 'Encaissé', value: finance.collected, color: '#22c55e' });
-        bars.push({ label: 'À recouvrer', value: finance.outstanding, color: '#f59e0b' });
+        bars.push({ label: t('Facturé'), value: finance.invoiced, color: '#3b82f6' });
+        bars.push({ label: t('Encaissé'), value: finance.collected, color: '#22c55e' });
+        bars.push({ label: t('À recouvrer'), value: finance.outstanding, color: '#f59e0b' });
     }
     if (finance.has_purchases) {
-        bars.push({ label: 'Achats', value: finance.purchases, color: '#ef4444' });
+        bars.push({ label: t('Achats'), value: finance.purchases, color: '#ef4444' });
     }
 
     if (!bars.length) {
         return (
             <p className="py-8 text-center text-sm text-slate-400">
-                Modules financiers non disponibles.
+                {t('Modules financiers non disponibles.')}
             </p>
         );
     }
@@ -267,21 +271,22 @@ export default function ReportsIndex({
     finance = {},
     hr = {},
 }) {
+    const { t } = useTrans();
     const handlePrint = () => window.print();
 
     return (
         <AppLayout header="Rapports & BI">
-            <Head title="Rapports & BI" />
+            <Head title={t('Rapports & BI')} />
 
             {/* En-tête + actions */}
             <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h2 className="flex items-center gap-2 text-xl font-bold text-slate-800 dark:text-slate-100">
                         <Icon name="bar-chart-3" className="h-6 w-6 text-orange-500" />
-                        Tableau de bord analytique
+                        {t('Tableau de bord analytique')}
                     </h2>
                     <p className="mt-1 text-sm text-slate-500">
-                        Synthèse transverse de l'activité de l'entreprise.
+                        {t('Synthèse transverse de l\'activité de l\'entreprise.')}
                     </p>
                 </div>
                 <div className="flex gap-2 print:hidden">
@@ -290,14 +295,14 @@ export default function ReportsIndex({
                         className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
                     >
                         <Icon name="printer" className="h-4 w-4" />
-                        Imprimer
+                        {t('Imprimer')}
                     </button>
                     <button
                         onClick={handlePrint}
                         className="inline-flex items-center gap-2 rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600"
                     >
                         <Icon name="download" className="h-4 w-4" />
-                        Exporter
+                        {t('Exporter')}
                     </button>
                 </div>
             </div>
@@ -327,16 +332,16 @@ export default function ReportsIndex({
             <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
                 <section className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
                     <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">
-                        Projets par statut
+                        {t('Projets par statut')}
                     </h3>
-                    <DonutChart data={projectsByStatus} title="Projets" />
+                    <DonutChart data={projectsByStatus} title={t('Projets')} />
                 </section>
 
                 <section className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
                     <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">
-                        Chantiers par statut
+                        {t('Chantiers par statut')}
                     </h3>
-                    <DonutChart data={sitesByStatus} title="Chantiers" />
+                    <DonutChart data={sitesByStatus} title={t('Chantiers')} />
                 </section>
             </div>
 
@@ -345,10 +350,10 @@ export default function ReportsIndex({
                 <section className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
                     <div className="mb-4 flex items-center justify-between">
                         <h3 className="font-semibold text-slate-800 dark:text-slate-100">
-                            Top 5 projets par budget
+                            {t('Top 5 projets par budget')}
                         </h3>
                         <span className="text-xs text-slate-400">
-                            Total : {formatMoney(totals.totalBudget, currency)}
+                            {t('Total :')} {formatMoney(totals.totalBudget, currency)}
                         </span>
                     </div>
                     <BudgetBars projects={topProjects} currency={currency} />
@@ -356,13 +361,13 @@ export default function ReportsIndex({
 
                 <section className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
                     <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">
-                        Finances
+                        {t('Finances')}
                     </h3>
                     <FinanceBars finance={finance} currency={currency} />
                     {hr.available && (
                         <div className="mt-4 flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-600 dark:bg-slate-800 dark:text-slate-300">
                             <Icon name="users" className="h-4 w-4 text-orange-500" />
-                            Effectif actif : <strong>{hr.headcount}</strong> employé(s)
+                            {t('Effectif actif :')} <strong>{hr.headcount}</strong> {t('employé(s)')}
                         </div>
                     )}
                 </section>

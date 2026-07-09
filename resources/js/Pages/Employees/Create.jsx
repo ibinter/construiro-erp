@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import EmployeeForm from './Partials/EmployeeForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Create({ sites, agencies, departments, contractTypes, statuses }) {
+    const { t } = useTrans();
     const form = useForm({
         matricule: '',
         first_name: '',
@@ -29,7 +31,7 @@ export default function Create({ sites, agencies, departments, contractTypes, st
 
     return (
         <AppLayout header="Nouvel employé">
-            <Head title="Nouvel employé" />
+            <Head title={t('Nouvel employé')} />
             <div className="mx-auto max-w-4xl">
                 <EmployeeForm
                     form={form}
@@ -39,7 +41,7 @@ export default function Create({ sites, agencies, departments, contractTypes, st
                     contractTypes={contractTypes}
                     statuses={statuses}
                     onSubmit={submit}
-                    submitLabel="Créer l'employé"
+                    submitLabel={t("Créer l'employé")}
                 />
             </div>
         </AppLayout>

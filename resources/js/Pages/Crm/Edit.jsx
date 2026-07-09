@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import OpportunityForm from './Partials/OpportunityForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Edit({ opportunity, stages, clients, users }) {
+    const { t } = useTrans();
     const form = useForm({
         code: opportunity.code ?? '',
         title: opportunity.title ?? '',
@@ -25,7 +27,7 @@ export default function Edit({ opportunity, stages, clients, users }) {
 
     return (
         <AppLayout header={`Modifier — ${opportunity.title}`}>
-            <Head title={`Modifier ${opportunity.title}`} />
+            <Head title={`${t('Modifier')} ${opportunity.title}`} />
             <div className="mx-auto max-w-4xl">
                 <OpportunityForm
                     form={form}
@@ -33,7 +35,7 @@ export default function Edit({ opportunity, stages, clients, users }) {
                     clients={clients}
                     users={users}
                     onSubmit={submit}
-                    submitLabel="Enregistrer"
+                    submitLabel={t('Enregistrer')}
                 />
             </div>
         </AppLayout>

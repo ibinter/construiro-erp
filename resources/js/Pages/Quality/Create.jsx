@@ -1,8 +1,10 @@
 import AppLayout from '@/Layouts/AppLayout';
 import QualityForm from './Partials/QualityForm';
 import { Head, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 export default function Create({ projects, sites, controlTypes, results }) {
+    const { t } = useTrans();
     const form = useForm({
         code: '',
         title: '',
@@ -23,7 +25,7 @@ export default function Create({ projects, sites, controlTypes, results }) {
 
     return (
         <AppLayout header="Nouveau contrôle qualité">
-            <Head title="Nouveau contrôle qualité" />
+            <Head title={t('Nouveau contrôle qualité')} />
             <div className="mx-auto max-w-4xl">
                 <QualityForm
                     form={form}
@@ -32,7 +34,7 @@ export default function Create({ projects, sites, controlTypes, results }) {
                     controlTypes={controlTypes}
                     results={results}
                     onSubmit={submit}
-                    submitLabel="Créer le contrôle"
+                    submitLabel={t('Créer le contrôle')}
                 />
             </div>
         </AppLayout>

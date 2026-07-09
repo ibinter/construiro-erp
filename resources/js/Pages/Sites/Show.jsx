@@ -2,10 +2,12 @@ import AppLayout from '@/Layouts/AppLayout';
 import Icon from '@/Components/Icon';
 import { Head, Link } from '@inertiajs/react';
 import { SITE_STATUS } from '@/constants';
+import { useTrans } from '@/i18n';
 
 function StatusBadge({ status }) {
+    const { t } = useTrans();
     const s = SITE_STATUS[status] ?? { label: status, color: 'bg-slate-100 text-slate-600' };
-    return <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${s.color}`}>{s.label}</span>;
+    return <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${s.color}`}>{t(s.label)}</span>;
 }
 
 function InfoTile({ icon, label, value }) {
@@ -21,8 +23,9 @@ function InfoTile({ icon, label, value }) {
 }
 
 export default function Show({ site }) {
+    const { t } = useTrans();
     const fmtDate = (d) => (d ? new Date(d).toLocaleDateString('fr-FR') : '—');
-    const statusLabel = SITE_STATUS[site.status]?.label ?? site.status;
+    const statusLabel = t(SITE_STATUS[site.status]?.label ?? site.status);
 
     return (
         <AppLayout header="Fiche chantier">
@@ -49,20 +52,20 @@ export default function Show({ site }) {
                         href={`/projects/${site.project.id}`}
                         className="inline-flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
                     >
-                        <Icon name="folder" className="h-4 w-4" /> Voir le projet
+                        <Icon name="folder" className="h-4 w-4" /> {t('Voir le projet')}
                     </Link>
                 )}
             </div>
 
             {/* Tuiles d'info */}
             <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-                <InfoTile icon="folder" label="Projet" value={site.project?.name ?? '—'} />
-                <InfoTile icon="activity" label="Statut" value={statusLabel} />
-                <InfoTile icon="trending-up" label="Avancement" value={`${site.progress} %`} />
-                <InfoTile icon="user" label="Chef de chantier" value={site.site_manager?.name ?? '—'} />
-                <InfoTile icon="calendar" label="Début → Fin" value={`${fmtDate(site.start_date)} → ${fmtDate(site.end_date)}`} />
-                <InfoTile icon="map-pin" label="Ville" value={site.city ?? '—'} />
-                <InfoTile icon="map" label="Adresse" value={site.address ?? '—'} />
+                <InfoTile icon="folder" label={t('Projet')} value={site.project?.name ?? '—'} />
+                <InfoTile icon="activity" label={t('Statut')} value={statusLabel} />
+                <InfoTile icon="trending-up" label={t('Avancement')} value={`${site.progress} %`} />
+                <InfoTile icon="user" label={t('Chef de chantier')} value={site.site_manager?.name ?? '—'} />
+                <InfoTile icon="calendar" label={t('Début → Fin')} value={`${fmtDate(site.start_date)} → ${fmtDate(site.end_date)}`} />
+                <InfoTile icon="map-pin" label={t('Ville')} value={site.city ?? '—'} />
+                <InfoTile icon="map" label={t('Adresse')} value={site.address ?? '—'} />
             </div>
 
             {site.description && (
