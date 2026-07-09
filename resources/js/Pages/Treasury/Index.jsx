@@ -222,39 +222,39 @@ export default function Index({ accounts, totalBalance, transactions, types, acc
                             <InputError message={accountForm.errors.name} className="mt-1" />
                         </div>
                         <div>
-                            <InputLabel htmlFor="acc_type" value="Type *" />
+                            <InputLabel htmlFor="acc_type" value={t('Type *')} />
                             <select
                                 id="acc_type"
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                                 value={accountForm.data.type}
                                 onChange={(e) => accountForm.setData('type', e.target.value)}
                             >
-                                {accountTypes.map((t) => (
-                                    <option key={t} value={t}>{ACCOUNT_TYPE[t]?.label ?? t}</option>
+                                {accountTypes.map((k) => (
+                                    <option key={k} value={k}>{t(ACCOUNT_TYPE[k]?.label ?? k)}</option>
                                 ))}
                             </select>
                             <InputError message={accountForm.errors.type} className="mt-1" />
                         </div>
                         <div>
-                            <InputLabel htmlFor="acc_currency" value="Devise *" />
+                            <InputLabel htmlFor="acc_currency" value={t('Devise *')} />
                             <TextInput id="acc_currency" className="mt-1 block w-full" maxLength={3}
                                 value={accountForm.data.currency} onChange={(e) => accountForm.setData('currency', e.target.value.toUpperCase())} />
                             <InputError message={accountForm.errors.currency} className="mt-1" />
                         </div>
                         <div>
-                            <InputLabel htmlFor="acc_bank" value="Banque / Opérateur" />
+                            <InputLabel htmlFor="acc_bank" value={t('Banque / Opérateur')} />
                             <TextInput id="acc_bank" className="mt-1 block w-full" placeholder="SGBCI, Orange…"
                                 value={accountForm.data.bank_name} onChange={(e) => accountForm.setData('bank_name', e.target.value)} />
                             <InputError message={accountForm.errors.bank_name} className="mt-1" />
                         </div>
                         <div>
-                            <InputLabel htmlFor="acc_number" value="N° de compte / téléphone" />
+                            <InputLabel htmlFor="acc_number" value={t('N° de compte / téléphone')} />
                             <TextInput id="acc_number" className="mt-1 block w-full"
                                 value={accountForm.data.account_number} onChange={(e) => accountForm.setData('account_number', e.target.value)} />
                             <InputError message={accountForm.errors.account_number} className="mt-1" />
                         </div>
                         <div className="sm:col-span-2">
-                            <InputLabel htmlFor="acc_opening" value="Solde d'ouverture *" />
+                            <InputLabel htmlFor="acc_opening" value={t("Solde d'ouverture *")} />
                             <TextInput id="acc_opening" type="number" step="0.01" className="mt-1 block w-full"
                                 value={accountForm.data.opening_balance} onChange={(e) => accountForm.setData('opening_balance', e.target.value)} />
                             <InputError message={accountForm.errors.opening_balance} className="mt-1" />
