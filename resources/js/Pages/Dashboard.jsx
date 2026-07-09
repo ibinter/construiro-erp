@@ -2,15 +2,17 @@ import AppLayout from '@/Layouts/AppLayout';
 import Icon from '@/Components/Icon';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { PROJECT_STATUS, formatMoney } from '@/constants';
+import { useTrans } from '@/i18n';
 
 export default function Dashboard({ stats = [], recentProjects = [] }) {
     const { auth } = usePage().props;
+    const { t } = useTrans();
     const portal = auth?.portal;
     const user = auth?.user;
 
     return (
         <AppLayout header="Tableau de bord">
-            <Head title="Tableau de bord" />
+            <Head title={t('Tableau de bord')} />
 
             {/* Bandeau d'accueil */}
             <div className="mb-6 rounded-xl bg-gradient-to-r from-slate-900 to-slate-700 p-6 text-white">
@@ -21,10 +23,10 @@ export default function Dashboard({ stats = [], recentProjects = [] }) {
                     </span>
                 </div>
                 <h2 className="mt-2 text-2xl font-bold">
-                    Bonjour {user?.name} 👋
+                    {t('Bonjour')} {user?.name} 👋
                 </h2>
                 <p className="mt-1 text-sm text-slate-300">
-                    Voici la synthèse de vos chantiers et projets.
+                    {t('Voici la synthèse de vos chantiers et projets.')}
                 </p>
             </div>
 
@@ -56,10 +58,10 @@ export default function Dashboard({ stats = [], recentProjects = [] }) {
                 <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900 lg:col-span-2">
                     <div className="mb-3 flex items-center justify-between">
                         <h3 className="font-semibold text-slate-800 dark:text-slate-100">
-                            Projets récents
+                            {t('Projets récents')}
                         </h3>
                         <Link href="/projects" className="text-sm font-medium text-orange-600 hover:underline">
-                            Voir tout
+                            {t('Voir tout')}
                         </Link>
                     </div>
                     <ul className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -88,14 +90,14 @@ export default function Dashboard({ stats = [], recentProjects = [] }) {
                         })}
                         {recentProjects.length === 0 && (
                             <li className="py-8 text-center text-sm text-slate-400">
-                                Aucun projet pour le moment.
+                                {t('Aucun projet pour le moment.')}
                             </li>
                         )}
                     </ul>
                 </div>
                 <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
                     <h3 className="mb-3 font-semibold text-slate-800 dark:text-slate-100">
-                        Vos rôles
+                        {t('Vos rôles')}
                     </h3>
                     <ul className="space-y-2">
                         {(user?.roles ?? []).map((role) => (

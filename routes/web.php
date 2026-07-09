@@ -9,6 +9,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\DocumentPdfController;
@@ -412,5 +413,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// Changement de langue (accessible connecté ou non).
+Route::post('/locale/{locale}', [LocaleController::class, 'update'])->name('locale.update');
 
 require __DIR__.'/auth.php';
