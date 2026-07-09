@@ -163,32 +163,32 @@ export default function Index({ accounts, totalBalance, transactions, types, acc
                 <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
                     <h3 className="flex items-center gap-2 font-semibold text-slate-800 dark:text-slate-100">
                         <Icon name="arrow-left-right" className="h-5 w-5 text-orange-500" />
-                        Dernières transactions
+                        {t('Dernières transactions')}
                     </h3>
                 </div>
                 <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800">
                     <thead className="bg-slate-50 dark:bg-slate-800/50">
                         <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                            <th className="px-4 py-3">Date</th>
-                            <th className="px-4 py-3">Compte</th>
-                            <th className="px-4 py-3">Type</th>
-                            <th className="px-4 py-3">Catégorie</th>
-                            <th className="px-4 py-3 text-right">Montant</th>
-                            <th className="px-4 py-3">Description</th>
+                            <th className="px-4 py-3">{t('Date')}</th>
+                            <th className="px-4 py-3">{t('Compte')}</th>
+                            <th className="px-4 py-3">{t('Type')}</th>
+                            <th className="px-4 py-3">{t('Catégorie')}</th>
+                            <th className="px-4 py-3 text-right">{t('Montant')}</th>
+                            <th className="px-4 py-3">{t('Description')}</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                         {transactions.map((tx) => {
-                            const t = TRANSACTION_TYPE[tx.type] ?? { label: tx.type, color: 'bg-slate-100 text-slate-600' };
+                            const ty = TRANSACTION_TYPE[tx.type] ?? { label: tx.type, color: 'bg-slate-100 text-slate-600' };
                             return (
                                 <tr key={tx.id} className="text-sm hover:bg-slate-50 dark:hover:bg-slate-800/50">
                                     <td className="px-4 py-3 text-slate-500">{fmtDate(tx.date)}</td>
                                     <td className="px-4 py-3 text-slate-700 dark:text-slate-200">{tx.cash_account?.name}</td>
                                     <td className="px-4 py-3">
-                                        <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${t.color}`}>{t.label}</span>
+                                        <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${ty.color}`}>{t(ty.label)}</span>
                                     </td>
                                     <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
-                                        {TRANSACTION_CATEGORY[tx.category] ?? tx.category ?? '—'}
+                                        {t(TRANSACTION_CATEGORY[tx.category] ?? tx.category ?? '—')}
                                     </td>
                                     <td className={`px-4 py-3 text-right font-medium ${tx.type === 'in' ? 'text-green-600' : 'text-red-600'}`}>
                                         {tx.type === 'in' ? '+' : '−'} {formatMoney(tx.amount)}
@@ -202,7 +202,7 @@ export default function Index({ accounts, totalBalance, transactions, types, acc
                             <tr>
                                 <td colSpan={6} className="px-4 py-12 text-center text-slate-400">
                                     <Icon name="arrow-left-right" className="mx-auto mb-2 h-8 w-8" />
-                                    Aucune transaction enregistrée.
+                                    {t('Aucune transaction enregistrée.')}
                                 </td>
                             </tr>
                         )}
@@ -213,11 +213,11 @@ export default function Index({ accounts, totalBalance, transactions, types, acc
             {/* Modal nouveau compte */}
             <Modal show={showAccountModal} onClose={() => setShowAccountModal(false)}>
                 <form onSubmit={submitAccount} className="p-6">
-                    <h3 className="mb-4 text-lg font-semibold text-slate-800 dark:text-slate-100">Nouveau compte de trésorerie</h3>
+                    <h3 className="mb-4 text-lg font-semibold text-slate-800 dark:text-slate-100">{t('Nouveau compte de trésorerie')}</h3>
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div className="sm:col-span-2">
-                            <InputLabel htmlFor="acc_name" value="Nom du compte *" />
-                            <TextInput id="acc_name" className="mt-1 block w-full" placeholder="Caisse principale"
+                            <InputLabel htmlFor="acc_name" value={t('Nom du compte *')} />
+                            <TextInput id="acc_name" className="mt-1 block w-full" placeholder={t('Caisse principale')}
                                 value={accountForm.data.name} onChange={(e) => accountForm.setData('name', e.target.value)} />
                             <InputError message={accountForm.errors.name} className="mt-1" />
                         </div>

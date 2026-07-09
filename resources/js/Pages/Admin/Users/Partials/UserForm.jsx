@@ -36,34 +36,34 @@ export default function UserForm({ form, roles = [], agencies = [], onSubmit, su
                 <div className="flex items-start gap-3 rounded-xl border border-orange-200 bg-orange-50 p-4 text-sm text-orange-800 dark:border-orange-500/30 dark:bg-orange-500/10 dark:text-orange-300">
                     <Icon name="info" className="mt-0.5 h-5 w-5 shrink-0" />
                     <p>
-                        Le mot de passe initial de ce compte est <span className="font-semibold">« password »</span>.
-                        L'utilisateur devra le modifier à sa première connexion.
+                        {t('Le mot de passe initial de ce compte est')} <span className="font-semibold">« password »</span>.
+                        {' '}{t('L\'utilisateur devra le modifier à sa première connexion.')}
                     </p>
                 </div>
             )}
 
             <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-                <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">Identité</h3>
+                <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">{t('Identité')}</h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    {field('name', 'Nom complet *', { placeholder: 'Jean Dupont' })}
-                    {field('email', 'Adresse e-mail *', { type: 'email', placeholder: 'jean.dupont@exemple.com' })}
-                    {field('phone', 'Téléphone', { placeholder: '+225 07 00 00 00 00' })}
-                    {field('job_title', 'Fonction', { placeholder: 'Conducteur de travaux' })}
+                    {field('name', t('Nom complet *'), { placeholder: 'Jean Dupont' })}
+                    {field('email', t('Adresse e-mail *'), { type: 'email', placeholder: 'jean.dupont@exemple.com' })}
+                    {field('phone', t('Téléphone'), { placeholder: '+225 07 00 00 00 00' })}
+                    {field('job_title', t('Fonction'), { placeholder: 'Conducteur de travaux' })}
                 </div>
             </div>
 
             <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-                <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">Rôle & rattachement</h3>
+                <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">{t('Rôle & rattachement')}</h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
-                        <InputLabel htmlFor="role" value="Rôle / portail *" />
+                        <InputLabel htmlFor="role" value={t('Rôle / portail *')} />
                         <select
                             id="role"
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                             value={data.role ?? ''}
                             onChange={(e) => setData('role', e.target.value)}
                         >
-                            <option value="">— Sélectionner —</option>
+                            <option value="">{t('— Sélectionner —')}</option>
                             {roles.map((r) => (
                                 <option key={r.value} value={r.value}>{r.label}</option>
                             ))}
@@ -72,14 +72,14 @@ export default function UserForm({ form, roles = [], agencies = [], onSubmit, su
                     </div>
 
                     <div>
-                        <InputLabel htmlFor="agency_id" value="Agence" />
+                        <InputLabel htmlFor="agency_id" value={t('Agence')} />
                         <select
                             id="agency_id"
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                             value={data.agency_id ?? ''}
                             onChange={(e) => setData('agency_id', e.target.value || null)}
                         >
-                            <option value="">— Aucune —</option>
+                            <option value="">{t('— Aucune —')}</option>
                             {agencies.map((a) => (
                                 <option key={a.id} value={a.id}>{a.name}</option>
                             ))}
