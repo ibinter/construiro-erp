@@ -93,7 +93,7 @@ export default function UserForm({ form, roles = [], agencies = [], onSubmit, su
                         checked={!!data.is_active}
                         onChange={(e) => setData('is_active', e.target.checked)}
                     />
-                    Compte actif
+                    {t('Compte actif')}
                 </label>
                 <InputError message={errors.is_active} className="mt-1" />
             </div>
@@ -103,7 +103,7 @@ export default function UserForm({ form, roles = [], agencies = [], onSubmit, su
                     href="/admin/users"
                     className="rounded-md px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
                 >
-                    Annuler
+                    {t('Annuler')}
                 </Link>
                 <PrimaryButton disabled={processing} className="bg-orange-500 hover:bg-orange-600 focus:bg-orange-600">
                     {submitLabel}

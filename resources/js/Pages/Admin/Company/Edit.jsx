@@ -5,6 +5,7 @@ import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
 import { Head, Link, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 const CURRENCIES = ['XOF', 'XAF', 'EUR', 'USD', 'GHS', 'NGN'];
 const LOCALES = [
@@ -13,6 +14,7 @@ const LOCALES = [
 ];
 
 export default function Edit({ company, agencies }) {
+    const { t } = useTrans();
     const form = useForm({
         name: company.name ?? '',
         legal_name: company.legal_name ?? '',
@@ -51,37 +53,37 @@ export default function Edit({ company, agencies }) {
 
     return (
         <AppLayout header="Administration — Entreprise">
-            <Head title="Paramètres de l'entreprise" />
+            <Head title={t("Paramètres de l'entreprise")} />
 
             <div className="mx-auto max-w-4xl">
                 <form onSubmit={submit} className="space-y-6">
                     <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-                        <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">Identité de l'entreprise</h3>
+                        <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">{t("Identité de l'entreprise")}</h3>
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            {field('name', 'Nom commercial *', { placeholder: 'CONSTRUIRO' })}
-                            {field('legal_name', 'Raison sociale', { placeholder: 'CONSTRUIRO SARL' })}
-                            {field('registration_number', 'Registre de commerce (RCCM)')}
-                            {field('tax_id', 'Identifiant fiscal (NIF)')}
+                            {field('name', t('Nom commercial *'), { placeholder: 'CONSTRUIRO' })}
+                            {field('legal_name', t('Raison sociale'), { placeholder: 'CONSTRUIRO SARL' })}
+                            {field('registration_number', t('Registre de commerce (RCCM)'))}
+                            {field('tax_id', t('Identifiant fiscal (NIF)'))}
                         </div>
                     </div>
 
                     <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-                        <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">Coordonnées</h3>
+                        <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">{t('Coordonnées')}</h3>
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            {field('country', 'Pays', { placeholder: "Côte d'Ivoire" })}
-                            {field('city', 'Ville', { placeholder: 'Abidjan' })}
-                            {field('address', 'Adresse')}
-                            {field('phone', 'Téléphone')}
-                            {field('email', 'E-mail', { type: 'email' })}
-                            {field('website', 'Site web', { placeholder: 'https://…' })}
+                            {field('country', t('Pays'), { placeholder: "Côte d'Ivoire" })}
+                            {field('city', t('Ville'), { placeholder: 'Abidjan' })}
+                            {field('address', t('Adresse'))}
+                            {field('phone', t('Téléphone'))}
+                            {field('email', t('E-mail'), { type: 'email' })}
+                            {field('website', t('Site web'), { placeholder: 'https://…' })}
                         </div>
                     </div>
 
                     <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-                        <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">Préférences</h3>
+                        <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">{t('Préférences')}</h3>
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <div>
-                                <InputLabel htmlFor="base_currency" value="Devise de base *" />
+                                <InputLabel htmlFor="base_currency" value={t('Devise de base *')} />
                                 <select
                                     id="base_currency"
                                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
@@ -93,7 +95,7 @@ export default function Edit({ company, agencies }) {
                                 <InputError message={errors.base_currency} className="mt-1" />
                             </div>
                             <div>
-                                <InputLabel htmlFor="locale" value="Langue *" />
+                                <InputLabel htmlFor="locale" value={t('Langue *')} />
                                 <select
                                     id="locale"
                                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
@@ -112,10 +114,10 @@ export default function Edit({ company, agencies }) {
                             href="/admin/users"
                             className="rounded-md px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
                         >
-                            Annuler
+                            {t('Annuler')}
                         </Link>
                         <PrimaryButton disabled={processing} className="bg-orange-500 hover:bg-orange-600 focus:bg-orange-600">
-                            Enregistrer
+                            {t('Enregistrer')}
                         </PrimaryButton>
                     </div>
                 </form>
@@ -125,7 +127,7 @@ export default function Edit({ company, agencies }) {
                     <div className="flex items-center gap-2 border-b border-slate-100 px-5 py-4 dark:border-slate-800">
                         <Icon name="building-2" className="h-5 w-5 text-orange-500" />
                         <h3 className="font-semibold text-slate-800 dark:text-slate-100">
-                            Agences ({agencies.length})
+                            {t('Agences')} ({agencies.length})
                         </h3>
                     </div>
                     <ul className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -136,7 +138,7 @@ export default function Edit({ company, agencies }) {
                                         {agency.name}
                                         {agency.is_headquarters && (
                                             <span className="inline-flex rounded-full bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-700 dark:bg-orange-500/10 dark:text-orange-400">
-                                                Siège
+                                                {t('Siège')}
                                             </span>
                                         )}
                                     </div>
@@ -144,18 +146,18 @@ export default function Edit({ company, agencies }) {
                                 </div>
                                 {agency.is_active ? (
                                     <span className="inline-flex rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
-                                        Active
+                                        {t('Active')}
                                     </span>
                                 ) : (
                                     <span className="inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-500 dark:bg-slate-700 dark:text-slate-300">
-                                        Inactive
+                                        {t('Inactive')}
                                     </span>
                                 )}
                             </li>
                         ))}
                         {agencies.length === 0 && (
                             <li className="px-5 py-8 text-center text-sm text-slate-400">
-                                Aucune agence enregistrée.
+                                {t('Aucune agence enregistrée.')}
                             </li>
                         )}
                     </ul>

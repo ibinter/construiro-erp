@@ -4,8 +4,10 @@ import Icon from '@/Components/Icon';
 import { Head, Link, router } from '@inertiajs/react';
 import { formatMoney } from '@/constants';
 import { METHOD_LABELS } from './Partials/PaymentForm';
+import { useTrans } from '@/i18n';
 
 export default function Index({ payments, filters, methods, totalReceived, can }) {
+    const { t } = useTrans();
     const [search, setSearch] = useState(filters.search ?? '');
 
     const applyFilters = (next = {}) => {
@@ -26,7 +28,7 @@ export default function Index({ payments, filters, methods, totalReceived, can }
                 <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
                     <div className="flex items-center gap-2 text-slate-400">
                         <Icon name="arrow-down-circle" className="h-4 w-4 text-green-500" />
-                        <span className="text-xs uppercase tracking-wider">Total encaissé</span>
+                        <span className="text-xs uppercase tracking-wider">{t('Total encaissé')}</span>
                     </div>
                     <div className="mt-1 text-2xl font-bold text-green-600">
                         {formatMoney(totalReceived, 'XOF')}
@@ -46,7 +48,7 @@ export default function Index({ payments, filters, methods, totalReceived, can }
                             type="text"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Rechercher un encaissement…"
+                            placeholder={t('Rechercher un encaissement…')}
                             className="w-64 rounded-md border-slate-300 pl-9 text-sm focus:border-orange-500 focus:ring-orange-500 dark:border-slate-700 dark:bg-slate-900"
                         />
                     </div>
@@ -55,9 +57,9 @@ export default function Index({ payments, filters, methods, totalReceived, can }
                         onChange={(e) => applyFilters({ method: e.target.value })}
                         className="rounded-md border-slate-300 text-sm focus:border-orange-500 focus:ring-orange-500 dark:border-slate-700 dark:bg-slate-900"
                     >
-                        <option value="">Tous les modes</option>
+                        <option value="">{t('Tous les modes')}</option>
                         {methods.map((m) => (
-                            <option key={m} value={m}>{METHOD_LABELS[m] ?? m}</option>
+                            <option key={m} value={m}>{t(METHOD_LABELS[m] ?? m)}</option>
                         ))}
                     </select>
                 </form>
@@ -68,7 +70,7 @@ export default function Index({ payments, filters, methods, totalReceived, can }
                         className="inline-flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600"
                     >
                         <Icon name="plus" className="h-4 w-4" />
-                        Nouvel encaissement
+                        {t('Nouvel encaissement')}
                     </Link>
                 )}
             </div>
@@ -78,12 +80,12 @@ export default function Index({ payments, filters, methods, totalReceived, can }
                 <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800">
                     <thead className="bg-slate-50 dark:bg-slate-800/50">
                         <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                            <th className="px-4 py-3">Encaissement</th>
-                            <th className="px-4 py-3">Client / Payeur</th>
-                            <th className="px-4 py-3">Facture</th>
-                            <th className="px-4 py-3">Mode</th>
-                            <th className="px-4 py-3">Date</th>
-                            <th className="px-4 py-3 text-right">Montant</th>
+                            <th className="px-4 py-3">{t('Encaissement')}</th>
+                            <th className="px-4 py-3">{t('Client / Payeur')}</th>
+                            <th className="px-4 py-3">{t('Facture')}</th>
+                            <th className="px-4 py-3">{t('Mode')}</th>
+                            <th className="px-4 py-3">{t('Date')}</th>
+                            <th className="px-4 py-3 text-right">{t('Montant')}</th>
                             <th className="px-4 py-3"></th>
                         </tr>
                     </thead>
@@ -105,7 +107,7 @@ export default function Index({ payments, filters, methods, totalReceived, can }
                                     {payment.invoice?.code ?? '—'}
                                 </td>
                                 <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
-                                    {METHOD_LABELS[payment.method] ?? payment.method}
+                                    {t(METHOD_LABELS[payment.method] ?? payment.method)}
                                 </td>
                                 <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
                                     {fmtDate(payment.date)}
@@ -125,7 +127,7 @@ export default function Index({ payments, filters, methods, totalReceived, can }
                             <tr>
                                 <td colSpan={7} className="px-4 py-12 text-center text-slate-400">
                                     <Icon name="arrow-down-circle" className="mx-auto mb-2 h-8 w-8" />
-                                    Aucun encaissement trouvé.
+                                    {t('Aucun encaissement trouvé.')}
                                 </td>
                             </tr>
                         )}

@@ -3,6 +3,7 @@ import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
 import { Link } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 const CURRENCIES = ['XOF', 'XAF', 'EUR', 'USD', 'GHS', 'NGN'];
 
@@ -39,6 +40,7 @@ export default function PaymentForm({
     onSubmit,
     submitLabel,
 }) {
+    const { t } = useTrans();
     const { data, setData, errors, processing } = form;
 
     const categoryList = categories.length ? categories : Object.keys(CATEGORY_LABELS);
@@ -61,12 +63,12 @@ export default function PaymentForm({
     return (
         <form onSubmit={onSubmit} className="space-y-6">
             <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-                <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">Informations générales</h3>
+                <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">{t('Informations générales')}</h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    {field('code', 'Code décaissement *', { placeholder: 'DEC-2026-001' })}
+                    {field('code', t('Code décaissement *'), { placeholder: 'DEC-2026-001' })}
 
                     <div>
-                        <InputLabel htmlFor="category" value="Nature de dépense *" />
+                        <InputLabel htmlFor="category" value={t('Nature de dépense *')} />
                         <select
                             id="category"
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
@@ -74,14 +76,14 @@ export default function PaymentForm({
                             onChange={(e) => setData('category', e.target.value)}
                         >
                             {categoryList.map((c) => (
-                                <option key={c} value={c}>{CATEGORY_LABELS[c] ?? c}</option>
+                                <option key={c} value={c}>{t(CATEGORY_LABELS[c] ?? c)}</option>
                             ))}
                         </select>
                         <InputError message={errors.category} className="mt-1" />
                     </div>
 
                     <div>
-                        <InputLabel htmlFor="supplier_id" value="Fournisseur" />
+                        <InputLabel htmlFor="supplier_id" value={t('Fournisseur')} />
                         <select
                             id="supplier_id"
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"

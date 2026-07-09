@@ -261,9 +261,9 @@ export default function Index({ accounts, totalBalance, transactions, types, acc
                         </div>
                     </div>
                     <div className="mt-6 flex justify-end gap-3">
-                        <SecondaryButton type="button" onClick={() => setShowAccountModal(false)}>Annuler</SecondaryButton>
+                        <SecondaryButton type="button" onClick={() => setShowAccountModal(false)}>{t('Annuler')}</SecondaryButton>
                         <PrimaryButton disabled={accountForm.processing} className="bg-orange-500 hover:bg-orange-600 focus:bg-orange-600">
-                            Créer le compte
+                            {t('Créer le compte')}
                         </PrimaryButton>
                     </div>
                 </form>
@@ -272,24 +272,24 @@ export default function Index({ accounts, totalBalance, transactions, types, acc
             {/* Modal nouvelle transaction */}
             <Modal show={showTxModal} onClose={() => setShowTxModal(false)}>
                 <form onSubmit={submitTx} className="p-6">
-                    <h3 className="mb-4 text-lg font-semibold text-slate-800 dark:text-slate-100">Nouvelle transaction</h3>
+                    <h3 className="mb-4 text-lg font-semibold text-slate-800 dark:text-slate-100">{t('Nouvelle transaction')}</h3>
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div>
-                            <InputLabel htmlFor="tx_type" value="Type *" />
+                            <InputLabel htmlFor="tx_type" value={t('Type *')} />
                             <select
                                 id="tx_type"
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                                 value={txForm.data.type}
                                 onChange={(e) => txForm.setData('type', e.target.value)}
                             >
-                                {types.map((t) => (
-                                    <option key={t} value={t}>{TRANSACTION_TYPE[t]?.label ?? t}</option>
+                                {types.map((k) => (
+                                    <option key={k} value={k}>{t(TRANSACTION_TYPE[k]?.label ?? k)}</option>
                                 ))}
                             </select>
                             <InputError message={txForm.errors.type} className="mt-1" />
                         </div>
                         <div>
-                            <InputLabel htmlFor="tx_account" value="Compte *" />
+                            <InputLabel htmlFor="tx_account" value={t('Compte *')} />
                             <select
                                 id="tx_account"
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
@@ -303,13 +303,13 @@ export default function Index({ accounts, totalBalance, transactions, types, acc
                             <InputError message={txForm.errors.cash_account_id} className="mt-1" />
                         </div>
                         <div>
-                            <InputLabel htmlFor="tx_amount" value="Montant *" />
+                            <InputLabel htmlFor="tx_amount" value={t('Montant *')} />
                             <TextInput id="tx_amount" type="number" min={0} step="0.01" className="mt-1 block w-full"
                                 value={txForm.data.amount} onChange={(e) => txForm.setData('amount', e.target.value)} />
                             <InputError message={txForm.errors.amount} className="mt-1" />
                         </div>
                         <div>
-                            <InputLabel htmlFor="tx_category" value="Catégorie" />
+                            <InputLabel htmlFor="tx_category" value={t('Catégorie')} />
                             <select
                                 id="tx_category"
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
@@ -317,34 +317,34 @@ export default function Index({ accounts, totalBalance, transactions, types, acc
                                 onChange={(e) => txForm.setData('category', e.target.value)}
                             >
                                 {CATEGORY_KEYS.map((c) => (
-                                    <option key={c} value={c}>{TRANSACTION_CATEGORY[c]}</option>
+                                    <option key={c} value={c}>{t(TRANSACTION_CATEGORY[c])}</option>
                                 ))}
                             </select>
                             <InputError message={txForm.errors.category} className="mt-1" />
                         </div>
                         <div>
-                            <InputLabel htmlFor="tx_date" value="Date *" />
+                            <InputLabel htmlFor="tx_date" value={t('Date *')} />
                             <TextInput id="tx_date" type="date" className="mt-1 block w-full"
                                 value={txForm.data.date} onChange={(e) => txForm.setData('date', e.target.value)} />
                             <InputError message={txForm.errors.date} className="mt-1" />
                         </div>
                         <div>
-                            <InputLabel htmlFor="tx_reference" value="Référence" />
+                            <InputLabel htmlFor="tx_reference" value={t('Référence')} />
                             <TextInput id="tx_reference" className="mt-1 block w-full"
                                 value={txForm.data.reference} onChange={(e) => txForm.setData('reference', e.target.value)} />
                             <InputError message={txForm.errors.reference} className="mt-1" />
                         </div>
                         <div className="sm:col-span-2">
-                            <InputLabel htmlFor="tx_description" value="Description" />
+                            <InputLabel htmlFor="tx_description" value={t('Description')} />
                             <TextInput id="tx_description" className="mt-1 block w-full"
                                 value={txForm.data.description} onChange={(e) => txForm.setData('description', e.target.value)} />
                             <InputError message={txForm.errors.description} className="mt-1" />
                         </div>
                     </div>
                     <div className="mt-6 flex justify-end gap-3">
-                        <SecondaryButton type="button" onClick={() => setShowTxModal(false)}>Annuler</SecondaryButton>
+                        <SecondaryButton type="button" onClick={() => setShowTxModal(false)}>{t('Annuler')}</SecondaryButton>
                         <PrimaryButton disabled={txForm.processing} className="bg-orange-500 hover:bg-orange-600 focus:bg-orange-600">
-                            Enregistrer la transaction
+                            {t('Enregistrer la transaction')}
                         </PrimaryButton>
                     </div>
                 </form>

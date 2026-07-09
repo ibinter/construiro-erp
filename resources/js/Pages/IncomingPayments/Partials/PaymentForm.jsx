@@ -3,6 +3,7 @@ import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
 import { Link } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 const CURRENCIES = ['XOF', 'XAF', 'EUR', 'USD', 'GHS', 'NGN'];
 
@@ -28,6 +29,7 @@ export default function PaymentForm({
     onSubmit,
     submitLabel,
 }) {
+    const { t } = useTrans();
     const { data, setData, errors, processing } = form;
 
     const methodList = methods.length ? methods : Object.keys(METHOD_LABELS);
@@ -49,19 +51,19 @@ export default function PaymentForm({
     return (
         <form onSubmit={onSubmit} className="space-y-6">
             <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-                <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">Informations générales</h3>
+                <h3 className="mb-4 font-semibold text-slate-800 dark:text-slate-100">{t('Informations générales')}</h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    {field('code', 'Code encaissement *', { placeholder: 'ENC-2026-001' })}
+                    {field('code', t('Code encaissement *'), { placeholder: 'ENC-2026-001' })}
 
                     <div>
-                        <InputLabel htmlFor="client_id" value="Client" />
+                        <InputLabel htmlFor="client_id" value={t('Client')} />
                         <select
                             id="client_id"
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                             value={data.client_id ?? ''}
                             onChange={(e) => setData('client_id', e.target.value || null)}
                         >
-                            <option value="">— Aucun —</option>
+                            <option value="">{t('— Aucun —')}</option>
                             {clients.map((c) => (
                                 <option key={c.id} value={c.id}>{c.name}</option>
                             ))}
@@ -70,14 +72,14 @@ export default function PaymentForm({
                     </div>
 
                     <div>
-                        <InputLabel htmlFor="invoice_id" value="Facture réglée" />
+                        <InputLabel htmlFor="invoice_id" value={t('Facture réglée')} />
                         <select
                             id="invoice_id"
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                             value={data.invoice_id ?? ''}
                             onChange={(e) => setData('invoice_id', e.target.value || null)}
                         >
-                            <option value="">— Aucune —</option>
+                            <option value="">{t('— Aucune —')}</option>
                             {invoices.map((inv) => (
                                 <option key={inv.id} value={inv.id}>{inv.code}</option>
                             ))}
@@ -86,14 +88,14 @@ export default function PaymentForm({
                     </div>
 
                     <div>
-                        <InputLabel htmlFor="project_id" value="Projet rattaché" />
+                        <InputLabel htmlFor="project_id" value={t('Projet rattaché')} />
                         <select
                             id="project_id"
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                             value={data.project_id ?? ''}
                             onChange={(e) => setData('project_id', e.target.value || null)}
                         >
-                            <option value="">— Aucun —</option>
+                            <option value="">{t('— Aucun —')}</option>
                             {projects.map((p) => (
                                 <option key={p.id} value={p.id}>{p.name}</option>
                             ))}
@@ -101,12 +103,12 @@ export default function PaymentForm({
                         <InputError message={errors.project_id} className="mt-1" />
                     </div>
 
-                    {field('payer_name', 'Nom du payeur', { placeholder: 'Si aucun client rattaché' })}
+                    {field('payer_name', t('Nom du payeur'), { placeholder: t('Si aucun client rattaché') })}
 
-                    {field('amount', 'Montant reçu *', { type: 'number', min: '0.01', step: '0.01' })}
+                    {field('amount', t('Montant reçu *'), { type: 'number', min: '0.01', step: '0.01' })}
 
                     <div>
-                        <InputLabel htmlFor="currency" value="Devise *" />
+                        <InputLabel htmlFor="currency" value={t('Devise *')} />
                         <select
                             id="currency"
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
@@ -119,7 +121,7 @@ export default function PaymentForm({
                     </div>
 
                     <div>
-                        <InputLabel htmlFor="method" value="Mode de règlement *" />
+                        <InputLabel htmlFor="method" value={t('Mode de règlement *')} />
                         <select
                             id="method"
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
@@ -127,18 +129,18 @@ export default function PaymentForm({
                             onChange={(e) => setData('method', e.target.value)}
                         >
                             {methodList.map((m) => (
-                                <option key={m} value={m}>{METHOD_LABELS[m] ?? m}</option>
+                                <option key={m} value={m}>{t(METHOD_LABELS[m] ?? m)}</option>
                             ))}
                         </select>
                         <InputError message={errors.method} className="mt-1" />
                     </div>
 
-                    {field('date', 'Date de l\'encaissement *', { type: 'date' })}
-                    {field('reference', 'Référence', { placeholder: 'N° virement / chèque…' })}
+                    {field('date', t('Date de l\'encaissement *'), { type: 'date' })}
+                    {field('reference', t('Référence'), { placeholder: t('N° virement / chèque…') })}
                 </div>
 
                 <div className="mt-4">
-                    <InputLabel htmlFor="notes" value="Notes" />
+                    <InputLabel htmlFor="notes" value={t('Notes')} />
                     <textarea
                         id="notes"
                         rows={3}
@@ -155,7 +157,7 @@ export default function PaymentForm({
                     href="/incoming-payments"
                     className="rounded-md px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
                 >
-                    Annuler
+                    {t('Annuler')}
                 </Link>
                 <PrimaryButton disabled={processing} className="bg-orange-500 hover:bg-orange-600 focus:bg-orange-600">
                     {submitLabel}
