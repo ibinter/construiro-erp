@@ -82,7 +82,7 @@ export default function Dashboard({ stats = [], recentProjects = [] }) {
                                             <div className="h-full rounded-full bg-orange-500" style={{ width: `${project.progress}%` }} />
                                         </div>
                                         <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${s.color}`}>
-                                            {s.label}
+                                            {t(s.label)}
                                         </span>
                                     </div>
                                 </li>
