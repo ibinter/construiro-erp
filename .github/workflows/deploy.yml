@@ -24,4 +24,4 @@ jobs:
           curl -s -X POST \
             -F "secret=${{ secrets.DEPLOY_SECRET }}" \
             -F "zip=@deploy.zip" \
-            http://construiro.com/deploy-receiver.php
+            http://construiro.com/public/deploy-receiver.php
