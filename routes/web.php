@@ -56,6 +56,7 @@ use App\Http\Controllers\LaboratoryController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\SignatureController;
 // Vague 5 — BI / IA
+use App\Http\Controllers\BiController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AiAssistantController;
 use Illuminate\Foundation\Application;
@@ -377,6 +378,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/e-signature',                            [SignatureController::class, 'index'])->middleware('can:e_signature.view')->name('e_signature.index');
     Route::post('/e-signature',                           [SignatureController::class, 'store'])->middleware('can:e_signature.create')->name('e_signature.store');
     Route::post('/e-signature/{signatureRequest}/status', [SignatureController::class, 'updateStatus'])->middleware('can:e_signature.update')->name('e_signature.status');
+
+    // --- Tableau de bord BI ----------------------------------------------------
+    Route::get('/bi', [BiController::class, 'index'])->middleware('can:bi.view')->name('bi.index');
 
     // --- Rapports & BI / Assistant IA ------------------------------------------
     Route::get('/reports', [ReportController::class, 'index'])->middleware('can:reports.view')->name('reports.index');

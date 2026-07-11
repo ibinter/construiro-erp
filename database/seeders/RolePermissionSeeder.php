@@ -83,12 +83,12 @@ class RolePermissionSeeder extends Seeder
             'direction_generale' => [
                 'dashboard' => '*', 'projects' => '*', 'sites' => '*', 'planning' => ['view'],
                 'budget' => '*', 'treasury' => '*', 'cost_accounting' => '*', 'accounting' => $ro,
-                'reports' => '*', 'ai' => '*', 'contracts' => $ro, 'invoicing' => $ro,
+                'bi' => $ro, 'reports' => '*', 'ai' => '*', 'contracts' => $ro, 'invoicing' => $ro,
             ],
             'directeur_projet' => [
                 'dashboard' => ['view'], 'projects' => '*', 'sites' => '*', 'planning' => '*',
                 'budget' => '*', 'quotes' => '*', 'boq' => '*', 'contracts' => '*',
-                'purchases' => ['view', 'create', 'update'], 'reports' => '*', 'documents' => '*', 'ai' => '*',
+                'purchases' => ['view', 'create', 'update'], 'bi' => $ro, 'reports' => '*', 'documents' => '*', 'ai' => '*',
             ],
             'conducteur_travaux' => [
                 'dashboard' => ['view'], 'sites' => '*', 'planning' => '*', 'materials' => '*',

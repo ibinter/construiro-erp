@@ -132,6 +132,7 @@ return [
         // Documents & transverse
         'documents'        => ['group' => 'transverse','icon' => 'files',          'name' => ['fr' => 'Gestion documentaire',   'en' => 'Document Management']],
         'e_signature'      => ['group' => 'transverse','icon' => 'pen-line',       'name' => ['fr' => 'Signature électronique', 'en' => 'E-Signature']],
+        'bi'               => ['group' => 'transverse','icon' => 'chart-no-axes-combined', 'actions' => ['view'], 'name' => ['fr' => 'Tableau de bord BI', 'en' => 'BI Dashboard']],
         'reports'          => ['group' => 'transverse','icon' => 'bar-chart-3',    'name' => ['fr' => 'Rapports & BI',          'en' => 'Reports & BI']],
         'ai'               => ['group' => 'transverse','icon' => 'sparkles',       'name' => ['fr' => 'Intelligence Artificielle','en' => 'Artificial Intelligence']],
         'administration'   => ['group' => 'transverse','icon' => 'settings',       'name' => ['fr' => 'Administration',         'en' => 'Administration']],

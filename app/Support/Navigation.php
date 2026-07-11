@@ -70,6 +70,7 @@ class Navigation
             'laboratory'        => '/laboratory',
             'documents'         => '/documents',
             'e_signature'       => '/e-signature',
+            'bi'                => '/bi',
             'reports'           => '/reports',
             'ai'                => '/ai',
             'administration' => '/admin/users',
