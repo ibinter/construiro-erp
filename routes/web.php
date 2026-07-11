@@ -229,6 +229,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // --- Module Paie -----------------------------------------------------------
     Route::get('/payroll',                 [PayslipController::class, 'index'])->middleware('can:payroll.view')->name('payroll.index');
     Route::post('/payroll',                [PayslipController::class, 'store'])->middleware('can:payroll.create')->name('payroll.store');
+    Route::post('/payroll/generate',         [PayslipController::class, 'generateAll'])->middleware('can:payroll.create')->name('payroll.generate');
     Route::post('/payroll/{payslip}/status', [PayslipController::class, 'updateStatus'])->middleware('can:payroll.update')->name('payroll.status');
 
     // --- Module Planning & Gantt -----------------------------------------------

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use App\Models\Payslip;
 use App\Models\User;
+use App\Services\PayrollEngine;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -42,6 +43,36 @@ class PayslipController extends Controller
                 'update' => $user->can('payroll.update'),
             ],
         ]);
+    }
+
+    /**
+     * Génère automatiquement les bulletins pour tous les employés actifs
+     * à partir des pointages de la période.
+     */
+    public function generateAll(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        $data = $request->validate([
+            'period'       => ['required', 'string', 'regex:/^\d{4}-\d{2}$/'],
+            'country_code' => ['nullable', 'string', 'size:2'],
+        ]);
+
+        $countryCode = strtoupper($data['country_code'] ?? $user->company?->country ?? 'CI');
+
+        $result = (new PayrollEngine())->generateAll(
+            $user->company_id,
+            $data['period'],
+            $countryCode
+        );
+
+        $msg = "{$result['generated']} bulletin(s) généré(s) automatiquement.";
+        if (!empty($result['errors'])) {
+            $msg .= ' Erreurs : ' . collect($result['errors'])->pluck('employee')->join(', ') . '.';
+        }
+
+        return redirect()->route('payroll.index', ['period' => $data['period']])
+            ->with('success', $msg);
     }
 
     public function store(Request $request): RedirectResponse
