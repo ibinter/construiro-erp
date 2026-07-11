@@ -5,7 +5,7 @@ if (($_POST['secret'] ?? '') !== 'construiro_deploy_2026') {
     die('Accès refusé');
 }
 
-$dir = '/htdocs/construiro.com';
+$dir = dirname(__DIR__); // = dossier parent de public/
 $log = "$dir/storage/logs/deploy.log";
 
 function logMsg(string $msg): void {
@@ -73,4 +73,4 @@ shell_exec("chmod -R 775 $dir/storage $dir/bootstrap/cache 2>&1");
 logMsg('Permissions OK');
 logMsg('=== Déploiement terminé ===');
 
-echo 'OK';
+echo 'DEPLOY_OK:' . $dir . ':index=' . (file_exists("$dir/index.php") ? filesize("$dir/index.php") . 'bytes' : 'ABSENT');
