@@ -1,0 +1,27 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Créer zip du code (sans vendor ni node_modules)
+        run: |
+          zip -r deploy.zip . \
+            --exclude "vendor/*" \
+            --exclude "node_modules/*" \
+            --exclude ".git/*" \
+            --exclude "tests/*" \
+            --exclude "*.zip"
+
+      - name: Envoyer le zip au serveur
+        run: |
+          curl -s -X POST \
+            -F "secret=${{ secrets.DEPLOY_SECRET }}" \
+            -F "zip=@deploy.zip" \
+            https://construiro.com/deploy-receiver.php
