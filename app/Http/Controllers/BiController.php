@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 namespace App\Http\Controllers;
 
@@ -7,12 +7,69 @@ use App\Models\Site;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
+use Inertia\Inertia;
 
-/**
- * Module BI — export PDF du tableau de bord analytique.
- */
 class BiController extends Controller
 {
+    public function index(Request $request)
+    {
+        $user      = $request->user();
+        $companyId = $user->company_id;
+        $currency  = $user->company?->base_currency ?? 'XOF';
+
+        $caByMonth = [];
+        $depensesByMonth = [];
+
+        if ($this->modelReady(\App\Models\Invoice::class, 'invoices')) {
+            $caByMonth = \App\Models\Invoice::where('company_id', $companyId)
+                ->where('status', '!=', 'draft')
+                ->where('issue_date', '>=', now()->subMonths(11)->startOfMonth())
+                ->selectRaw("DATE_FORMAT(issue_date, '%Y-%m') as month, SUM(total) as total")
+                ->groupByRaw("DATE_FORMAT(issue_date, '%Y-%m')")
+                ->orderByRaw("DATE_FORMAT(issue_date, '%Y-%m')")
+                ->get()->toArray();
+        }
+
+        if ($this->modelReady(\App\Models\PurchaseOrder::class, 'purchase_orders')) {
+            $depensesByMonth = \App\Models\PurchaseOrder::where('company_id', $companyId)
+                ->where('status', 'received')
+                ->where('order_date', '>=', now()->subMonths(11)->startOfMonth())
+                ->selectRaw("DATE_FORMAT(order_date, '%Y-%m') as month, SUM(total) as total")
+                ->groupByRaw("DATE_FORMAT(order_date, '%Y-%m')")
+                ->orderByRaw("DATE_FORMAT(order_date, '%Y-%m')")
+                ->get()->toArray();
+        }
+
+        $projetsByStatus = Project::where('company_id', $companyId)
+            ->selectRaw('status, COUNT(*) as count')
+            ->groupBy('status')->get()->toArray();
+
+        $projetsAvancement = Project::where('company_id', $companyId)
+            ->where('status', 'in_progress')
+            ->orderByDesc('progress')
+            ->limit(10)
+            ->get(['id', 'name', 'progress', 'budget_amount', 'currency'])
+            ->toArray();
+
+        $kpis = [
+            'ca_total'         => $this->modelReady(\App\Models\Invoice::class, 'invoices')
+                ? (float) \App\Models\Invoice::where('company_id', $companyId)->where('status', '!=', 'draft')->sum('total') : 0,
+            'ca_encaisse'      => $this->modelReady(\App\Models\Invoice::class, 'invoices')
+                ? (float) \App\Models\Invoice::where('company_id', $companyId)->where('status', 'paid')->sum('total') : 0,
+            'depenses_total'   => $this->modelReady(\App\Models\PurchaseOrder::class, 'purchase_orders')
+                ? (float) \App\Models\PurchaseOrder::where('company_id', $companyId)->where('status', 'received')->sum('total') : 0,
+            'projets_actifs'   => Project::where('company_id', $companyId)->where('status', 'in_progress')->count(),
+            'factures_impayees' => $this->modelReady(\App\Models\Invoice::class, 'invoices')
+                ? \App\Models\Invoice::where('company_id', $companyId)->whereIn('status', ['sent', 'overdue'])->count() : 0,
+            'employes'         => $this->modelReady(\App\Models\Employee::class, 'employees')
+                ? \App\Models\Employee::where('company_id', $companyId)->where('status', 'active')->count() : 0,
+        ];
+
+        return Inertia::render('Bi/Dashboard', compact(
+            'caByMonth', 'depensesByMonth', 'projetsByStatus', 'projetsAvancement', 'kpis'
+        ));
+    }
+
     public function pdf(Request $request)
     {
         $user      = $request->user();
