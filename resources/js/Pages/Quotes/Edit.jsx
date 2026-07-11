@@ -3,13 +3,14 @@ import QuoteForm from './Partials/QuoteForm';
 import { Head, useForm } from '@inertiajs/react';
 import { useTrans } from '@/i18n';
 
-export default function Edit({ quote, projects, statuses }) {
+export default function Edit({ quote, clients, projects, statuses }) {
     const { t } = useTrans();
     const fmtDate = (d) => (d ? String(d).slice(0, 10) : '');
 
     const form = useForm({
         code: quote.code ?? '',
         title: quote.title ?? '',
+        client_id: quote.client_id ?? '',
         client_name: quote.client_name ?? '',
         project_id: quote.project_id ?? '',
         status: quote.status ?? 'draft',
@@ -37,6 +38,7 @@ export default function Edit({ quote, projects, statuses }) {
             <div className="mx-auto max-w-5xl">
                 <QuoteForm
                     form={form}
+                    clients={clients}
                     projects={projects}
                     statuses={statuses}
                     onSubmit={submit}

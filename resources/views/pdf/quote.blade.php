@@ -63,6 +63,13 @@
 
     @if($doc->notes)<div class="notes">{{ $doc->notes }}</div>@endif
 
+    @if($doc->signed_at)
+    <div style="border-top:1px solid #e2e8f0;margin-top:20px;padding-top:10px;font-size:10px;color:#64748b;">
+        ✓ Signé électroniquement par {{ $doc->signed_by }} le {{ \Illuminate\Support\Carbon::parse($doc->signed_at)->format('d/m/Y H:i') }}
+        — Empreinte : {{ substr($doc->signature_hash, 0, 16) }}…
+    </div>
+    @endif
+
     <div class="foot">
         {{ $company->name ?? 'CONSTRUIRO' }} — Document généré par CONSTRUIRO ERP le {{ now()->format('d/m/Y à H:i') }}
     </div>

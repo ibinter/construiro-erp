@@ -11,6 +11,7 @@ import DangerButton from '@/Components/DangerButton';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { formatMoney } from '@/constants';
 import { useTrans } from '@/i18n';
+import MobileMoneyButton from '@/Components/MobileMoneyButton';
 
 // Libellés et styles des statuts de facture (FR).
 const INVOICE_STATUS = {
@@ -89,6 +90,7 @@ export default function Show({ invoice, can }) {
                             <Icon name="banknote" className="h-4 w-4" /> {t('Enregistrer un paiement')}
                         </button>
                     )}
+                    <MobileMoneyButton invoice={invoice} can={can} />
                     {can.update && (
                         <Link
                             href={`/invoices/${invoice.id}/edit`}

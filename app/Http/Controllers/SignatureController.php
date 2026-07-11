@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Contract;
 use App\Models\Document;
+use App\Models\Quote;
 use App\Models\SignatureRequest;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -87,6 +89,39 @@ class SignatureController extends Controller
             : 'Demande marquée comme refusée.';
 
         return redirect()->route('e_signature.index')->with('success', $message);
+    }
+
+    /**
+     * Signature électronique simple côté serveur (SHA-256 + horodatage + nom).
+     * Modèle attendu : 'quote' ou 'contract'.
+     */
+    public function sign(Request $request, string $model, int $id): RedirectResponse
+    {
+        $record = match ($model) {
+            'quote'    => Quote::findOrFail($id),
+            'contract' => Contract::findOrFail($id),
+            default    => abort(404),
+        };
+
+        abort_if($record->company_id !== $request->user()->company_id, 403);
+        abort_if($record->signed_at !== null, 422, 'Déjà signé');
+
+        $request->validate(['signed_by' => 'required|string|max:255']);
+
+        $hash = hash('sha256', implode('|', [
+            $model, $id, $record->company_id,
+            $request->signed_by, now()->toISOString(),
+            config('app.key'),
+        ]));
+
+        $record->update([
+            'signed_at'      => now(),
+            'signed_by'      => $request->signed_by,
+            'signature_hash' => $hash,
+            'signature_ip'   => $request->ip(),
+        ]);
+
+        return back()->with('success', 'Document signé avec succès.');
     }
 
     /** Documents de l'entreprise, candidats à une demande de signature. */

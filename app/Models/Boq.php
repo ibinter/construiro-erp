@@ -20,7 +20,7 @@ class Boq extends Model
     public const STATUSES = ['draft', 'validated'];
 
     protected $fillable = [
-        'company_id', 'project_id',
+        'company_id', 'project_id', 'client_id',
         'code', 'title', 'status', 'currency', 'total', 'notes',
     ];
 
@@ -36,6 +36,11 @@ class Boq extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function client(): BelongsTo
+    {
+        return $this->belongsTo(Client::class);
     }
 
     public function lines(): HasMany

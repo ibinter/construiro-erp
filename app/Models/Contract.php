@@ -24,6 +24,7 @@ class Contract extends Model
         'amount', 'currency', 'status',
         'start_date', 'end_date', 'signed_date',
         'notes',
+        'signed_at', 'signed_by', 'signature_hash', 'signature_ip',
     ];
 
     protected $casts = [
@@ -31,6 +32,7 @@ class Contract extends Model
         'start_date'  => 'date',
         'end_date'    => 'date',
         'signed_date' => 'date',
+        'signed_at'   => 'datetime',
     ];
 
     public function company(): BelongsTo

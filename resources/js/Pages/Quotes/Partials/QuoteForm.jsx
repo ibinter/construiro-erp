@@ -25,7 +25,7 @@ const emptyLine = () => ({ designation: '', unit: 'u', quantity: 1, unit_price: 
  * Gère les lignes dynamiques et recalcule les totaux côté client pour l'affichage.
  * `form` est l'objet retourné par useForm() d'Inertia (avec data.lines : array).
  */
-export default function QuoteForm({ form, projects = [], statuses = [], onSubmit, submitLabel }) {
+export default function QuoteForm({ form, clients = [], projects = [], statuses = [], onSubmit, submitLabel }) {
     const { t } = useTrans();
     const { data, setData, errors, processing } = form;
 
@@ -72,7 +72,25 @@ export default function QuoteForm({ form, projects = [], statuses = [], onSubmit
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     {field('code', t('Code devis *'), { placeholder: 'DEV-2026-001' })}
                     {field('title', t('Intitulé *'), { placeholder: 'Construction villa R+1' })}
-                    {field('client_name', t('Client'), { placeholder: t('Nom du client') })}
+                    {clients.length > 0 ? (
+                        <div>
+                            <InputLabel htmlFor="client_id" value={t('Client')} />
+                            <select
+                                id="client_id"
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                                value={data.client_id ?? ''}
+                                onChange={(e) => setData('client_id', e.target.value || null)}
+                            >
+                                <option value="">{t('— Aucun —')}</option>
+                                {clients.map((c) => (
+                                    <option key={c.id} value={c.id}>{c.name}</option>
+                                ))}
+                            </select>
+                            <InputError message={errors.client_id} className="mt-1" />
+                        </div>
+                    ) : (
+                        field('client_name', t('Client'), { placeholder: t('Nom du client') })
+                    )}
 
                     <div>
                         <InputLabel htmlFor="project_id" value={t('Projet rattaché')} />

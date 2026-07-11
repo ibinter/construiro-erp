@@ -3,11 +3,12 @@ import QuoteForm from './Partials/QuoteForm';
 import { Head, useForm } from '@inertiajs/react';
 import { useTrans } from '@/i18n';
 
-export default function Create({ projects, statuses }) {
+export default function Create({ clients, projects, statuses }) {
     const { t } = useTrans();
     const form = useForm({
         code: '',
         title: '',
+        client_id: '',
         client_name: '',
         project_id: '',
         status: 'draft',
@@ -32,6 +33,7 @@ export default function Create({ projects, statuses }) {
             <div className="mx-auto max-w-5xl">
                 <QuoteForm
                     form={form}
+                    clients={clients}
                     projects={projects}
                     statuses={statuses}
                     onSubmit={submit}

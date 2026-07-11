@@ -4,6 +4,7 @@ import Icon from '@/Components/Icon';
 import Modal from '@/Components/Modal';
 import SecondaryButton from '@/Components/SecondaryButton';
 import DangerButton from '@/Components/DangerButton';
+import SignatureBlock from '@/Components/SignatureBlock';
 import { Head, Link, router } from '@inertiajs/react';
 import { formatMoney } from '@/constants';
 import { useTrans } from '@/i18n';
@@ -181,6 +182,9 @@ export default function Show({ quote, can }) {
                     {quote.notes}
                 </div>
             )}
+
+            {/* Signature électronique */}
+            <SignatureBlock record={quote} model="quote" can={can} />
 
             {/* Confirmation suppression */}
             <Modal show={confirmDelete} onClose={() => setConfirmDelete(false)} maxWidth="md">

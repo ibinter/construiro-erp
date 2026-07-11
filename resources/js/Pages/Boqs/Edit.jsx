@@ -3,11 +3,12 @@ import BoqForm from './Partials/BoqForm';
 import { Head, useForm } from '@inertiajs/react';
 import { useTrans } from '@/i18n';
 
-export default function Edit({ boq, projects, statuses, unitPrices }) {
+export default function Edit({ boq, clients, projects, statuses, unitPrices }) {
     const { t } = useTrans();
     const form = useForm({
         code: boq.code ?? '',
         title: boq.title ?? '',
+        client_id: boq.client_id ?? '',
         project_id: boq.project_id ?? '',
         status: boq.status ?? 'draft',
         currency: boq.currency ?? 'XOF',
@@ -31,6 +32,7 @@ export default function Edit({ boq, projects, statuses, unitPrices }) {
             <div className="mx-auto max-w-5xl">
                 <BoqForm
                     form={form}
+                    clients={clients}
                     projects={projects}
                     statuses={statuses}
                     unitPrices={unitPrices}

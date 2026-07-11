@@ -6,6 +6,7 @@ use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\Project;
 use App\Models\User;
+use App\Services\NotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -74,6 +75,15 @@ class InvoiceController extends Controller
 
             return $invoice;
         });
+
+        NotificationService::send(
+            companyId: $request->user()->company_id,
+            userId:    null,
+            type:      'invoice_due',
+            title:     'Nouvelle facture créée',
+            body:      "La facture {$invoice->code} a été enregistrée.",
+            link:      route('invoices.show', $invoice),
+        );
 
         return redirect()->route('invoices.show', $invoice)
             ->with('success', 'Facture créée avec succès.');

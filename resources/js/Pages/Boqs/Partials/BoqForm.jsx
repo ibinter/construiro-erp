@@ -23,7 +23,7 @@ const emptyLine = () => ({ designation: '', unit: 'u', quantity: 1, unit_price: 
  * (BPU) et recalcule le total côté client pour l'affichage.
  * `form` est l'objet retourné par useForm() d'Inertia (avec data.lines : array).
  */
-export default function BoqForm({ form, projects = [], statuses = [], unitPrices = [], onSubmit, submitLabel }) {
+export default function BoqForm({ form, clients = [], projects = [], statuses = [], unitPrices = [], onSubmit, submitLabel }) {
     const { t } = useTrans();
     const { data, setData, errors, processing } = form;
 
@@ -83,6 +83,22 @@ export default function BoqForm({ form, projects = [], statuses = [], unitPrices
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     {field('code', t('Code DQE *'), { placeholder: 'DQE-2026-001' })}
                     {field('title', t('Intitulé *'), { placeholder: t('Devis quantitatif — Villa R+1') })}
+
+                    <div>
+                        <InputLabel htmlFor="client_id" value={t('Client')} />
+                        <select
+                            id="client_id"
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                            value={data.client_id ?? ''}
+                            onChange={(e) => setData('client_id', e.target.value || null)}
+                        >
+                            <option value="">{t('— Aucun —')}</option>
+                            {clients.map((c) => (
+                                <option key={c.id} value={c.id}>{c.name}</option>
+                            ))}
+                        </select>
+                        <InputError message={errors.client_id} className="mt-1" />
+                    </div>
 
                     <div>
                         <InputLabel htmlFor="project_id" value={t('Projet rattaché')} />

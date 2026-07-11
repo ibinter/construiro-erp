@@ -80,6 +80,7 @@ class ContractController extends Controller
             'can'      => [
                 'update' => $request->user()->can('contracts.update'),
                 'delete' => $request->user()->can('contracts.delete'),
+                'sign'   => $request->user()->can('contracts.update'),
             ],
         ]);
     }

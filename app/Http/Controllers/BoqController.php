@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Boq;
+use App\Models\Client;
 use App\Models\Project;
 use App\Models\UnitPrice;
 use App\Models\User;
@@ -52,6 +53,7 @@ class BoqController extends Controller
     public function create(Request $request): Response
     {
         return Inertia::render('Boqs/Create', [
+            'clients'    => $this->clients($request->user()),
             'projects'   => $this->projects($request->user()),
             'statuses'   => Boq::STATUSES,
             'unitPrices' => $this->unitPrices($request->user()),
@@ -103,6 +105,7 @@ class BoqController extends Controller
 
         return Inertia::render('Boqs/Edit', [
             'boq'        => $boq,
+            'clients'    => $this->clients($request->user()),
             'projects'   => $this->projects($request->user()),
             'statuses'   => Boq::STATUSES,
             'unitPrices' => $this->unitPrices($request->user()),
@@ -164,6 +167,7 @@ class BoqController extends Controller
         return $request->validate([
             'code'       => ['required', 'string', 'max:50', Rule::unique('boqs')->where('company_id', $companyId)->ignore($boq?->id)],
             'title'      => ['required', 'string', 'max:255'],
+            'client_id'  => ['nullable', 'integer', Rule::exists('clients', 'id')->where('company_id', $companyId)],
             'status'     => ['required', Rule::in(Boq::STATUSES)],
             'currency'   => ['required', 'string', 'size:3'],
             'project_id' => ['nullable', 'integer', Rule::exists('projects', 'id')->where('company_id', $companyId)],
@@ -175,6 +179,15 @@ class BoqController extends Controller
             'lines.*.quantity'    => ['required', 'numeric', 'min:0'],
             'lines.*.unit_price'  => ['required', 'numeric', 'min:0'],
         ]);
+    }
+
+    /** Liste des clients de l'entreprise, candidats au rattachement. */
+    private function clients(User $user)
+    {
+        return Client::where('company_id', $user->company_id)
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'name']);
     }
 
     /** Liste des projets de l'entreprise, candidats au rattachement. */

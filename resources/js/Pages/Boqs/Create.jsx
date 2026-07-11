@@ -3,11 +3,12 @@ import BoqForm from './Partials/BoqForm';
 import { Head, useForm } from '@inertiajs/react';
 import { useTrans } from '@/i18n';
 
-export default function Create({ projects, statuses, unitPrices }) {
+export default function Create({ clients, projects, statuses, unitPrices }) {
     const { t } = useTrans();
     const form = useForm({
         code: '',
         title: '',
+        client_id: '',
         project_id: '',
         status: 'draft',
         currency: 'XOF',
@@ -28,6 +29,7 @@ export default function Create({ projects, statuses, unitPrices }) {
             <div className="mx-auto max-w-5xl">
                 <BoqForm
                     form={form}
+                    clients={clients}
                     projects={projects}
                     statuses={statuses}
                     unitPrices={unitPrices}

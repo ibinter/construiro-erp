@@ -6,6 +6,7 @@ use App\Models\HseIncident;
 use App\Models\Project;
 use App\Models\Site;
 use App\Models\User;
+use App\Services\NotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -69,6 +70,15 @@ class HseIncidentController extends Controller
         $data['company_id'] = $request->user()->company_id;
 
         $incident = HseIncident::create($data);
+
+        NotificationService::send(
+            companyId: $request->user()->company_id,
+            userId:    null,
+            type:      'qhse_incident',
+            title:     'Incident QHSE déclaré',
+            body:      "[{$incident->severity}] {$incident->title}",
+            link:      route('hse.show', $incident),
+        );
 
         return redirect()->route('hse.show', $incident)
             ->with('success', 'Incident QHSE déclaré avec succès.');

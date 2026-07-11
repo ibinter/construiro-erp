@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Client;
 use App\Models\Project;
 use App\Models\Quote;
 use App\Models\User;
+use App\Services\NotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -51,6 +53,7 @@ class QuoteController extends Controller
     public function create(Request $request): Response
     {
         return Inertia::render('Quotes/Create', [
+            'clients'  => $this->clients($request->user()),
             'projects' => $this->projects($request->user()),
             'statuses' => Quote::STATUSES,
         ]);
@@ -89,6 +92,7 @@ class QuoteController extends Controller
             'can'   => [
                 'update' => $request->user()->can('quotes.update'),
                 'delete' => $request->user()->can('quotes.delete'),
+                'sign'   => $request->user()->can('quotes.update'),
             ],
         ]);
     }
@@ -101,6 +105,7 @@ class QuoteController extends Controller
 
         return Inertia::render('Quotes/Edit', [
             'quote'    => $quote,
+            'clients'  => $this->clients($request->user()),
             'projects' => $this->projects($request->user()),
             'statuses' => Quote::STATUSES,
         ]);
@@ -111,6 +116,7 @@ class QuoteController extends Controller
         $this->authorizeCompany($request->user(), $quote);
 
         $data = $this->validateData($request, $quote);
+        $previousStatus = $quote->status;
 
         DB::transaction(function () use ($quote, $data) {
             $lines = $data['lines'];
@@ -124,6 +130,18 @@ class QuoteController extends Controller
 
             $quote->recalculateTotals();
         });
+
+        // Notification si le devis vient d'être accepté.
+        if ($previousStatus !== 'accepted' && $quote->fresh()->status === 'accepted') {
+            NotificationService::send(
+                companyId: $request->user()->company_id,
+                userId:    null,
+                type:      'quote_accepted',
+                title:     'Devis accepté',
+                body:      "Le devis {$quote->code} a été accepté.",
+                link:      route('quotes.show', $quote),
+            );
+        }
 
         return redirect()->route('quotes.show', $quote)
             ->with('success', 'Devis mis à jour.');
@@ -161,6 +179,7 @@ class QuoteController extends Controller
         return $request->validate([
             'code'        => ['required', 'string', 'max:50', Rule::unique('quotes')->where('company_id', $companyId)->ignore($quote?->id)],
             'title'       => ['required', 'string', 'max:255'],
+            'client_id'   => ['nullable', 'integer', Rule::exists('clients', 'id')->where('company_id', $companyId)],
             'client_name' => ['nullable', 'string', 'max:255'],
             'status'      => ['required', Rule::in(Quote::STATUSES)],
             'currency'    => ['required', 'string', 'size:3'],
@@ -176,6 +195,15 @@ class QuoteController extends Controller
             'lines.*.quantity'       => ['required', 'numeric', 'min:0'],
             'lines.*.unit_price'     => ['required', 'numeric', 'min:0'],
         ]);
+    }
+
+    /** Liste des clients de l'entreprise, candidats au rattachement. */
+    private function clients(User $user)
+    {
+        return Client::where('company_id', $user->company_id)
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'name']);
     }
 
     /** Liste des projets de l'entreprise, candidats au rattachement. */

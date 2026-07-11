@@ -59,6 +59,8 @@ use App\Http\Controllers\SignatureController;
 use App\Http\Controllers\BiController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AiAssistantController;
+use App\Http\Controllers\MobileMoneyController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -74,6 +76,13 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // --- Notifications internes (cloche) ----------------------------------------
+    Route::prefix('notifications')->group(function () {
+        Route::get('/',                         [NotificationController::class, 'index'])->name('notifications.index');
+        Route::patch('/{notification}/read',    [NotificationController::class, 'markRead'])->name('notifications.read');
+        Route::post('/read-all',                [NotificationController::class, 'markAllRead'])->name('notifications.readAll');
+    });
 
     // --- Module Projets --------------------------------------------------------
     Route::get('/projects',            [ProjectController::class, 'index'])->middleware('can:projects.view')->name('projects.index');
@@ -107,6 +116,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/invoices/{invoice}',    [InvoiceController::class, 'update'])->middleware('can:invoicing.update')->name('invoices.update');
     Route::delete('/invoices/{invoice}', [InvoiceController::class, 'destroy'])->middleware('can:invoicing.delete')->name('invoices.destroy');
     Route::post('/invoices/{invoice}/payment', [InvoiceController::class, 'registerPayment'])->middleware('can:invoicing.update')->name('invoices.payment');
+    Route::post('/invoices/{invoice}/mobile-money', [MobileMoneyController::class, 'initiate'])->middleware('can:invoicing.update')->name('mobile-money.initiate');
 
     // --- Module Matériaux ------------------------------------------------------
     Route::get('/materials',                [MaterialController::class, 'index'])->middleware('can:materials.view')->name('materials.index');
@@ -375,6 +385,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/documents/{document}',  [DocumentController::class, 'destroy'])->middleware('can:documents.delete')->name('documents.destroy');
 
     // --- Signature électronique ------------------------------------------------
+    Route::post('/sign/{model}/{id}',                     [SignatureController::class, 'sign'])->name('signature.sign');
     Route::get('/e-signature',                            [SignatureController::class, 'index'])->middleware('can:e_signature.view')->name('e_signature.index');
     Route::post('/e-signature',                           [SignatureController::class, 'store'])->middleware('can:e_signature.create')->name('e_signature.store');
     Route::post('/e-signature/{signatureRequest}/status', [SignatureController::class, 'updateStatus'])->middleware('can:e_signature.update')->name('e_signature.status');
@@ -421,5 +432,10 @@ Route::middleware('auth')->group(function () {
 
 // Changement de langue (accessible connecté ou non).
 Route::post('/locale/{locale}', [LocaleController::class, 'update'])->name('locale.update');
+
+// --- Webhooks Mobile Money (publics — hors CSRF et auth) -------------------
+Route::post('/webhooks/mobile-money/{operator}', [MobileMoneyController::class, 'webhook'])
+    ->name('mobile-money.webhook')
+    ->withoutMiddleware(['App\Http\Middleware\VerifyCsrfToken']);
 
 require __DIR__.'/auth.php';

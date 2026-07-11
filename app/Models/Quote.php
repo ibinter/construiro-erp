@@ -20,11 +20,12 @@ class Quote extends Model
     public const STATUSES = ['draft', 'sent', 'accepted', 'rejected', 'expired'];
 
     protected $fillable = [
-        'company_id', 'project_id',
+        'company_id', 'project_id', 'client_id',
         'code', 'title', 'client_name',
         'status', 'currency', 'tax_rate',
         'subtotal', 'tax_amount', 'total',
         'date', 'valid_until', 'notes',
+        'signed_at', 'signed_by', 'signature_hash', 'signature_ip',
     ];
 
     protected $casts = [
@@ -34,6 +35,7 @@ class Quote extends Model
         'total'       => 'decimal:2',
         'date'        => 'date',
         'valid_until' => 'date',
+        'signed_at'   => 'datetime',
     ];
 
     public function company(): BelongsTo
@@ -44,6 +46,23 @@ class Quote extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function client(): BelongsTo
+    {
+        return $this->belongsTo(Client::class);
+    }
+
+    /**
+     * Accesseur de compatibilité rétroactive : retourne le nom du client
+     * depuis la relation FK si disponible, sinon depuis le champ texte legacy.
+     */
+    public function getClientNameAttribute(): string
+    {
+        if (array_key_exists('client_id', $this->attributes) && $this->client_id !== null) {
+            return $this->client?->name ?? $this->attributes['client_name'] ?? '';
+        }
+        return $this->attributes['client_name'] ?? '';
     }
 
     public function lines(): HasMany
