@@ -384,6 +384,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // --- Rapports & BI / Assistant IA ------------------------------------------
     Route::get('/reports', [ReportController::class, 'index'])->middleware('can:reports.view')->name('reports.index');
+    Route::get('/bi/pdf',  [BiController::class, 'pdf'])->middleware('can:reports.view')->name('bi.pdf');
     Route::get('/ai',      [AiAssistantController::class, 'index'])->middleware('can:ai.view')->name('ai.index');
     Route::post('/ai/ask', [AiAssistantController::class, 'ask'])->middleware('can:ai.view')->name('ai.ask');
 
