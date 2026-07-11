@@ -36,6 +36,11 @@ $zip->close();
 unlink($zipPath);
 logMsg('Extraction terminée');
 
+// Forcer index.php et .htaccess corrects à la racine
+file_put_contents("$dir/index.php", "<?php\nrequire __DIR__.'/public/index.php';\n");
+file_put_contents("$dir/.htaccess", "<IfModule mod_rewrite.c>\n    RewriteEngine On\n    RewriteCond %{REQUEST_URI} !^/public/\n    RewriteRule ^(.*)$ public/\$1 [L]\n</IfModule>\n");
+logMsg('index.php + .htaccess forcés');
+
 // 3. Migrations via Laravel kernel
 chdir($dir);
 try {
