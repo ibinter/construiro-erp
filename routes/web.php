@@ -67,12 +67,15 @@ use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboard;
 use App\Http\Controllers\SuperAdmin\ClientController as SuperAdminClientController;
 use App\Http\Controllers\SuperAdmin\ProspectController as SuperAdminProspectController;
 use App\Http\Controllers\SuperAdmin\SupportSessionController;
+use App\Http\Controllers\SuperAdmin\LandingController as SuperAdminLandingController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\LegalController;
 use App\Http\Controllers\DemoRequestController;
 use App\Http\Controllers\SupportController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\UserGuideController;
+use App\Models\LandingFaq;
+use App\Models\LandingTemoignage;
 use App\Models\SubscriptionPlan;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -92,21 +95,28 @@ Route::get('/', function () {
         'trial_days' => $p->trial_days,
     ])->toArray();
 
-    // FAQ statiques — pourra être rendu dynamique via table faq dans une prochaine version
-    $faqs = [
-        ['question' => 'Puis-je utiliser CONSTRUIRO sans connexion Internet ?', 'answer' => 'CONSTRUIRO est une application web et nécessite une connexion Internet. Une version offline partielle est prévue dans une prochaine mise à jour.'],
-        ['question' => 'Les données de mon entreprise sont-elles sécurisées ?', 'answer' => 'Oui. Chaque entreprise dispose de ses propres données isolées. Personne d\'autre ne peut accéder à vos informations.'],
-        ['question' => 'Puis-je importer mes données existantes ?', 'answer' => 'Oui, CONSTRUIRO supporte l\'import via fichiers Excel pour les matériaux, clients, fournisseurs et plan comptable.'],
-        ['question' => 'Combien de temps dure la mise en place ?', 'answer' => 'La plupart des entreprises sont opérationnelles en 48 heures. Notre équipe vous accompagne lors de l\'onboarding.'],
-        ['question' => 'Y a-t-il un contrat d\'engagement ?', 'answer' => 'Non. L\'abonnement mensuel est sans engagement. Vous pouvez annuler à tout moment depuis votre espace.'],
-    ];
+    $locale = app()->getLocale();
+    $faqs = LandingFaq::active()->get()->map(fn($f) => [
+        'question' => $locale === 'en' && $f->question_en ? $f->question_en : $f->question_fr,
+        'answer'   => $locale === 'en' && $f->answer_en   ? $f->answer_en   : $f->answer_fr,
+    ])->toArray();
+
+    $temoignages = LandingTemoignage::active()->get()->map(fn($t) => [
+        'initiales' => $t->initiales,
+        'nom'       => $t->nom,
+        'poste'     => $t->poste,
+        'ville'     => $t->ville,
+        'texte'     => $locale === 'en' && $t->texte_en ? $t->texte_en : $t->texte_fr,
+        'rating'    => $t->rating,
+    ])->toArray();
 
     return Inertia::render('Welcome', [
-        'canLogin'    => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'auth'        => ['user' => auth()->user()],
-        'plans'       => $plans,
-        'faqs'        => $faqs,
+        'canLogin'      => Route::has('login'),
+        'canRegister'   => Route::has('register'),
+        'auth'          => ['user' => auth()->user()],
+        'plans'         => $plans,
+        'faqs'          => $faqs,
+        'temoignages'   => $temoignages,
     ]);
 });
 
@@ -273,6 +283,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/support-sessions',                      [SupportSessionController::class, 'index'])->name('superadmin.support-sessions.index');
         Route::post('/support-sessions',                     [SupportSessionController::class, 'create'])->name('superadmin.support-sessions.create');
         Route::post('/support-sessions/{session}/end',       [SupportSessionController::class, 'end'])->name('superadmin.support-sessions.end');
+
+        // Landing page management
+        Route::get('/landing',                                          [SuperAdminLandingController::class, 'index'])->name('superadmin.landing.index');
+        Route::post('/landing/faqs',                                    [SuperAdminLandingController::class, 'faqStore'])->name('superadmin.landing.faq.store');
+        Route::patch('/landing/faqs/{faq}',                             [SuperAdminLandingController::class, 'faqUpdate'])->name('superadmin.landing.faq.update');
+        Route::delete('/landing/faqs/{faq}',                            [SuperAdminLandingController::class, 'faqDestroy'])->name('superadmin.landing.faq.destroy');
+        Route::post('/landing/temoignages',                             [SuperAdminLandingController::class, 'temoignageStore'])->name('superadmin.landing.temoignage.store');
+        Route::patch('/landing/temoignages/{temoignage}',               [SuperAdminLandingController::class, 'temoignageUpdate'])->name('superadmin.landing.temoignage.update');
+        Route::delete('/landing/temoignages/{temoignage}',              [SuperAdminLandingController::class, 'temoignageDestroy'])->name('superadmin.landing.temoignage.destroy');
+        Route::post('/landing/settings',                                [SuperAdminLandingController::class, 'settingsUpdate'])->name('superadmin.landing.settings.update');
+        Route::patch('/landing/legal/{legalPage}/toggle',               [SuperAdminLandingController::class, 'legalToggle'])->name('superadmin.landing.legal.toggle');
     });
 
     // --- Guide utilisateur PDF --------------------------------------------------

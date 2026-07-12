@@ -603,9 +603,10 @@ function TopBar() {
 }
 
 /* ── Page principale ─────────────────────────────────────────── */
-export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs = [] }) {
+export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs = [], temoignages: temoignagesProp = null }) {
     const { t } = useTrans();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const temoignagesList = temoignagesProp ?? temoignages;
 
     return (
         <>
@@ -1147,7 +1148,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                             <h2 className="text-4xl font-black" style={{ color: NAVY }}>{t('Ils font confiance à CONSTRUIRO')}</h2>
                         </div>
                         <div className="grid md:grid-cols-3 gap-6">
-                            {temoignages.map((t) => (
+                            {temoignagesList.map((t) => (
                                 <div key={t.nom}
                                     className="bg-white rounded-2xl p-7 flex flex-col border border-gray-100 hover:shadow-lg transition-all">
                                     <div className="flex mb-4">

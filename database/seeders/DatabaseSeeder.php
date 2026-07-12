@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
             SubscriptionPlanSeeder::class,
             LegalPageSeeder::class,
+            LandingSeeder::class,
         ]);
 
         // 2) Entreprise + agence de démonstration.
