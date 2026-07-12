@@ -41,35 +41,25 @@ file_put_contents("$dir/index.php", "<?php\nrequire __DIR__.'/public/index.php';
 file_put_contents("$dir/.htaccess", "<IfModule mod_rewrite.c>\n    RewriteEngine On\n    RewriteCond %{REQUEST_URI} !^/public/\n    RewriteRule ^(.*)$ public/\$1 [L]\n</IfModule>\n");
 logMsg('index.php + .htaccess forcés');
 
-// 3. Migrations via Laravel kernel
-chdir($dir);
-try {
-    require_once "$dir/vendor/autoload.php";
-    $app    = require_once "$dir/bootstrap/app.php";
-    $kernel = $app->make(\Illuminate\Contracts\Console\Kernel::class);
+// 3. Composer install (sans dev)
+$composerOut = shell_exec("cd $dir && composer install --no-dev --optimize-autoloader --no-interaction 2>&1");
+logMsg('composer install : ' . (str_contains($composerOut ?? '', 'Generating') ? 'OK' : substr($composerOut ?? '', -100)));
 
-    foreach ([
-        ['migrate',      ['--force' => true]],
-        ['config:cache', []],
-        ['route:cache',  []],
-        ['view:cache',   []],
-    ] as [$cmd, $args]) {
-        try {
-            ob_start();
-            $kernel->call($cmd, $args);
-            ob_end_clean();
-            logMsg("$cmd : OK");
-        } catch (\Throwable $e) {
-            ob_end_clean();
-            logMsg("$cmd ERREUR : " . $e->getMessage());
-        }
-    }
-} catch (\Throwable $e) {
-    logMsg('Bootstrap erreur : ' . $e->getMessage());
+// 4. Permissions avant artisan (php-fpm = www-data doit pouvoir écrire)
+shell_exec("chown -R www-data:www-data $dir/storage $dir/bootstrap/cache 2>&1");
+shell_exec("chmod -R 775 $dir/storage $dir/bootstrap/cache 2>&1");
+
+// 5. Artisan via sudo -u www-data pour que les fichiers de cache appartiennent à www-data
+foreach ([
+    "migrate --force",
+    "config:cache",
+    "route:cache",
+    "view:cache",
+] as $cmd) {
+    $out = shell_exec("cd $dir && sudo -u www-data php artisan $cmd 2>&1");
+    logMsg("$cmd : " . (str_contains($out ?? '', 'successfully') || str_contains($out ?? '', 'DONE') ? 'OK' : substr($out ?? '', -100)));
 }
 
-// 4. Permissions
-shell_exec("chmod -R 775 $dir/storage $dir/bootstrap/cache 2>&1");
 logMsg('Permissions OK');
 logMsg('=== Déploiement terminé ===');
 

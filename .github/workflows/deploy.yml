@@ -21,7 +21,9 @@ jobs:
 
       - name: Envoyer le zip au serveur
         run: |
-          curl -s -X POST \
+          RESULT=$(curl -s -X POST \
             -F "secret=${{ secrets.DEPLOY_SECRET }}" \
             -F "zip=@deploy.zip" \
-            http://construiro.com/public/deploy-receiver.php
+            https://construiro.com/public/deploy-receiver.php)
+          echo "Résultat: $RESULT"
+          echo "$RESULT" | grep -q "DEPLOY_OK" && echo "✅ Déploiement réussi" || (echo "❌ Échec: $RESULT" && exit 1)
