@@ -5,64 +5,71 @@ if (($_POST['secret'] ?? '') !== 'construiro_deploy_2026') {
     die('Accès refusé');
 }
 
-$dir = dirname(__DIR__);
-$log = "$dir/storage/logs/deploy.log";
-
-// PATH étendu pour que npm/node soient trouvés par shell_exec (PHP tourne sans PATH complet)
-$env = 'export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/nvm/versions/node/$(ls /usr/local/nvm/versions/node/ 2>/dev/null | tail -1)/bin:/root/.nvm/versions/node/$(ls /root/.nvm/versions/node/ 2>/dev/null | tail -1)/bin:/home/$(ls /home/ 2>/dev/null | head -1)/.nvm/versions/node/$(ls /home/$(ls /home/ 2>/dev/null | head -1)/.nvm/versions/node/ 2>/dev/null | tail -1)/bin 2>/dev/null; which node; node -v; which npm; npm -v';
+$dir  = dirname(__DIR__);
+$log  = "$dir/storage/logs/deploy.log";
+$script = "$dir/storage/deploy-build.sh";
 
 function logMsg(string $msg): void {
     global $log;
     file_put_contents($log, date('[Y-m-d H:i:s] ') . $msg . "\n", FILE_APPEND);
 }
 
-function runCmd(string $cmd): string {
-    global $dir;
-    $path = 'PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/nvm/versions/node/v22.0.0/bin:/usr/local/nvm/versions/node/v20.0.0/bin';
-    $fullCmd = "export $path; cd $dir && $cmd 2>&1";
-    $out = shell_exec($fullCmd);
-    return trim((string) $out);
-}
-
 logMsg('=== Déploiement démarré ===');
 
-// Détection node/npm
-$nodePath = trim((string) shell_exec('find /usr/local/nvm /root/.nvm /home -name "node" -type f 2>/dev/null | head -1'));
-$npmPath  = trim((string) shell_exec('find /usr/local/nvm /root/.nvm /home -name "npm"  -type f 2>/dev/null | head -1'));
-$nodeBin  = $nodePath ? dirname($nodePath) : '/usr/bin';
-logMsg("node trouvé : $nodePath | npm : $npmPath | bin dir : $nodeBin");
-
-function runWithNode(string $cmd): string {
-    global $dir, $nodeBin;
-    $fullCmd = "export PATH=$nodeBin:/usr/local/bin:/usr/bin:/bin; cd $dir && $cmd 2>&1";
-    return trim((string) shell_exec($fullCmd));
-}
-
-// 1. Git pull
+// 1. Git pull (rapide, OK en synchrone)
 $out = shell_exec("cd $dir && git pull origin master 2>&1");
 logMsg('git pull : ' . trim($out));
 
-// 2. Composer install (sans dev)
-$out = shell_exec("cd $dir && /usr/bin/composer install --no-dev --optimize-autoloader --no-interaction 2>&1 | tail -3");
-logMsg('composer : ' . trim($out));
+// 2. Écrire un script bash qui sera exécuté en arrière-plan
+//    Le script bash a accès au PATH complet du système
+file_put_contents($script, <<<BASH
+#!/bin/bash
+set -e
+export HOME=/root
+export NVM_DIR="\$HOME/.nvm"
+[ -s "\$NVM_DIR/nvm.sh" ] && source "\$NVM_DIR/nvm.sh"
+# Fallback : chercher node dans les emplacements courants Ubuntu
+export PATH="\$PATH:/usr/local/bin:/usr/bin:/bin:\$NVM_DIR/versions/node/\$(ls \$NVM_DIR/versions/node/ 2>/dev/null | sort -V | tail -1)/bin"
 
-// 3. Build assets front-end (Vite/React)
-$out = runWithNode('node -v && npm -v');
-logMsg('node/npm version : ' . $out);
-$out = runWithNode('npm ci --prefer-offline');
-logMsg('npm ci : ' . substr($out, -500));
-$out = runWithNode('npm run build');
-logMsg('npm build : ' . substr($out, -800));
+LOG="$log"
+DIR="$dir"
 
-// 4. Artisan en tant que www-data
-foreach (['migrate --force', 'config:cache', 'route:cache', 'view:cache'] as $cmd) {
-    $out = shell_exec("cd $dir && sudo -u www-data php artisan $cmd 2>&1 | tail -2");
-    logMsg("$cmd : " . trim($out));
-}
+log() { echo "[\$(date '+%Y-%m-%d %H:%M:%S')] \$1" >> "\$LOG"; }
 
-// 4. Permissions
-shell_exec("chown -R www-data:www-data $dir/storage $dir/bootstrap/cache 2>&1");
-logMsg('Permissions OK');
-logMsg('=== Déploiement terminé ===');
+log "--- Script build démarré (PID=\$\$) ---"
+log "node: \$(which node 2>/dev/null || echo INTROUVABLE) | \$(node -v 2>/dev/null || echo N/A)"
+log "npm:  \$(which npm  2>/dev/null || echo INTROUVABLE) | \$(npm -v  2>/dev/null || echo N/A)"
 
+cd "\$DIR"
+
+log "--- composer install ---"
+/usr/bin/composer install --no-dev --optimize-autoloader --no-interaction >> "\$LOG" 2>&1
+log "composer : OK"
+
+log "--- npm ci ---"
+npm ci --prefer-offline >> "\$LOG" 2>&1 && log "npm ci : OK" || log "npm ci : ECHEC"
+
+log "--- npm run build ---"
+npm run build >> "\$LOG" 2>&1 && log "npm build : OK" || log "npm build : ECHEC"
+
+log "--- artisan ---"
+php artisan migrate --force >> "\$LOG" 2>&1
+php artisan config:cache    >> "\$LOG" 2>&1
+php artisan route:cache     >> "\$LOG" 2>&1
+php artisan view:cache      >> "\$LOG" 2>&1
+
+chown -R www-data:www-data "\$DIR/storage" "\$DIR/bootstrap/cache" 2>/dev/null
+log "--- Déploiement terminé ---"
+BASH
+);
+chmod(0755, $script);
+
+// 3. Lancer le script en arrière-plan (nohup) — PHP répond immédiatement
+//    stderr redirigé dans le log aussi
+shell_exec("nohup bash $script >> $log 2>&1 &");
+
+logMsg('Script build lancé en arrière-plan — vérifiez deploy.log dans quelques minutes');
+logMsg('=== Réponse envoyée à GitHub Actions ===');
+
+// Répondre immédiatement avant que PHP timeout
 echo 'DEPLOY_OK';
