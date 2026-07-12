@@ -613,15 +613,18 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                 <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-wider">Liens rapides</h4>
                                 <ul className="space-y-2.5 text-sm">
                                     {[
-                                        { label: 'Modules',       href: '#modules' },
-                                        { label: 'Tarifs',        href: '#tarifs' },
-                                        { label: 'Témoignages',   href: '#temoignages' },
-                                        { label: 'Démonstration', href: '#demo' },
-                                        { label: 'Connexion',     href: '/login' },
-                                        { label: 'Inscription',   href: '/register' },
+                                        { label: 'Modules',       href: '#modules',      isAnchor: true },
+                                        { label: 'Tarifs',        href: '#tarifs',       isAnchor: true },
+                                        { label: 'Témoignages',   href: '#temoignages',  isAnchor: true },
+                                        { label: 'Démonstration', href: '#demo',         isAnchor: true },
+                                        { label: 'Contact',       href: '#demo',         isAnchor: true },
+                                        { label: 'Connexion',     href: route('login'),   isAnchor: false },
                                     ].map((l) => (
                                         <li key={l.label}>
-                                            <a href={l.href} className="hover:text-[#F58220] transition">{l.label}</a>
+                                            {l.isAnchor
+                                                ? <a href={l.href} className="hover:text-[#F58220] transition">{l.label}</a>
+                                                : <Link href={l.href} className="hover:text-[#F58220] transition">{l.label}</Link>
+                                            }
                                         </li>
                                     ))}
                                 </ul>
