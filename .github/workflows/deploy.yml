@@ -30,7 +30,17 @@ jobs:
           zip -r ../assets.zip build/
           echo "Taille du zip : $(du -sh ../assets.zip | cut -f1)"
 
-      - name: Déployer sur le VPS (git pull + assets + artisan)
+      - name: Git pull via ancien endpoint (bootstrap deploy-v2.php)
+        run: |
+          # L'ancien endpoint fait git pull → installe deploy-v2.php sur le VPS
+          curl -s --max-time 60 \
+            --resolve construiro.com:443:185.98.139.38 \
+            -X POST \
+            -d "secret=${{ secrets.DEPLOY_SECRET }}" \
+            https://construiro.com/deploy-receiver.php || true
+          echo "Git pull déclenché (résultat ignoré)"
+
+      - name: Déployer assets via deploy-v2.php (nouveau endpoint sans OPcache)
         run: |
           RESULT=$(curl -s --max-time 120 \
             --resolve construiro.com:443:185.98.139.38 \
