@@ -13,5 +13,5 @@
 <div class="cta-block">
     <a href="{{ $loginUrl }}" class="cta-btn">Accéder à mon espace →</a>
 </div>
-<p>Si vous avez des questions, notre équipe est disponible à <a href="mailto:support@ibigsoft.com" style="color:#ea580c">support@ibigsoft.com</a>.</p>
+<p>Si vous avez des questions, notre équipe est disponible à <a href="mailto:support@ibigsoft.com" style="color:#F58220">support@ibigsoft.com</a>.</p>
 @endsection

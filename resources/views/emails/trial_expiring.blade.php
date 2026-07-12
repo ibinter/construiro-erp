@@ -7,5 +7,5 @@
 <div class="cta-block">
     <a href="{{ $renewUrl }}" class="cta-btn">{{ $isTrial ? 'Activer mon abonnement' : 'Renouveler' }} →</a>
 </div>
-<p style="font-size:13px;color:#94a3b8;text-align:center">Des questions ? Écrivez-nous à <a href="mailto:support@ibigsoft.com" style="color:#ea580c">support@ibigsoft.com</a></p>
+<p style="font-size:13px;color:#94a3b8;text-align:center">Des questions ? Écrivez-nous à <a href="mailto:support@ibigsoft.com" style="color:#F58220">support@ibigsoft.com</a></p>
 @endsection

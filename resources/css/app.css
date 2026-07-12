@@ -5,11 +5,13 @@
 /* ── CONSTRUIRO Design Tokens ──────────────────────────────────────── */
 @layer base {
     :root {
-        /* Brand */
-        --color-brand:        #ea580c;
-        --color-brand-light:  #fb923c;
-        --color-brand-dark:   #c2410c;
-        --color-brand-subtle: #fff7ed;
+        /* Brand — Orange exact logo CONSTRUIRO #F58220 */
+        --color-brand:        #F58220;
+        --color-brand-light:  #f99a38;
+        --color-brand-dark:   #e06b10;
+        --color-brand-subtle: #fff8f0;
+        --color-brand-navy:   #1E1E1E;
+        --color-brand-gray:   #5F6368;
 
         /* Surface */
         --color-surface:        #f8fafc;
@@ -33,7 +35,7 @@
         --sidebar-bg:           #0f172a;
         --sidebar-text:         #94a3b8;
         --sidebar-text-active:  #ffffff;
-        --sidebar-accent:       #ea580c;
+        --sidebar-accent:       #F58220;
         --sidebar-width:        260px;
 
         /* Transitions */

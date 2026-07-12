@@ -20,23 +20,25 @@ export default {
             colors: {
                 // ── CONSTRUIRO Brand Palette ──────────────────────────────
                 primary: {
-                    50:  '#fff7ed',
+                    50:  '#fff8f0',
                     100: '#ffedd5',
-                    200: '#fed7aa',
-                    300: '#fdba74',
-                    400: '#fb923c',
-                    500: '#f97316',
-                    600: '#ea580c', // PRIMARY — Orange CONSTRUIRO
-                    700: '#c2410c',
-                    800: '#9a3412',
-                    900: '#7c2d12',
-                    950: '#431407',
+                    200: '#fdd5a0',
+                    300: '#fbb868',
+                    400: '#f99a38',
+                    500: '#F58220', // PRIMARY — Orange exact logo CONSTRUIRO
+                    600: '#e06b10',
+                    700: '#c2540c',
+                    800: '#9a3d0a',
+                    900: '#7c2d08',
+                    950: '#3f1504',
                 },
                 brand: {
-                    DEFAULT: '#ea580c',
-                    light:   '#fb923c',
-                    dark:    '#c2410c',
-                    subtle:  '#fff7ed',
+                    DEFAULT: '#F58220', // Orange exact logo #F58220
+                    light:   '#f99a38',
+                    dark:    '#e06b10',
+                    subtle:  '#fff8f0',
+                    navy:    '#1E1E1E', // Navy sombre du logo
+                    gray:    '#5F6368', // Gris moyen
                 },
                 // ── Neutral (slate — professionnel BTP) ───────────────────
                 surface: {

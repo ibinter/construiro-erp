@@ -1,4 +1,5 @@
 import { Head, Link, useForm } from '@inertiajs/react';
+import ConstruiroLogo from '@/Components/ConstruiroLogo';
 
 const modules = [
     { icon: '🏗️', titre: 'Gestion de Projets', desc: 'Planification, suivi d\'avancement, jalons, tâches et budget par projet BTP.' },
@@ -118,10 +119,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                 {/* NAV */}
                 <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-gray-100 shadow-sm">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-                        <div className="flex items-center gap-2">
-                            <span className="text-2xl font-black text-orange-600 tracking-tight">CONSTRUIRO</span>
-                            <span className="hidden sm:inline text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-semibold">ERP BTP</span>
-                        </div>
+                        <ConstruiroLogo size="sm" />
                         <div className="flex items-center gap-4">
                             <a href="#modules" className="hidden md:block text-sm text-gray-600 hover:text-orange-600">Modules</a>
                             <a href="#tarifs" className="hidden md:block text-sm text-gray-600 hover:text-orange-600">Tarifs</a>
@@ -179,7 +177,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                 </section>
 
                 {/* STATS */}
-                <section className="bg-slate-900 text-white py-10">
+                <section className="bg-[#1E1E1E] text-white py-10">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
                             {[
@@ -347,12 +345,12 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                 </section>
 
                 {/* FOOTER */}
-                <footer className="bg-slate-900 text-slate-400 py-10">
+                <footer className="bg-[#1E1E1E] text-slate-400 py-10">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                             <div>
-                                <span className="text-white font-black text-xl">CONSTRUIRO</span>
-                                <p className="text-xs mt-1">© {new Date().getFullYear()} IBIG Soft — IBIG SARL · Tous droits réservés</p>
+                                <ConstruiroLogo size="sm" dark />
+                                <p className="text-xs mt-2 text-slate-500">© {new Date().getFullYear()} IBIG Soft — IBIG SARL · Tous droits réservés</p>
                             </div>
                             <div className="flex gap-6 text-sm">
                                 <Link href="/legal/cgu" className="hover:text-orange-400 transition">CGU</Link>

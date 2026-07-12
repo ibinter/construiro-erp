@@ -1,5 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
+import ConstruiroLogo from '@/Components/ConstruiroLogo';
 import { useTrans } from '@/i18n';
 
 /**
@@ -19,18 +20,8 @@ export default function Sidebar({ open = true }) {
             className={`${open ? 'w-64' : 'w-0'} sticky top-0 z-30 flex h-screen shrink-0 flex-col overflow-hidden border-r border-slate-200 bg-slate-900 text-slate-200 transition-all duration-200 dark:border-slate-800`}
         >
             {/* Marque */}
-            <div className="flex items-center gap-2 px-5 py-4">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-orange-500 font-bold text-white">
-                    C
-                </div>
-                <div className="leading-tight">
-                    <div className="text-sm font-bold tracking-wide text-white">
-                        CONSTRUIRO
-                    </div>
-                    <div className="text-[10px] font-medium uppercase tracking-widest text-orange-400">
-                        ERP
-                    </div>
-                </div>
+            <div className="flex items-center px-5 py-4">
+                <ConstruiroLogo size="sm" dark />
             </div>
 
             {/* En-tête du portail actif */}
