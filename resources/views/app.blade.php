@@ -6,6 +6,17 @@
 
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
+        <!-- CSRF -->
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+
+        <!-- PWA -->
+        <link rel="manifest" href="/manifest.json">
+        <meta name="theme-color" content="#F58220">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="apple-mobile-web-app-title" content="CONSTRUIRO">
+        <link rel="apple-touch-icon" href="/icons/icon-192.png">
+
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
@@ -18,5 +29,23 @@
     </head>
     <body class="font-sans antialiased">
         @inertia
+        <script>
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/sw.js')
+                        .then(reg => {
+                            reg.addEventListener('updatefound', () => {
+                                const newWorker = reg.installing;
+                                newWorker.addEventListener('statechange', () => {
+                                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                        window.dispatchEvent(new CustomEvent('sw-update-available'));
+                                    }
+                                });
+                            });
+                        })
+                        .catch(() => {});
+                });
+            }
+        </script>
     </body>
 </html>

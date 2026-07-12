@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CONSTRUIRO — Hors connexion</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#1E1E1E;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+.logo{font-size:28px;font-weight:900;letter-spacing:-0.03em;margin-bottom:8px}
+.logo span{color:#F58220}
+.erp{font-size:10px;color:#F58220;letter-spacing:0.25em;font-weight:700;margin-bottom:40px}
+.icon{font-size:64px;margin-bottom:24px}
+h1{font-size:24px;font-weight:800;margin-bottom:12px}
+p{color:#94a3b8;font-size:15px;line-height:1.6;max-width:380px;margin:0 auto 32px}
+button{background:#F58220;color:#fff;border:none;padding:14px 32px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;transition:opacity .2s}
+button:hover{opacity:.85}
+.hint{font-size:12px;color:#475569;margin-top:16px}
+</style>
+</head>
+<body>
+<div class="logo">CONSTRUIR<span>O</span></div>
+<div class="erp">— ERP —</div>
+<div class="icon">📡</div>
+<h1>Vous êtes hors connexion</h1>
+<p>CONSTRUIRO ERP nécessite une connexion internet pour fonctionner correctement. Vérifiez votre connexion et réessayez.</p>
+<button onclick="window.location.reload()">Réessayer</button>
+<p class="hint">Certaines pages récemment visitées peuvent être disponibles hors ligne.</p>
+</body>
+</html>

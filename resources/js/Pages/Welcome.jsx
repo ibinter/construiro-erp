@@ -1,6 +1,8 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import ConstruiroLogo from '@/Components/ConstruiroLogo';
+import SaraFloating from '@/Components/SaraFloating';
+import PwaBanner from '@/Components/PwaBanner';
 
 const BRAND = '#F58220';
 const NAVY  = '#1E1E1E';
@@ -1411,6 +1413,10 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                 </footer>
 
             </div>
+
+            {/* ── FLOTTANTS ────────────────────────────────────── */}
+            <SaraFloating />
+            <PwaBanner />
         </>
     );
 }

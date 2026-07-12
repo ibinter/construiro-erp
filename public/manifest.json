@@ -1,0 +1,95 @@
+{
+  "name": "CONSTRUIRO ERP",
+  "short_name": "CONSTRUIRO",
+  "description": "L'ERP BTP conçu pour les entreprises de construction et de travaux publics en Afrique.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#F58220",
+  "background_color": "#1E1E1E",
+  "lang": "fr-FR",
+  "scope": "/",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "/icons/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Tableau de bord CONSTRUIRO ERP"
+    },
+    {
+      "src": "/screenshots/mobile.jpg",
+      "sizes": "390x844",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "CONSTRUIRO sur mobile"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Tableau de bord",
+      "short_name": "Dashboard",
+      "description": "Accéder au tableau de bord",
+      "url": "/dashboard",
+      "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Demander une démo",
+      "short_name": "Démo",
+      "description": "Demander une démonstration gratuite",
+      "url": "/#demo",
+      "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96" }]
+    }
+  ]
+}
