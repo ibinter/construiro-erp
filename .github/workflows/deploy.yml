@@ -11,10 +11,20 @@ jobs:
       - name: Déclencher le déploiement sur le VPS
         run: |
           # Utilise l'IP directe avec SNI pour contourner les problèmes DNS
-          RESULT=$(curl -s --max-time 120 \
+          # --max-time 300 car npm run build peut prendre 2-3 min
+          RESULT=$(curl -s --max-time 300 \
             --resolve construiro.com:443:185.98.139.38 \
             -X POST \
             -d "secret=${{ secrets.DEPLOY_SECRET }}" \
             https://construiro.com/deploy-receiver.php)
-          echo "Résultat: $RESULT"
+          echo "Résultat brut: $RESULT"
           echo "$RESULT" | grep -q "DEPLOY_OK" && echo "✅ Déploiement réussi" || (echo "❌ Échec: $RESULT" && exit 1)
+
+      - name: Récupérer les logs de déploiement
+        if: always()
+        run: |
+          LOG=$(curl -s --max-time 30 \
+            --resolve construiro.com:443:185.98.139.38 \
+            "https://construiro.com/deploy-log.php?secret=${{ secrets.DEPLOY_SECRET }}")
+          echo "=== Logs VPS ==="
+          echo "$LOG"
