@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Employee extends Model
 {
+    use BelongsToCompany;
+    use Auditable;
     use HasFactory, SoftDeletes;
 
     public const DEPARTMENTS = ['chantier', 'bureau', 'direction', 'logistique', 'autre'];

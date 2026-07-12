@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Project extends Model
 {
+    use BelongsToCompany;
+    use Auditable;
     use HasFactory, SoftDeletes;
 
     public const STATUSES = ['draft', 'in_progress', 'on_hold', 'completed', 'cancelled'];

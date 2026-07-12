@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class Attendance extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     public const STATUSES = ['present', 'absent', 'leave', 'half_day'];

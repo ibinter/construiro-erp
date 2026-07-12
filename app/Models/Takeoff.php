@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Takeoff extends Model
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes;
 
     public const STATUSES = ['draft', 'validated'];

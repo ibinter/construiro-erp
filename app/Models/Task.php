@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Task extends Model
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes;
 
     public const STATUSES = ['todo', 'in_progress', 'done', 'blocked'];

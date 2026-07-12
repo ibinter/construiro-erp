@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class MaintenanceRecord extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     public const TYPES = ['preventive', 'curative', 'revision'];

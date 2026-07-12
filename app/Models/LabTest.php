@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class LabTest extends Model
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes;
 
     public const SAMPLE_TYPES = ['beton', 'sol', 'granulat', 'acier', 'bitume', 'autre'];

@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class Payslip extends Model
 {
+    use BelongsToCompany;
+    use Auditable;
     use HasFactory;
 
     public const STATUSES = ['draft', 'validated', 'paid'];

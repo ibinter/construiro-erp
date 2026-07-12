@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class CostEntry extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     public const AXES  = ['chantier', 'materiel', 'main_oeuvre', 'sous_traitance', 'frais_generaux'];

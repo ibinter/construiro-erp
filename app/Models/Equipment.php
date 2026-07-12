@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Equipment extends Model
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes;
 
     // La table s'appelle « equipment » (invariable), on la force explicitement.

@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Invoice extends Model
 {
+    use BelongsToCompany;
+    use Auditable;
     use HasFactory, SoftDeletes;
 
     public const STATUSES = ['draft', 'sent', 'partial', 'paid', 'overdue', 'cancelled'];

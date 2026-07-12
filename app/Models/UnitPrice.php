@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class UnitPrice extends Model
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes;
 
     public const UNITS = ['u', 'm2', 'm3', 'ml', 'kg', 'forfait'];

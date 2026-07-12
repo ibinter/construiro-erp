@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class OutgoingPayment extends Model
 {
+    use BelongsToCompany;
+    use Auditable;
     use HasFactory, SoftDeletes;
 
     // Natures de dépense.

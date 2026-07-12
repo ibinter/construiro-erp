@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class JournalEntry extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     protected $fillable = [

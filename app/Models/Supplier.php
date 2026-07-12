@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Supplier extends Model
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes;
 
     public const CATEGORIES = ['materiaux', 'services', 'location', 'sous_traitance', 'autre'];

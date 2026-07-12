@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Storage;
  */
 class Document extends Model
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes;
 
     public const CATEGORIES = ['plan', 'contrat', 'rapport', 'facture', 'photo', 'administratif', 'autre'];

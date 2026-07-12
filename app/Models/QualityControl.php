@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class QualityControl extends Model
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes;
 
     public const CONTROL_TYPES = ['reception', 'en_cours', 'essai', 'final'];

@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class PurchaseOrder extends Model
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes;
 
     public const STATUSES = ['draft', 'sent', 'confirmed', 'received', 'cancelled'];

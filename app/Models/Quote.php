@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Quote extends Model
 {
+    use BelongsToCompany;
+    use Auditable;
     use HasFactory, SoftDeletes;
 
     public const STATUSES = ['draft', 'sent', 'accepted', 'rejected', 'expired'];

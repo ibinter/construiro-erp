@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Warehouse extends Model
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes;
 
     protected $fillable = [

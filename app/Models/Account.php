@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Account extends Model
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes;
 
     public const TYPES = ['actif', 'passif', 'charge', 'produit'];

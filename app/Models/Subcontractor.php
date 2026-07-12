@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Subcontractor extends Model
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes;
 
     public const SPECIALTIES = [

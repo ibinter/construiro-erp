@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class HseIncident extends Model
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes;
 
     public const TYPES = ['accident', 'presque_accident', 'environnement', 'incendie', 'autre'];

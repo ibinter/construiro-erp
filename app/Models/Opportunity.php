@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Opportunity extends Model
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes;
 
     /** Étapes du pipeline commercial. */

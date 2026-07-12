@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Client extends Model
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes;
 
     public const TYPES = ['particulier', 'entreprise', 'public', 'promoteur'];

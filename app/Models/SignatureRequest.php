@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class SignatureRequest extends Model
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes;
 
     public const STATUSES = ['pending', 'signed', 'refused', 'expired'];

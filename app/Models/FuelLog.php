@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class FuelLog extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     protected $fillable = [

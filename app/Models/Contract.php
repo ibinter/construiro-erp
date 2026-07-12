@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Contract extends Model
 {
+    use BelongsToCompany;
+    use Auditable;
     use HasFactory, SoftDeletes;
 
     public const STATUSES = ['draft', 'active', 'suspended', 'closed', 'cancelled'];

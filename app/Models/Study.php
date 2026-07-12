@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Study extends Model
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes;
 
     public const TYPES = ['plan', 'note_calcul', 'etude_sol', 'autre'];

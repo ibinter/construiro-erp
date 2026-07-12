@@ -16,6 +16,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CurrencySeeder::class,
             RolePermissionSeeder::class,
+            SubscriptionPlanSeeder::class,
+            LegalPageSeeder::class,
         ]);
 
         // 2) Entreprise + agence de démonstration.

@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class StockMovement extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     public const TYPES = ['in', 'out', 'adjustment'];

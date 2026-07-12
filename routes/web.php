@@ -61,8 +61,18 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AiAssistantController;
 use App\Http\Controllers\MobileMoneyController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\NotificationPreferenceController;
+use App\Http\Controllers\BillingController;
+use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboard;
+use App\Http\Controllers\SuperAdmin\ClientController as SuperAdminClientController;
+use App\Http\Controllers\SuperAdmin\ProspectController as SuperAdminProspectController;
+use App\Http\Controllers\Admin\AuditLogController;
+use App\Http\Controllers\LegalController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
+// ─── Pages légales publiques ────────────────────────────────────────────────
+Route::get('/legal/{slug}', [LegalController::class, 'show'])->name('legal.show');
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -75,11 +85,19 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    // --- Abonnement & Facturation -------------------------------------------
+    Route::prefix('billing')->middleware('subscription')->group(function () {
+        Route::get('/', [BillingController::class, 'index'])->name('billing.index');
+        Route::post('/activate', [BillingController::class, 'activate'])->name('billing.activate');
+    });
+
     // --- Notifications internes (cloche) ----------------------------------------
     Route::prefix('notifications')->group(function () {
         Route::get('/',                         [NotificationController::class, 'index'])->name('notifications.index');
         Route::patch('/{notification}/read',    [NotificationController::class, 'markRead'])->name('notifications.read');
         Route::post('/read-all',                [NotificationController::class, 'markAllRead'])->name('notifications.readAll');
+        Route::get('/preferences',              [NotificationPreferenceController::class, 'edit'])->name('notifications.preferences.edit');
+        Route::put('/preferences',              [NotificationPreferenceController::class, 'update'])->name('notifications.preferences.update');
     });
 
     // --- Module Projets --------------------------------------------------------
@@ -204,12 +222,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // --- Administration — Entreprise -------------------------------------------
     Route::get('/admin/company',            [CompanyController::class, 'edit'])->middleware('can:administration.view')->name('admin.company.edit');
+    Route::get('/admin/audit-logs',         [AuditLogController::class, 'index'])->middleware('can:administration.view')->name('admin.audit-logs.index');
+    Route::get('/admin/legal',              [LegalController::class, 'adminIndex'])->middleware('can:administration.view')->name('admin.legal.index');
+    Route::get('/admin/legal/{slug}/edit',  [LegalController::class, 'adminEdit'])->middleware('can:administration.update')->name('admin.legal.edit');
+    Route::put('/admin/legal/{slug}',       [LegalController::class, 'adminUpdate'])->middleware('can:administration.update')->name('admin.legal.update');
     Route::put('/admin/company',            [CompanyController::class, 'update'])->middleware('can:administration.update')->name('admin.company.update');
 
     // --- Administration — Paramétrage IA ---------------------------------------
     Route::get('/admin/ai-settings',       [AiSettingController::class, 'edit'])->middleware('can:administration.view')->name('admin.ai.edit');
     Route::put('/admin/ai-settings',       [AiSettingController::class, 'update'])->middleware('can:administration.update')->name('admin.ai.update');
     Route::post('/admin/ai-settings/test', [AiSettingController::class, 'test'])->middleware('can:administration.update')->name('admin.ai.test');
+
+    // --- Console SuperAdmin IBIG Soft (accès ibig_superadmin uniquement) -------
+    Route::prefix('superadmin')->middleware('superadmin')->group(function () {
+        Route::get('/',                                     [SuperAdminDashboard::class, 'index'])->name('superadmin.dashboard');
+        Route::get('/clients',                              [SuperAdminClientController::class, 'index'])->name('superadmin.clients.index');
+        Route::get('/clients/{company}',                    [SuperAdminClientController::class, 'show'])->name('superadmin.clients.show');
+        Route::post('/clients/{company}/subscription',      [SuperAdminClientController::class, 'grantSubscription'])->name('superadmin.clients.grant');
+        Route::patch('/clients/{company}/toggle',           [SuperAdminClientController::class, 'toggleActive'])->name('superadmin.clients.toggle');
+        Route::get('/prospects',                            [SuperAdminProspectController::class, 'index'])->name('superadmin.prospects.index');
+        Route::patch('/prospects/{demoRequest}/status',     [SuperAdminProspectController::class, 'updateStatus'])->name('superadmin.prospects.status');
+    });
 
     // --- Module RH — Employés --------------------------------------------------
     Route::get('/hr',                [EmployeeController::class, 'index'])->middleware('can:hr.view')->name('hr.index');

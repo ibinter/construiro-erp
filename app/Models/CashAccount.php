@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class CashAccount extends Model
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes;
 
     public const TYPES = ['caisse', 'banque', 'mobile_money'];

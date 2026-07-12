@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class IncomingPayment extends Model
 {
+    use BelongsToCompany;
+    use Auditable;
     use HasFactory, SoftDeletes;
 
     // Modes de règlement disponibles.

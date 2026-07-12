@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class TreasuryTransaction extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     public const TYPES = ['in', 'out'];

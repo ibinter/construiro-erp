@@ -36,6 +36,9 @@ class RolePermissionSeeder extends Seeder
         $superAdmin = Role::findOrCreate('super_admin', 'web');
         $superAdmin->syncPermissions(Permission::all());
 
+        // ibig_superadmin : rôle réservé à l'équipe IBIG Soft pour la console globale.
+        Role::findOrCreate('ibig_superadmin', 'web');
+
         // 3) Créer un rôle par portail avec ses permissions par défaut.
         foreach ($this->portalPermissions() as $portal => $rules) {
             $role = Role::findOrCreate($portal, 'web');

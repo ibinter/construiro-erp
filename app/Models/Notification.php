@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class Notification extends Model
 {
+    use BelongsToCompany;
     public const TYPES = [
         'invoice_due',
         'quote_accepted',

@@ -1,10 +1,17 @@
 <?php
 
+use App\Console\Commands\SendTrialExpirationReminders;
+use App\Console\Commands\SendSubscriptionExpirationReminders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Console\Scheduling\Schedule;
 
 return Application::configure(basePath: dirname(__DIR__))
+    ->withSchedule(function (Schedule $schedule): void {
+        $schedule->command(SendTrialExpirationReminders::class)->dailyAt('08:00');
+        $schedule->command(SendSubscriptionExpirationReminders::class)->dailyAt('08:05');
+    })
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         commands: __DIR__.'/../routes/console.php',
@@ -16,6 +23,11 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\SetLocale::class,
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
+        ]);
+
+        $middleware->alias([
+            'subscription' => \App\Http\Middleware\CheckSubscription::class,
+            'superadmin' => \App\Http\Middleware\SuperAdminOnly::class,
         ]);
 
         // Exclure les webhooks Mobile Money du CSRF (appelés par les opérateurs)

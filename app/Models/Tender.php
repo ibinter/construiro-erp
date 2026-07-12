@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Tender extends Model
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes;
 
     /** Statuts de suivi de l'appel d'offres. */

@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class AiSetting extends Model
 {
+    use BelongsToCompany;
     protected $fillable = [
         'company_id', 'provider', 'api_key', 'model', 'base_url', 'enabled',
     ];

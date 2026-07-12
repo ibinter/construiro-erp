@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Material extends Model
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes;
 
     public const CATEGORIES = ['gros_oeuvre', 'second_oeuvre', 'electricite', 'plomberie', 'quincaillerie', 'consommable', 'autre'];

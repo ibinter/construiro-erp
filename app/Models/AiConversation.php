@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class AiConversation extends Model
 {
+    use BelongsToCompany;
     use HasFactory;
 
     protected $fillable = [

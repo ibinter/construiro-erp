@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Site extends Model
 {
+    use BelongsToCompany;
     use HasFactory, SoftDeletes;
 
     public const STATUSES = ['preparation', 'in_progress', 'suspended', 'completed'];
