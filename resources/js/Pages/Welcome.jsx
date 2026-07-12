@@ -4,6 +4,8 @@ import ConstruiroLogo from '@/Components/ConstruiroLogo';
 import SaraFloating from '@/Components/SaraFloating';
 import PwaBanner from '@/Components/PwaBanner';
 import CookiesBanner from '@/Components/CookiesBanner';
+import LanguageSwitcher from '@/Components/LanguageSwitcher';
+import { useTrans } from '@/i18n';
 
 const BRAND = '#F58220';
 const NAVY  = '#1E1E1E';
@@ -361,6 +363,7 @@ function SlideVisualSecurity() {
 
 /* ── Hero Slider ─────────────────────────────────────────────── */
 function HeroSlider({ canRegister }) {
+    const { t } = useTrans();
     const [current, setCurrent] = useState(0);
     const [paused, setPaused]   = useState(false);
     const touchX = useRef(null);
@@ -411,38 +414,38 @@ function HeroSlider({ canRegister }) {
                     <div>
                         <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold mb-6"
                             style={{ background: 'rgba(245,130,32,0.15)', color: BRAND, border: `1px solid rgba(245,130,32,0.3)` }}>
-                            {slide.badge}
+                            {t(slide.badge)}
                         </div>
                         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.05] text-white mb-4">
-                            {slide.h1a}<br/>
-                            <span style={{ color: BRAND }}>{slide.h1b}</span><br/>
-                            {slide.h1c}
+                            {t(slide.h1a)}<br/>
+                            <span style={{ color: BRAND }}>{t(slide.h1b)}</span><br/>
+                            {t(slide.h1c)}
                         </h1>
-                        <p className="text-gray-400 text-lg mb-8 leading-relaxed">{slide.sub}</p>
+                        <p className="text-gray-400 text-lg mb-8 leading-relaxed">{t(slide.sub)}</p>
                         <div className="flex flex-wrap gap-4 mb-10">
                             <a href={slide.cta1Href}
                                 className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-white text-base transition-all hover:opacity-90 shadow-lg"
                                 style={{ background: BRAND, boxShadow: `0 8px 32px rgba(245,130,32,0.35)` }}>
-                                {slide.cta1Label}
+                                {t(slide.cta1Label)}
                             </a>
                             {slide.cta2IsRegister && canRegister ? (
                                 <Link href={route('register')}
                                     className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-white text-base transition-all hover:bg-white/10"
                                     style={{ border: '2px solid rgba(255,255,255,0.2)' }}>
-                                    {slide.cta2Label}
+                                    {t(slide.cta2Label)}
                                 </Link>
                             ) : slide.cta2Href ? (
                                 <a href={slide.cta2Href}
                                     className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-white text-base transition-all hover:bg-white/10"
                                     style={{ border: '2px solid rgba(255,255,255,0.2)' }}>
-                                    {slide.cta2Label}
+                                    {t(slide.cta2Label)}
                                 </a>
                             ) : null}
                         </div>
                         <div className="flex flex-wrap gap-6 text-sm text-gray-500">
-                            <span className="flex items-center gap-1.5"><span style={{ color: BRAND }}>✓</span> 15+ modules intégrés</span>
-                            <span className="flex items-center gap-1.5"><span style={{ color: BRAND }}>✓</span> Essai 14 jours gratuit</span>
-                            <span className="flex items-center gap-1.5"><span style={{ color: BRAND }}>✓</span> Déployé en 48h</span>
+                            <span className="flex items-center gap-1.5"><span style={{ color: BRAND }}>✓</span> {t('15+ modules intégrés')}</span>
+                            <span className="flex items-center gap-1.5"><span style={{ color: BRAND }}>✓</span> {t('Essai 14 jours gratuit')}</span>
+                            <span className="flex items-center gap-1.5"><span style={{ color: BRAND }}>✓</span> {t('Déployé en 48h')}</span>
                         </div>
                     </div>
                     {/* Visuel */}
@@ -570,12 +573,13 @@ function DemoForm() {
 
 /* ── Barre supérieure ────────────────────────────────────────── */
 function TopBar() {
+    const { t } = useTrans();
     return (
         <div style={{ background: '#0a1628' }} className="text-xs py-2">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-4 text-gray-400">
                     <span className="flex items-center gap-1.5">
-                        <span style={{ color: BRAND }}>✓</span> Essai gratuit 14 jours
+                        <span style={{ color: BRAND }}>✓</span> {t('Essai gratuit 14 jours')}
                     </span>
                     <span className="hidden sm:flex items-center gap-1.5">
                         <span style={{ color: BRAND }}>📞</span>
@@ -589,11 +593,9 @@ function TopBar() {
                 <div className="flex items-center gap-3 text-gray-400">
                     <a href="https://ibigsoft.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition">IBIG Soft</a>
                     <span className="opacity-30">|</span>
-                    <a href="/aide" className="hover:text-white transition">Support</a>
+                    <a href="/aide" className="hover:text-white transition">{t('Support')}</a>
                     <span className="opacity-30">|</span>
-                    <button className="hover:text-white transition font-semibold" style={{ color: BRAND }}>FR</button>
-                    <span className="opacity-30">/</span>
-                    <button className="hover:text-white transition">EN</button>
+                    <LanguageSwitcher />
                 </div>
             </div>
         </div>
@@ -602,6 +604,7 @@ function TopBar() {
 
 /* ── Page principale ─────────────────────────────────────────── */
 export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs = [] }) {
+    const { t } = useTrans();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     return (
@@ -644,12 +647,12 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                         {/* Menu desktop */}
                         <div className="hidden lg:flex items-center gap-7">
                             {[
-                                ['Fonctionnalités', '#modules'],
-                                ['Publics', '#publics'],
-                                ['Modules', '#modules'],
-                                ['Tarifs', '#tarifs'],
-                                ['Démo', '#demo'],
-                                ['Assistance', '/aide'],
+                                [t('Fonctionnalités'), '#modules'],
+                                [t('Publics'), '#publics'],
+                                [t('Modules'), '#modules'],
+                                [t('Tarifs'), '#tarifs'],
+                                [t('Démo'), '#demo'],
+                                [t('Assistance'), '/aide'],
                             ].map(([label, href]) => (
                                 <a key={label} href={href}
                                     className="text-sm font-medium text-gray-500 hover:text-[#F58220] transition">
@@ -660,24 +663,25 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
 
                         {/* CTAs */}
                         <div className="flex items-center gap-3">
+                            <div className="hidden lg:block"><LanguageSwitcher /></div>
                             {auth?.user ? (
                                 <Link href={route('dashboard')}
                                     className="text-sm font-semibold px-5 py-2.5 rounded-xl text-white transition hover:opacity-90"
                                     style={{ background: BRAND }}>
-                                    Mon tableau de bord →
+                                    {t('Mon tableau de bord')} →
                                 </Link>
                             ) : (
                                 <>
                                     {canLogin && (
                                         <Link href={route('login')} className="text-sm font-medium text-gray-600 hover:text-[#F58220] transition hidden sm:block">
-                                            Se connecter
+                                            {t('Se connecter')}
                                         </Link>
                                     )}
                                     {canRegister && (
                                         <Link href={route('register')}
                                             className="text-sm font-semibold px-5 py-2.5 rounded-xl text-white transition hover:opacity-90"
                                             style={{ background: BRAND }}>
-                                            Essai gratuit
+                                            {t('Essai gratuit')}
                                         </Link>
                                     )}
                                 </>
@@ -699,18 +703,19 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                     {/* Menu mobile */}
                     {mobileMenuOpen && (
                         <div className="lg:hidden border-t border-gray-100 bg-white px-4 pb-4 pt-3 space-y-1">
-                            {[['Fonctionnalités', '#modules'],['Publics', '#publics'],['Tarifs', '#tarifs'],['Démo', '#demo'],['Assistance', '/aide']].map(([label, href]) => (
+                            {[[t('Fonctionnalités'), '#modules'],[t('Publics'), '#publics'],[t('Tarifs'), '#tarifs'],[t('Démo'), '#demo'],[t('Assistance'), '/aide']].map(([label, href]) => (
                                 <a key={label} href={href} onClick={() => setMobileMenuOpen(false)}
                                     className="block py-2 text-sm font-medium text-gray-700 hover:text-[#F58220]">{label}</a>
                             ))}
-                            {canLogin && <Link href={route('login')} className="block py-2 text-sm font-medium text-gray-700 hover:text-[#F58220]">Se connecter</Link>}
+                            {canLogin && <Link href={route('login')} className="block py-2 text-sm font-medium text-gray-700 hover:text-[#F58220]">{t('Se connecter')}</Link>}
                             {canRegister && (
                                 <Link href={route('register')}
                                     className="block mt-2 text-center py-3 rounded-xl font-bold text-white text-sm"
                                     style={{ background: BRAND }}>
-                                    Essai gratuit 14 jours
+                                    {t('Essai gratuit 14 jours')}
                                 </Link>
                             )}
+                            <div className="pt-2"><LanguageSwitcher /></div>
                         </div>
                     )}
                 </nav>
@@ -723,10 +728,10 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
                             {[
-                                { val: '15+',  label: 'Modules métier BTP' },
-                                { val: '48h',  label: 'Déploiement garanti' },
-                                { val: '14j',  label: 'Essai 100% gratuit' },
-                                { val: '24/7', label: 'Accès en ligne' },
+                                { val: '15+',  label: t('Modules métier BTP') },
+                                { val: '48h',  label: t('Déploiement garanti') },
+                                { val: '14j',  label: t('Essai 100% gratuit') },
+                                { val: '24/7', label: t('Accès en ligne') },
                             ].map((s) => (
                                 <div key={s.label}>
                                     <div className="text-4xl font-black text-white">{s.val}</div>
@@ -741,20 +746,20 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                 <section className="py-20 bg-gray-50">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-14">
-                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>Avant / Après CONSTRUIRO</p>
-                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>Des problèmes concrets,<br />des solutions réelles</h2>
-                            <p className="text-gray-500 max-w-xl mx-auto">Voici ce que vivent vos homologues BTP avant d'adopter CONSTRUIRO — et ce qu'ils disent après.</p>
+                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Avant / Après CONSTRUIRO')}</p>
+                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Des problèmes concrets, des solutions réelles')}</h2>
+                            <p className="text-gray-500 max-w-xl mx-auto">{t("Voici ce que vivent vos homologues BTP avant d'adopter CONSTRUIRO — et ce qu'ils disent après.")}</p>
                         </div>
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {PROBLEMES.map((p, i) => (
                                 <div key={i} className="bg-white rounded-2xl overflow-hidden border border-gray-100 hover:shadow-lg transition-all">
                                     <div className="p-5" style={{ background: 'rgba(239,68,68,0.05)', borderBottom: '1px solid rgba(239,68,68,0.1)' }}>
-                                        <span className="text-xs font-bold text-red-500 uppercase tracking-wider">Avant</span>
-                                        <p className="text-sm text-gray-600 mt-2 leading-relaxed">{p.avant}</p>
+                                        <span className="text-xs font-bold text-red-500 uppercase tracking-wider">{t('Avant')}</span>
+                                        <p className="text-sm text-gray-600 mt-2 leading-relaxed">{t(p.avant)}</p>
                                     </div>
                                     <div className="p-5" style={{ background: 'rgba(245,130,32,0.04)' }}>
-                                        <span className="text-xs font-bold uppercase tracking-wider" style={{ color: BRAND }}>Avec CONSTRUIRO</span>
-                                        <p className="text-sm text-gray-700 mt-2 leading-relaxed font-medium">{p.apres}</p>
+                                        <span className="text-xs font-bold uppercase tracking-wider" style={{ color: BRAND }}>{t('Avec CONSTRUIRO')}</span>
+                                        <p className="text-sm text-gray-700 mt-2 leading-relaxed font-medium">{t(p.apres)}</p>
                                     </div>
                                 </div>
                             ))}
@@ -766,8 +771,8 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                 <section className="py-20 bg-white">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-14">
-                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>Bénéfices</p>
-                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>Ce que vous gagnez<br />concrètement</h2>
+                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Bénéfices')}</p>
+                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Ce que vous gagnez concrètement')}</h2>
                         </div>
                         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                             {BENEFICES.map((b) => (
@@ -777,8 +782,8 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                         style={{ background: 'rgba(245,130,32,0.1)', color: BRAND }}>
                                         <span className="w-5 h-5">{icons[b.icon]}</span>
                                     </div>
-                                    <h3 className="font-bold text-base mb-2" style={{ color: NAVY }}>{b.titre}</h3>
-                                    <p className="text-sm text-gray-500 leading-relaxed">{b.desc}</p>
+                                    <h3 className="font-bold text-base mb-2" style={{ color: NAVY }}>{t(b.titre)}</h3>
+                                    <p className="text-sm text-gray-500 leading-relaxed">{t(b.desc)}</p>
                                 </div>
                             ))}
                         </div>
@@ -789,9 +794,9 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                 <section id="modules" className="py-20 bg-gray-50">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-14">
-                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>Plateforme complète</p>
-                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>Tout ce dont votre entreprise BTP a besoin</h2>
-                            <p className="text-gray-500 max-w-xl mx-auto">Une plateforme unique qui couvre l'ensemble de votre activité, du devis à la facturation.</p>
+                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Plateforme complète')}</p>
+                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Tout ce dont votre entreprise BTP a besoin')}</h2>
+                            <p className="text-gray-500 max-w-xl mx-auto">{t("Une plateforme unique qui couvre l'ensemble de votre activité, du devis à la facturation.")}</p>
                         </div>
                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {modules.map((m) => (
@@ -801,8 +806,8 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                         style={{ background: 'rgba(245,130,32,0.1)', color: BRAND }}>
                                         <span className="w-5 h-5">{icons[m.key]}</span>
                                     </div>
-                                    <h3 className="font-bold text-base mb-2" style={{ color: NAVY }}>{m.titre}</h3>
-                                    <p className="text-sm text-gray-500 leading-relaxed">{m.desc}</p>
+                                    <h3 className="font-bold text-base mb-2" style={{ color: NAVY }}>{t(m.titre)}</h3>
+                                    <p className="text-sm text-gray-500 leading-relaxed">{t(m.desc)}</p>
                                 </div>
                             ))}
                         </div>
@@ -813,8 +818,8 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                 <section className="py-20 bg-white">
                     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-14">
-                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>Démarrage rapide</p>
-                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>Opérationnel en 4 étapes</h2>
+                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Démarrage rapide')}</p>
+                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Opérationnel en 4 étapes')}</h2>
                         </div>
                         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 relative">
                             {ETAPES.map((e, i) => (
@@ -823,8 +828,8 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                         style={{ background: BRAND, boxShadow: `0 8px 24px rgba(245,130,32,0.35)` }}>
                                         {e.num}
                                     </div>
-                                    <h3 className="font-black text-lg mb-3" style={{ color: NAVY }}>{e.titre}</h3>
-                                    <p className="text-sm text-gray-500 leading-relaxed">{e.desc}</p>
+                                    <h3 className="font-black text-lg mb-3" style={{ color: NAVY }}>{t(e.titre)}</h3>
+                                    <p className="text-sm text-gray-500 leading-relaxed">{t(e.desc)}</p>
                                 </div>
                             ))}
                         </div>
@@ -833,7 +838,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                 <Link href={route('register')}
                                     className="inline-flex items-center gap-2 px-10 py-4 rounded-xl font-bold text-white text-base transition-all hover:opacity-90"
                                     style={{ background: BRAND, boxShadow: `0 8px 32px rgba(245,130,32,0.3)` }}>
-                                    Commencer gratuitement — 14 jours offerts
+                                    {t('Commencer gratuitement — 14 jours offerts')}
                                 </Link>
                             )}
                         </div>
@@ -844,16 +849,16 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                 <section id="publics" className="py-20 bg-gray-50">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-14">
-                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>Solutions sectorielles</p>
-                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>CONSTRUIRO s'adapte<br />à votre type d'activité</h2>
+                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Solutions sectorielles')}</p>
+                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>{t("CONSTRUIRO s'adapte à votre type d'activité")}</h2>
                         </div>
                         <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-5">
                             {PUBLICS.map((p) => (
                                 <div key={p.titre}
                                     className="bg-white rounded-2xl p-6 border border-gray-100 hover:border-[#F58220] hover:shadow-lg transition-all text-center">
                                     <div className="text-4xl mb-4">{p.emoji}</div>
-                                    <h3 className="font-black text-base mb-2" style={{ color: NAVY }}>{p.titre}</h3>
-                                    <p className="text-xs text-gray-500 leading-relaxed">{p.desc}</p>
+                                    <h3 className="font-black text-base mb-2" style={{ color: NAVY }}>{t(p.titre)}</h3>
+                                    <p className="text-xs text-gray-500 leading-relaxed">{t(p.desc)}</p>
                                 </div>
                             ))}
                         </div>
@@ -905,9 +910,9 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                 <section className="py-20 bg-gray-50">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-14">
-                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>Intégrations</p>
-                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>Connecté à votre écosystème</h2>
-                            <p className="text-gray-500 max-w-xl mx-auto">CONSTRUIRO s'intègre aux outils de paiement, communication et données que vous utilisez déjà.</p>
+                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Intégrations')}</p>
+                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Connecté à votre écosystème')}</h2>
+                            <p className="text-gray-500 max-w-xl mx-auto">{t("CONSTRUIRO s'intègre aux outils de paiement, communication et données que vous utilisez déjà.")}</p>
                         </div>
                         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
                             {INTEGRATIONS.map((integ) => (
@@ -1138,8 +1143,8 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                 <section id="temoignages" className="py-20 bg-gray-50">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-14">
-                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>Témoignages</p>
-                            <h2 className="text-4xl font-black" style={{ color: NAVY }}>Ils font confiance à CONSTRUIRO</h2>
+                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Témoignages')}</p>
+                            <h2 className="text-4xl font-black" style={{ color: NAVY }}>{t('Ils font confiance à CONSTRUIRO')}</h2>
                         </div>
                         <div className="grid md:grid-cols-3 gap-6">
                             {temoignages.map((t) => (
@@ -1234,8 +1239,8 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                 <section id="demo" className="py-20" style={{ background: BRAND }}>
                     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-10">
-                            <h2 className="text-4xl font-black text-white mb-3">Demandez une démo gratuite</h2>
-                            <p className="text-orange-100">Notre équipe vous répond sous 24h ouvrées pour organiser une démonstration personnalisée.</p>
+                            <h2 className="text-4xl font-black text-white mb-3">{t('Demandez une démo gratuite')}</h2>
+                            <p className="text-orange-100">{t('Notre équipe vous répond sous 24h ouvrées pour organiser une démonstration personnalisée.')}</p>
                         </div>
                         <DemoForm />
                     </div>
@@ -1245,29 +1250,29 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                 <section className="py-20 bg-white">
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                         <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>
-                            Prêt à moderniser la gestion<br />de vos chantiers ?
+                            {t('Prêt à moderniser la gestion de vos chantiers ?')}
                         </h2>
                         <p className="text-gray-500 mb-10 text-lg">
-                            Essayez CONSTRUIRO gratuitement, demandez une démonstration,<br className="hidden sm:block"/> ou échangez avec notre assistante IA SARA.
+                            {t('Essayez CONSTRUIRO gratuitement, demandez une démonstration, ou échangez avec notre assistante IA SARA.')}
                         </p>
                         <div className="flex flex-wrap justify-center gap-4">
                             {canRegister && (
                                 <Link href={route('register')}
                                     className="inline-flex items-center gap-2 px-10 py-4 rounded-xl font-bold text-white text-base transition-all hover:opacity-90"
                                     style={{ background: BRAND, boxShadow: `0 8px 32px rgba(245,130,32,0.3)` }}>
-                                    Commencer gratuitement
+                                    {t('Commencer gratuitement')}
                                 </Link>
                             )}
                             <a href="#demo"
                                 className="inline-flex items-center gap-2 px-10 py-4 rounded-xl font-bold text-base border-2 transition-all hover:bg-gray-50"
                                 style={{ borderColor: NAVY, color: NAVY }}>
-                                Demander une démo →
+                                {t('Demander une démo')} →
                             </a>
                             <button
                                 className="inline-flex items-center gap-2 px-10 py-4 rounded-xl font-bold text-base border-2 transition-all hover:bg-orange-50"
                                 style={{ borderColor: BRAND, color: BRAND }}
                                 onClick={() => document.getElementById('sara-chat')?.click()}>
-                                Parler à SARA 🤖
+                                {t('Parler à SARA')} 🤖
                             </button>
                         </div>
                     </div>
