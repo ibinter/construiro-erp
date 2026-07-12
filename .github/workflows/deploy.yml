@@ -37,7 +37,7 @@ jobs:
             -X POST \
             -F "secret=${{ secrets.DEPLOY_SECRET }}" \
             -F "assets=@assets.zip;type=application/zip" \
-            https://construiro.com/deploy-receiver.php)
+            https://construiro.com/deploy-v2.php)
           echo "Résultat: $RESULT"
           echo "$RESULT" | grep -q "DEPLOY_OK" && echo "✅ Déploiement réussi" || (echo "❌ Échec: $RESULT" && exit 1)
 
