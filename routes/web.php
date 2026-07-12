@@ -66,6 +66,7 @@ use App\Http\Controllers\BillingController;
 use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboard;
 use App\Http\Controllers\SuperAdmin\ClientController as SuperAdminClientController;
 use App\Http\Controllers\SuperAdmin\ProspectController as SuperAdminProspectController;
+use App\Http\Controllers\SuperAdmin\SupportSessionController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\LegalController;
 use App\Http\Controllers\DemoRequestController;
@@ -269,6 +270,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/clients/{company}/toggle',           [SuperAdminClientController::class, 'toggleActive'])->name('superadmin.clients.toggle');
         Route::get('/prospects',                            [SuperAdminProspectController::class, 'index'])->name('superadmin.prospects.index');
         Route::patch('/prospects/{demoRequest}/status',     [SuperAdminProspectController::class, 'updateStatus'])->name('superadmin.prospects.status');
+        Route::get('/support-sessions',                      [SupportSessionController::class, 'index'])->name('superadmin.support-sessions.index');
+        Route::post('/support-sessions',                     [SupportSessionController::class, 'create'])->name('superadmin.support-sessions.create');
+        Route::post('/support-sessions/{session}/end',       [SupportSessionController::class, 'end'])->name('superadmin.support-sessions.end');
     });
 
     // --- Guide utilisateur PDF --------------------------------------------------

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\SupportSession;
 use App\Support\Navigation;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -56,6 +57,14 @@ class HandleInertiaRequests extends Middleware
                 'success' => fn () => $request->session()->get('success'),
                 'error'   => fn () => $request->session()->get('error'),
             ],
+            // Session de support active (avertissement visible dans l'interface)
+            'support_session' => fn() => $user && $user->hasRole('ibig_superadmin')
+                ? SupportSession::where('support_user_id', $user->id)
+                    ->whereNull('ended_at')
+                    ->where('expires_at', '>', now())
+                    ->with('company:id,name')
+                    ->first()?->only(['id', 'reason', 'expires_at', 'company'])
+                : null,
         ];
     }
 
