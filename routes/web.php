@@ -68,17 +68,44 @@ use App\Http\Controllers\SuperAdmin\ClientController as SuperAdminClientControll
 use App\Http\Controllers\SuperAdmin\ProspectController as SuperAdminProspectController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\LegalController;
+use App\Http\Controllers\DemoRequestController;
+use App\Http\Controllers\SupportController;
+use App\Http\Controllers\OnboardingController;
+use App\Http\Controllers\UserGuideController;
+use App\Models\SubscriptionPlan;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 // ─── Pages légales publiques ────────────────────────────────────────────────
 Route::get('/legal/{slug}', [LegalController::class, 'show'])->name('legal.show');
+Route::post('/demo-request', [DemoRequestController::class, 'store'])->name('demo.request');
 
 Route::get('/', function () {
+    $plans = SubscriptionPlan::where('is_active', true)->orderBy('sort_order')->get()->map(fn($p) => [
+        'id' => $p->id,
+        'name' => $p->name,
+        'description' => $p->description,
+        'price_monthly' => $p->price_monthly,
+        'max_users' => $p->max_users,
+        'max_projects' => $p->max_projects,
+        'trial_days' => $p->trial_days,
+    ])->toArray();
+
+    // FAQ statiques — pourra être rendu dynamique via table faq dans une prochaine version
+    $faqs = [
+        ['question' => 'Puis-je utiliser CONSTRUIRO sans connexion Internet ?', 'answer' => 'CONSTRUIRO est une application web et nécessite une connexion Internet. Une version offline partielle est prévue dans une prochaine mise à jour.'],
+        ['question' => 'Les données de mon entreprise sont-elles sécurisées ?', 'answer' => 'Oui. Chaque entreprise dispose de ses propres données isolées. Personne d\'autre ne peut accéder à vos informations.'],
+        ['question' => 'Puis-je importer mes données existantes ?', 'answer' => 'Oui, CONSTRUIRO supporte l\'import via fichiers Excel pour les matériaux, clients, fournisseurs et plan comptable.'],
+        ['question' => 'Combien de temps dure la mise en place ?', 'answer' => 'La plupart des entreprises sont opérationnelles en 48 heures. Notre équipe vous accompagne lors de l\'onboarding.'],
+        ['question' => 'Y a-t-il un contrat d\'engagement ?', 'answer' => 'Non. L\'abonnement mensuel est sans engagement. Vous pouvez annuler à tout moment depuis votre espace.'],
+    ];
+
     return Inertia::render('Welcome', [
         'canLogin'    => Route::has('login'),
         'canRegister' => Route::has('register'),
         'auth'        => ['user' => auth()->user()],
+        'plans'       => $plans,
+        'faqs'        => $faqs,
     ]);
 });
 
@@ -242,6 +269,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/clients/{company}/toggle',           [SuperAdminClientController::class, 'toggleActive'])->name('superadmin.clients.toggle');
         Route::get('/prospects',                            [SuperAdminProspectController::class, 'index'])->name('superadmin.prospects.index');
         Route::patch('/prospects/{demoRequest}/status',     [SuperAdminProspectController::class, 'updateStatus'])->name('superadmin.prospects.status');
+    });
+
+    // --- Guide utilisateur PDF --------------------------------------------------
+    Route::get('/guide/{locale}', [UserGuideController::class, 'download'])->name('guide.download')->where('locale', 'fr|en');
+
+    // --- Onboarding post-inscription -------------------------------------------
+    Route::prefix('onboarding')->group(function () {
+        Route::get('/',                  [OnboardingController::class, 'index'])->name('onboarding.index');
+        Route::post('/company',          [OnboardingController::class, 'saveCompany'])->name('onboarding.company');
+        Route::post('/logo',             [OnboardingController::class, 'saveLogo'])->name('onboarding.logo');
+        Route::post('/settings',         [OnboardingController::class, 'saveSettings'])->name('onboarding.settings');
+        Route::post('/complete',         [OnboardingController::class, 'complete'])->name('onboarding.complete');
+    });
+
+    // --- Centre de support -----------------------------------------------------
+    Route::prefix('support')->group(function () {
+        Route::get('/',                         [SupportController::class, 'index'])->name('support.index');
+        Route::get('/create',                   [SupportController::class, 'create'])->name('support.create');
+        Route::post('/',                        [SupportController::class, 'store'])->name('support.store');
+        Route::get('/{ticket}',                 [SupportController::class, 'show'])->name('support.show');
+        Route::post('/{ticket}/reply',          [SupportController::class, 'reply'])->name('support.reply');
+        Route::post('/{ticket}/close',          [SupportController::class, 'close'])->name('support.close');
     });
 
     // --- Module RH — Employés --------------------------------------------------

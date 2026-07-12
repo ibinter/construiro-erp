@@ -18,11 +18,14 @@ class Company extends Model
         'name', 'legal_name', 'slug', 'registration_number', 'tax_id',
         'country', 'city', 'address', 'phone', 'email', 'website',
         'logo_path', 'base_currency', 'locale', 'timezone', 'is_active', 'settings',
+        'enabled_modules', 'onboarding_completed_at',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
         'settings'  => 'array',
+        'enabled_modules' => 'array',
+        'onboarding_completed_at' => 'datetime',
     ];
 
     public function agencies(): HasMany
