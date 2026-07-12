@@ -586,20 +586,99 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                 </section>
 
                 {/* ── FOOTER ───────────────────────────────────────────── */}
-                <footer style={{ background: NAVY }} className="text-slate-400 py-12">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                            <div>
+                <footer style={{ background: NAVY }} className="text-slate-400">
+                    {/* Grille principale */}
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+
+                            {/* Colonne 1 — Marque */}
+                            <div className="lg:col-span-1">
                                 <ConstruiroLogo size="sm" dark />
-                                <p className="text-xs mt-2 text-slate-600">© {new Date().getFullYear()} IBIG Soft — IBIG SARL · Tous droits réservés</p>
-                                <p className="text-xs mt-1 text-slate-600 italic">CONSTRUIRE. PILOTER. MAÎTRISER.</p>
+                                <p className="text-sm text-slate-400 mt-4 leading-relaxed">
+                                    L'ERP BTP conçu pour les entreprises de construction et de travaux publics en Afrique.
+                                </p>
+                                <p className="text-xs mt-4 italic" style={{ color: BRAND }}>
+                                    CONSTRUIRE. PILOTER. MAÎTRISER.
+                                </p>
+                                <p className="text-xs mt-2 text-slate-600">Un produit de <strong className="text-slate-500">IBIG Soft</strong></p>
+                                <a href="https://ibigsoft.com" target="_blank" rel="noopener noreferrer"
+                                    className="text-xs mt-1 inline-block hover:text-[#F58220] transition"
+                                    style={{ color: BRAND }}>
+                                    ibigsoft.com →
+                                </a>
                             </div>
-                            <div className="flex flex-wrap gap-6 text-sm">
-                                <Link href="/legal/cgu" className="hover:text-[#F58220] transition">CGU</Link>
-                                <Link href="/legal/privacy" className="hover:text-[#F58220] transition">Confidentialité</Link>
-                                <Link href="/legal/legal" className="hover:text-[#F58220] transition">Mentions légales</Link>
-                                <Link href="/legal/cookies" className="hover:text-[#F58220] transition">Cookies</Link>
+
+                            {/* Colonne 2 — Liens rapides */}
+                            <div>
+                                <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-wider">Liens rapides</h4>
+                                <ul className="space-y-2.5 text-sm">
+                                    {[
+                                        { label: 'Modules',       href: '#modules' },
+                                        { label: 'Tarifs',        href: '#tarifs' },
+                                        { label: 'Témoignages',   href: '#temoignages' },
+                                        { label: 'Démonstration', href: '#demo' },
+                                        { label: 'Connexion',     href: '/login' },
+                                        { label: 'Inscription',   href: '/register' },
+                                    ].map((l) => (
+                                        <li key={l.label}>
+                                            <a href={l.href} className="hover:text-[#F58220] transition">{l.label}</a>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
+
+                            {/* Colonne 3 — Légal */}
+                            <div>
+                                <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-wider">Légal</h4>
+                                <ul className="space-y-2.5 text-sm">
+                                    {[
+                                        { label: 'Mentions légales',   href: '/legal/legal' },
+                                        { label: 'Confidentialité',    href: '/legal/privacy' },
+                                        { label: 'CGU',                href: '/legal/cgu' },
+                                        { label: 'Politique cookies',  href: '/legal/cookies' },
+                                    ].map((l) => (
+                                        <li key={l.label}>
+                                            <Link href={l.href} className="hover:text-[#F58220] transition">{l.label}</Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            {/* Colonne 4 — Contact */}
+                            <div>
+                                <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-wider">Adresse</h4>
+                                <div className="space-y-3 text-sm">
+                                    <p className="font-semibold text-slate-300">IBIG Soft<br />
+                                        <span className="font-normal text-slate-500">Intermark Business International Group</span>
+                                    </p>
+                                    <p className="flex items-start gap-2">
+                                        <span>📍</span>
+                                        <span>Abidjan, Côte d'Ivoire</span>
+                                    </p>
+                                    <p className="flex items-start gap-2">
+                                        <span>📧</span>
+                                        <a href="mailto:contact@ibigsoft.com" className="hover:text-[#F58220] transition">
+                                            contact@ibigsoft.com
+                                        </a>
+                                    </p>
+                                    <p className="flex items-start gap-2">
+                                        <span>📞</span>
+                                        <span>+225 27 22 27 60 14</span>
+                                    </p>
+                                    <p className="flex items-start gap-2">
+                                        <span>📞</span>
+                                        <span>+225 05 55 05 99 01</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Barre de bas de page */}
+                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-600">
+                            <p>© {new Date().getFullYear()} IBIG Soft — Tous droits réservés.</p>
+                            <p>CONSTRUIRO ERP est un produit de <strong className="text-slate-500">IBIG Soft</strong> · Abidjan, Côte d'Ivoire.</p>
                         </div>
                     </div>
                 </footer>
