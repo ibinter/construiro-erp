@@ -65,10 +65,11 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    if (auth()->check()) {
-        return redirect()->route('dashboard');
-    }
-    return redirect()->route('login');
+    return Inertia::render('Welcome', [
+        'canLogin'    => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'auth'        => ['user' => auth()->user()],
+    ]);
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
