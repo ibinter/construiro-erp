@@ -1,5 +1,17 @@
 <?php
-// Webhook de déploiement — appelé par GitHub Actions
+/**
+ * Webhook de déploiement CONSTRUIRO
+ *
+ * Mode 1 — POST secret seulement   : git pull + artisan (sans rebuild)
+ * Mode 2 — POST secret + assets.zip : extrait le zip dans public/build/
+ *                                      (le build Vite est fait dans GitHub Actions)
+ */
+
+// Invalider l'OPcache pour ce fichier (recharge la version disque au prochain appel)
+if (function_exists('opcache_invalidate')) {
+    opcache_invalidate(__FILE__, true);
+}
+
 if (($_POST['secret'] ?? '') !== 'construiro_deploy_2026') {
     http_response_code(403);
     die('Accès refusé');
@@ -13,22 +25,44 @@ function logMsg(string $msg): void {
     file_put_contents($log, date('[Y-m-d H:i:s] ') . $msg . "\n", FILE_APPEND);
 }
 
-logMsg('=== Déploiement démarré ===');
+logMsg('=== Déploiement démarré (v2) ===');
 
-// 1. Git pull (synchrone, rapide)
+// ── 1. Git pull ────────────────────────────────────────────────────
 $out = shell_exec("cd $dir && git pull origin master 2>&1");
 logMsg('git pull : ' . trim($out));
 
-// 2. S'assurer que le script de build est exécutable
-shell_exec("chmod +x $dir/deploy-build.sh 2>&1");
+// ── 2. Extraire les assets si un zip est fourni ────────────────────
+if (!empty($_FILES['assets']['tmp_name'])) {
+    $zip = new ZipArchive();
+    if ($zip->open($_FILES['assets']['tmp_name']) === true) {
+        $buildDir = "$dir/public/build";
+        // Supprimer l'ancien build
+        shell_exec("rm -rf $buildDir");
+        mkdir($buildDir, 0755, true);
+        $zip->extractTo("$dir/public");
+        $zip->close();
+        logMsg('Assets extraits dans public/build/ ✓');
+        chown_r($buildDir, 'www-data');
+    } else {
+        logMsg('ERREUR : impossible d\'ouvrir le zip assets');
+    }
+} else {
+    logMsg('Aucun zip assets fourni — build non mis à jour');
+}
 
-// 3. Lancer le build en arrière-plan via nohup
-//    PHP répond immédiatement à GitHub Actions sans attendre le build (>3 min)
-$buildLog = "$dir/storage/logs/deploy.log";
-$cmd = "nohup bash $dir/deploy-build.sh >> $buildLog 2>&1 &";
-shell_exec($cmd);
+// ── 3. Artisan ────────────────────────────────────────────────────
+foreach (['migrate --force', 'config:cache', 'route:cache', 'view:cache'] as $cmd) {
+    $out = shell_exec("cd $dir && php artisan $cmd 2>&1 | tail -2");
+    logMsg("$cmd : " . trim($out));
+}
 
-logMsg('Build lancé en arrière-plan (deploy-build.sh)');
-logMsg('=== Réponse immédiate GitHub Actions ===');
+// ── 4. Permissions ────────────────────────────────────────────────
+shell_exec("chown -R www-data:www-data $dir/storage $dir/bootstrap/cache 2>&1");
+logMsg('Permissions OK');
+logMsg('=== Déploiement terminé (v2) ===');
 
 echo 'DEPLOY_OK';
+
+function chown_r(string $path, string $user): void {
+    shell_exec("chown -R $user:$user " . escapeshellarg($path) . " 2>&1");
+}

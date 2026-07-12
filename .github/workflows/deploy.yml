@@ -5,26 +5,46 @@ on:
     branches: [master]
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Déclencher le déploiement sur le VPS
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Installer les dépendances npm
+        run: npm ci
+
+      - name: Build Vite (React + Tailwind)
+        run: npm run build
+
+      - name: Créer l'archive des assets compilés
         run: |
-          # Utilise l'IP directe avec SNI pour contourner les problèmes DNS
-          # --max-time 300 car npm run build peut prendre 2-3 min
-          RESULT=$(curl -s --max-time 300 \
+          cd public
+          zip -r ../assets.zip build/
+          echo "Taille du zip : $(du -sh ../assets.zip | cut -f1)"
+
+      - name: Déployer sur le VPS (git pull + assets + artisan)
+        run: |
+          RESULT=$(curl -s --max-time 120 \
             --resolve construiro.com:443:185.98.139.38 \
             -X POST \
-            -d "secret=${{ secrets.DEPLOY_SECRET }}" \
+            -F "secret=${{ secrets.DEPLOY_SECRET }}" \
+            -F "assets=@assets.zip;type=application/zip" \
             https://construiro.com/deploy-receiver.php)
-          echo "Résultat brut: $RESULT"
+          echo "Résultat: $RESULT"
           echo "$RESULT" | grep -q "DEPLOY_OK" && echo "✅ Déploiement réussi" || (echo "❌ Échec: $RESULT" && exit 1)
 
-      - name: Récupérer les logs de déploiement
+      - name: Afficher les logs VPS
         if: always()
         run: |
-          LOG=$(curl -s --max-time 30 \
+          echo "=== Logs deploy.log ==="
+          curl -s --max-time 30 \
             --resolve construiro.com:443:185.98.139.38 \
-            "https://construiro.com/deploy-log.php?secret=${{ secrets.DEPLOY_SECRET }}")
-          echo "=== Logs VPS ==="
-          echo "$LOG"
+            "https://construiro.com/deploy-log.php?secret=${{ secrets.DEPLOY_SECRET }}" | tail -30
