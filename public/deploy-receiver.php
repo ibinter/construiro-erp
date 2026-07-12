@@ -23,7 +23,13 @@ logMsg('git pull : ' . trim($out));
 $out = shell_exec("cd $dir && composer install --no-dev --optimize-autoloader --no-interaction 2>&1 | tail -3");
 logMsg('composer : ' . trim($out));
 
-// 3. Artisan en tant que www-data
+// 3. Build assets front-end (Vite/React)
+$out = shell_exec("cd $dir && npm ci --prefer-offline 2>&1 | tail -2");
+logMsg('npm ci : ' . trim($out));
+$out = shell_exec("cd $dir && npm run build 2>&1 | tail -3");
+logMsg('npm build : ' . trim($out));
+
+// 4. Artisan en tant que www-data
 foreach (['migrate --force', 'config:cache', 'route:cache', 'view:cache'] as $cmd) {
     $out = shell_exec("cd $dir && sudo -u www-data php artisan $cmd 2>&1 | tail -2");
     logMsg("$cmd : " . trim($out));
