@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import ConstruiroLogo from '@/Components/ConstruiroLogo';
 import SaraFloating from '@/Components/SaraFloating';
 import PwaBanner from '@/Components/PwaBanner';
+import CookiesBanner from '@/Components/CookiesBanner';
 
 const BRAND = '#F58220';
 const NAVY  = '#1E1E1E';
@@ -1417,6 +1418,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
             {/* ── FLOTTANTS ────────────────────────────────────── */}
             <SaraFloating />
             <PwaBanner />
+            <CookiesBanner />
         </>
     );
 }
