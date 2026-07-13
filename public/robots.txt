@@ -1,2 +1,10 @@
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /superadmin
+Disallow: /admin
+Disallow: /aide/tickets
+Disallow: /aide/nouvelle-question
+
+Sitemap: https://construiro.com/sitemap.xml

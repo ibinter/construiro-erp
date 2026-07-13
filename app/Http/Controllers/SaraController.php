@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Http;
@@ -107,11 +108,15 @@ PROMPT;
 
         $apiKey = config('services.groq.key');
 
-        if (empty($apiKey)) {
+        if (empty($apiKey) || !Setting::get('sara_enabled', '1')) {
             return response()->json([
                 'reply' => 'Je suis temporairement indisponible. Contactez-nous directement : contact@ibigsoft.com ou +225 27 22 27 60 14.',
             ]);
         }
+
+        $model       = Setting::get('sara_model',       'llama-3.1-8b-instant');
+        $maxTokens   = (int)   Setting::get('sara_max_tokens',   self::MAX_TOKENS);
+        $temperature = (float) Setting::get('sara_temperature',  self::TEMPERATURE);
 
         // Construire les messages
         $messages = [['role' => 'system', 'content' => $this->systemPrompt()]];
@@ -128,10 +133,10 @@ PROMPT;
             $response = Http::withToken($apiKey)
                 ->timeout(20)
                 ->post('https://api.groq.com/openai/v1/chat/completions', [
-                    'model'       => 'llama-3.1-8b-instant',
+                    'model'       => $model,
                     'messages'    => $messages,
-                    'max_tokens'  => self::MAX_TOKENS,
-                    'temperature' => self::TEMPERATURE,
+                    'max_tokens'  => $maxTokens,
+                    'temperature' => $temperature,
                     'stream'      => false,
                 ]);
 

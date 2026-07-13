@@ -571,6 +571,271 @@ function DemoForm() {
     );
 }
 
+/* ── Galerie captures (mockups illustrés) ────────────────────── */
+const GALERIE_TABS = [
+    {
+        key: 'dashboard', label: '📊 Tableau de bord', color: '#1E1E1E',
+        modules: ['KPIs temps réel', 'Budget chantier', 'Avancement %', 'Alertes actives'],
+        desc: 'Vue directeur — tous vos indicateurs BTP en un coup d\'œil.',
+    },
+    {
+        key: 'chantier', label: '🏗️ Chantiers', color: '#0f3460',
+        modules: ['Planning Gantt', 'Pointage équipes', 'Journal de chantier', 'Photos terrain'],
+        desc: 'Suivez chaque chantier de la pose de la première pierre à la réception.',
+    },
+    {
+        key: 'finance', label: '💰 Finance', color: '#1a472a',
+        modules: ['Facturation client', 'Décaissements', 'Budget analytique', 'Trésorerie'],
+        desc: 'Comptabilité, facturation et trésorerie intégrées nativement.',
+    },
+    {
+        key: 'stock', label: '📦 Matériaux', color: '#7b2d00',
+        modules: ['Bons de commande', 'Entrées/Sorties', 'Inventaire', 'Alertes seuil'],
+        desc: 'Gérez vos stocks, commandes et livraisons depuis un seul écran.',
+    },
+];
+
+function MockScreen({ tab }) {
+    return (
+        <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10" style={{ background: '#0d0d1a' }}>
+            {/* Browser chrome */}
+            <div className="flex items-center gap-2 px-4 py-2.5" style={{ background: '#1a1a2e' }}>
+                <span className="w-3 h-3 rounded-full bg-red-500/70" />
+                <span className="w-3 h-3 rounded-full bg-yellow-500/70" />
+                <span className="w-3 h-3 rounded-full bg-green-500/70" />
+                <div className="ml-3 flex-1 rounded-full px-3 py-0.5 text-xs text-gray-500" style={{ background: '#111' }}>
+                    app.construiro.com
+                </div>
+            </div>
+            {/* App UI mock */}
+            <div className="p-4" style={{ minHeight: 260 }}>
+                <div className="flex gap-3 mb-4">
+                    {/* Sidebar */}
+                    <div className="w-10 flex flex-col gap-2 pt-1">
+                        {[...Array(6)].map((_, i) => (
+                            <div key={i} className="w-8 h-8 rounded-lg opacity-30" style={{ background: i === 0 ? BRAND : '#333' }} />
+                        ))}
+                    </div>
+                    {/* Content */}
+                    <div className="flex-1 space-y-3">
+                        {/* Header bar */}
+                        <div className="flex items-center justify-between">
+                            <div className="h-5 w-32 rounded" style={{ background: tab.color }} />
+                            <div className="h-7 w-24 rounded-lg" style={{ background: BRAND, opacity: 0.8 }} />
+                        </div>
+                        {/* KPI cards */}
+                        <div className="grid grid-cols-2 gap-2">
+                            {tab.modules.map((m, i) => (
+                                <div key={m} className="rounded-xl p-3 flex flex-col gap-1.5" style={{ background: '#1a1a2e' }}>
+                                    <div className="h-2 w-16 rounded" style={{ background: i % 2 === 0 ? BRAND : '#3a3a5c', opacity: 0.7 }} />
+                                    <div className="text-xs text-gray-400 font-medium truncate">{m}</div>
+                                    <div className="h-6 w-20 rounded" style={{ background: tab.color, opacity: 0.5 }} />
+                                </div>
+                            ))}
+                        </div>
+                        {/* Chart mockup */}
+                        <div className="rounded-xl p-3 flex items-end gap-1" style={{ background: '#1a1a2e', height: 60 }}>
+                            {[40, 65, 45, 80, 55, 90, 70, 85, 60, 75, 95, 50].map((h, i) => (
+                                <div key={i} className="flex-1 rounded-t" style={{ height: `${h}%`, background: i === 6 ? BRAND : '#3a3a5c', opacity: i === 6 ? 1 : 0.5 }} />
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function GalerieCaptures() {
+    const [active, setActive] = useState(0);
+    const tab = GALERIE_TABS[active];
+    return (
+        <section className="py-20 bg-white overflow-hidden">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center mb-12">
+                    <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>Démonstration visuelle</p>
+                    <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>Découvrez l'interface CONSTRUIRO</h2>
+                    <p className="text-gray-500 max-w-xl mx-auto">Une interface claire, pensée pour les équipes terrain comme pour la direction générale.</p>
+                </div>
+                <div className="flex flex-wrap justify-center gap-2 mb-8">
+                    {GALERIE_TABS.map((t, i) => (
+                        <button key={t.key} onClick={() => setActive(i)}
+                            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${active === i ? 'text-white shadow-lg' : 'text-gray-600 bg-gray-100 hover:bg-gray-200'}`}
+                            style={active === i ? { background: BRAND } : {}}>
+                            {t.label}
+                        </button>
+                    ))}
+                </div>
+                <div className="grid lg:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <MockScreen tab={tab} />
+                    </div>
+                    <div>
+                        <h3 className="text-2xl font-black mb-4" style={{ color: NAVY }}>{tab.label.split(' ').slice(1).join(' ')}</h3>
+                        <p className="text-gray-500 mb-6 leading-relaxed">{tab.desc}</p>
+                        <ul className="space-y-3">
+                            {tab.modules.map(m => (
+                                <li key={m} className="flex items-center gap-3 text-sm">
+                                    <span className="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center" style={{ background: BRAND }}>
+                                        <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                                    </span>
+                                    <span className="font-medium" style={{ color: NAVY }}>{m}</span>
+                                </li>
+                            ))}
+                        </ul>
+                        <a href="#demo" className="inline-flex items-center gap-2 mt-8 px-8 py-3.5 rounded-xl font-bold text-white transition hover:opacity-90"
+                            style={{ background: BRAND }}>
+                            Voir une vraie démo →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    );
+}
+
+/* ── Vidéo de présentation ───────────────────────────────────── */
+function VideoPresentation() {
+    const [playing, setPlaying] = useState(false);
+    return (
+        <section className="py-20" style={{ background: NAVY }}>
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center mb-10">
+                    <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>Présentation</p>
+                    <h2 className="text-4xl font-black text-white mb-4">CONSTRUIRO en 3 minutes</h2>
+                    <p className="text-gray-400 max-w-xl mx-auto">Découvrez comment les entreprises BTP africaines pilotent leurs chantiers avec CONSTRUIRO ERP.</p>
+                </div>
+                <div className="relative rounded-3xl overflow-hidden cursor-pointer group"
+                    style={{ background: '#111', aspectRatio: '16/9', boxShadow: '0 32px 80px rgba(0,0,0,0.5)' }}
+                    onClick={() => setPlaying(true)}>
+                    {/* Placeholder thumbnail */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center"
+                        style={{ background: `linear-gradient(135deg, #0a1628 0%, #1E1E1E 100%)` }}>
+                        {/* Mock screenshot lines */}
+                        <div className="absolute inset-0 opacity-10">
+                            {[...Array(8)].map((_, i) => (
+                                <div key={i} className="absolute h-px w-full" style={{ top: `${12.5 * (i + 0.5)}%`, background: 'white' }} />
+                            ))}
+                        </div>
+                        {/* Overlay brand */}
+                        <div className="relative z-10 text-center">
+                            <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 transition-transform group-hover:scale-110"
+                                style={{ background: BRAND, boxShadow: `0 0 60px rgba(245,130,32,0.5)` }}>
+                                <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </div>
+                            <p className="text-white font-bold text-lg mb-1">CONSTRUIRO ERP — Présentation officielle</p>
+                            <p className="text-gray-500 text-sm">Durée estimée : 3 minutes · Disponible prochainement</p>
+                        </div>
+                    </div>
+                    {playing && (
+                        <div className="absolute inset-0 flex items-center justify-center" style={{ background: '#000' }}>
+                            <p className="text-white text-sm">Vidéo disponible prochainement sur YouTube</p>
+                        </div>
+                    )}
+                    {/* Bottom bar */}
+                    <div className="absolute bottom-0 left-0 right-0 h-1.5" style={{ background: `linear-gradient(to right, ${BRAND}, transparent)` }} />
+                </div>
+                <p className="text-center text-gray-600 text-sm mt-6">
+                    Préférez une démo en live ?{' '}
+                    <a href="#demo" className="font-semibold transition hover:opacity-75" style={{ color: BRAND }}>
+                        Demandez une démonstration personnalisée →
+                    </a>
+                </p>
+            </div>
+        </section>
+    );
+}
+
+/* ── Comparateur des offres ──────────────────────────────────── */
+const FEATURES_COMPARE = [
+    { label: 'Modules BTP', values: ['15+ modules', '15+ modules', '15+ modules'] },
+    { label: 'Utilisateurs', key: 'max_users' },
+    { label: 'Projets simultanés', key: 'max_projects' },
+    { label: 'Essai gratuit', key: 'trial_days', format: v => v > 0 ? `${v} jours` : '—' },
+    { label: 'Tableaux de bord', values: ['Basique', 'Avancé', 'Illimité'] },
+    { label: 'Rapports & exports', values: ['PDF', 'PDF + Excel', 'PDF + Excel + BI'] },
+    { label: 'Support', values: ['Email', 'Email + Chat', 'Prioritaire dédié'] },
+    { label: 'API REST', values: ['—', '✓', '✓'] },
+    { label: 'Multi-agences', values: ['—', '—', '✓'] },
+    { label: 'Formation incluse', values: ['—', '1 session', '3 sessions'] },
+    { label: 'SLA garanti', values: ['—', '99%', '99.9%'] },
+];
+
+function ComparateurOffres({ plans }) {
+    const p0 = plans[0] || {}, p1 = plans[1] || {}, p2 = plans[2] || {};
+    const getValue = (feat, i) => {
+        if (feat.values) return feat.values[i] || '—';
+        const val = [p0, p1, p2][i][feat.key];
+        if (feat.format) return feat.format(val);
+        if (val >= 9999) return '∞';
+        return val ?? '—';
+    };
+    return (
+        <section className="py-20 bg-gray-50 overflow-x-auto">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center mb-12">
+                    <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>Comparateur</p>
+                    <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>Ce qui est inclus dans chaque offre</h2>
+                </div>
+                <div className="rounded-2xl overflow-hidden border border-gray-200 bg-white shadow-sm">
+                    <table className="w-full text-sm">
+                        <thead>
+                            <tr style={{ background: NAVY }}>
+                                <th className="text-left px-6 py-4 text-gray-400 font-medium w-1/3">Fonctionnalité</th>
+                                {plans.slice(0, 3).map((plan, i) => (
+                                    <th key={plan.id} className="px-4 py-4 text-center relative" style={{ minWidth: 130 }}>
+                                        {i === 1 && (
+                                            <span className="absolute -top-0 left-1/2 -translate-x-1/2 text-xs font-bold px-2 py-0.5 rounded-b-lg"
+                                                style={{ background: BRAND, color: '#fff' }}>RECOMMANDÉ</span>
+                                        )}
+                                        <div className="text-white font-bold mt-1">{plan.name}</div>
+                                        <div className="text-xs font-normal mt-0.5" style={{ color: BRAND }}>{formatXOF(plan.price_monthly)}/mois</div>
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {FEATURES_COMPARE.map((feat, ri) => (
+                                <tr key={feat.label} className={ri % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                                    <td className="px-6 py-3.5 font-medium" style={{ color: NAVY }}>{feat.label}</td>
+                                    {plans.slice(0, 3).map((_, ci) => {
+                                        const val = getValue(feat, ci);
+                                        return (
+                                            <td key={ci} className="px-4 py-3.5 text-center text-gray-600">
+                                                {val === '✓'
+                                                    ? <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-white text-xs" style={{ background: BRAND }}>✓</span>
+                                                    : val === '—'
+                                                    ? <span className="text-gray-300">—</span>
+                                                    : val}
+                                            </td>
+                                        );
+                                    })}
+                                </tr>
+                            ))}
+                            <tr className="border-t border-gray-200">
+                                <td className="px-6 py-4" />
+                                {plans.slice(0, 3).map((plan, i) => (
+                                    <td key={plan.id} className="px-4 py-4 text-center">
+                                        <a href="#demo"
+                                            className="inline-block px-5 py-2.5 rounded-xl font-bold text-sm transition hover:opacity-90"
+                                            style={i === 1
+                                                ? { background: BRAND, color: '#fff' }
+                                                : { border: `2px solid ${BRAND}`, color: BRAND }}>
+                                            Choisir →
+                                        </a>
+                                    </td>
+                                ))}
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    );
+}
+
 /* ── Barre supérieure ────────────────────────────────────────── */
 function TopBar() {
     const { t } = useTrans();
@@ -624,16 +889,30 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                 <meta name="twitter:description" content="L'ERP BTP pensé pour les réalités africaines. Essai gratuit 14 jours." />
                 <meta name="robots" content="index, follow" />
                 <link rel="canonical" href="https://construiro.com" />
-                <script type="application/ld+json">{JSON.stringify({
-                    "@context": "https://schema.org",
-                    "@type": "SoftwareApplication",
-                    "name": "CONSTRUIRO ERP",
-                    "description": "ERP BTP conçu pour les entreprises de construction africaines",
-                    "applicationCategory": "BusinessApplication",
-                    "operatingSystem": "Web",
-                    "offers": { "@type": "Offer", "priceCurrency": "XOF", "availability": "https://schema.org/InStock" },
-                    "publisher": { "@type": "Organization", "name": "IBIG Soft", "url": "https://ibigsoft.com" }
-                })}</script>
+                <script type="application/ld+json">{JSON.stringify([
+                    {
+                        "@context": "https://schema.org",
+                        "@type": "SoftwareApplication",
+                        "name": "CONSTRUIRO ERP",
+                        "description": "ERP BTP conçu pour les entreprises de construction et de travaux publics africaines. Gestion de projets, RH, stocks, équipements, finance, comptabilité.",
+                        "applicationCategory": "BusinessApplication",
+                        "operatingSystem": "Web, Android, iOS",
+                        "url": "https://construiro.com",
+                        "screenshot": "https://construiro.com/og-image.png",
+                        "offers": { "@type": "Offer", "priceCurrency": "XOF", "price": "0", "description": "Essai gratuit 14 jours sans carte bancaire", "availability": "https://schema.org/InStock" },
+                        "publisher": { "@type": "Organization", "name": "IBIG Soft", "url": "https://ibigsoft.com" },
+                        "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "reviewCount": "3" }
+                    },
+                    {
+                        "@context": "https://schema.org",
+                        "@type": "Organization",
+                        "name": "IBIG Soft",
+                        "url": "https://ibigsoft.com",
+                        "logo": "https://ibigsoft.com/logo.png",
+                        "contactPoint": { "@type": "ContactPoint", "telephone": "+225-27-22-27-60-14", "contactType": "customer service", "areaServed": "AF", "availableLanguage": ["French", "English"] },
+                        "address": { "@type": "PostalAddress", "addressLocality": "Abidjan", "addressCountry": "CI" }
+                    }
+                ])}</script>
             </Head>
             <div className="min-h-screen bg-white font-sans" style={{ color: NAVY }}>
 
@@ -814,6 +1093,12 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                         </div>
                     </div>
                 </section>
+
+                {/* ── GALERIE CAPTURES ────────────────────────────── */}
+                <GalerieCaptures />
+
+                {/* ── VIDÉO DE PRÉSENTATION ───────────────────────── */}
+                <VideoPresentation />
 
                 {/* ── COMMENT ÇA MARCHE ───────────────────────────── */}
                 <section className="py-20 bg-white">
@@ -1099,6 +1384,9 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                         )}
                     </div>
                 </section>
+
+                {/* ── COMPARATEUR OFFRES ──────────────────────────── */}
+                {plans.length > 0 && <ComparateurOffres plans={plans} />}
 
                 {/* ── IBIG PARTNERS ───────────────────────────────── */}
                 <section className="py-20" style={{ background: NAVY }}>

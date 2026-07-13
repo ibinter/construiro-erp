@@ -71,6 +71,7 @@ use App\Http\Controllers\SuperAdmin\LandingController as SuperAdminLandingContro
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\LegalController;
 use App\Http\Controllers\DemoRequestController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SupportController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\UserGuideController;
@@ -79,6 +80,9 @@ use App\Models\LandingTemoignage;
 use App\Models\SubscriptionPlan;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
+// ─── SEO ─────────────────────────────────────────────────────────────────────
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
 // ─── Pages légales publiques ────────────────────────────────────────────────
 Route::get('/legal/{slug}', [LegalController::class, 'show'])->name('legal.show');
