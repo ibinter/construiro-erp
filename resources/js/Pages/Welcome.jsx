@@ -1,4 +1,4 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+﻿import { Head, Link, useForm } from '@inertiajs/react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import ConstruiroLogo from '@/Components/ConstruiroLogo';
 import SaraFloating from '@/Components/SaraFloating';
@@ -10,7 +10,7 @@ import { useTrans } from '@/i18n';
 const BRAND = '#F58220';
 const NAVY  = '#1E1E1E';
 
-/* ── Icônes SVG ─────────────────────────────────────────────── */
+/* â”€â”€ IcÃ´nes SVG â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const icons = {
     projects:   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><path d="M3 17l2 2 4-4"/></svg>,
     hr:         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/><path d="M16 3.13a4 4 0 010 7.75"/><path d="M21 21v-2a4 4 0 00-3-3.85"/></svg>,
@@ -35,139 +35,139 @@ const icons = {
     hand:       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>,
 };
 
-/* ── Données modules ─────────────────────────────────────────── */
+/* â”€â”€ DonnÃ©es modules â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const modules = [
-    { key: 'projects',  titre: 'Gestion de Projets',      desc: 'Planification, jalons, tâches et budget par chantier en temps réel.' },
-    { key: 'hr',        titre: 'RH & Paie',               desc: 'Personnel, présences, congés et fiches de paie localisées.' },
-    { key: 'finance',   titre: 'Finance & Comptabilité',   desc: 'Facturation, trésorerie, budget analytique et comptabilité générale.' },
-    { key: 'materials', titre: 'Matériaux & Stock',        desc: 'Entrepôts, commandes fournisseurs, livraisons et inventaires.' },
-    { key: 'equipment', titre: 'Équipements & Engins',     desc: 'Parc roulant, maintenance préventive et affectation chantiers.' },
-    { key: 'quotes',    titre: 'Devis & Contrats',         desc: 'Métré, DQE, devis clients, contrats signés et avenants.' },
-    { key: 'hse',       titre: 'HSE & Qualité',            desc: 'Incidents, contrôles qualité, non-conformités et audits chantier.' },
-    { key: 'studies',   titre: 'Bureau d\'Études',         desc: 'Plans, métrés détaillés et bibliothèque de prix unitaires.' },
+    { key: 'projects',  titre: 'Gestion de Projets',      desc: 'Planification, jalons, tÃ¢ches et budget par chantier en temps rÃ©el.' },
+    { key: 'hr',        titre: 'RH & Paie',               desc: 'Personnel, prÃ©sences, congÃ©s et fiches de paie localisÃ©es.' },
+    { key: 'finance',   titre: 'Finance & ComptabilitÃ©',   desc: 'Facturation, trÃ©sorerie, budget analytique et comptabilitÃ© gÃ©nÃ©rale.' },
+    { key: 'materials', titre: 'MatÃ©riaux & Stock',        desc: 'EntrepÃ´ts, commandes fournisseurs, livraisons et inventaires.' },
+    { key: 'equipment', titre: 'Ã‰quipements & Engins',     desc: 'Parc roulant, maintenance prÃ©ventive et affectation chantiers.' },
+    { key: 'quotes',    titre: 'Devis & Contrats',         desc: 'MÃ©trÃ©, DQE, devis clients, contrats signÃ©s et avenants.' },
+    { key: 'hse',       titre: 'HSE & QualitÃ©',            desc: 'Incidents, contrÃ´les qualitÃ©, non-conformitÃ©s et audits chantier.' },
+    { key: 'studies',   titre: 'Bureau d\'Ã‰tudes',         desc: 'Plans, mÃ©trÃ©s dÃ©taillÃ©s et bibliothÃ¨que de prix unitaires.' },
     { key: 'reporting', titre: 'BI & Reporting',           desc: 'Tableaux de bord, KPIs et rapports automatiques avec assistant IA.' },
 ];
 
-/* ── Témoignages ─────────────────────────────────────────────── */
+/* â”€â”€ TÃ©moignages â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const temoignages = [
-    { initiales: 'KA', nom: 'Koffi A.', poste: 'Directeur BTP', ville: 'Abidjan', texte: 'CONSTRUIRO a centralisé tout notre suivi de chantier. Fini les fichiers Excel perdus — on pilote tout depuis un seul écran.' },
-    { initiales: 'MD', nom: 'Mamadou D.', poste: 'Chef de Projet', ville: 'Dakar', texte: 'La gestion des équipements et du carburant seule nous a économisé plus de 20% de coûts en moins d\'un trimestre.' },
-    { initiales: 'AB', nom: 'Aminata B.', poste: 'Directrice Administrative', ville: 'Douala', texte: 'La comptabilité et la facturation intégrées nous font gagner 2 jours de travail manuel chaque mois.' },
+    { initiales: 'KA', nom: 'Koffi A.', poste: 'Directeur BTP', ville: 'Abidjan', texte: 'CONSTRUIRO a centralisÃ© tout notre suivi de chantier. Fini les fichiers Excel perdus â€” on pilote tout depuis un seul Ã©cran.' },
+    { initiales: 'MD', nom: 'Mamadou D.', poste: 'Chef de Projet', ville: 'Dakar', texte: 'La gestion des Ã©quipements et du carburant seule nous a Ã©conomisÃ© plus de 20% de coÃ»ts en moins d\'un trimestre.' },
+    { initiales: 'AB', nom: 'Aminata B.', poste: 'Directrice Administrative', ville: 'Douala', texte: 'La comptabilitÃ© et la facturation intÃ©grÃ©es nous font gagner 2 jours de travail manuel chaque mois.' },
 ];
 
-/* ── Slides hero ─────────────────────────────────────────────── */
+/* â”€â”€ Slides hero â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const SLIDES = [
     {
-        badge: '🌍 Conçu pour les entreprises BTP africaines',
-        h1a: 'Pilotez toute votre', h1b: 'activité BTP', h1c: 'depuis un seul endroit',
-        sub: 'Une solution complète, moderne et adaptée aux réalités africaines. Projets, RH, finances, équipements — tout centralisé.',
-        cta1Label: 'Demander une démo gratuite', cta1Href: '#demo', cta2Label: 'Essai 14 jours gratuit →', cta2IsRegister: true,
+        badge: 'ðŸŒ ConÃ§u pour les entreprises BTP africaines',
+        h1a: 'Pilotez toute votre', h1b: 'activitÃ© BTP', h1c: 'depuis un seul endroit',
+        sub: 'Une solution complÃ¨te, moderne et adaptÃ©e aux rÃ©alitÃ©s africaines. Projets, RH, finances, Ã©quipements â€” tout centralisÃ©.',
+        cta1Label: 'Demander une dÃ©mo gratuite', cta1Href: '#demo', cta2Label: 'Essai 14 jours gratuit â†’', cta2IsRegister: true,
         visual: 'dashboard',
     },
     {
-        badge: '⚡ Automatisation avancée',
-        h1a: 'Automatisez vos', h1b: 'opérations BTP', h1c: 'et réduisez les erreurs',
-        sub: 'Rapports automatiques, alertes intelligentes, suivi temps réel des chantiers — fini la saisie manuelle et les fichiers Excel dispersés.',
-        cta1Label: 'Voir les modules', cta1Href: '#modules', cta2Label: 'Essai gratuit →', cta2IsRegister: true,
+        badge: 'âš¡ Automatisation avancÃ©e',
+        h1a: 'Automatisez vos', h1b: 'opÃ©rations BTP', h1c: 'et rÃ©duisez les erreurs',
+        sub: 'Rapports automatiques, alertes intelligentes, suivi temps rÃ©el des chantiers â€” fini la saisie manuelle et les fichiers Excel dispersÃ©s.',
+        cta1Label: 'Voir les modules', cta1Href: '#modules', cta2Label: 'Essai gratuit â†’', cta2IsRegister: true,
         visual: 'automation',
     },
     {
-        badge: '📱 Multi-appareils & PWA',
+        badge: 'ðŸ“± Multi-appareils & PWA',
         h1a: 'Travaillez partout,', h1b: 'depuis tous vos', h1c: 'appareils',
-        sub: 'Ordinateur, tablette, smartphone — accédez à CONSTRUIRO depuis n\'importe où. Installez-le comme une application sur votre écran d\'accueil.',
-        cta1Label: 'Installer l\'application', cta1Href: '#pwa', cta2Label: 'Essai gratuit →', cta2IsRegister: true,
+        sub: 'Ordinateur, tablette, smartphone â€” accÃ©dez Ã  CONSTRUIRO depuis n\'importe oÃ¹. Installez-le comme une application sur votre Ã©cran d\'accueil.',
+        cta1Label: 'Installer l\'application', cta1Href: '#pwa', cta2Label: 'Essai gratuit â†’', cta2IsRegister: true,
         visual: 'devices',
     },
     {
-        badge: '🤖 Intelligence artificielle SARA',
-        h1a: 'Votre assistante IA', h1b: 'SARA vous accompagne', h1c: 'à chaque étape',
-        sub: 'SARA répond à vos questions, guide vos équipes, et vous aide à tirer le meilleur de CONSTRUIRO — disponible 24h/24.',
-        cta1Label: 'Parler à SARA', cta1Href: '#sara', cta2Label: 'Essai gratuit →', cta2IsRegister: true,
+        badge: 'ðŸ¤– Intelligence artificielle SARA',
+        h1a: 'Votre assistante IA', h1b: 'SARA vous accompagne', h1c: 'Ã  chaque Ã©tape',
+        sub: 'SARA rÃ©pond Ã  vos questions, guide vos Ã©quipes, et vous aide Ã  tirer le meilleur de CONSTRUIRO â€” disponible 24h/24.',
+        cta1Label: 'Parler Ã  SARA', cta1Href: '#sara', cta2Label: 'Essai gratuit â†’', cta2IsRegister: true,
         visual: 'ai',
     },
     {
-        badge: '🔒 Sécurité & Conformité',
-        h1a: 'Vos données sont', h1b: 'protégées.', h1c: 'Votre équipe accompagnée.',
-        sub: 'Connexions HTTPS, gestion des rôles, sauvegardes automatiques, journal d\'audit complet — votre activité est entre de bonnes mains.',
-        cta1Label: 'Demander une démo', cta1Href: '#demo', cta2Label: 'En savoir plus', cta2Href: '#securite',
+        badge: 'ðŸ”’ SÃ©curitÃ© & ConformitÃ©',
+        h1a: 'Vos donnÃ©es sont', h1b: 'protÃ©gÃ©es.', h1c: 'Votre Ã©quipe accompagnÃ©e.',
+        sub: 'Connexions HTTPS, gestion des rÃ´les, sauvegardes automatiques, journal d\'audit complet â€” votre activitÃ© est entre de bonnes mains.',
+        cta1Label: 'Demander une dÃ©mo', cta1Href: '#demo', cta2Label: 'En savoir plus', cta2Href: '#securite',
         visual: 'security',
     },
 ];
 
-/* ── Problèmes résolus ───────────────────────────────────────── */
+/* â”€â”€ ProblÃ¨mes rÃ©solus â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const PROBLEMES = [
-    { avant: 'Fichiers Excel dispersés entre plusieurs équipes', apres: 'Toutes les informations centralisées et accessibles en temps réel' },
-    { avant: 'Suivi de chantier manuel, risques d\'erreurs et de retards', apres: 'Tableau de bord temps réel avec alertes automatiques' },
-    { avant: 'Gestion RH et paie sur papier ou tableurs', apres: 'Module RH intégré, fiches de paie en quelques clics' },
-    { avant: 'Pertes de documents, contrats et devis introuvables', apres: 'Archivage numérique centralisé et sécurisé' },
-    { avant: 'Coordination difficile entre chefs de chantier et direction', apres: 'Collaboration intégrée et reporting instantané' },
-    { avant: 'Aucune visibilité sur les stocks et équipements', apres: 'Suivi en temps réel des matériaux, engins et consommations' },
+    { avant: 'Fichiers Excel dispersÃ©s entre plusieurs Ã©quipes', apres: 'Toutes les informations centralisÃ©es et accessibles en temps rÃ©el' },
+    { avant: 'Suivi de chantier manuel, risques d\'erreurs et de retards', apres: 'Tableau de bord temps rÃ©el avec alertes automatiques' },
+    { avant: 'Gestion RH et paie sur papier ou tableurs', apres: 'Module RH intÃ©grÃ©, fiches de paie en quelques clics' },
+    { avant: 'Pertes de documents, contrats et devis introuvables', apres: 'Archivage numÃ©rique centralisÃ© et sÃ©curisÃ©' },
+    { avant: 'Coordination difficile entre chefs de chantier et direction', apres: 'Collaboration intÃ©grÃ©e et reporting instantanÃ©' },
+    { avant: 'Aucune visibilitÃ© sur les stocks et Ã©quipements', apres: 'Suivi en temps rÃ©el des matÃ©riaux, engins et consommations' },
 ];
 
-/* ── Bénéfices ──────────────────────────────────────────────── */
+/* â”€â”€ BÃ©nÃ©fices â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const BENEFICES = [
-    { icon: 'clock',  titre: 'Gagnez du temps', desc: 'Automatisez les tâches répétitives. Vos équipes se concentrent sur l\'essentiel.' },
-    { icon: 'shield', titre: 'Réduisez les erreurs', desc: 'Données centralisées, calculs automatiques, zéro ressaisie manuelle.' },
-    { icon: 'chart',  titre: 'Meilleures décisions', desc: 'Tableaux de bord et KPIs en temps réel pour piloter avec précision.' },
-    { icon: 'lock',   titre: 'Données sécurisées', desc: 'Accès chiffré, gestion des rôles, sauvegardes automatiques quotidiennes.' },
-    { icon: 'users',  titre: 'Équipes connectées', desc: 'Direction, chefs de chantier et RH collaborent sur une seule plateforme.' },
-    { icon: 'globe',  titre: 'Adapté à l\'Afrique', desc: 'Multi-devises FCFA/USD/EUR, conformité fiscale locale, support basé en Afrique.' },
-    { icon: 'bolt',   titre: 'Déployé en 48h', desc: 'Aucune installation complexe. Accès depuis votre navigateur dès le premier jour.' },
-    { icon: 'ai',     titre: 'IA intégrée (SARA)', desc: 'Un assistant intelligent qui guide vos utilisateurs et répond à leurs questions.' },
+    { icon: 'clock',  titre: 'Gagnez du temps', desc: 'Automatisez les tÃ¢ches rÃ©pÃ©titives. Vos Ã©quipes se concentrent sur l\'essentiel.' },
+    { icon: 'shield', titre: 'RÃ©duisez les erreurs', desc: 'DonnÃ©es centralisÃ©es, calculs automatiques, zÃ©ro ressaisie manuelle.' },
+    { icon: 'chart',  titre: 'Meilleures dÃ©cisions', desc: 'Tableaux de bord et KPIs en temps rÃ©el pour piloter avec prÃ©cision.' },
+    { icon: 'lock',   titre: 'DonnÃ©es sÃ©curisÃ©es', desc: 'AccÃ¨s chiffrÃ©, gestion des rÃ´les, sauvegardes automatiques quotidiennes.' },
+    { icon: 'users',  titre: 'Ã‰quipes connectÃ©es', desc: 'Direction, chefs de chantier et RH collaborent sur une seule plateforme.' },
+    { icon: 'globe',  titre: 'AdaptÃ© Ã  l\'Afrique', desc: 'Multi-devises FCFA/USD/EUR, conformitÃ© fiscale locale, support basÃ© en Afrique.' },
+    { icon: 'bolt',   titre: 'DÃ©ployÃ© en 48h', desc: 'Aucune installation complexe. AccÃ¨s depuis votre navigateur dÃ¨s le premier jour.' },
+    { icon: 'ai',     titre: 'IA intÃ©grÃ©e (SARA)', desc: 'Un assistant intelligent qui guide vos utilisateurs et rÃ©pond Ã  leurs questions.' },
 ];
 
-/* ── Comment ça marche ──────────────────────────────────────── */
+/* â”€â”€ Comment Ã§a marche â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const ETAPES = [
-    { num: '01', titre: 'Créez votre compte', desc: 'Inscription en 2 minutes. Votre espace CONSTRUIRO est prêt immédiatement. 14 jours d\'essai gratuit, sans carte bancaire.' },
-    { num: '02', titre: 'Configurez votre organisation', desc: 'Renseignez vos informations, importez vos projets, configurez vos modules selon vos besoins métier.' },
-    { num: '03', titre: 'Invitez vos collaborateurs', desc: 'Ajoutez vos chefs de chantier, RH, comptables et directeurs. Attribuez les rôles et droits d\'accès.' },
-    { num: '04', titre: 'Pilotez depuis le tableau de bord', desc: 'Suivez vos chantiers, vos finances et vos équipes en temps réel. Exportez vos rapports en PDF et Excel.' },
+    { num: '01', titre: 'CrÃ©ez votre compte', desc: 'Inscription en 2 minutes. Votre espace CONSTRUIRO est prÃªt immÃ©diatement. 14 jours d\'essai gratuit, sans carte bancaire.' },
+    { num: '02', titre: 'Configurez votre organisation', desc: 'Renseignez vos informations, importez vos projets, configurez vos modules selon vos besoins mÃ©tier.' },
+    { num: '03', titre: 'Invitez vos collaborateurs', desc: 'Ajoutez vos chefs de chantier, RH, comptables et directeurs. Attribuez les rÃ´les et droits d\'accÃ¨s.' },
+    { num: '04', titre: 'Pilotez depuis le tableau de bord', desc: 'Suivez vos chantiers, vos finances et vos Ã©quipes en temps rÃ©el. Exportez vos rapports en PDF et Excel.' },
 ];
 
-/* ── Publics concernés ──────────────────────────────────────── */
+/* â”€â”€ Publics concernÃ©s â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const PUBLICS = [
-    { emoji: '🏗️', titre: 'PME BTP', desc: 'Entreprises de construction de 5 à 200 employés cherchant à se structurer et digitaliser leur gestion.' },
-    { emoji: '🏢', titre: 'Groupes BTP', desc: 'Grandes entreprises multi-sites qui ont besoin d\'une vision consolidée de leur activité.' },
-    { emoji: '🏘️', titre: 'Promoteurs immobiliers', desc: 'Gestion de projets immobiliers, suivi des lots, devis clients et facturation avancée.' },
-    { emoji: '🛣️', titre: 'Travaux publics', desc: 'Entreprises de voirie, réseaux, ouvrages d\'art avec contraintes spécifiques HSE et reporting.' },
-    { emoji: '🔧', titre: 'Sous-traitants BTP', desc: 'Artisans et sous-traitants qui veulent professionnaliser leur gestion et leurs documents.' },
+    { emoji: 'ðŸ—ï¸', titre: 'PME BTP', desc: 'Entreprises de construction de 5 Ã  200 employÃ©s cherchant Ã  se structurer et digitaliser leur gestion.' },
+    { emoji: 'ðŸ¢', titre: 'Groupes BTP', desc: 'Grandes entreprises multi-sites qui ont besoin d\'une vision consolidÃ©e de leur activitÃ©.' },
+    { emoji: 'ðŸ˜ï¸', titre: 'Promoteurs immobiliers', desc: 'Gestion de projets immobiliers, suivi des lots, devis clients et facturation avancÃ©e.' },
+    { emoji: 'ðŸ›£ï¸', titre: 'Travaux publics', desc: 'Entreprises de voirie, rÃ©seaux, ouvrages d\'art avec contraintes spÃ©cifiques HSE et reporting.' },
+    { emoji: 'ðŸ”§', titre: 'Sous-traitants BTP', desc: 'Artisans et sous-traitants qui veulent professionnaliser leur gestion et leurs documents.' },
 ];
 
-/* ── Intégrations ────────────────────────────────────────────── */
+/* â”€â”€ IntÃ©grations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const INTEGRATIONS = [
-    { nom: 'Mobile Money', desc: 'Orange Money, MTN MoMo, Wave', statut: 'disponible', emoji: '📱' },
-    { nom: 'CinetPay', desc: 'Paiements en ligne Afrique', statut: 'disponible', emoji: '💳' },
-    { nom: 'WhatsApp Business', desc: 'Notifications et alertes', statut: 'disponible', emoji: '💬' },
-    { nom: 'Email & SMS', desc: 'Notifications automatiques', statut: 'disponible', emoji: '📧' },
-    { nom: 'API REST', desc: 'Connexion à vos systèmes', statut: 'disponible', emoji: '🔌' },
-    { nom: 'Moneroo', desc: 'Paiements mobile Afrique', statut: 'disponible', emoji: '💳' },
-    { nom: 'Flutterwave', desc: 'Paiements multicanaux', statut: 'integration', emoji: '🔗' },
-    { nom: 'Paystack', desc: 'Paiements e-commerce', statut: 'bientot', emoji: '🏦' },
-    { nom: 'Stripe', desc: 'Paiements internationaux', statut: 'bientot', emoji: '💰' },
+    { nom: 'Mobile Money', desc: 'Orange Money, MTN MoMo, Wave', statut: 'disponible', emoji: 'ðŸ“±' },
+    { nom: 'CinetPay', desc: 'Paiements en ligne Afrique', statut: 'disponible', emoji: 'ðŸ’³' },
+    { nom: 'WhatsApp Business', desc: 'Notifications et alertes', statut: 'disponible', emoji: 'ðŸ’¬' },
+    { nom: 'Email & SMS', desc: 'Notifications automatiques', statut: 'disponible', emoji: 'ðŸ“§' },
+    { nom: 'API REST', desc: 'Connexion Ã  vos systÃ¨mes', statut: 'disponible', emoji: 'ðŸ”Œ' },
+    { nom: 'Moneroo', desc: 'Paiements mobile Afrique', statut: 'disponible', emoji: 'ðŸ’³' },
+    { nom: 'Flutterwave', desc: 'Paiements multicanaux', statut: 'integration', emoji: 'ðŸ”—' },
+    { nom: 'Paystack', desc: 'Paiements e-commerce', statut: 'bientot', emoji: 'ðŸ¦' },
+    { nom: 'Stripe', desc: 'Paiements internationaux', statut: 'bientot', emoji: 'ðŸ’°' },
 ];
 
-const STATUT_LABEL_FR = { disponible: 'Disponible', integration: 'En intégration', bientot: 'Bientôt' };
+const STATUT_LABEL_FR = { disponible: 'Disponible', integration: 'En intÃ©gration', bientot: 'BientÃ´t' };
 const statutColor = { disponible: '#22c55e', integration: BRAND, bientot: '#94a3b8' };
 
-/* ── Autres logiciels IBIG Soft ─────────────────────────────── */
+/* â”€â”€ Autres logiciels IBIG Soft â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const AUTRES_LOGICIELS = [
-    { nom: 'SCOLABY ERP',    secteur: 'Éducation',       emoji: '🎓', couleur: '#6366f1' },
-    { nom: 'ANOUANZE ERP',   secteur: 'Associations',    emoji: '🤝', couleur: '#3b82f6' },
-    { nom: 'SANTAREX ERP',   secteur: 'Santé',           emoji: '🏥', couleur: '#10b981' },
-    { nom: 'GESTMONEY',      secteur: 'Finance',         emoji: '💰', couleur: '#f59e0b' },
-    { nom: 'AGRIFRIK',       secteur: 'Agriculture',     emoji: '🌾', couleur: '#84cc16' },
-    { nom: 'LOKATIVO',       secteur: 'Immobilier',      emoji: '🏘️',  couleur: '#ec4899' },
-    { nom: 'STOCKFLOW',      secteur: 'Logistique',      emoji: '📦', couleur: '#8b5cf6' },
-    { nom: 'IBIG FLEET 360', secteur: 'Transport',       emoji: '🚚', couleur: '#0ea5e9' },
-    { nom: 'ZELIVRY',        secteur: 'Livraison',       emoji: '⚡', couleur: BRAND },
+    { nom: 'SCOLABY ERP',    secteur: 'Ã‰ducation',       emoji: 'ðŸŽ“', couleur: '#6366f1' },
+    { nom: 'ANOUANZE ERP',   secteur: 'Associations',    emoji: 'ðŸ¤', couleur: '#3b82f6' },
+    { nom: 'SANTAREX ERP',   secteur: 'SantÃ©',           emoji: 'ðŸ¥', couleur: '#10b981' },
+    { nom: 'GESTMONEY',      secteur: 'Finance',         emoji: 'ðŸ’°', couleur: '#f59e0b' },
+    { nom: 'AGRIFRIK',       secteur: 'Agriculture',     emoji: 'ðŸŒ¾', couleur: '#84cc16' },
+    { nom: 'LOKATIVO',       secteur: 'Immobilier',      emoji: 'ðŸ˜ï¸',  couleur: '#ec4899' },
+    { nom: 'STOCKFLOW',      secteur: 'Logistique',      emoji: 'ðŸ“¦', couleur: '#8b5cf6' },
+    { nom: 'IBIG FLEET 360', secteur: 'Transport',       emoji: 'ðŸšš', couleur: '#0ea5e9' },
+    { nom: 'ZELIVRY',        secteur: 'Livraison',       emoji: 'âš¡', couleur: BRAND },
 ];
 
-/* ── Format XOF ─────────────────────────────────────────────── */
+/* â”€â”€ Format XOF â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function formatXOF(amount) {
     return new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(amount) + ' FCFA';
 }
 
-/* ── Maquette dashboard SVG ─────────────────────────────────── */
+/* â”€â”€ Maquette dashboard SVG â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function DashboardMockup() {
     return (
         <svg viewBox="0 0 560 360" xmlns="http://www.w3.org/2000/svg" className="w-full drop-shadow-2xl">
@@ -177,11 +177,11 @@ function DashboardMockup() {
             <circle cx="20" cy="18" r="5" fill="#ef4444" opacity=".8"/>
             <circle cx="36" cy="18" r="5" fill="#f59e0b" opacity=".8"/>
             <circle cx="52" cy="18" r="5" fill="#22c55e" opacity=".8"/>
-            <text x="280" y="22" textAnchor="middle" fill="#94a3b8" fontSize="9" fontFamily="monospace">CONSTRUIRO ERP — Tableau de bord</text>
+            <text x="280" y="22" textAnchor="middle" fill="#94a3b8" fontSize="9" fontFamily="monospace">CONSTRUIRO ERP â€” Tableau de bord</text>
             <rect x="0" y="36" width="120" height="324" fill="#1e293b"/>
             <rect x="12" y="48" width="96" height="28" rx="6" fill={BRAND} opacity=".15"/>
             <text x="60" y="66" textAnchor="middle" fill={BRAND} fontSize="9" fontWeight="bold" fontFamily="sans-serif">CONSTRUIRO</text>
-            {[['Tableau de bord', true],['Projets', false],['RH & Paie', false],['Stock', false],['Finance', false],['Équipements', false],['Rapports', false]].map(([label, active], i) => (
+            {[['Tableau de bord', true],['Projets', false],['RH & Paie', false],['Stock', false],['Finance', false],['Ã‰quipements', false],['Rapports', false]].map(([label, active], i) => (
                 <g key={label}>
                     <rect x="8" y={90 + i * 30} width="104" height="24" rx="5" fill={active ? BRAND : 'transparent'} opacity={active ? 1 : 0}/>
                     <text x="20" y={106 + i * 30} fill={active ? '#fff' : '#64748b'} fontSize="8" fontFamily="sans-serif">{label}</text>
@@ -200,7 +200,7 @@ function DashboardMockup() {
                 </g>
             ))}
             <rect x="128" y="150" width="260" height="140" rx="6" fill="#1e293b"/>
-            <text x="142" y="168" fill="#94a3b8" fontSize="8" fontFamily="sans-serif">Avancement chantiers — Juillet 2026</text>
+            <text x="142" y="168" fill="#94a3b8" fontSize="8" fontFamily="sans-serif">Avancement chantiers â€” Juillet 2026</text>
             {[{ h: 60, col: BRAND },{ h: 90, col: '#3b82f6' },{ h: 40, col: '#22c55e' },{ h: 75, col: BRAND },{ h: 55, col: '#8b5cf6' },{ h: 85, col: '#3b82f6' }].map((b, i) => (
                 <g key={i}>
                     <rect x={148 + i * 36} y={270 - b.h} width="22" height={b.h} rx="3" fill={b.col} opacity=".85"/>
@@ -208,8 +208,8 @@ function DashboardMockup() {
                 </g>
             ))}
             <rect x="396" y="150" width="156" height="140" rx="6" fill="#1e293b"/>
-            <text x="410" y="168" fill="#94a3b8" fontSize="8" fontFamily="sans-serif">Projets récents</text>
-            {[{ name: 'Résidence Cocody', col: BRAND },{ name: 'Route N\'Djamena', col: '#3b82f6' },{ name: 'Pont de Kayes', col: '#22c55e' },{ name: 'Imm. Plateau', col: BRAND }].map((p, i) => (
+            <text x="410" y="168" fill="#94a3b8" fontSize="8" fontFamily="sans-serif">Projets rÃ©cents</text>
+            {[{ name: 'RÃ©sidence Cocody', col: BRAND },{ name: 'Route N\'Djamena', col: '#3b82f6' },{ name: 'Pont de Kayes', col: '#22c55e' },{ name: 'Imm. Plateau', col: BRAND }].map((p, i) => (
                 <g key={p.name}>
                     <text x="410" y={184 + i * 24} fill="#e2e8f0" fontSize="7" fontFamily="sans-serif">{p.name}</text>
                     <rect x="480" y={174 + i * 24} width="52" height="12" rx="3" fill={p.col} opacity=".2"/>
@@ -217,20 +217,20 @@ function DashboardMockup() {
                 </g>
             ))}
             <rect x="128" y="298" width="424" height="2" fill="#334155"/>
-            <text x="140" y="322" fill="#475569" fontSize="7" fontFamily="sans-serif">© 2026 IBIG Soft — CONSTRUIRO ERP v1.0 · Données sécurisées · Accès 24/7</text>
+            <text x="140" y="322" fill="#475569" fontSize="7" fontFamily="sans-serif">Â© 2026 IBIG Soft â€” CONSTRUIRO ERP v1.0 Â· DonnÃ©es sÃ©curisÃ©es Â· AccÃ¨s 24/7</text>
         </svg>
     );
 }
 
-/* ── Visuel slide automation ──────────────────────────────────── */
+/* â”€â”€ Visuel slide automation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function SlideVisualAutomation() {
     return (
         <div className="grid grid-cols-2 gap-3 w-full max-w-md mx-auto">
             {[
-                { icon: '📊', titre: 'Rapports auto', sub: 'Générés chaque nuit' },
-                { icon: '🔔', titre: 'Alertes stock', sub: '3 alertes aujourd\'hui' },
-                { icon: '📅', titre: 'Planning sync', sub: '18 chantiers actifs' },
-                { icon: '✅', titre: 'Tâches auto', sub: '94% complétées' },
+                { icon: 'ðŸ“Š', titre: 'Rapports auto', sub: 'GÃ©nÃ©rÃ©s chaque nuit' },
+                { icon: 'ðŸ””', titre: 'Alertes stock', sub: '3 alertes aujourd\'hui' },
+                { icon: 'ðŸ“…', titre: 'Planning sync', sub: '18 chantiers actifs' },
+                { icon: 'âœ…', titre: 'TÃ¢ches auto', sub: '94% complÃ©tÃ©es' },
             ].map((item) => (
                 <div key={item.titre} className="rounded-xl p-4 text-left"
                     style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}>
@@ -243,7 +243,7 @@ function SlideVisualAutomation() {
     );
 }
 
-/* ── Visuel slide devices ─────────────────────────────────────── */
+/* â”€â”€ Visuel slide devices â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function SlideVisualDevices() {
     return (
         <div className="flex items-end justify-center gap-6 w-full max-w-md mx-auto py-4">
@@ -300,7 +300,7 @@ function SlideVisualDevices() {
     );
 }
 
-/* ── Visuel slide AI ──────────────────────────────────────────── */
+/* â”€â”€ Visuel slide AI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function SlideVisualAI() {
     return (
         <div className="w-full max-w-sm mx-auto rounded-2xl overflow-hidden"
@@ -323,14 +323,14 @@ function SlideVisualAI() {
                 </div>
                 <div className="ml-auto rounded-xl p-3 text-sm text-white max-w-xs text-right"
                     style={{ background: 'rgba(255,255,255,0.12)' }}>
-                    Comment gérer mes stocks de matériaux ?
+                    Comment gÃ©rer mes stocks de matÃ©riaux ?
                 </div>
                 <div className="rounded-xl p-3 text-sm text-gray-200 max-w-xs"
                     style={{ background: 'rgba(245,130,32,0.2)' }}>
-                    Dans le module Stock, allez dans Inventaire → Entrées / Sorties pour suivre vos matériaux en temps réel.
+                    Dans le module Stock, allez dans Inventaire â†’ EntrÃ©es / Sorties pour suivre vos matÃ©riaux en temps rÃ©el.
                 </div>
                 <div className="flex gap-2 flex-wrap pt-1">
-                    {['Tarifs', 'Modules', 'Démo'].map(q => (
+                    {['Tarifs', 'Modules', 'DÃ©mo'].map(q => (
                         <span key={q} className="text-xs px-2.5 py-1 rounded-full cursor-pointer transition"
                             style={{ background: 'rgba(245,130,32,0.15)', color: BRAND, border: `1px solid rgba(245,130,32,0.3)` }}>
                             {q}
@@ -342,15 +342,15 @@ function SlideVisualAI() {
     );
 }
 
-/* ── Visuel slide sécurité ────────────────────────────────────── */
+/* â”€â”€ Visuel slide sÃ©curitÃ© â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function SlideVisualSecurity() {
     return (
         <div className="w-full max-w-sm mx-auto space-y-3">
             {[
-                { icon: '🔒', titre: 'Connexions HTTPS', val: 'SSL/TLS actif' },
-                { icon: '👥', titre: 'Gestion des rôles', val: '8 niveaux d\'accès' },
-                { icon: '💾', titre: 'Sauvegardes auto', val: 'Toutes les 24h' },
-                { icon: '📋', titre: 'Journal d\'audit', val: '100% des actions tracées' },
+                { icon: 'ðŸ”’', titre: 'Connexions HTTPS', val: 'SSL/TLS actif' },
+                { icon: 'ðŸ‘¥', titre: 'Gestion des rÃ´les', val: '8 niveaux d\'accÃ¨s' },
+                { icon: 'ðŸ’¾', titre: 'Sauvegardes auto', val: 'Toutes les 24h' },
+                { icon: 'ðŸ“‹', titre: 'Journal d\'audit', val: '100% des actions tracÃ©es' },
             ].map(item => (
                 <div key={item.titre} className="flex items-center gap-4 rounded-xl px-4 py-3"
                     style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}>
@@ -368,7 +368,7 @@ function SlideVisualSecurity() {
     );
 }
 
-/* ── Hero Slider ─────────────────────────────────────────────── */
+/* â”€â”€ Hero Slider â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function HeroSlider({ canRegister }) {
     const { t } = useTrans();
     const [current, setCurrent] = useState(0);
@@ -398,7 +398,7 @@ function HeroSlider({ canRegister }) {
     return (
         <section
             className="relative overflow-hidden"
-            style={{ background: NAVY, minHeight: 520 }}
+            style={{ background: NAVY, minHeight: 'clamp(400px, 60vh, 520px)' }}
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
             onTouchStart={handleTouchStart}
@@ -416,43 +416,43 @@ function HeroSlider({ canRegister }) {
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-6"
                 key={current}
                 style={{ animation: 'construiroFadeUp 0.45s ease both' }}>
-                <div className="grid lg:grid-cols-2 gap-12 items-center">
+                <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
                     {/* Texte */}
                     <div>
                         <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold mb-6"
                             style={{ background: 'rgba(245,130,32,0.15)', color: BRAND, border: `1px solid rgba(245,130,32,0.3)` }}>
                             {t(slide.badge)}
                         </div>
-                        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.05] text-white mb-4">
+                        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black leading-[1.1] text-white mb-4">
                             {t(slide.h1a)}<br/>
                             <span style={{ color: BRAND }}>{t(slide.h1b)}</span><br/>
                             {t(slide.h1c)}
                         </h1>
                         <p className="text-gray-400 text-lg mb-8 leading-relaxed">{t(slide.sub)}</p>
-                        <div className="flex flex-wrap gap-4 mb-10">
+                        <div className="flex flex-wrap gap-3 mb-10">
                             <a href={slide.cta1Href}
-                                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-white text-base transition-all hover:opacity-90 shadow-lg"
+                                className="inline-flex items-center gap-2 px-5 sm:px-8 py-3.5 sm:py-4 rounded-xl font-bold text-white text-sm sm:text-base transition-all hover:opacity-90 shadow-lg"
                                 style={{ background: BRAND, boxShadow: `0 8px 32px rgba(245,130,32,0.35)` }}>
                                 {t(slide.cta1Label)}
                             </a>
                             {slide.cta2IsRegister && canRegister ? (
                                 <Link href={route('register')}
-                                    className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-white text-base transition-all hover:bg-white/10"
+                                    className="inline-flex items-center gap-2 px-5 sm:px-8 py-3.5 sm:py-4 rounded-xl font-semibold text-white text-sm sm:text-base transition-all hover:bg-white/10"
                                     style={{ border: '2px solid rgba(255,255,255,0.2)' }}>
                                     {t(slide.cta2Label)}
                                 </Link>
                             ) : slide.cta2Href ? (
                                 <a href={slide.cta2Href}
-                                    className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-white text-base transition-all hover:bg-white/10"
+                                    className="inline-flex items-center gap-2 px-5 sm:px-8 py-3.5 sm:py-4 rounded-xl font-semibold text-white text-sm sm:text-base transition-all hover:bg-white/10"
                                     style={{ border: '2px solid rgba(255,255,255,0.2)' }}>
                                     {t(slide.cta2Label)}
                                 </a>
                             ) : null}
                         </div>
                         <div className="flex flex-wrap gap-6 text-sm text-gray-500">
-                            <span className="flex items-center gap-1.5"><span style={{ color: BRAND }}>✓</span> {t('15+ modules intégrés')}</span>
-                            <span className="flex items-center gap-1.5"><span style={{ color: BRAND }}>✓</span> {t('Essai 14 jours gratuit')}</span>
-                            <span className="flex items-center gap-1.5"><span style={{ color: BRAND }}>✓</span> {t('Déployé en 48h')}</span>
+                            <span className="flex items-center gap-1.5"><span style={{ color: BRAND }}>âœ“</span> {t('15+ modules intÃ©grÃ©s')}</span>
+                            <span className="flex items-center gap-1.5"><span style={{ color: BRAND }}>âœ“</span> {t('Essai 14 jours gratuit')}</span>
+                            <span className="flex items-center gap-1.5"><span style={{ color: BRAND }}>âœ“</span> {t('DÃ©ployÃ© en 48h')}</span>
                         </div>
                     </div>
                     {/* Visuel */}
@@ -484,11 +484,11 @@ function HeroSlider({ canRegister }) {
                 ))}
             </div>
 
-            {/* Flèches navigation */}
+            {/* FlÃ¨ches navigation */}
             <button onClick={() => go(current - 1)}
                 className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center hidden md:flex transition hover:bg-white/10"
                 style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)' }}
-                aria-label="Slide précédent">
+                aria-label="Slide prÃ©cÃ©dent">
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
             </button>
             <button onClick={() => go(current + 1)}
@@ -508,7 +508,7 @@ function HeroSlider({ canRegister }) {
     );
 }
 
-/* ── Formulaire démo ─────────────────────────────────────────── */
+/* â”€â”€ Formulaire dÃ©mo â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function DemoForm() {
     const { t } = useTrans();
     const { data, setData, post, processing, wasSuccessful, errors } = useForm({
@@ -518,9 +518,9 @@ function DemoForm() {
     if (wasSuccessful) {
         return (
             <div className="rounded-2xl p-8 text-center" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}>
-                <div className="text-5xl mb-4">✅</div>
-                <p className="text-xl font-bold text-white mb-2">{t('Demande envoyée !')}</p>
-                <p className="text-orange-100 text-sm">{t('Notre équipe vous contactera dans les 24h ouvrées.')}</p>
+                <div className="text-5xl mb-4">âœ…</div>
+                <p className="text-xl font-bold text-white mb-2">{t('Demande envoyÃ©e !')}</p>
+                <p className="text-orange-100 text-sm">{t('Notre Ã©quipe vous contactera dans les 24h ouvrÃ©es.')}</p>
             </div>
         );
     }
@@ -543,22 +543,22 @@ function DemoForm() {
                     {errors.email && <p className="text-red-300 text-xs mt-1">{errors.email}</p>}
                 </div>
                 <div>
-                    <label className="block text-sm font-semibold text-white mb-1.5">{t('Téléphone')}</label>
+                    <label className="block text-sm font-semibold text-white mb-1.5">{t('TÃ©lÃ©phone')}</label>
                     <input type="tel" value={data.phone} onChange={e => setData('phone', e.target.value)}
                         placeholder="+225 07 00 00 00 00" className={inputCls}/>
                 </div>
                 <div>
                     <label className="block text-sm font-semibold text-white mb-1.5">{t('Entreprise *')}</label>
                     <input type="text" required value={data.company} onChange={e => setData('company', e.target.value)}
-                        placeholder="BTP Côte d'Ivoire SA" className={inputCls}/>
+                        placeholder="BTP CÃ´te d'Ivoire SA" className={inputCls}/>
                 </div>
             </div>
             <div>
-                <label className="block text-sm font-semibold text-white mb-1.5">{t("Secteur d'activité")}</label>
+                <label className="block text-sm font-semibold text-white mb-1.5">{t("Secteur d'activitÃ©")}</label>
                 <select value={data.sector} onChange={e => setData('sector', e.target.value)} className={inputCls}>
-                    <option value="">{t('— Sélectionnez —')}</option>
+                    <option value="">{t('â€” SÃ©lectionnez â€”')}</option>
                     <option>{t('BTP / Construction')}</option>
-                    <option>{t('Promotion Immobilière')}</option>
+                    <option>{t('Promotion ImmobiliÃ¨re')}</option>
                     <option>{t('Travaux Publics')}</option>
                     <option>{t('Sous-traitance BTP')}</option>
                     <option>{t('Autre')}</option>
@@ -567,39 +567,39 @@ function DemoForm() {
             <div>
                 <label className="block text-sm font-semibold text-white mb-1.5">{t('Message (optionnel)')}</label>
                 <textarea rows={3} value={data.message} onChange={e => setData('message', e.target.value)}
-                    placeholder={t('Décrivez votre besoin ou posez vos questions…')}
+                    placeholder={t('DÃ©crivez votre besoin ou posez vos questionsâ€¦')}
                     className={`${inputCls} resize-none`}/>
             </div>
             <button type="submit" disabled={processing}
                 className="w-full py-4 rounded-xl font-bold text-white text-base transition-all disabled:opacity-60"
                 style={{ background: processing ? '#666' : NAVY, boxShadow: `0 4px 20px rgba(0,0,0,0.4)` }}>
-                {processing ? t('Envoi en cours…') : t('Demander une démo gratuite →')}
+                {processing ? t('Envoi en coursâ€¦') : t('Demander une dÃ©mo gratuite â†’')}
             </button>
         </form>
     );
 }
 
-/* ── Galerie captures (mockups illustrés) ────────────────────── */
+/* â”€â”€ Galerie captures (mockups illustrÃ©s) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const GALERIE_TABS = [
     {
-        key: 'dashboard', label: '📊 Tableau de bord', color: '#1E1E1E',
-        modules: ['KPIs temps réel', 'Budget chantier', 'Avancement %', 'Alertes actives'],
-        desc: 'Vue directeur — tous vos indicateurs BTP en un coup d\'œil.',
+        key: 'dashboard', label: 'ðŸ“Š Tableau de bord', color: '#1E1E1E',
+        modules: ['KPIs temps rÃ©el', 'Budget chantier', 'Avancement %', 'Alertes actives'],
+        desc: 'Vue directeur â€” tous vos indicateurs BTP en un coup d\'Å“il.',
     },
     {
-        key: 'chantier', label: '🏗️ Chantiers', color: '#0f3460',
-        modules: ['Planning Gantt', 'Pointage équipes', 'Journal de chantier', 'Photos terrain'],
-        desc: 'Suivez chaque chantier de la pose de la première pierre à la réception.',
+        key: 'chantier', label: 'ðŸ—ï¸ Chantiers', color: '#0f3460',
+        modules: ['Planning Gantt', 'Pointage Ã©quipes', 'Journal de chantier', 'Photos terrain'],
+        desc: 'Suivez chaque chantier de la pose de la premiÃ¨re pierre Ã  la rÃ©ception.',
     },
     {
-        key: 'finance', label: '💰 Finance', color: '#1a472a',
-        modules: ['Facturation client', 'Décaissements', 'Budget analytique', 'Trésorerie'],
-        desc: 'Comptabilité, facturation et trésorerie intégrées nativement.',
+        key: 'finance', label: 'ðŸ’° Finance', color: '#1a472a',
+        modules: ['Facturation client', 'DÃ©caissements', 'Budget analytique', 'TrÃ©sorerie'],
+        desc: 'ComptabilitÃ©, facturation et trÃ©sorerie intÃ©grÃ©es nativement.',
     },
     {
-        key: 'stock', label: '📦 Matériaux', color: '#7b2d00',
-        modules: ['Bons de commande', 'Entrées/Sorties', 'Inventaire', 'Alertes seuil'],
-        desc: 'Gérez vos stocks, commandes et livraisons depuis un seul écran.',
+        key: 'stock', label: 'ðŸ“¦ MatÃ©riaux', color: '#7b2d00',
+        modules: ['Bons de commande', 'EntrÃ©es/Sorties', 'Inventaire', 'Alertes seuil'],
+        desc: 'GÃ©rez vos stocks, commandes et livraisons depuis un seul Ã©cran.',
     },
 ];
 
@@ -661,8 +661,8 @@ function GalerieCaptures() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-12">
                     <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Interface')}</p>
-                    <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>{t("Découvrez l'interface CONSTRUIRO")}</h2>
-                    <p className="text-gray-500 max-w-xl mx-auto">{t('Une interface claire, pensée pour les équipes terrain comme pour la direction générale.')}</p>
+                    <h2 className="text-3xl sm:text-4xl font-black mb-4" style={{ color: NAVY }}>{t("DÃ©couvrez l'interface CONSTRUIRO")}</h2>
+                    <p className="text-gray-500 max-w-xl mx-auto">{t('Une interface claire, pensÃ©e pour les Ã©quipes terrain comme pour la direction gÃ©nÃ©rale.')}</p>
                 </div>
                 <div className="grid lg:grid-cols-2 gap-12 items-center">
                     <div className="rounded-2xl overflow-hidden shadow-2xl border border-gray-100">
@@ -671,10 +671,10 @@ function GalerieCaptures() {
                     <div>
                         <h3 className="text-2xl font-black mb-4" style={{ color: NAVY }}>{t('Tableau de bord tout-en-un')}</h3>
                         <p className="text-gray-500 mb-6 leading-relaxed">
-                            {t("Pilotez vos projets, vos équipes et vos finances depuis un seul écran. Les données s'actualisent en temps réel, depuis le bureau ou le chantier.")}
+                            {t("Pilotez vos projets, vos Ã©quipes et vos finances depuis un seul Ã©cran. Les donnÃ©es s'actualisent en temps rÃ©el, depuis le bureau ou le chantier.")}
                         </p>
                         <ul className="space-y-3">
-                            {['KPIs en temps réel', 'Avancement chantiers', 'Budget analytique', 'Alertes automatiques', 'Tableaux de bord personnalisables', 'Export PDF & Excel'].map(m => (
+                            {['KPIs en temps rÃ©el', 'Avancement chantiers', 'Budget analytique', 'Alertes automatiques', 'Tableaux de bord personnalisables', 'Export PDF & Excel'].map(m => (
                                 <li key={m} className="flex items-center gap-3 text-sm">
                                     <span className="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center" style={{ background: BRAND }}>
                                         <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
@@ -685,7 +685,7 @@ function GalerieCaptures() {
                         </ul>
                         <a href="#demo" className="inline-flex items-center gap-2 mt-8 px-8 py-3.5 rounded-xl font-bold text-white transition hover:opacity-90"
                             style={{ background: BRAND }}>
-                            {t('Demander une démo →')}
+                            {t('Demander une dÃ©mo â†’')}
                         </a>
                     </div>
                 </div>
@@ -694,7 +694,7 @@ function GalerieCaptures() {
     );
 }
 
-/* ── Vidéo de présentation ───────────────────────────────────── */
+/* â”€â”€ VidÃ©o de prÃ©sentation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function VideoPresentation() {
     const { t } = useTrans();
     const [playing, setPlaying] = useState(false);
@@ -702,9 +702,9 @@ function VideoPresentation() {
         <section className="py-20" style={{ background: NAVY }}>
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-10">
-                    <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Présentation')}</p>
-                    <h2 className="text-4xl font-black text-white mb-4">{t('CONSTRUIRO en 3 minutes')}</h2>
-                    <p className="text-gray-400 max-w-xl mx-auto">{t('Découvrez comment les entreprises BTP africaines pilotent leurs chantiers avec CONSTRUIRO ERP.')}</p>
+                    <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('PrÃ©sentation')}</p>
+                    <h2 className="text-3xl sm:text-4xl font-black text-white mb-4">{t('CONSTRUIRO en 3 minutes')}</h2>
+                    <p className="text-gray-400 max-w-xl mx-auto">{t('DÃ©couvrez comment les entreprises BTP africaines pilotent leurs chantiers avec CONSTRUIRO ERP.')}</p>
                 </div>
                 <div className="relative rounded-3xl overflow-hidden cursor-pointer group"
                     style={{ background: '#111', aspectRatio: '16/9', boxShadow: '0 32px 80px rgba(0,0,0,0.5)' }}
@@ -726,22 +726,22 @@ function VideoPresentation() {
                                     <path d="M8 5v14l11-7z"/>
                                 </svg>
                             </div>
-                            <p className="text-white font-bold text-lg mb-1">{t('CONSTRUIRO ERP — Présentation officielle')}</p>
-                            <p className="text-gray-500 text-sm">{t('Durée estimée : 3 minutes · Disponible prochainement')}</p>
+                            <p className="text-white font-bold text-lg mb-1">{t('CONSTRUIRO ERP â€” PrÃ©sentation officielle')}</p>
+                            <p className="text-gray-500 text-sm">{t('DurÃ©e estimÃ©e : 3 minutes Â· Disponible prochainement')}</p>
                         </div>
                     </div>
                     {playing && (
                         <div className="absolute inset-0 flex items-center justify-center" style={{ background: '#000' }}>
-                            <p className="text-white text-sm">{t('Vidéo disponible prochainement sur YouTube')}</p>
+                            <p className="text-white text-sm">{t('VidÃ©o disponible prochainement sur YouTube')}</p>
                         </div>
                     )}
                     {/* Bottom bar */}
                     <div className="absolute bottom-0 left-0 right-0 h-1.5" style={{ background: `linear-gradient(to right, ${BRAND}, transparent)` }} />
                 </div>
                 <p className="text-center text-gray-600 text-sm mt-6">
-                    {t('Préférez une démo en live ?')}{' '}
+                    {t('PrÃ©fÃ©rez une dÃ©mo en live ?')}{' '}
                     <a href="#demo" className="font-semibold transition hover:opacity-75" style={{ color: BRAND }}>
-                        {t('Demandez une démonstration personnalisée →')}
+                        {t('Demandez une dÃ©monstration personnalisÃ©e â†’')}
                     </a>
                 </p>
             </div>
@@ -749,48 +749,48 @@ function VideoPresentation() {
     );
 }
 
-/* ── Comparateur des offres ──────────────────────────────────── */
+/* â”€â”€ Comparateur des offres â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const FEATURES_COMPARE = [
     { label: 'Modules BTP', values: ['15+ modules', '15+ modules', '15+ modules'] },
     { label: 'Utilisateurs', key: 'max_users' },
-    { label: 'Projets simultanés', key: 'max_projects' },
-    { label: 'Essai gratuit', key: 'trial_days', format: v => v > 0 ? `${v} jours` : '—' },
-    { label: 'Tableaux de bord', values: ['Basique', 'Avancé', 'Illimité'] },
+    { label: 'Projets simultanÃ©s', key: 'max_projects' },
+    { label: 'Essai gratuit', key: 'trial_days', format: v => v > 0 ? `${v} jours` : 'â€”' },
+    { label: 'Tableaux de bord', values: ['Basique', 'AvancÃ©', 'IllimitÃ©'] },
     { label: 'Rapports & exports', values: ['PDF', 'PDF + Excel', 'PDF + Excel + BI'] },
-    { label: 'Support', values: ['Email', 'Email + Chat', 'Prioritaire dédié'] },
-    { label: 'API REST', values: ['—', '✓', '✓'] },
-    { label: 'Multi-agences', values: ['—', '—', '✓'] },
-    { label: 'Formation incluse', values: ['—', '1 session', '3 sessions'] },
-    { label: 'SLA garanti', values: ['—', '99%', '99.9%'] },
+    { label: 'Support', values: ['Email', 'Email + Chat', 'Prioritaire dÃ©diÃ©'] },
+    { label: 'API REST', values: ['â€”', 'âœ“', 'âœ“'] },
+    { label: 'Multi-agences', values: ['â€”', 'â€”', 'âœ“'] },
+    { label: 'Formation incluse', values: ['â€”', '1 session', '3 sessions'] },
+    { label: 'SLA garanti', values: ['â€”', '99%', '99.9%'] },
 ];
 
 function ComparateurOffres({ plans }) {
     const { t } = useTrans();
     const p0 = plans[0] || {}, p1 = plans[1] || {}, p2 = plans[2] || {};
     const getValue = (feat, i) => {
-        if (feat.values) return feat.values[i] || '—';
+        if (feat.values) return feat.values[i] || 'â€”';
         const val = [p0, p1, p2][i][feat.key];
         if (feat.format) return feat.format(val);
-        if (val >= 9999) return '∞';
-        return val ?? '—';
+        if (val >= 9999) return 'âˆž';
+        return val ?? 'â€”';
     };
     return (
         <section className="py-20 bg-gray-50 overflow-x-auto">
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-12">
                     <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Comparateur')}</p>
-                    <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Ce qui est inclus dans chaque offre')}</h2>
+                    <h2 className="text-3xl sm:text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Ce qui est inclus dans chaque offre')}</h2>
                 </div>
                 <div className="rounded-2xl overflow-hidden border border-gray-200 bg-white shadow-sm">
                     <table className="w-full text-sm">
                         <thead>
                             <tr style={{ background: NAVY }}>
-                                <th className="text-left px-6 py-4 text-gray-400 font-medium w-1/3">Fonctionnalité</th>
+                                <th className="text-left px-6 py-4 text-gray-400 font-medium w-1/3">FonctionnalitÃ©</th>
                                 {plans.slice(0, 3).map((plan, i) => (
                                     <th key={plan.id} className="px-4 py-4 text-center relative" style={{ minWidth: 130 }}>
                                         {i === 1 && (
                                             <span className="absolute -top-0 left-1/2 -translate-x-1/2 text-xs font-bold px-2 py-0.5 rounded-b-lg"
-                                                style={{ background: BRAND, color: '#fff' }}>RECOMMANDÉ</span>
+                                                style={{ background: BRAND, color: '#fff' }}>RECOMMANDÃ‰</span>
                                         )}
                                         <div className="text-white font-bold mt-1">{plan.name}</div>
                                         <div className="text-xs font-normal mt-0.5" style={{ color: BRAND }}>{formatXOF(plan.price_monthly)}{t('/mois')}</div>
@@ -806,10 +806,10 @@ function ComparateurOffres({ plans }) {
                                         const val = getValue(feat, ci);
                                         return (
                                             <td key={ci} className="px-4 py-3.5 text-center text-gray-600">
-                                                {val === '✓'
-                                                    ? <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-white text-xs" style={{ background: BRAND }}>✓</span>
-                                                    : val === '—'
-                                                    ? <span className="text-gray-300">—</span>
+                                                {val === 'âœ“'
+                                                    ? <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-white text-xs" style={{ background: BRAND }}>âœ“</span>
+                                                    : val === 'â€”'
+                                                    ? <span className="text-gray-300">â€”</span>
                                                     : val}
                                             </td>
                                         );
@@ -825,7 +825,7 @@ function ComparateurOffres({ plans }) {
                                             style={i === 1
                                                 ? { background: BRAND, color: '#fff' }
                                                 : { border: `2px solid ${BRAND}`, color: BRAND }}>
-                                            {t('Choisir')} →
+                                            {t('Choisir')} â†’
                                         </a>
                                     </td>
                                 ))}
@@ -838,7 +838,7 @@ function ComparateurOffres({ plans }) {
     );
 }
 
-/* ── Barre supérieure ────────────────────────────────────────── */
+/* â”€â”€ Barre supÃ©rieure â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function TopBar() {
     const { t } = useTrans();
     return (
@@ -846,14 +846,14 @@ function TopBar() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-4 text-gray-400">
                     <span className="flex items-center gap-1.5">
-                        <span style={{ color: BRAND }}>✓</span> {t('Essai gratuit 14 jours')}
+                        <span style={{ color: BRAND }}>âœ“</span> {t('Essai gratuit 14 jours')}
                     </span>
                     <span className="hidden sm:flex items-center gap-1.5">
-                        <span style={{ color: BRAND }}>📞</span>
+                        <span style={{ color: BRAND }}>ðŸ“ž</span>
                         <a href="tel:+2252722276014" className="hover:text-white transition">+225 27 22 27 60 14</a>
                     </span>
                     <span className="hidden md:flex items-center gap-1.5">
-                        <span style={{ color: BRAND }}>📧</span>
+                        <span style={{ color: BRAND }}>ðŸ“§</span>
                         <a href="mailto:contact@ibigsoft.com" className="hover:text-white transition">contact@ibigsoft.com</a>
                     </span>
                 </div>
@@ -869,7 +869,7 @@ function TopBar() {
     );
 }
 
-/* ── Page principale ─────────────────────────────────────────── */
+/* â”€â”€ Page principale â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs = [], temoignages: temoignagesProp = null }) {
     const { t } = useTrans();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -878,17 +878,17 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
     return (
         <>
             <Head>
-                <title>CONSTRUIRO — ERP BTP pour l'Afrique | Gérez vos chantiers</title>
-                <meta name="description" content="CONSTRUIRO est l'ERP BTP conçu pour les entreprises africaines. Gérez projets, RH, stocks, équipements et finance depuis une seule plateforme. Essai gratuit 14 jours." />
-                <meta name="keywords" content="ERP BTP Afrique, logiciel chantier, gestion construction, ERP Côte d'Ivoire, CONSTRUIRO, IBIG Soft" />
-                <meta property="og:title" content="CONSTRUIRO — ERP BTP pour l'Afrique" />
-                <meta property="og:description" content="15+ modules intégrés pour les entreprises BTP africaines. Projets, RH, finances, matériaux, équipements. Essai gratuit 14 jours." />
+                <title>CONSTRUIRO â€” ERP BTP pour l'Afrique | GÃ©rez vos chantiers</title>
+                <meta name="description" content="CONSTRUIRO est l'ERP BTP conÃ§u pour les entreprises africaines. GÃ©rez projets, RH, stocks, Ã©quipements et finance depuis une seule plateforme. Essai gratuit 14 jours." />
+                <meta name="keywords" content="ERP BTP Afrique, logiciel chantier, gestion construction, ERP CÃ´te d'Ivoire, CONSTRUIRO, IBIG Soft" />
+                <meta property="og:title" content="CONSTRUIRO â€” ERP BTP pour l'Afrique" />
+                <meta property="og:description" content="15+ modules intÃ©grÃ©s pour les entreprises BTP africaines. Projets, RH, finances, matÃ©riaux, Ã©quipements. Essai gratuit 14 jours." />
                 <meta property="og:type" content="website" />
                 <meta property="og:url" content="https://construiro.com" />
                 <meta property="og:image" content="https://construiro.com/og-image.jpg" />
                 <meta name="twitter:card" content="summary_large_image" />
-                <meta name="twitter:title" content="CONSTRUIRO — ERP BTP pour l'Afrique" />
-                <meta name="twitter:description" content="L'ERP BTP pensé pour les réalités africaines. Essai gratuit 14 jours." />
+                <meta name="twitter:title" content="CONSTRUIRO â€” ERP BTP pour l'Afrique" />
+                <meta name="twitter:description" content="L'ERP BTP pensÃ© pour les rÃ©alitÃ©s africaines. Essai gratuit 14 jours." />
                 <meta name="robots" content="index, follow" />
                 <link rel="canonical" href="https://construiro.com" />
                 <script type="application/ld+json">{JSON.stringify([
@@ -896,7 +896,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                         "@context": "https://schema.org",
                         "@type": "SoftwareApplication",
                         "name": "CONSTRUIRO ERP",
-                        "description": "ERP BTP conçu pour les entreprises de construction et de travaux publics africaines. Gestion de projets, RH, stocks, équipements, finance, comptabilité.",
+                        "description": "ERP BTP conÃ§u pour les entreprises de construction et de travaux publics africaines. Gestion de projets, RH, stocks, Ã©quipements, finance, comptabilitÃ©.",
                         "applicationCategory": "BusinessApplication",
                         "operatingSystem": "Web, Android, iOS",
                         "url": "https://construiro.com",
@@ -916,24 +916,26 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                     }
                 ])}</script>
             </Head>
-            <div className="min-h-screen bg-white font-sans" style={{ color: NAVY }}>
+            <div className="min-h-screen bg-white font-sans" style={{ color: NAVY, overflowX: 'clip' }}>
 
-                {/* ── BARRE SUPÉRIEURE ─────────────────────────────── */}
+                {/* â”€â”€ BARRE SUPÃ‰RIEURE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 <TopBar />
 
-                {/* ── NAV ─────────────────────────────────────────── */}
+                {/* â”€â”€ NAV â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-                        <ConstruiroLogo size="sm" />
+                        {/* Logo icon-only on xs, full on sm+ */}
+                        <ConstruiroLogo size="sm" variant="icon" className="sm:hidden flex-shrink-0" />
+                        <ConstruiroLogo size="sm" className="hidden sm:inline-flex flex-shrink-0" />
 
                         {/* Menu desktop */}
                         <div className="hidden lg:flex items-center gap-7">
                             {[
-                                [t('Fonctionnalités'), '#modules'],
+                                [t('FonctionnalitÃ©s'), '#modules'],
                                 [t('Publics'), '#publics'],
                                 [t('Modules'), '#modules'],
                                 [t('Tarifs'), '#tarifs'],
-                                [t('Démo'), '#demo'],
+                                [t('DÃ©mo'), '#demo'],
                                 [t('Assistance'), '/aide'],
                             ].map(([label, href]) => (
                                 <a key={label} href={href}
@@ -948,14 +950,14 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                             <a href="https://ibigpartners.com/" target="_blank" rel="noopener noreferrer"
                                 className="hidden lg:inline-flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-xl transition hover:opacity-90"
                                 style={{ background: 'rgba(245,130,32,0.1)', color: BRAND, border: `1.5px solid ${BRAND}` }}>
-                                🤝 {t('Devenir partenaire')}
+                                ðŸ¤ {t('Devenir partenaire')}
                             </a>
                             <div className="hidden lg:block"><LanguageSwitcher /></div>
                             {auth?.user ? (
                                 <Link href={route('dashboard')}
                                     className="text-sm font-semibold px-5 py-2.5 rounded-xl text-white transition hover:opacity-90"
                                     style={{ background: BRAND }}>
-                                    {t('Mon tableau de bord')} →
+                                    {t('Mon tableau de bord')} â†’
                                 </Link>
                             ) : (
                                 <>
@@ -990,7 +992,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                     {/* Menu mobile */}
                     {mobileMenuOpen && (
                         <div className="lg:hidden border-t border-gray-100 bg-white px-4 pb-4 pt-3 space-y-1">
-                            {[[t('Fonctionnalités'), '#modules'],[t('Publics'), '#publics'],[t('Tarifs'), '#tarifs'],[t('Démo'), '#demo'],[t('Assistance'), '/aide']].map(([label, href]) => (
+                            {[[t('FonctionnalitÃ©s'), '#modules'],[t('Publics'), '#publics'],[t('Tarifs'), '#tarifs'],[t('DÃ©mo'), '#demo'],[t('Assistance'), '/aide']].map(([label, href]) => (
                                 <a key={label} href={href} onClick={() => setMobileMenuOpen(false)}
                                     className="block py-2 text-sm font-medium text-gray-700 hover:text-[#F58220]">{label}</a>
                             ))}
@@ -1007,21 +1009,21 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                     )}
                 </nav>
 
-                {/* ── HERO SLIDER ─────────────────────────────────── */}
+                {/* â”€â”€ HERO SLIDER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 <HeroSlider canRegister={canRegister} />
 
-                {/* ── ZONE DE RÉASSURANCE ─────────────────────────── */}
+                {/* â”€â”€ ZONE DE RÃ‰ASSURANCE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 <section style={{ background: BRAND }}>
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
                             {[
-                                { val: '15+',  label: t('Modules métier BTP') },
-                                { val: '48h',  label: t('Déploiement garanti') },
+                                { val: '15+',  label: t('Modules mÃ©tier BTP') },
+                                { val: '48h',  label: t('DÃ©ploiement garanti') },
                                 { val: '14j',  label: t('Essai 100% gratuit') },
-                                { val: '24/7', label: t('Accès en ligne') },
+                                { val: '24/7', label: t('AccÃ¨s en ligne') },
                             ].map((s) => (
                                 <div key={s.label}>
-                                    <div className="text-4xl font-black text-white">{s.val}</div>
+                                    <div className="text-3xl sm:text-4xl font-black text-white">{s.val}</div>
                                     <div className="text-orange-100 text-sm mt-1">{s.label}</div>
                                 </div>
                             ))}
@@ -1029,13 +1031,13 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                     </div>
                 </section>
 
-                {/* ── PROBLÈMES RÉSOLUS ───────────────────────────── */}
+                {/* â”€â”€ PROBLÃˆMES RÃ‰SOLUS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 <section className="py-20 bg-gray-50">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-14">
-                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Avant / Après CONSTRUIRO')}</p>
-                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Des problèmes concrets, des solutions réelles')}</h2>
-                            <p className="text-gray-500 max-w-xl mx-auto">{t("Voici ce que vivent vos homologues BTP avant d'adopter CONSTRUIRO — et ce qu'ils disent après.")}</p>
+                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Avant / AprÃ¨s CONSTRUIRO')}</p>
+                            <h2 className="text-3xl sm:text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Des problÃ¨mes concrets, des solutions rÃ©elles')}</h2>
+                            <p className="text-gray-500 max-w-xl mx-auto">{t("Voici ce que vivent vos homologues BTP avant d'adopter CONSTRUIRO â€” et ce qu'ils disent aprÃ¨s.")}</p>
                         </div>
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {PROBLEMES.map((p, i) => (
@@ -1054,12 +1056,12 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                     </div>
                 </section>
 
-                {/* ── BÉNÉFICES MAJEURS ───────────────────────────── */}
+                {/* â”€â”€ BÃ‰NÃ‰FICES MAJEURS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 <section className="py-20 bg-white">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-14">
-                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Bénéfices')}</p>
-                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Ce que vous gagnez concrètement')}</h2>
+                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('BÃ©nÃ©fices')}</p>
+                            <h2 className="text-3xl sm:text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Ce que vous gagnez concrÃ¨tement')}</h2>
                         </div>
                         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                             {BENEFICES.map((b) => (
@@ -1077,13 +1079,13 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                     </div>
                 </section>
 
-                {/* ── MODULES ─────────────────────────────────────── */}
+                {/* â”€â”€ MODULES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 <section id="modules" className="py-20 bg-gray-50">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-14">
-                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Plateforme complète')}</p>
-                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Tout ce dont votre entreprise BTP a besoin')}</h2>
-                            <p className="text-gray-500 max-w-xl mx-auto">{t("Une plateforme unique qui couvre l'ensemble de votre activité, du devis à la facturation.")}</p>
+                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Plateforme complÃ¨te')}</p>
+                            <h2 className="text-3xl sm:text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Tout ce dont votre entreprise BTP a besoin')}</h2>
+                            <p className="text-gray-500 max-w-xl mx-auto">{t("Une plateforme unique qui couvre l'ensemble de votre activitÃ©, du devis Ã  la facturation.")}</p>
                         </div>
                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {modules.map((m) => (
@@ -1101,18 +1103,18 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                     </div>
                 </section>
 
-                {/* ── GALERIE CAPTURES ────────────────────────────── */}
+                {/* â”€â”€ GALERIE CAPTURES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 <GalerieCaptures />
 
-                {/* ── VIDÉO DE PRÉSENTATION ───────────────────────── */}
+                {/* â”€â”€ VIDÃ‰O DE PRÃ‰SENTATION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 <VideoPresentation />
 
-                {/* ── COMMENT ÇA MARCHE ───────────────────────────── */}
+                {/* â”€â”€ COMMENT Ã‡A MARCHE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 <section className="py-20 bg-white">
                     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-14">
-                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Démarrage rapide')}</p>
-                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Opérationnel en 4 étapes')}</h2>
+                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('DÃ©marrage rapide')}</p>
+                            <h2 className="text-3xl sm:text-4xl font-black mb-4" style={{ color: NAVY }}>{t('OpÃ©rationnel en 4 Ã©tapes')}</h2>
                         </div>
                         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 relative">
                             {ETAPES.map((e, i) => (
@@ -1131,19 +1133,19 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                 <Link href={route('register')}
                                     className="inline-flex items-center gap-2 px-10 py-4 rounded-xl font-bold text-white text-base transition-all hover:opacity-90"
                                     style={{ background: BRAND, boxShadow: `0 8px 32px rgba(245,130,32,0.3)` }}>
-                                    {t('Commencer gratuitement — 14 jours offerts')}
+                                    {t('Commencer gratuitement â€” 14 jours offerts')}
                                 </Link>
                             )}
                         </div>
                     </div>
                 </section>
 
-                {/* ── PUBLICS CONCERNÉS ───────────────────────────── */}
+                {/* â”€â”€ PUBLICS CONCERNÃ‰S â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 <section id="publics" className="py-20 bg-gray-50">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-14">
                             <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Solutions sectorielles')}</p>
-                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>{t("CONSTRUIRO s'adapte à votre type d'activité")}</h2>
+                            <h2 className="text-3xl sm:text-4xl font-black mb-4" style={{ color: NAVY }}>{t("CONSTRUIRO s'adapte Ã  votre type d'activitÃ©")}</h2>
                         </div>
                         <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-5">
                             {PUBLICS.map((p) => (
@@ -1158,20 +1160,20 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                     </div>
                 </section>
 
-                {/* ── POURQUOI CONSTRUIRO ─────────────────────────── */}
+                {/* â”€â”€ POURQUOI CONSTRUIRO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 <section className="py-20 bg-white">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid lg:grid-cols-2 gap-16 items-center">
                             <div>
                                 <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Pourquoi CONSTRUIRO ?')}</p>
-                                <h2 className="text-4xl font-black mb-6" style={{ color: NAVY }}>{t("L'ERP pensé pour la réalité africaine")}</h2>
-                                <p className="text-gray-500 mb-10">{t("Nous ne sommes pas un ERP occidental adapté à l'Afrique. Nous avons été conçus dès le départ pour les PME et groupes BTP africains.")}</p>
+                                <h2 className="text-3xl sm:text-4xl font-black mb-6" style={{ color: NAVY }}>{t("L'ERP pensÃ© pour la rÃ©alitÃ© africaine")}</h2>
+                                <p className="text-gray-500 mb-10">{t("Nous ne sommes pas un ERP occidental adaptÃ© Ã  l'Afrique. Nous avons Ã©tÃ© conÃ§us dÃ¨s le dÃ©part pour les PME et groupes BTP africains.")}</p>
                                 <div className="space-y-6">
                                     {[
-                                        { titre: 'Adapté au contexte local', desc: 'Multi-devises (FCFA, USD, EUR…), sous-traitants locaux, conformité fiscale africaine.' },
-                                        { titre: 'Zéro infrastructure requise', desc: "Accédez depuis n'importe quel navigateur. Pas de serveur à installer." },
-                                        { titre: 'Prise en main en quelques heures', desc: 'Interface en français. Vos équipes sont opérationnelles dès le premier jour.' },
-                                        { titre: 'Support basé en Afrique', desc: 'Une équipe disponible dans votre fuseau horaire, qui comprend vos contraintes.' },
+                                        { titre: 'AdaptÃ© au contexte local', desc: 'Multi-devises (FCFA, USD, EURâ€¦), sous-traitants locaux, conformitÃ© fiscale africaine.' },
+                                        { titre: 'ZÃ©ro infrastructure requise', desc: "AccÃ©dez depuis n'importe quel navigateur. Pas de serveur Ã  installer." },
+                                        { titre: 'Prise en main en quelques heures', desc: 'Interface en franÃ§ais. Vos Ã©quipes sont opÃ©rationnelles dÃ¨s le premier jour.' },
+                                        { titre: 'Support basÃ© en Afrique', desc: 'Une Ã©quipe disponible dans votre fuseau horaire, qui comprend vos contraintes.' },
                                     ].map((r) => (
                                         <div key={r.titre} className="flex gap-4">
                                             <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-0.5" style={{ background: BRAND }}>
@@ -1188,9 +1190,9 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                             <div className="rounded-3xl p-8" style={{ background: NAVY }}>
                                 <p className="text-sm font-bold tracking-widest uppercase mb-6" style={{ color: BRAND }}>{t('Inclus dans votre abonnement')}</p>
                                 <div className="grid grid-cols-2 gap-4">
-                                    {['Suivi temps réel des chantiers','Tableau de bord dirigeant','Alertes et notifications','Exports PDF et Excel','Signature électronique','Assistant IA intégré','Application mobile','Sauvegarde automatique','Multi-utilisateurs','Audit trail complet'].map((f) => (
+                                    {['Suivi temps rÃ©el des chantiers','Tableau de bord dirigeant','Alertes et notifications','Exports PDF et Excel','Signature Ã©lectronique','Assistant IA intÃ©grÃ©','Application mobile','Sauvegarde automatique','Multi-utilisateurs','Audit trail complet'].map((f) => (
                                         <div key={f} className="flex items-center gap-2 text-sm text-gray-400">
-                                            <span style={{ color: BRAND }}>⚡</span> {t(f)}
+                                            <span style={{ color: BRAND }}>âš¡</span> {t(f)}
                                         </div>
                                     ))}
                                 </div>
@@ -1199,13 +1201,13 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                     </div>
                 </section>
 
-                {/* ── INTÉGRATIONS ────────────────────────────────── */}
+                {/* â”€â”€ INTÃ‰GRATIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 <section className="py-20 bg-gray-50">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-14">
-                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Intégrations')}</p>
-                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Connecté à votre écosystème')}</h2>
-                            <p className="text-gray-500 max-w-xl mx-auto">{t("CONSTRUIRO s'intègre aux outils de paiement, communication et données que vous utilisez déjà.")}</p>
+                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('IntÃ©grations')}</p>
+                            <h2 className="text-3xl sm:text-4xl font-black mb-4" style={{ color: NAVY }}>{t('ConnectÃ© Ã  votre Ã©cosystÃ¨me')}</h2>
+                            <p className="text-gray-500 max-w-xl mx-auto">{t("CONSTRUIRO s'intÃ¨gre aux outils de paiement, communication et donnÃ©es que vous utilisez dÃ©jÃ .")}</p>
                         </div>
                         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
                             {INTEGRATIONS.map((integ) => (
@@ -1228,25 +1230,25 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                     </div>
                 </section>
 
-                {/* ── SECTION IA SARA ─────────────────────────────── */}
+                {/* â”€â”€ SECTION IA SARA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 <section id="sara" className="py-20" style={{ background: NAVY }}>
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid lg:grid-cols-2 gap-16 items-center">
                             <div>
                                 <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Intelligence artificielle')}</p>
-                                <h2 className="text-4xl font-black text-white mb-6">
+                                <h2 className="text-3xl sm:text-4xl font-black text-white mb-6">
                                     {t('Rencontrez')} <span style={{ color: BRAND }}>SARA</span>,<br />{t('votre assistante IA')}
                                 </h2>
                                 <p className="text-gray-400 mb-8 leading-relaxed">
-                                    {t("SARA est l'assistante intelligente intégrée à CONSTRUIRO. Elle aide les visiteurs, prospects et utilisateurs à comprendre le logiciel et à trouver rapidement les réponses dont ils ont besoin.")}
+                                    {t("SARA est l'assistante intelligente intÃ©grÃ©e Ã  CONSTRUIRO. Elle aide les visiteurs, prospects et utilisateurs Ã  comprendre le logiciel et Ã  trouver rapidement les rÃ©ponses dont ils ont besoin.")}
                                 </p>
                                 <div className="space-y-4 mb-8">
                                     {[
-                                        'Présente et explique toutes les fonctionnalités de CONSTRUIRO',
-                                        'Guide vos équipes pas à pas dans le logiciel',
+                                        'PrÃ©sente et explique toutes les fonctionnalitÃ©s de CONSTRUIRO',
+                                        'Guide vos Ã©quipes pas Ã  pas dans le logiciel',
                                         'Compare les offres et vous oriente vers la bonne formule',
-                                        "Propose une démonstration dès qu'elle détecte un intérêt",
-                                        'Disponible 24h/24, 7j/7, en français et en anglais',
+                                        "Propose une dÃ©monstration dÃ¨s qu'elle dÃ©tecte un intÃ©rÃªt",
+                                        'Disponible 24h/24, 7j/7, en franÃ§ais et en anglais',
                                     ].map((f) => (
                                         <div key={f} className="flex gap-3 items-start">
                                             <div className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5"
@@ -1261,7 +1263,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                     className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-white transition-all hover:opacity-90"
                                     style={{ background: BRAND, boxShadow: `0 8px 32px rgba(245,130,32,0.35)` }}
                                     onClick={() => document.getElementById('sara-chat')?.click()}>
-                                    {t('Parler à SARA →')}
+                                    {t('Parler Ã  SARA â†’')}
                                 </button>
                             </div>
                             <div>
@@ -1271,22 +1273,22 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                     </div>
                 </section>
 
-                {/* ── SÉCURITÉ ────────────────────────────────────── */}
+                {/* â”€â”€ SÃ‰CURITÃ‰ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 <section id="securite" className="py-20 bg-white">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-14">
-                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Sécurité & Conformité')}</p>
-                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Vos données en sécurité')}</h2>
-                            <p className="text-gray-500 max-w-xl mx-auto">{t('La protection de vos informations est au cœur de CONSTRUIRO. Voici nos engagements concrets.')}</p>
+                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('SÃ©curitÃ© & ConformitÃ©')}</p>
+                            <h2 className="text-3xl sm:text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Vos donnÃ©es en sÃ©curitÃ©')}</h2>
+                            <p className="text-gray-500 max-w-xl mx-auto">{t('La protection de vos informations est au cÅ“ur de CONSTRUIRO. Voici nos engagements concrets.')}</p>
                         </div>
                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {[
-                                { emoji: '🔒', titre: 'Connexions HTTPS', desc: 'Toutes les communications sont chiffrées. Vos données transitent de manière 100% sécurisée.' },
-                                { emoji: '👥', titre: 'Gestion des rôles', desc: "Définissez précisément qui voit quoi. 8 niveaux d'accès configurables selon vos besoins." },
-                                { emoji: '💾', titre: 'Sauvegardes automatiques', desc: 'Vos données sont sauvegardées automatiquement chaque jour. Restauration disponible à tout moment.' },
-                                { emoji: '📋', titre: "Journal d'audit complet", desc: 'Chaque action dans le logiciel est tracée. Retrouvez qui a fait quoi, quand et depuis où.' },
-                                { emoji: '🔐', titre: 'Mots de passe sécurisés', desc: 'Hachage bcrypt, authentification à deux facteurs disponible, politique de mot de passe forte.' },
-                                { emoji: '🏢', titre: 'Isolation des données', desc: 'Les données de chaque entreprise sont strictement isolées. Aucun croisement entre clients.' },
+                                { emoji: 'ðŸ”’', titre: 'Connexions HTTPS', desc: 'Toutes les communications sont chiffrÃ©es. Vos donnÃ©es transitent de maniÃ¨re 100% sÃ©curisÃ©e.' },
+                                { emoji: 'ðŸ‘¥', titre: 'Gestion des rÃ´les', desc: "DÃ©finissez prÃ©cisÃ©ment qui voit quoi. 8 niveaux d'accÃ¨s configurables selon vos besoins." },
+                                { emoji: 'ðŸ’¾', titre: 'Sauvegardes automatiques', desc: 'Vos donnÃ©es sont sauvegardÃ©es automatiquement chaque jour. Restauration disponible Ã  tout moment.' },
+                                { emoji: 'ðŸ“‹', titre: "Journal d'audit complet", desc: 'Chaque action dans le logiciel est tracÃ©e. Retrouvez qui a fait quoi, quand et depuis oÃ¹.' },
+                                { emoji: 'ðŸ”', titre: 'Mots de passe sÃ©curisÃ©s', desc: 'Hachage bcrypt, authentification Ã  deux facteurs disponible, politique de mot de passe forte.' },
+                                { emoji: 'ðŸ¢', titre: 'Isolation des donnÃ©es', desc: 'Les donnÃ©es de chaque entreprise sont strictement isolÃ©es. Aucun croisement entre clients.' },
                             ].map((s) => (
                                 <div key={s.titre} className="p-6 rounded-2xl border border-gray-100 hover:border-[#F58220] hover:shadow-lg transition-all">
                                     <div className="text-3xl mb-4">{s.emoji}</div>
@@ -1298,7 +1300,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                     </div>
                 </section>
 
-                {/* ── PWA ─────────────────────────────────────────── */}
+                {/* â”€â”€ PWA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 <section id="pwa" className="py-20 bg-gray-50">
                     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="rounded-3xl overflow-hidden" style={{ background: NAVY }}>
@@ -1307,22 +1309,22 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                     <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Application Web Progressive')}</p>
                                     <h2 className="text-3xl font-black text-white mb-5">{t('Installez CONSTRUIRO sur votre appareil')}</h2>
                                     <p className="text-gray-400 mb-8 leading-relaxed">
-                                        {t("Accédez plus rapidement à votre espace depuis votre ordinateur, tablette ou smartphone, sans passer par une boutique d'applications.")}
+                                        {t("AccÃ©dez plus rapidement Ã  votre espace depuis votre ordinateur, tablette ou smartphone, sans passer par une boutique d'applications.")}
                                     </p>
                                     <div className="space-y-3 mb-8">
-                                        {["Icône sur votre écran d'accueil",'Ouverture en plein écran','Mises à jour automatiques','Installation légère, aucun fichier lourd','Compatible Android, Windows, Chrome, Edge'].map(f => (
+                                        {["IcÃ´ne sur votre Ã©cran d'accueil",'Ouverture en plein Ã©cran','Mises Ã  jour automatiques','Installation lÃ©gÃ¨re, aucun fichier lourd','Compatible Android, Windows, Chrome, Edge'].map(f => (
                                             <div key={f} className="flex items-center gap-2 text-sm text-gray-300">
-                                                <span style={{ color: BRAND }}>✓</span> {t(f)}
+                                                <span style={{ color: BRAND }}>âœ“</span> {t(f)}
                                             </div>
                                         ))}
                                     </div>
                                     <button id="pwa-install-btn"
                                         className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-white transition-all hover:opacity-90"
                                         style={{ background: BRAND }}>
-                                        {t("📲 Installer l'application")}
+                                        {t("ðŸ“² Installer l'application")}
                                     </button>
                                     <p className="text-xs text-gray-600 mt-4">
-                                        {t('Sur iPhone : appuyez sur Partager puis "Ajouter à l\'écran d\'accueil"')}
+                                        {t('Sur iPhone : appuyez sur Partager puis "Ajouter Ã  l\'Ã©cran d\'accueil"')}
                                     </p>
                                 </div>
                                 <div className="p-10 lg:p-14 flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.03)' }}>
@@ -1333,13 +1335,13 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                     </div>
                 </section>
 
-                {/* ── TARIFS ──────────────────────────────────────── */}
+                {/* â”€â”€ TARIFS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 <section id="tarifs" className="py-20 bg-white">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-14">
                             <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Tarification')}</p>
-                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Tarifs transparents')}</h2>
-                            <p className="text-gray-500 max-w-md mx-auto">{t('Payez en FCFA. Pas de frais cachés. Annulez à tout moment.')}</p>
+                            <h2 className="text-3xl sm:text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Tarifs transparents')}</h2>
+                            <p className="text-gray-500 max-w-md mx-auto">{t('Payez en FCFA. Pas de frais cachÃ©s. Annulez Ã  tout moment.')}</p>
                         </div>
                         {plans.length > 0 ? (
                             <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
@@ -1350,7 +1352,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                         {i === 1 && (
                                             <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold text-white"
                                                 style={{ background: BRAND }}>
-                                                {t('RECOMMANDÉ')}
+                                                {t('RECOMMANDÃ‰')}
                                             </div>
                                         )}
                                         <h3 className={`text-xl font-black mb-1 ${i === 1 ? 'text-white' : ''}`} style={i !== 1 ? { color: NAVY } : {}}>{plan.name}</h3>
@@ -1361,13 +1363,13 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                         </div>
                                         <ul className="space-y-3 text-sm flex-1 mb-8">
                                             {[
-                                                plan.max_users >= 9999 ? t('Utilisateurs illimités') : `${plan.max_users} ${t('utilisateurs')}`,
-                                                plan.max_projects >= 9999 ? t('Projets illimités') : `${plan.max_projects} ${t('projets')}`,
+                                                plan.max_users >= 9999 ? t('Utilisateurs illimitÃ©s') : `${plan.max_users} ${t('utilisateurs')}`,
+                                                plan.max_projects >= 9999 ? t('Projets illimitÃ©s') : `${plan.max_projects} ${t('projets')}`,
                                                 t('15+ modules BTP inclus'),
                                                 ...(plan.trial_days > 0 ? [`${plan.trial_days} ${t('jours d\'essai gratuit')}`] : []),
                                             ].map((item) => (
                                                 <li key={item} className={`flex items-center gap-2 ${i === 1 ? 'text-gray-300' : 'text-gray-600'}`}>
-                                                    <span style={{ color: BRAND }}>✓</span> {item}
+                                                    <span style={{ color: BRAND }}>âœ“</span> {item}
                                                 </li>
                                             ))}
                                         </ul>
@@ -1383,36 +1385,36 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                             </div>
                         ) : (
                             <div className="text-center py-12">
-                                <p className="text-gray-500 mb-4">{t('Contactez-nous pour un devis personnalisé adapté à votre entreprise.')}</p>
+                                <p className="text-gray-500 mb-4">{t('Contactez-nous pour un devis personnalisÃ© adaptÃ© Ã  votre entreprise.')}</p>
                                 <a href="#demo"
                                     className="inline-block px-8 py-3.5 rounded-xl font-bold text-white transition hover:opacity-90"
                                     style={{ background: BRAND }}>
-                                    {t('Demander un devis →')}
+                                    {t('Demander un devis â†’')}
                                 </a>
                             </div>
                         )}
                     </div>
                 </section>
 
-                {/* ── COMPARATEUR OFFRES ──────────────────────────── */}
+                {/* â”€â”€ COMPARATEUR OFFRES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 {plans.length > 0 && <ComparateurOffres plans={plans} />}
 
-                {/* ── IBIG PARTNERS ───────────────────────────────── */}
+                {/* â”€â”€ IBIG PARTNERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 <section className="py-20" style={{ background: NAVY }}>
                     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="rounded-3xl p-10 lg:p-14 text-center"
                             style={{ background: 'rgba(245,130,32,0.1)', border: '1px solid rgba(245,130,32,0.25)' }}>
-                            <div className="text-5xl mb-5">🤝</div>
+                            <div className="text-5xl mb-5">ðŸ¤</div>
                             <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Programme partenaire')}</p>
-                            <h2 className="text-4xl font-black text-white mb-5">{t('Développez vos revenus avec IBIG PARTNERS')}</h2>
+                            <h2 className="text-3xl sm:text-4xl font-black text-white mb-5">{t('DÃ©veloppez vos revenus avec IBIG PARTNERS')}</h2>
                             <p className="text-gray-400 max-w-xl mx-auto mb-8 leading-relaxed">
-                                {t("Rejoignez gratuitement le programme de partenariat IBIG et recommandez les solutions du groupe à votre réseau. Accédez aux outils, suivez vos recommandations et percevez vos commissions.")}
+                                {t("Rejoignez gratuitement le programme de partenariat IBIG et recommandez les solutions du groupe Ã  votre rÃ©seau. AccÃ©dez aux outils, suivez vos recommandations et percevez vos commissions.")}
                             </p>
                             <div className="grid sm:grid-cols-3 gap-6 mb-10 text-left max-w-2xl mx-auto">
                                 {[
-                                    { emoji: '📋', titre: 'Inscription gratuite', desc: "Rejoignez le programme sans frais d'entrée." },
-                                    { emoji: '📊', titre: 'Espace partenaire', desc: 'Accédez à votre tableau de bord dédié.' },
-                                    { emoji: '💰', titre: 'Commissions', desc: 'Percevez vos commissions pour chaque client référé.' },
+                                    { emoji: 'ðŸ“‹', titre: 'Inscription gratuite', desc: "Rejoignez le programme sans frais d'entrÃ©e." },
+                                    { emoji: 'ðŸ“Š', titre: 'Espace partenaire', desc: 'AccÃ©dez Ã  votre tableau de bord dÃ©diÃ©.' },
+                                    { emoji: 'ðŸ’°', titre: 'Commissions', desc: 'Percevez vos commissions pour chaque client rÃ©fÃ©rÃ©.' },
                                 ].map(item => (
                                     <div key={item.titre} className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.05)' }}>
                                         <div className="text-2xl mb-2">{item.emoji}</div>
@@ -1425,24 +1427,24 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                 <a href="https://ibigpartners.com/" target="_blank" rel="noopener noreferrer"
                                     className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-white transition-all hover:opacity-90"
                                     style={{ background: BRAND, boxShadow: `0 8px 32px rgba(245,130,32,0.35)` }}>
-                                    {t('Devenir partenaire →')}
+                                    {t('Devenir partenaire â†’')}
                                 </a>
                                 <a href="https://ibigpartners.com/" target="_blank" rel="noopener noreferrer"
                                     className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-white transition-all hover:bg-white/10"
                                     style={{ border: '2px solid rgba(255,255,255,0.2)' }}>
-                                    {t('Découvrir le programme')}
+                                    {t('DÃ©couvrir le programme')}
                                 </a>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                {/* ── TÉMOIGNAGES ─────────────────────────────────── */}
+                {/* â”€â”€ TÃ‰MOIGNAGES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 <section id="temoignages" className="py-20 bg-gray-50">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-14">
-                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Témoignages')}</p>
-                            <h2 className="text-4xl font-black" style={{ color: NAVY }}>{t('Ils font confiance à CONSTRUIRO')}</h2>
+                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('TÃ©moignages')}</p>
+                            <h2 className="text-3xl sm:text-4xl font-black" style={{ color: NAVY }}>{t('Ils font confiance Ã  CONSTRUIRO')}</h2>
                         </div>
                         <div className="grid md:grid-cols-3 gap-6">
                             {temoignagesList.map((t) => (
@@ -1450,7 +1452,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                     className="bg-white rounded-2xl p-7 flex flex-col border border-gray-100 hover:shadow-lg transition-all">
                                     <div className="flex mb-4">
                                         {[...Array(5)].map((_, i) => (
-                                            <span key={i} style={{ color: BRAND }}>★</span>
+                                            <span key={i} style={{ color: BRAND }}>â˜…</span>
                                         ))}
                                     </div>
                                     <p className="text-gray-600 text-sm leading-relaxed flex-1 mb-6">"{t.texte}"</p>
@@ -1461,7 +1463,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                         </div>
                                         <div>
                                             <p className="font-bold text-sm" style={{ color: NAVY }}>{t.nom}</p>
-                                            <p className="text-xs text-gray-400">{t.poste} · {t.ville}</p>
+                                            <p className="text-xs text-gray-400">{t.poste} Â· {t.ville}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -1470,16 +1472,16 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                     </div>
                 </section>
 
-                {/* ── AUTRES LOGICIELS IBIG SOFT ──────────────────── */}
+                {/* â”€â”€ AUTRES LOGICIELS IBIG SOFT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 <section className="py-20 bg-white overflow-hidden">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-12">
-                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Écosystème IBIG Soft')}</p>
-                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Découvrez les autres solutions IBIG Soft')}</h2>
-                            <p className="text-gray-500 max-w-xl mx-auto">{t('IBIG Soft édite plusieurs logiciels de gestion pour différents secteurs en Afrique.')}</p>
+                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Ã‰cosystÃ¨me IBIG Soft')}</p>
+                            <h2 className="text-3xl sm:text-4xl font-black mb-4" style={{ color: NAVY }}>{t('DÃ©couvrez les autres solutions IBIG Soft')}</h2>
+                            <p className="text-gray-500 max-w-xl mx-auto">{t('IBIG Soft Ã©dite plusieurs logiciels de gestion pour diffÃ©rents secteurs en Afrique.')}</p>
                         </div>
                     </div>
-                    {/* Marquee défilant */}
+                    {/* Marquee dÃ©filant */}
                     <div className="relative" style={{ maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)', WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' }}>
                         <style>{`
                             @keyframes marquee-ibig { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
@@ -1504,18 +1506,18 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                         <a href="https://ibigsoft.com" target="_blank" rel="noopener noreferrer"
                             className="inline-flex items-center gap-2 text-sm font-bold transition hover:opacity-75"
                             style={{ color: BRAND }}>
-                            {t('Voir toutes les solutions IBIG Soft →')}
+                            {t('Voir toutes les solutions IBIG Soft â†’')}
                         </a>
                     </div>
                 </section>
 
-                {/* ── FAQ ─────────────────────────────────────────── */}
+                {/* â”€â”€ FAQ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 {faqs.length > 0 && (
                     <section className="py-20 bg-gray-50">
                         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div className="text-center mb-12">
                                 <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>FAQ</p>
-                                <h2 className="text-4xl font-black" style={{ color: NAVY }}>Questions fréquentes</h2>
+                                <h2 className="text-3xl sm:text-4xl font-black" style={{ color: NAVY }}>Questions frÃ©quentes</h2>
                             </div>
                             <div className="space-y-3">
                                 {faqs.map((faq, i) => (
@@ -1533,25 +1535,25 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                     </section>
                 )}
 
-                {/* ── DEMO FORM ────────────────────────────────────── */}
+                {/* â”€â”€ DEMO FORM â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 <section id="demo" className="py-20" style={{ background: BRAND }}>
                     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-10">
-                            <h2 className="text-4xl font-black text-white mb-3">{t('Demandez une démo gratuite')}</h2>
-                            <p className="text-orange-100">{t('Notre équipe vous répond sous 24h ouvrées pour organiser une démonstration personnalisée.')}</p>
+                            <h2 className="text-3xl sm:text-4xl font-black text-white mb-3">{t('Demandez une dÃ©mo gratuite')}</h2>
+                            <p className="text-orange-100">{t('Notre Ã©quipe vous rÃ©pond sous 24h ouvrÃ©es pour organiser une dÃ©monstration personnalisÃ©e.')}</p>
                         </div>
                         <DemoForm />
                     </div>
                 </section>
 
-                {/* ── CTA FINAL ────────────────────────────────────── */}
+                {/* â”€â”€ CTA FINAL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 <section className="py-20 bg-white">
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                        <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>
-                            {t('Prêt à moderniser la gestion de vos chantiers ?')}
+                        <h2 className="text-3xl sm:text-4xl font-black mb-4" style={{ color: NAVY }}>
+                            {t('PrÃªt Ã  moderniser la gestion de vos chantiers ?')}
                         </h2>
                         <p className="text-gray-500 mb-10 text-lg">
-                            {t('Essayez CONSTRUIRO gratuitement, demandez une démonstration, ou échangez avec notre assistante IA SARA.')}
+                            {t('Essayez CONSTRUIRO gratuitement, demandez une dÃ©monstration, ou Ã©changez avec notre assistante IA SARA.')}
                         </p>
                         <div className="flex flex-wrap justify-center gap-4">
                             {canRegister && (
@@ -1564,57 +1566,57 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                             <a href="#demo"
                                 className="inline-flex items-center gap-2 px-10 py-4 rounded-xl font-bold text-base border-2 transition-all hover:bg-gray-50"
                                 style={{ borderColor: NAVY, color: NAVY }}>
-                                {t('Demander une démo')} →
+                                {t('Demander une dÃ©mo')} â†’
                             </a>
                             <button
                                 className="inline-flex items-center gap-2 px-10 py-4 rounded-xl font-bold text-base border-2 transition-all hover:bg-orange-50"
                                 style={{ borderColor: BRAND, color: BRAND }}
                                 onClick={() => document.getElementById('sara-chat')?.click()}>
-                                {t('Parler à SARA')} 🤖
+                                {t('Parler Ã  SARA')} ðŸ¤–
                             </button>
                         </div>
                     </div>
                 </section>
 
-                {/* ── FOOTER 6 COLONNES ────────────────────────────── */}
+                {/* â”€â”€ FOOTER 6 COLONNES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                 <footer style={{ background: NAVY }} className="text-slate-400">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
 
-                            {/* Col 1 — Identité (span 2 sur lg) */}
+                            {/* Col 1 â€” IdentitÃ© (span 2 sur lg) */}
                             <div className="col-span-2 md:col-span-3 lg:col-span-2">
                                 <ConstruiroLogo size="sm" dark />
                                 <p className="text-sm text-slate-400 mt-4 leading-relaxed max-w-xs">
-                                    {t("L'ERP BTP conçu pour les entreprises de construction et de travaux publics en Afrique.")}
+                                    {t("L'ERP BTP conÃ§u pour les entreprises de construction et de travaux publics en Afrique.")}
                                 </p>
-                                <p className="text-xs mt-4 italic" style={{ color: BRAND }}>{t('CONSTRUIRE. PILOTER. MAÎTRISER.')}</p>
+                                <p className="text-xs mt-4 italic" style={{ color: BRAND }}>{t('CONSTRUIRE. PILOTER. MAÃŽTRISER.')}</p>
                                 <p className="text-xs mt-2 text-slate-600">{t('Un produit de')} <strong className="text-slate-500">IBIG Soft</strong></p>
                                 <a href="https://ibigsoft.com" target="_blank" rel="noopener noreferrer"
                                     className="text-xs mt-1 inline-block transition hover:text-[#F58220]" style={{ color: BRAND }}>
-                                    ibigsoft.com →
+                                    ibigsoft.com â†’
                                 </a>
                                 <div className="flex gap-3 mt-5">
                                     <a href="tel:+2252722276014" className="text-xs text-slate-500 hover:text-white transition flex items-center gap-1">
-                                        📞 +225 27 22 27 60 14
+                                        ðŸ“ž +225 27 22 27 60 14
                                     </a>
                                 </div>
                                 <div className="mt-1">
                                     <a href="mailto:contact@ibigsoft.com" className="text-xs text-slate-500 hover:text-white transition">
-                                        📧 contact@ibigsoft.com
+                                        ðŸ“§ contact@ibigsoft.com
                                     </a>
                                 </div>
                             </div>
 
-                            {/* Col 2 — Navigation */}
+                            {/* Col 2 â€” Navigation */}
                             <div>
                                 <h4 className="text-xs font-bold text-white mb-4 uppercase tracking-wider">{t('Navigation')}</h4>
                                 <ul className="space-y-2.5 text-sm">
                                     {[
                                         { label: 'Accueil', href: '/', anchor: false },
-                                        { label: 'Fonctionnalités', href: '#modules', anchor: true },
+                                        { label: 'FonctionnalitÃ©s', href: '#modules', anchor: true },
                                         { label: 'Modules', href: '#modules', anchor: true },
                                         { label: 'Tarifs', href: '#tarifs', anchor: true },
-                                        { label: 'Démonstration', href: '#demo', anchor: true },
+                                        { label: 'DÃ©monstration', href: '#demo', anchor: true },
                                         { label: 'Assistance', href: '/aide', anchor: false },
                                         { label: 'Se connecter', href: route('login'), anchor: false },
                                     ].map(l => (
@@ -1628,7 +1630,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                 </ul>
                             </div>
 
-                            {/* Col 3 — Ressources */}
+                            {/* Col 3 â€” Ressources */}
                             <div>
                                 <h4 className="text-xs font-bold text-white mb-4 uppercase tracking-wider">{t('Ressources')}</h4>
                                 <ul className="space-y-2.5 text-sm">
@@ -1651,12 +1653,12 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                 </ul>
                             </div>
 
-                            {/* Col 4 — IBIG Soft */}
+                            {/* Col 4 â€” IBIG Soft */}
                             <div>
                                 <h4 className="text-xs font-bold text-white mb-4 uppercase tracking-wider">IBIG Soft</h4>
                                 <ul className="space-y-2.5 text-sm">
                                     {[
-                                        { label: "À propos d'IBIG Soft", href: 'https://ibigsoft.com', ext: true },
+                                        { label: "Ã€ propos d'IBIG Soft", href: 'https://ibigsoft.com', ext: true },
                                         { label: 'Autres logiciels', href: 'https://ibigsoft.com', ext: true },
                                         { label: 'Devenir partenaire', href: 'https://ibigpartners.com/', ext: true },
                                         { label: 'IBIG PARTNERS', href: 'https://ibigpartners.com/', ext: true },
@@ -1675,19 +1677,19 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                 </ul>
                             </div>
 
-                            {/* Col 5 — Légal */}
+                            {/* Col 5 â€” LÃ©gal */}
                             <div>
-                                <h4 className="text-xs font-bold text-white mb-4 uppercase tracking-wider">{t('Légal')}</h4>
+                                <h4 className="text-xs font-bold text-white mb-4 uppercase tracking-wider">{t('LÃ©gal')}</h4>
                                 <ul className="space-y-2.5 text-sm">
                                     {[
-                                        { label: 'Mentions légales', href: '/legal/legal' },
+                                        { label: 'Mentions lÃ©gales', href: '/legal/legal' },
                                         { label: 'CGU', href: '/legal/cgu' },
                                         { label: 'Cond. commerciales', href: '/legal/conditions-commerciales' },
                                         { label: 'Contrat de licence', href: '/legal/contrat-licence' },
-                                        { label: 'Confidentialité', href: '/legal/privacy' },
+                                        { label: 'ConfidentialitÃ©', href: '/legal/privacy' },
                                         { label: 'Politique cookies', href: '/legal/cookies' },
-                                        { label: 'Résiliation', href: '/legal/resiliation' },
-                                        { label: 'Gestion des données', href: '/legal/traitement-donnees' },
+                                        { label: 'RÃ©siliation', href: '/legal/resiliation' },
+                                        { label: 'Gestion des donnÃ©es', href: '/legal/traitement-donnees' },
                                     ].map(l => (
                                         <li key={l.label}>
                                             <Link href={l.href} className="hover:text-[#F58220] transition text-sm">{t(l.label)}</Link>
@@ -1703,17 +1705,17 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                     <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600">
-                                <p>© {new Date().getFullYear()} CONSTRUIRO ERP — {t('Tous droits réservés.')}</p>
+                                <p>Â© {new Date().getFullYear()} CONSTRUIRO ERP â€” {t('Tous droits rÃ©servÃ©s.')}</p>
                                 <p className="text-center">
-                                    {t('Logiciel conçu, édité et exploité par')} <strong className="text-slate-500">IBIG Soft</strong>, une marque de IBIG SARL – Intermark Business International Group.
+                                    {t('Logiciel conÃ§u, Ã©ditÃ© et exploitÃ© par')} <strong className="text-slate-500">IBIG Soft</strong>, une marque de IBIG SARL â€“ Intermark Business International Group.
                                 </p>
                                 <a href="https://ibigsoft.com" target="_blank" rel="noopener noreferrer"
                                     className="hover:text-[#F58220] transition whitespace-nowrap" style={{ color: BRAND }}>
-                                    {t("Découvrir l'éditeur →")}
+                                    {t("DÃ©couvrir l'Ã©diteur â†’")}
                                 </a>
                             </div>
                             <p className="text-xs text-slate-700 text-center mt-3 max-w-3xl mx-auto">
-                                {t('Toute reproduction, imitation, copie ou utilisation non autorisée du logiciel, de son interface, de son logo, de ses textes ou de sa documentation est interdite.')}
+                                {t('Toute reproduction, imitation, copie ou utilisation non autorisÃ©e du logiciel, de son interface, de son logo, de ses textes ou de sa documentation est interdite.')}
                             </p>
                         </div>
                     </div>
@@ -1721,10 +1723,11 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
 
             </div>
 
-            {/* ── FLOTTANTS ────────────────────────────────────── */}
+            {/* â”€â”€ FLOTTANTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
             <SaraFloating />
             <PwaBanner />
             <CookiesBanner />
         </>
     );
 }
+

@@ -131,7 +131,7 @@ function SaraWindow({ onClose }) {
         <div
             className="flex flex-col rounded-2xl overflow-hidden shadow-2xl"
             style={{
-                width: expanded ? 460 : 360,
+                width: expanded ? 'min(460px, calc(100vw - 24px))' : 'min(360px, calc(100vw - 24px))',
                 height: expanded ? 600 : 500,
                 background: '#0f172a',
                 border: '1px solid rgba(255,255,255,0.12)',
