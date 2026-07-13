@@ -105,6 +105,7 @@ Route::get('/', function () {
         'name' => $p->name,
         'description' => $p->description,
         'price_monthly' => $p->price_monthly,
+        'price_yearly' => $p->price_yearly,
         'max_users' => $p->max_users,
         'max_projects' => $p->max_projects,
         'trial_days' => $p->trial_days,

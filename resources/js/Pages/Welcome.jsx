@@ -754,50 +754,52 @@ function VideoPresentation() {
 
 /* ── Comparateur des offres ──────────────────────────────────── */
 const FEATURES_COMPARE = [
-    { label: 'Modules BTP', values: ['15+ modules', '15+ modules', '15+ modules'] },
+    { label: 'Modules BTP', values: ['15+ modules', '15+ modules', '15+ modules', '15+ modules'] },
     { label: 'Utilisateurs', key: 'max_users' },
     { label: 'Projets simultanés', key: 'max_projects' },
     { label: 'Essai gratuit', key: 'trial_days', format: v => v > 0 ? `${v} jours` : '—' },
-    { label: 'Tableaux de bord', values: ['Basique', 'Avancé', 'Illimité'] },
-    { label: 'Rapports & exports', values: ['PDF', 'PDF + Excel', 'PDF + Excel + BI'] },
-    { label: 'Support', values: ['Email', 'Email + Chat', 'Prioritaire dédié'] },
-    { label: 'API REST', values: ['—', '✓', '✓'] },
-    { label: 'Multi-agences', values: ['—', '—', '✓'] },
-    { label: 'Formation incluse', values: ['—', '1 session', '3 sessions'] },
-    { label: 'SLA garanti', values: ['—', '99%', '99.9%'] },
+    { label: 'Tableaux de bord', values: ['Basique', 'Basique', 'Avancé', 'Illimité'] },
+    { label: 'Rapports & exports', values: ['PDF', 'PDF + Excel', 'PDF + Excel', 'PDF + Excel + BI'] },
+    { label: 'Support', values: ['Email', 'Email', 'Email + Chat', 'Prioritaire dédié'] },
+    { label: 'API REST', values: ['—', '—', '✓', '✓'] },
+    { label: 'Multi-agences', values: ['—', '—', '—', '✓'] },
+    { label: 'Formation incluse', values: ['—', '—', '1 session', '3 sessions'] },
+    { label: 'SLA garanti', values: ['—', '—', '99%', '99.9%'] },
 ];
 
-function ComparateurOffres({ plans }) {
+function ComparateurOffres({ plans, billingCycle }) {
     const { t } = useTrans();
-    const p0 = plans[0] || {}, p1 = plans[1] || {}, p2 = plans[2] || {};
     const getValue = (feat, i) => {
         if (feat.values) return feat.values[i] || '—';
-        const val = [p0, p1, p2][i][feat.key];
+        const val = plans[i]?.[feat.key];
         if (feat.format) return feat.format(val);
         if (val >= 9999) return '∞';
         return val ?? '—';
     };
     return (
         <section className="py-20 bg-gray-50">
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-12">
                     <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Comparateur')}</p>
                     <h2 className="text-3xl sm:text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Ce qui est inclus dans chaque offre')}</h2>
                 </div>
                 <div className="overflow-x-auto -mx-4 sm:mx-0 rounded-2xl" style={{ WebkitOverflowScrolling: 'touch' }}>
-                <div className="rounded-2xl overflow-hidden border border-gray-200 bg-white shadow-sm" style={{ minWidth: 560 }}>
+                <div className="rounded-2xl overflow-hidden border border-gray-200 bg-white shadow-sm" style={{ minWidth: 680 }}>
                     <table className="w-full text-sm">
                         <thead>
                             <tr style={{ background: NAVY }}>
-                                <th className="text-left px-6 py-4 text-gray-400 font-medium w-1/3">Fonctionnalité</th>
-                                {plans.slice(0, 3).map((plan, i) => (
-                                    <th key={plan.id} className="px-4 py-4 text-center relative" style={{ minWidth: 130 }}>
-                                        {i === 1 && (
+                                <th className="text-left px-5 py-4 text-gray-400 font-medium" style={{ width: '28%' }}>Fonctionnalité</th>
+                                {plans.map((plan, i) => (
+                                    <th key={plan.id} className="px-3 py-4 text-center relative" style={{ minWidth: 110 }}>
+                                        {i === 2 && (
                                             <span className="absolute -top-0 left-1/2 -translate-x-1/2 text-xs font-bold px-2 py-0.5 rounded-b-lg"
-                                                style={{ background: BRAND, color: '#fff' }}>RECOMMANDÉ</span>
+                                                style={{ background: BRAND, color: '#fff' }}>★</span>
                                         )}
-                                        <div className="text-white font-bold mt-1">{plan.name}</div>
-                                        <div className="text-xs font-normal mt-0.5" style={{ color: BRAND }}>{formatXOF(plan.price_monthly)}{t('/mois')}</div>
+                                        <div className="text-white font-bold mt-1 text-xs sm:text-sm">{plan.name}</div>
+                                        <div className="text-xs font-normal mt-0.5" style={{ color: BRAND }}>
+                                            {formatXOF(billingCycle === 'yearly' ? plan.price_yearly : plan.price_monthly)}
+                                            {billingCycle === 'yearly' ? t('/an') : t('/mois')}
+                                        </div>
                                     </th>
                                 ))}
                             </tr>
@@ -805,11 +807,11 @@ function ComparateurOffres({ plans }) {
                         <tbody>
                             {FEATURES_COMPARE.map((feat, ri) => (
                                 <tr key={feat.label} className={ri % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                                    <td className="px-6 py-3.5 font-medium" style={{ color: NAVY }}>{t(feat.label)}</td>
-                                    {plans.slice(0, 3).map((_, ci) => {
+                                    <td className="px-5 py-3.5 font-medium" style={{ color: NAVY }}>{t(feat.label)}</td>
+                                    {plans.map((_, ci) => {
                                         const val = getValue(feat, ci);
                                         return (
-                                            <td key={ci} className="px-4 py-3.5 text-center text-gray-600">
+                                            <td key={ci} className="px-3 py-3.5 text-center text-gray-600">
                                                 {val === '✓'
                                                     ? <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-white text-xs" style={{ background: BRAND }}>✓</span>
                                                     : val === '—'
@@ -821,12 +823,12 @@ function ComparateurOffres({ plans }) {
                                 </tr>
                             ))}
                             <tr className="border-t border-gray-200">
-                                <td className="px-6 py-4" />
-                                {plans.slice(0, 3).map((plan, i) => (
-                                    <td key={plan.id} className="px-4 py-4 text-center">
+                                <td className="px-5 py-4" />
+                                {plans.map((plan, i) => (
+                                    <td key={plan.id} className="px-3 py-4 text-center">
                                         <a href="#demo"
-                                            className="inline-block px-5 py-2.5 rounded-xl font-bold text-sm transition hover:opacity-90"
-                                            style={i === 1
+                                            className="inline-block px-4 py-2 rounded-xl font-bold text-xs sm:text-sm transition hover:opacity-90"
+                                            style={i === 2
                                                 ? { background: BRAND, color: '#fff' }
                                                 : { border: `2px solid ${BRAND}`, color: BRAND }}>
                                             {t('Choisir')} →
@@ -878,6 +880,7 @@ function TopBar() {
 export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs = [], temoignages: temoignagesProp = null }) {
     const { t } = useTrans();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [billingCycle, setBillingCycle] = useState('monthly');
     const temoignagesList = temoignagesProp ?? temoignages;
     const hamburgerRef  = useRef(null);
     const closeButtonRef = useRef(null);
@@ -1460,50 +1463,85 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                 {/* ── TARIFS ──────────────────────────────────────── */}
                 <section id="tarifs" className="py-20 bg-white">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="text-center mb-14">
+                        <div className="text-center mb-10">
                             <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Tarification')}</p>
                             <h2 className="text-3xl sm:text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Tarifs transparents')}</h2>
-                            <p className="text-gray-500 max-w-md mx-auto">{t('Payez en FCFA. Pas de frais cachés. Annulez à tout moment.')}</p>
+                            <p className="text-gray-500 max-w-md mx-auto mb-8">{t('Payez en FCFA. Pas de frais cachés. Annulez à tout moment.')}</p>
+                            {/* Toggle Mensuel / Annuel */}
+                            <div className="inline-flex items-center gap-1 rounded-2xl p-1" style={{ background: '#f1f5f9' }}>
+                                <button
+                                    onClick={() => setBillingCycle('monthly')}
+                                    className="px-5 py-2 rounded-xl text-sm font-bold transition-all"
+                                    style={billingCycle === 'monthly'
+                                        ? { background: '#fff', color: NAVY, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }
+                                        : { color: '#64748b' }}>
+                                    {t('Mensuel')}
+                                </button>
+                                <button
+                                    onClick={() => setBillingCycle('yearly')}
+                                    className="px-5 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2"
+                                    style={billingCycle === 'yearly'
+                                        ? { background: '#fff', color: NAVY, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }
+                                        : { color: '#64748b' }}>
+                                    {t('Annuel')}
+                                    <span className="text-xs font-black px-2 py-0.5 rounded-full text-white" style={{ background: BRAND }}>-17%</span>
+                                </button>
+                            </div>
+                            {billingCycle === 'yearly' && (
+                                <p className="text-sm mt-3" style={{ color: BRAND }}>
+                                    🎁 {t('2 mois offerts avec le forfait annuel')}
+                                </p>
+                            )}
                         </div>
                         {plans.length > 0 ? (
-                            <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-                                {plans.map((plan, i) => (
-                                    <div key={plan.id}
-                                        className={`rounded-2xl p-8 flex flex-col relative ${i === 1 ? 'text-white' : 'bg-white border border-gray-100'}`}
-                                        style={i === 1 ? { background: NAVY, boxShadow: `0 24px 60px rgba(0,0,0,0.2)` } : {}}>
-                                        {i === 1 && (
-                                            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold text-white"
-                                                style={{ background: BRAND }}>
-                                                {t('RECOMMANDÉ')}
+                            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto">
+                                {plans.map((plan, i) => {
+                                    const isRecommended = i === 2;
+                                    const price = billingCycle === 'yearly' ? plan.price_yearly : plan.price_monthly;
+                                    const suffix = billingCycle === 'yearly' ? t('/an') : t('/mois');
+                                    return (
+                                        <div key={plan.id}
+                                            className={`rounded-2xl p-6 flex flex-col relative ${isRecommended ? 'text-white' : 'bg-white border border-gray-100'}`}
+                                            style={isRecommended ? { background: NAVY, boxShadow: `0 24px 60px rgba(0,0,0,0.2)` } : {}}>
+                                            {isRecommended && (
+                                                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold text-white whitespace-nowrap"
+                                                    style={{ background: BRAND }}>
+                                                    {t('RECOMMANDÉ')}
+                                                </div>
+                                            )}
+                                            <h3 className={`text-lg font-black mb-1 ${isRecommended ? 'text-white' : ''}`} style={!isRecommended ? { color: NAVY } : {}}>{plan.name}</h3>
+                                            {plan.description && <p className={`text-xs mb-4 ${isRecommended ? 'text-gray-400' : 'text-gray-500'}`}>{plan.description}</p>}
+                                            <div className="mb-5">
+                                                <span className="text-2xl font-black" style={{ color: BRAND }}>{formatXOF(price)}</span>
+                                                <span className={`text-xs ml-1 ${isRecommended ? 'text-gray-500' : 'text-gray-400'}`}>{suffix}</span>
+                                                {billingCycle === 'yearly' && (
+                                                    <div className="text-xs mt-1" style={{ color: isRecommended ? '#9ca3af' : '#94a3b8' }}>
+                                                        ({formatXOF(Math.round(plan.price_yearly / 12))}{t('/mois')})
+                                                    </div>
+                                                )}
                                             </div>
-                                        )}
-                                        <h3 className={`text-xl font-black mb-1 ${i === 1 ? 'text-white' : ''}`} style={i !== 1 ? { color: NAVY } : {}}>{plan.name}</h3>
-                                        {plan.description && <p className={`text-sm mb-5 ${i === 1 ? 'text-gray-400' : 'text-gray-500'}`}>{plan.description}</p>}
-                                        <div className="mb-6">
-                                            <span className="text-3xl font-black" style={{ color: BRAND }}>{formatXOF(plan.price_monthly)}</span>
-                                            <span className={`text-sm ml-1 ${i === 1 ? 'text-gray-500' : 'text-gray-400'}`}>{t('/mois')}</span>
+                                            <ul className="space-y-2 text-xs flex-1 mb-6">
+                                                {[
+                                                    plan.max_users >= 9999 ? t('Utilisateurs illimités') : `${plan.max_users} ${t('utilisateurs')}`,
+                                                    plan.max_projects >= 9999 ? t('Projets illimités') : `${plan.max_projects} ${t('projets')}`,
+                                                    t('15+ modules BTP inclus'),
+                                                    ...(plan.trial_days > 0 ? [`${plan.trial_days} ${t('jours d\'essai gratuit')}`] : []),
+                                                ].map((item) => (
+                                                    <li key={item} className={`flex items-center gap-2 ${isRecommended ? 'text-gray-300' : 'text-gray-600'}`}>
+                                                        <span style={{ color: BRAND }}>✓</span> {item}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                            <a href="#demo"
+                                                className="block text-center py-3 rounded-xl font-bold text-sm transition-all hover:opacity-90"
+                                                style={isRecommended
+                                                    ? { background: BRAND, color: '#fff' }
+                                                    : { border: `2px solid ${BRAND}`, color: BRAND }}>
+                                                {t('Commencer l\'essai gratuit')}
+                                            </a>
                                         </div>
-                                        <ul className="space-y-3 text-sm flex-1 mb-8">
-                                            {[
-                                                plan.max_users >= 9999 ? t('Utilisateurs illimités') : `${plan.max_users} ${t('utilisateurs')}`,
-                                                plan.max_projects >= 9999 ? t('Projets illimités') : `${plan.max_projects} ${t('projets')}`,
-                                                t('15+ modules BTP inclus'),
-                                                ...(plan.trial_days > 0 ? [`${plan.trial_days} ${t('jours d\'essai gratuit')}`] : []),
-                                            ].map((item) => (
-                                                <li key={item} className={`flex items-center gap-2 ${i === 1 ? 'text-gray-300' : 'text-gray-600'}`}>
-                                                    <span style={{ color: BRAND }}>✓</span> {item}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                        <a href="#demo"
-                                            className="block text-center py-3.5 rounded-xl font-bold text-sm transition-all hover:opacity-90"
-                                            style={i === 1
-                                                ? { background: BRAND, color: '#fff' }
-                                                : { border: `2px solid ${BRAND}`, color: BRAND }}>
-                                            {t('Commencer l\'essai gratuit')}
-                                        </a>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         ) : (
                             <div className="text-center py-12">
@@ -1519,7 +1557,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                 </section>
 
                 {/* ── COMPARATEUR OFFRES ──────────────────────────── */}
-                {plans.length > 0 && <ComparateurOffres plans={plans} />}
+                {plans.length > 0 && <ComparateurOffres plans={plans} billingCycle={billingCycle} />}
 
                 {/* ── IBIG PARTNERS ───────────────────────────────── */}
                 <section className="py-20" style={{ background: NAVY }}>
