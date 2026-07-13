@@ -548,9 +548,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Changement de langue (GET = pas de CSRF, accessible connecté ou non).
-Route::get('/locale/{locale}',  [LocaleController::class, 'update'])->name('locale.update');
-Route::post('/locale/{locale}', [LocaleController::class, 'update'])->name('locale.update.post');
+// Changement de langue — GET et POST acceptés (GET = sans CSRF pour window.location.href).
+Route::match(['GET', 'POST'], '/locale/{locale}', [LocaleController::class, 'update'])->name('locale.update');
 
 // --- Webhooks Mobile Money (publics — hors CSRF et auth) -------------------
 Route::post('/webhooks/mobile-money/{operator}', [MobileMoneyController::class, 'webhook'])

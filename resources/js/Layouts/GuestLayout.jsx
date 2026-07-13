@@ -10,8 +10,11 @@ export default function GuestLayout({ children }) {
             {/* Panneau gauche — branding */}
             <div className="hidden lg:flex flex-col justify-between w-[420px] flex-shrink-0 p-10 text-white"
                 style={{ background: `linear-gradient(160deg, ${NAVY} 0%, #2d2d2d 100%)` }}>
-                <Link href="/">
-                    <ConstruiroLogo size="sm" />
+                <Link href="/" className="flex items-center gap-3">
+                    <ConstruiroLogo size="sm" dark={true} variant="icon" />
+                    <span className="font-black text-xl tracking-tight" style={{ color: '#F58220' }}>
+                        CONSTRUIRO <span className="text-white font-light text-base">ERP</span>
+                    </span>
                 </Link>
                 <div>
                     <p className="text-3xl font-black leading-snug mb-4">
