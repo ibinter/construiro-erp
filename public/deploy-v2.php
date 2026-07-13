@@ -115,6 +115,7 @@ $artisanCmds = [
     'db:seed --class=SubscriptionPlanSeeder --force',
     'db:seed --class=LandingSeeder --force',
     'db:seed --class=LegalPageSeeder --force',
+    'db:seed --class=IbigSuperAdminSeeder --force',
     'package:discover --ansi',
     'config:cache',
     'route:cache',
