@@ -12,13 +12,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('boqs', function (Blueprint $table) {
-            $table->foreignId('client_id')
-                ->nullable()
-                ->constrained('clients')
-                ->nullOnDelete()
-                ->after('project_id');
-        });
+        if (!Schema::hasColumn('boqs', 'client_id')) {
+            Schema::table('boqs', function (Blueprint $table) {
+                $table->foreignId('client_id')
+                    ->nullable()
+                    ->constrained('clients')
+                    ->nullOnDelete()
+                    ->after('project_id');
+            });
+        }
     }
 
     public function down(): void
