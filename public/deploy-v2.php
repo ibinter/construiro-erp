@@ -41,6 +41,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['diag'])) {
         echo shell_exec("cd $dir && php artisan migrate:status 2>&1");
     } elseif ($diag === 'git') {
         echo shell_exec("cd $dir && git log --oneline -5 2>&1");
+    } elseif ($diag === 'notification') {
+        echo file_get_contents($dir . '/app/Models/Notification.php');
+    } elseif ($diag === 'opcache-test') {
+        $f = $dir . '/app/Models/Notification.php';
+        $result = function_exists('opcache_invalidate') ? opcache_invalidate($f, true) : 'not available';
+        echo "opcache_invalidate result: " . var_export($result, true) . "\n";
+        echo "File mtime: " . date('Y-m-d H:i:s', filemtime($f)) . "\n";
+        echo "File head:\n" . implode("\n", array_slice(file($f), 0, 8));
     }
     exit;
 }
