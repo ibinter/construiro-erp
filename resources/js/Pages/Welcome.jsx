@@ -879,16 +879,22 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
     const { t } = useTrans();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const temoignagesList = temoignagesProp ?? temoignages;
+    const hamburgerRef  = useRef(null);
+    const closeButtonRef = useRef(null);
 
     useEffect(() => {
-        if (!mobileMenuOpen) return;
-        document.body.style.overflow = 'hidden';
-        const onKey = (e) => { if (e.key === 'Escape') setMobileMenuOpen(false); };
-        window.addEventListener('keydown', onKey);
-        return () => {
+        if (mobileMenuOpen) {
+            document.body.classList.add('mobile-menu-open');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => closeButtonRef.current?.focus(), 50);
+            const onKey = (e) => { if (e.key === 'Escape') setMobileMenuOpen(false); };
+            window.addEventListener('keydown', onKey);
+            return () => window.removeEventListener('keydown', onKey);
+        } else {
+            document.body.classList.remove('mobile-menu-open');
             document.body.style.overflow = '';
-            window.removeEventListener('keydown', onKey);
-        };
+            hamburgerRef.current?.focus();
+        }
     }, [mobileMenuOpen]);
 
     return (
@@ -990,63 +996,137 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                     )}
                                 </>
                             )}
-                            {/* Burger mobile */}
-                            <button className="lg:hidden p-2 rounded-lg hover:bg-gray-100"
+                            {/* Burger mobile — ref pour restaurer le focus à la fermeture */}
+                            <button
+                                ref={hamburgerRef}
+                                className="lg:hidden p-2 rounded-lg hover:bg-gray-100"
                                 onClick={() => setMobileMenuOpen(o => !o)}
-                                aria-label="Menu">
+                                aria-label={t('Ouvrir le menu')}
+                                aria-expanded={mobileMenuOpen}
+                                aria-controls="mobile-navigation"
+                                type="button">
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                    {mobileMenuOpen
-                                        ? <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>
-                                        : <><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></>
-                                    }
+                                    <line x1="3" y1="6" x2="21" y2="6"/>
+                                    <line x1="3" y1="12" x2="21" y2="12"/>
+                                    <line x1="3" y1="18" x2="21" y2="18"/>
                                 </svg>
                             </button>
                         </div>
                     </div>
+                </nav>
 
-                    {/* Drawer mobile plein écran */}
-                    {mobileMenuOpen && (
-                        <div className="lg:hidden fixed inset-0 z-[9998] flex flex-col" style={{ background: NAVY }}>
-                            {/* Header du drawer */}
-                            <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
-                                <ConstruiroLogo size="sm" dark />
-                                <button onClick={() => setMobileMenuOpen(false)}
-                                    className="p-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10"
-                                    aria-label="Fermer">
+                {/* ══════════════════════════════════════════════════════
+                    DRAWER MOBILE — EN DEHORS DE <nav> POUR Z-INDEX CORRECT
+                    La <nav> a z-50 qui crée un stacking context : tout
+                    enfant fixe reste captif de ce contexte.
+                    En plaçant le drawer ici (frère de <nav>, enfant direct
+                    du wrapper root), z-index: 9001 est global.
+                    ══════════════════════════════════════════════════════ */}
+                {mobileMenuOpen && (
+                    <>
+                        {/* Overlay sombre — clique pour fermer */}
+                        <div
+                            className="lg:hidden fixed inset-0"
+                            style={{ background: 'rgba(0,0,0,0.55)', zIndex: 9000 }}
+                            onClick={() => setMobileMenuOpen(false)}
+                            aria-hidden="true"
+                        />
+
+                        {/* Panneau blanc totalement opaque — glisse depuis la droite */}
+                        <aside
+                            id="mobile-navigation"
+                            role="dialog"
+                            aria-modal="true"
+                            aria-label={t('Navigation principale')}
+                            className="lg:hidden fixed inset-y-0 right-0 flex flex-col bg-white overflow-y-auto"
+                            style={{
+                                width: 'min(100%, 420px)',
+                                zIndex: 9001,
+                                paddingTop:    'calc(20px + env(safe-area-inset-top, 0px))',
+                                paddingBottom: 'calc(28px + env(safe-area-inset-bottom, 0px))',
+                                paddingLeft:  24,
+                                paddingRight: 24,
+                                boxShadow: '-12px 0 40px rgba(0,0,0,0.25)',
+                                overscrollBehavior: 'contain',
+                            }}
+                        >
+                            {/* En-tête du panneau */}
+                            <div className="flex items-center justify-between mb-8 flex-shrink-0">
+                                <ConstruiroLogo size="sm" />
+                                <button
+                                    ref={closeButtonRef}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition"
+                                    aria-label={t('Fermer le menu')}
+                                    type="button">
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                                        <line x1="18" y1="6" x2="6" y2="18"/>
+                                        <line x1="6" y1="6" x2="18" y2="18"/>
                                     </svg>
                                 </button>
                             </div>
-                            {/* Liens */}
-                            <nav className="flex-1 overflow-y-auto px-5 py-6 space-y-1">
-                                {[[t('Fonctionnalités'), '#modules'],[t('Publics'), '#publics'],[t('Tarifs'), '#tarifs'],[t('Démo'), '#demo'],[t('Assistance'), '/aide']].map(([label, href]) => (
-                                    <a key={label} href={href} onClick={() => setMobileMenuOpen(false)}
-                                        className="flex items-center py-3.5 px-4 text-base font-semibold text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition">
-                                        {label}
-                                    </a>
-                                ))}
+
+                            {/* Navigation principale */}
+                            <nav className="flex-1" aria-label={t('Navigation principale')}>
+                                <div style={{ display: 'grid', gap: 4 }}>
+                                    {[
+                                        [t('Fonctionnalités'), '#modules'],
+                                        [t('Solutions'),       '#publics'],
+                                        [t('Modules'),         '#modules'],
+                                        [t('Tarifs'),          '#tarifs'],
+                                        [t('Démonstration'),   '#demo'],
+                                        [t('FAQ'),             '#faq'],
+                                        [t('Support'),         '/aide'],
+                                        [t('Contact'),         '#demo'],
+                                    ].map(([label, href]) => (
+                                        <a
+                                            key={label}
+                                            href={href}
+                                            onClick={() => setMobileMenuOpen(false)}
+                                            className="flex items-center font-medium text-gray-700 hover:text-[#F58220] rounded-xl hover:bg-orange-50 transition"
+                                            style={{ minHeight: 52, padding: '0 16px' }}
+                                        >
+                                            {label}
+                                        </a>
+                                    ))}
+                                </div>
                             </nav>
-                            {/* CTA bas */}
-                            <div className="px-5 pb-8 space-y-3">
-                                <div className="mb-4"><LanguageSwitcher /></div>
-                                {canLogin && (
-                                    <Link href={route('login')} onClick={() => setMobileMenuOpen(false)}
-                                        className="block text-center py-3.5 rounded-xl font-bold text-white border border-white/30 hover:bg-white/10 transition text-sm">
-                                        {t('Se connecter')}
-                                    </Link>
-                                )}
-                                {canRegister && (
-                                    <Link href={route('register')} onClick={() => setMobileMenuOpen(false)}
-                                        className="block text-center py-3.5 rounded-xl font-bold text-white text-sm transition"
+
+                            {/* Actions — séparateur + CTA + langue */}
+                            <div className="flex-shrink-0 border-t border-gray-100 pt-6 mt-6"
+                                style={{ display: 'grid', gap: 12 }}>
+                                {auth?.user ? (
+                                    <Link href={route('dashboard')} onClick={() => setMobileMenuOpen(false)}
+                                        className="block text-center py-3.5 rounded-xl font-bold text-white text-sm hover:opacity-90 transition"
                                         style={{ background: BRAND }}>
-                                        {t('Essai gratuit 14 jours')}
+                                        {t('Mon tableau de bord')} →
                                     </Link>
+                                ) : (
+                                    <>
+                                        {canLogin && (
+                                            <Link href={route('login')} onClick={() => setMobileMenuOpen(false)}
+                                                className="block text-center py-3.5 rounded-xl font-bold text-sm border-2 transition hover:bg-orange-50"
+                                                style={{ borderColor: BRAND, color: BRAND }}>
+                                                {t('Se connecter')}
+                                            </Link>
+                                        )}
+                                        {canRegister && (
+                                            <Link href={route('register')} onClick={() => setMobileMenuOpen(false)}
+                                                className="block text-center py-3.5 rounded-xl font-bold text-white text-sm hover:opacity-90 transition"
+                                                style={{ background: BRAND }}>
+                                                {t('Essai gratuit 14 jours')}
+                                            </Link>
+                                        )}
+                                    </>
                                 )}
+                                {/* Sélecteur de langue — unique sur mobile (topbar masqué) */}
+                                <div className="pt-2">
+                                    <LanguageSwitcher />
+                                </div>
                             </div>
-                        </div>
-                    )}
-                </nav>
+                        </aside>
+                    </>
+                )}
 
                 {/* ── HERO SLIDER ─────────────────────────────────── */}
                 <HeroSlider canRegister={canRegister} />

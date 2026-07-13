@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { usePage } from '@inertiajs/react';
 
 const BRAND = '#F58220';
 const NAVY  = '#1E1E1E';
@@ -233,11 +234,25 @@ function SaraWindow({ onClose }) {
 export default function SaraFloating() {
     const [open, setOpen] = useState(false);
     const [showTooltip, setShowTooltip] = useState(true);
+    const [menuIsOpen, setMenuIsOpen] = useState(false);
+    const locale = usePage().props?.locale ?? 'fr';
 
+    /* Auto-hide tooltip après 5s */
     useEffect(() => {
-        const t = setTimeout(() => setShowTooltip(false), 5000);
-        return () => clearTimeout(t);
+        const timer = setTimeout(() => setShowTooltip(false), 5000);
+        return () => clearTimeout(timer);
     }, []);
+
+    /* Se masquer quand le menu mobile est ouvert (body.mobile-menu-open) */
+    useEffect(() => {
+        const obs = new MutationObserver(() => {
+            setMenuIsOpen(document.body.classList.contains('mobile-menu-open'));
+        });
+        obs.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+        return () => obs.disconnect();
+    }, []);
+
+    if (menuIsOpen) return null;
 
     return (
         <>
@@ -312,18 +327,20 @@ export default function SaraFloating() {
                         )}
                     </button>
 
-                    {/* Tooltip — visible 5s puis disparaît */}
+                    {/* Tooltip — visible 5s puis disparaît — traduit */}
                     {!open && showTooltip && (
-                        <div className="absolute bottom-full right-0 mb-2 pointer-events-none"
-                            style={{ animation: 'saraSlideUp 0.3s ease both', whiteSpace: 'nowrap' }}>
+                        <div className="absolute bottom-full right-0 mb-2"
+                            style={{ animation: 'saraSlideUp 0.3s ease both', whiteSpace: 'nowrap', pointerEvents: 'none' }}>
                             <div className="flex items-center gap-1.5 bg-gray-900 text-white text-xs px-3 py-1.5 rounded-xl"
                                 style={{ border: '1px solid rgba(255,255,255,0.12)' }}>
                                 <span className="w-1.5 h-1.5 rounded-full bg-green-400 flex-shrink-0"/>
-                                SARA — Besoin d'aide ?
+                                {locale === 'en' ? 'SARA — Need help?' : 'SARA — Besoin d\'aide ?'}
                             </div>
-                            <button className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-gray-700 text-white flex items-center justify-center pointer-events-auto"
-                                style={{ fontSize: 8, lineHeight: 1 }}
-                                onClick={() => setShowTooltip(false)}>✕</button>
+                            <button
+                                className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-gray-700 text-white flex items-center justify-center"
+                                style={{ fontSize: 8, lineHeight: 1, pointerEvents: 'auto' }}
+                                onClick={() => setShowTooltip(false)}
+                                aria-label="Fermer">✕</button>
                         </div>
                     )}
                 </div>
