@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Traits\Auditable;
+
 use App\Traits\BelongsToCompany;
 
 use Illuminate\Database\Eloquent\Builder;
