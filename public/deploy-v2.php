@@ -7,9 +7,21 @@
  *                                      (le build Vite est fait dans GitHub Actions)
  */
 
-// Invalider l'OPcache pour ce fichier (recharge la version disque au prochain appel)
+// Invalider l'OPcache pour ce fichier + tous les fichiers PHP de l'app
 if (function_exists('opcache_invalidate')) {
     opcache_invalidate(__FILE__, true);
+    // Invalider tous les fichiers PHP du projet (nécessaire si validate_timestamps=0)
+    $appDir = dirname(__DIR__) . '/app';
+    $iter = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($appDir));
+    foreach ($iter as $f) {
+        if ($f->isFile() && $f->getExtension() === 'php') {
+            opcache_invalidate($f->getPathname(), true);
+        }
+    }
+    // Invalider aussi les routes et bootstrap
+    foreach (glob(dirname(__DIR__) . '/bootstrap/cache/*.php') as $f) {
+        opcache_invalidate($f, true);
+    }
 }
 
 $secret = $_POST['secret'] ?? $_GET['secret'] ?? '';
