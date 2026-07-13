@@ -1,4 +1,8 @@
 <?php
+// Invalider opcache pour que cette version soit toujours fraîche
+if (function_exists('opcache_invalidate')) {
+    opcache_invalidate(__FILE__, true);
+}
 if (($_GET['secret'] ?? '') !== 'construiro_deploy_2026') {
     http_response_code(403);
     die('Accès refusé');
