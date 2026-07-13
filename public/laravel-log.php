@@ -6,10 +6,15 @@ if (($_GET['secret'] ?? '') !== 'construiro_deploy_2026') {
 header('Content-Type: text/plain; charset=utf-8');
 
 if (isset($_GET['file'])) {
+    $dir = dirname(__DIR__);
     if ($_GET['file'] === 'notification') {
-        echo file_get_contents(dirname(__DIR__) . '/app/Models/Notification.php');
+        echo file_get_contents($dir . '/app/Models/Notification.php');
     } elseif ($_GET['file'] === 'git') {
-        echo shell_exec('cd ' . dirname(__DIR__) . ' && git log --oneline -5 2>&1');
+        echo shell_exec("cd $dir && git log --oneline -5 2>&1");
+    } elseif ($_GET['file'] === 'migrate-status') {
+        echo shell_exec("cd $dir && php artisan migrate:status 2>&1");
+    } elseif ($_GET['file'] === 'migrate-run') {
+        echo shell_exec("cd $dir && php artisan migrate --force 2>&1");
     }
     exit;
 }
