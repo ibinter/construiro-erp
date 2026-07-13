@@ -9,9 +9,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('companies', function (Blueprint $table) {
-            $table->string('logo_path')->nullable()->after('country');
-            $table->json('enabled_modules')->nullable()->after('logo_path');
-            $table->timestamp('onboarding_completed_at')->nullable()->after('enabled_modules');
+            if (!Schema::hasColumn('companies', 'logo_path'))
+                $table->string('logo_path')->nullable()->after('country');
+            if (!Schema::hasColumn('companies', 'enabled_modules'))
+                $table->json('enabled_modules')->nullable()->after('logo_path');
+            if (!Schema::hasColumn('companies', 'onboarding_completed_at'))
+                $table->timestamp('onboarding_completed_at')->nullable()->after('enabled_modules');
         });
     }
 
