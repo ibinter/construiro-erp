@@ -12,9 +12,25 @@ if (function_exists('opcache_invalidate')) {
     opcache_invalidate(__FILE__, true);
 }
 
-if (($_POST['secret'] ?? '') !== 'construiro_deploy_2026') {
+$secret = $_POST['secret'] ?? $_GET['secret'] ?? '';
+if ($secret !== 'construiro_deploy_2026') {
     http_response_code(403);
     die('Accès refusé');
+}
+
+// Mode diagnostic (GET uniquement)
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['diag'])) {
+    header('Content-Type: text/plain; charset=utf-8');
+    $dir = dirname(__DIR__);
+    $diag = $_GET['diag'];
+    if ($diag === 'migrate') {
+        echo shell_exec("cd $dir && php artisan migrate --force 2>&1");
+    } elseif ($diag === 'status') {
+        echo shell_exec("cd $dir && php artisan migrate:status 2>&1");
+    } elseif ($diag === 'git') {
+        echo shell_exec("cd $dir && git log --oneline -5 2>&1");
+    }
+    exit;
 }
 
 $dir = dirname(__DIR__);
