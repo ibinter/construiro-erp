@@ -1,9 +1,10 @@
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
+
+const BRAND = '#F58220';
 
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -15,20 +16,19 @@ export default function Register() {
 
     const submit = (e) => {
         e.preventDefault();
-
-        post(route('register'), {
-            onFinish: () => reset('password', 'password_confirmation'),
-        });
+        post(route('register'), { onFinish: () => reset('password', 'password_confirmation') });
     };
 
     return (
         <GuestLayout>
-            <Head title="Register" />
+            <Head title="Créer un compte — CONSTRUIRO ERP" />
 
-            <form onSubmit={submit}>
+            <h1 className="text-2xl font-black mb-1" style={{ color: '#1E1E1E' }}>Créer votre compte</h1>
+            <p className="text-sm text-gray-500 mb-6">Essai gratuit 14 jours · Sans carte bancaire</p>
+
+            <form onSubmit={submit} className="space-y-5">
                 <div>
-                    <InputLabel htmlFor="name" value="Name" />
-
+                    <InputLabel htmlFor="name" value="Nom complet" />
                     <TextInput
                         id="name"
                         name="name"
@@ -39,13 +39,11 @@ export default function Register() {
                         onChange={(e) => setData('name', e.target.value)}
                         required
                     />
-
                     <InputError message={errors.name} className="mt-2" />
                 </div>
 
-                <div className="mt-4">
-                    <InputLabel htmlFor="email" value="Email" />
-
+                <div>
+                    <InputLabel htmlFor="email" value="Adresse email professionnelle" />
                     <TextInput
                         id="email"
                         type="email"
@@ -56,13 +54,11 @@ export default function Register() {
                         onChange={(e) => setData('email', e.target.value)}
                         required
                     />
-
                     <InputError message={errors.email} className="mt-2" />
                 </div>
 
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
-
+                <div>
+                    <InputLabel htmlFor="password" value="Mot de passe" />
                     <TextInput
                         id="password"
                         type="password"
@@ -73,16 +69,11 @@ export default function Register() {
                         onChange={(e) => setData('password', e.target.value)}
                         required
                     />
-
                     <InputError message={errors.password} className="mt-2" />
                 </div>
 
-                <div className="mt-4">
-                    <InputLabel
-                        htmlFor="password_confirmation"
-                        value="Confirm Password"
-                    />
-
+                <div>
+                    <InputLabel htmlFor="password_confirmation" value="Confirmer le mot de passe" />
                     <TextInput
                         id="password_confirmation"
                         type="password"
@@ -90,30 +81,33 @@ export default function Register() {
                         value={data.password_confirmation}
                         className="mt-1 block w-full"
                         autoComplete="new-password"
-                        onChange={(e) =>
-                            setData('password_confirmation', e.target.value)
-                        }
+                        onChange={(e) => setData('password_confirmation', e.target.value)}
                         required
                     />
-
-                    <InputError
-                        message={errors.password_confirmation}
-                        className="mt-2"
-                    />
+                    <InputError message={errors.password_confirmation} className="mt-2" />
                 </div>
 
-                <div className="mt-4 flex items-center justify-end">
-                    <Link
-                        href={route('login')}
-                        className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:text-gray-100 dark:focus:ring-offset-gray-800"
-                    >
-                        Already registered?
+                <button
+                    type="submit"
+                    disabled={processing}
+                    className="w-full py-3 rounded-xl font-bold text-white transition hover:opacity-90 disabled:opacity-60"
+                    style={{ background: BRAND }}>
+                    {processing ? 'Création...' : 'Créer mon compte gratuit →'}
+                </button>
+
+                <p className="text-center text-sm text-gray-500">
+                    Déjà inscrit ?{' '}
+                    <Link href={route('login')} className="font-semibold hover:underline" style={{ color: BRAND }}>
+                        Se connecter
                     </Link>
+                </p>
 
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Register
-                    </PrimaryButton>
-                </div>
+                <p className="text-center text-xs text-gray-400">
+                    En créant un compte, vous acceptez nos{' '}
+                    <a href="/legal/cgu" className="hover:underline" style={{ color: BRAND }}>CGU</a>
+                    {' '}et notre{' '}
+                    <a href="/legal/confidentialite" className="hover:underline" style={{ color: BRAND }}>politique de confidentialité</a>.
+                </p>
             </form>
         </GuestLayout>
     );

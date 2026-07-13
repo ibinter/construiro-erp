@@ -1627,16 +1627,19 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                 <h4 className="text-xs font-bold text-white mb-4 uppercase tracking-wider">Ressources</h4>
                                 <ul className="space-y-2.5 text-sm">
                                     {[
-                                        { label: 'Guide utilisateur', href: '/aide/guide' },
-                                        { label: 'Centre d\'aide', href: '/aide' },
-                                        { label: 'FAQ', href: '#faq' },
-                                        { label: 'Documentation', href: '/aide/docs' },
-                                        { label: 'Nouveautés', href: '/aide/nouveautes' },
-                                        { label: 'Blog', href: '/blog' },
-                                        { label: 'Statut des services', href: '/statut' },
+                                        { label: 'Guide utilisateur', href: '/guide/fr', ext: false },
+                                        { label: 'Centre d\'aide', href: '/aide', ext: false },
+                                        { label: 'FAQ', href: '#faq', anchor: true },
+                                        { label: 'Blog', href: 'https://ibigsoft.com', ext: true },
+                                        { label: 'Statut des services', href: 'https://ibigsoft.com', ext: true },
                                     ].map(l => (
                                         <li key={l.label}>
-                                            <Link href={l.href} className="hover:text-[#F58220] transition text-sm">{l.label}</Link>
+                                            {l.ext
+                                                ? <a href={l.href} target="_blank" rel="noopener noreferrer" className="hover:text-[#F58220] transition text-sm">{l.label}</a>
+                                                : l.anchor
+                                                ? <a href={l.href} className="hover:text-[#F58220] transition text-sm">{l.label}</a>
+                                                : <Link href={l.href} className="hover:text-[#F58220] transition text-sm">{l.label}</Link>
+                                            }
                                         </li>
                                     ))}
                                 </ul>

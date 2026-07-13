@@ -10,16 +10,8 @@ export default function LanguageSwitcher() {
 
     const switchTo = (code) => {
         if (code === locale) return;
-        // Soumission via form natif pour garantir un rechargement complet des shared props
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = `/locale/${code}`;
-        const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
-        const csrfInput = document.createElement('input');
-        csrfInput.type = 'hidden'; csrfInput.name = '_token'; csrfInput.value = csrf;
-        form.appendChild(csrfInput);
-        document.body.appendChild(form);
-        form.submit();
+        // GET sans CSRF — rechargement complet pour rafraîchir les shared props
+        window.location.href = `/locale/${code}`;
     };
 
     return (

@@ -72,6 +72,7 @@ use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\LegalController;
 use App\Http\Controllers\DemoRequestController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\AideController;
 use App\Http\Controllers\SupportController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\UserGuideController;
@@ -87,6 +88,13 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap')
 // ─── Pages légales publiques ────────────────────────────────────────────────
 Route::get('/legal/{slug}', [LegalController::class, 'show'])->name('legal.show');
 Route::post('/demo-request', [DemoRequestController::class, 'store'])->name('demo.request');
+
+// ─── Centre d'aide public ───────────────────────────────────────────────────
+Route::get('/aide',             [AideController::class, 'index'])->name('aide.index');
+Route::get('/aide/{section}',   [AideController::class, 'index'])->name('aide.section')
+    ->where('section', 'guide|docs|nouveautes|faq');
+Route::redirect('/blog',   'https://ibigsoft.com', 301);
+Route::redirect('/statut', 'https://ibigsoft.com', 301);
 
 Route::get('/', function () {
     $plans = SubscriptionPlan::where('is_active', true)->orderBy('sort_order')->get()->map(fn($p) => [
@@ -540,8 +548,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Changement de langue (accessible connecté ou non).
-Route::post('/locale/{locale}', [LocaleController::class, 'update'])->name('locale.update');
+// Changement de langue (GET = pas de CSRF, accessible connecté ou non).
+Route::get('/locale/{locale}',  [LocaleController::class, 'update'])->name('locale.update');
+Route::post('/locale/{locale}', [LocaleController::class, 'update'])->name('locale.update.post');
 
 // --- Webhooks Mobile Money (publics — hors CSRF et auth) -------------------
 Route::post('/webhooks/mobile-money/{operator}', [MobileMoneyController::class, 'webhook'])
