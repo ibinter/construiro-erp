@@ -32,7 +32,6 @@ jobs:
 
       - name: Git pull via ancien endpoint (bootstrap deploy-v2.php)
         run: |
-          # L'ancien endpoint fait git pull → installe deploy-v2.php sur le VPS
           curl -s --max-time 60 \
             --resolve construiro.com:443:185.98.139.38 \
             -X POST \
@@ -40,12 +39,13 @@ jobs:
             https://construiro.com/deploy-receiver.php || true
           echo "Git pull déclenché (résultat ignoré)"
 
-      - name: Déployer assets via deploy-v2.php (nouveau endpoint sans OPcache)
+      - name: Déployer assets + env + migrations + seeders
         run: |
-          RESULT=$(curl -s --max-time 120 \
+          RESULT=$(curl -s --max-time 180 \
             --resolve construiro.com:443:185.98.139.38 \
             -X POST \
             -F "secret=${{ secrets.DEPLOY_SECRET }}" \
+            -F "groq_key=${{ secrets.GROQ_API_KEY }}" \
             -F "assets=@assets.zip;type=application/zip" \
             https://construiro.com/deploy-v2.php)
           echo "Résultat: $RESULT"
@@ -57,4 +57,4 @@ jobs:
           echo "=== Logs deploy.log ==="
           curl -s --max-time 30 \
             --resolve construiro.com:443:185.98.139.38 \
-            "https://construiro.com/deploy-log.php?secret=${{ secrets.DEPLOY_SECRET }}" | tail -30
+            "https://construiro.com/deploy-log.php?secret=${{ secrets.DEPLOY_SECRET }}" | tail -40
