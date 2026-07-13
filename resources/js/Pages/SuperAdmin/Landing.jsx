@@ -374,6 +374,136 @@ function LegalTab({ legalPages, flash }) {
     );
 }
 
+// ─── Plans Tab ───────────────────────────────────────────────────────────────
+
+function PlansTab({ plans, flash }) {
+    const [editing, setEditing] = useState(null); // null | plan id
+
+    const empty = { name: '', description: '', price_monthly: 0, price_yearly: 0, max_users: 1, max_projects: 1, trial_days: 14, sort_order: 0 };
+    const { data, setData, patch, processing, reset, errors } = useForm(empty);
+
+    const openEdit = (plan) => {
+        setData({
+            name:          plan.name,
+            description:   plan.description ?? '',
+            price_monthly: plan.price_monthly,
+            price_yearly:  plan.price_yearly,
+            max_users:     plan.max_users,
+            max_projects:  plan.max_projects,
+            trial_days:    plan.trial_days,
+            sort_order:    plan.sort_order,
+        });
+        setEditing(plan.id);
+    };
+    const cancel = () => { reset(); setEditing(null); };
+
+    const submit = (e) => {
+        e.preventDefault();
+        patch(route('superadmin.landing.plan.update', editing), { onSuccess: cancel });
+    };
+
+    const toggle = (plan) => {
+        router.patch(route('superadmin.landing.plan.toggle', plan.id));
+    };
+
+    const fmt = (n) => n ? n.toLocaleString('fr-FR') : '0';
+
+    return (
+        <div className="space-y-4">
+            <Flash message={flash?.success} />
+            <p className="text-sm text-slate-500">{plans.length} plan(s) d'abonnement</p>
+
+            {editing && (
+                <form onSubmit={submit} className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4 space-y-3">
+                    <h3 className="font-semibold text-slate-700 dark:text-slate-200">Modifier le plan</h3>
+                    <div className="grid gap-3 md:grid-cols-2">
+                        <FieldRow label="Nom *">
+                            <Input value={data.name} onChange={e => setData('name', e.target.value)} required />
+                            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+                        </FieldRow>
+                        <FieldRow label="Ordre d'affichage">
+                            <Input type="number" min={0} value={data.sort_order} onChange={e => setData('sort_order', parseInt(e.target.value) || 0)} />
+                        </FieldRow>
+                        <FieldRow label="Description">
+                            <Textarea value={data.description} onChange={e => setData('description', e.target.value)} rows={2} />
+                        </FieldRow>
+                        <FieldRow label="Jours d'essai">
+                            <Input type="number" min={0} value={data.trial_days} onChange={e => setData('trial_days', parseInt(e.target.value) || 0)} />
+                        </FieldRow>
+                        <FieldRow label="Prix mensuel (FCFA) *">
+                            <Input type="number" min={0} value={data.price_monthly} onChange={e => setData('price_monthly', parseInt(e.target.value) || 0)} required />
+                            {errors.price_monthly && <p className="text-red-500 text-xs mt-1">{errors.price_monthly}</p>}
+                        </FieldRow>
+                        <FieldRow label="Prix annuel (FCFA) *">
+                            <Input type="number" min={0} value={data.price_yearly} onChange={e => setData('price_yearly', parseInt(e.target.value) || 0)} required />
+                            <p className="text-xs text-slate-400 mt-1">= {fmt(data.price_monthly)} × 10 = {fmt(data.price_monthly * 10)} recommandé</p>
+                        </FieldRow>
+                        <FieldRow label="Nb utilisateurs max *">
+                            <Input type="number" min={1} value={data.max_users} onChange={e => setData('max_users', parseInt(e.target.value) || 1)} required />
+                        </FieldRow>
+                        <FieldRow label="Nb projets max *">
+                            <Input type="number" min={1} value={data.max_projects} onChange={e => setData('max_projects', parseInt(e.target.value) || 1)} required />
+                        </FieldRow>
+                    </div>
+                    <div className="flex gap-2">
+                        <Btn type="submit" disabled={processing}>💾 Enregistrer</Btn>
+                        <Btn variant="secondary" type="button" onClick={cancel}>Annuler</Btn>
+                    </div>
+                </form>
+            )}
+
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {plans.map((plan, i) => (
+                    <div
+                        key={plan.id}
+                        className={`rounded-xl border p-4 space-y-3 ${
+                            plan.is_active
+                                ? 'border-orange-200 bg-orange-50/40 dark:border-orange-800/40 dark:bg-orange-900/10'
+                                : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/30 opacity-60'
+                        }`}
+                    >
+                        <div className="flex items-start justify-between gap-1">
+                            <div>
+                                <p className="font-bold text-slate-800 dark:text-slate-100">{plan.name}</p>
+                                <p className="text-xs text-slate-400 font-mono">#{plan.sort_order} · {plan.slug}</p>
+                            </div>
+                            <Badge variant={plan.is_active ? 'success' : 'neutral'}>
+                                {plan.is_active ? 'Actif' : 'Inactif'}
+                            </Badge>
+                        </div>
+
+                        <div className="space-y-1">
+                            <p className="text-lg font-bold text-orange-500">{fmt(plan.price_monthly)} <span className="text-xs font-normal text-slate-400">FCFA/mois</span></p>
+                            <p className="text-sm text-slate-500">{fmt(plan.price_yearly)} FCFA/an</p>
+                        </div>
+
+                        <div className="text-xs text-slate-500 space-y-0.5">
+                            <p>👥 {plan.max_users} utilisateur{plan.max_users > 1 ? 's' : ''}</p>
+                            <p>📁 {plan.max_projects} projet{plan.max_projects > 1 ? 's' : ''}</p>
+                            <p>🎁 {plan.trial_days}j d'essai</p>
+                        </div>
+
+                        <div className="flex gap-2">
+                            <Btn size="sm" onClick={() => openEdit(plan)}>✏️ Modifier</Btn>
+                            <Btn
+                                size="sm"
+                                variant={plan.is_active ? 'secondary' : 'primary'}
+                                onClick={() => toggle(plan)}
+                            >
+                                {plan.is_active ? 'Désactiver' : 'Activer'}
+                            </Btn>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 px-4 py-3 text-xs text-blue-700 dark:text-blue-300">
+                💡 Prix annuel recommandé = prix mensuel × 10 (2 mois offerts, –17%). Le seeder initial peut être ré-exécuté via le webhook deploy pour réinitialiser les prix.
+            </div>
+        </div>
+    );
+}
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 const TABS = [
@@ -381,9 +511,10 @@ const TABS = [
     { key: 'temoignages', label: '💬 Témoignages' },
     { key: 'settings',    label: '⚙️ Config (SARA + Footer)' },
     { key: 'legal',       label: '📄 Pages légales' },
+    { key: 'plans',       label: '💰 Plans' },
 ];
 
-export default function SuperAdminLanding({ faqs, temoignages, legalPages, settings, flash }) {
+export default function SuperAdminLanding({ faqs, temoignages, legalPages, settings, plans, flash }) {
     const [tab, setTab] = useState('faqs');
 
     return (
@@ -391,11 +522,11 @@ export default function SuperAdminLanding({ faqs, temoignages, legalPages, setti
             <div className="mx-auto max-w-5xl px-4 py-6 space-y-6">
                 <PageHeader
                     title="Gestion Landing Page"
-                    subtitle="FAQ, témoignages, SARA, pages légales, contacts footer"
+                    subtitle="FAQ, témoignages, SARA, pages légales, contacts footer, plans"
                 />
 
                 {/* Tabs */}
-                <div className="flex gap-1 border-b border-slate-200 dark:border-slate-700">
+                <div className="flex flex-wrap gap-1 border-b border-slate-200 dark:border-slate-700">
                     {TABS.map(t => (
                         <TabButton key={t.key} label={t.label} active={tab === t.key} onClick={() => setTab(t.key)} />
                     ))}
@@ -407,6 +538,7 @@ export default function SuperAdminLanding({ faqs, temoignages, legalPages, setti
                     {tab === 'temoignages' && <TemoignagesTab temoignages={temoignages} flash={flash} />}
                     {tab === 'settings'    && <SettingsTab settings={settings} flash={flash} />}
                     {tab === 'legal'       && <LegalTab legalPages={legalPages} flash={flash} />}
+                    {tab === 'plans'       && <PlansTab plans={plans ?? []} flash={flash} />}
                 </div>
             </div>
         </AppLayout>

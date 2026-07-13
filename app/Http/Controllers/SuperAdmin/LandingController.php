@@ -7,6 +7,7 @@ use App\Models\LandingFaq;
 use App\Models\LandingTemoignage;
 use App\Models\LegalPage;
 use App\Models\Setting;
+use App\Models\SubscriptionPlan;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -22,6 +23,7 @@ class LandingController extends Controller
             'faqs'         => LandingFaq::orderBy('sort_order')->get(),
             'temoignages'  => LandingTemoignage::orderBy('sort_order')->get(),
             'legalPages'   => LegalPage::select('id', 'slug', 'title_fr', 'is_published')->orderBy('slug')->get(),
+            'plans'        => SubscriptionPlan::orderBy('sort_order')->get(['id', 'name', 'slug', 'description', 'price_monthly', 'price_yearly', 'max_users', 'max_projects', 'trial_days', 'is_active', 'sort_order']),
             'settings'     => [
                 'footer'  => Setting::group('footer'),
                 'sara'    => Setting::group('sara'),
@@ -140,5 +142,31 @@ class LandingController extends Controller
     {
         $legalPage->update(['is_published' => ! $legalPage->is_published]);
         return back()->with('success', 'Statut mis à jour.');
+    }
+
+    // ── Plans d'abonnement ────────────────────────────────────────────────────
+
+    public function planUpdate(Request $request, SubscriptionPlan $plan): RedirectResponse
+    {
+        $data = $request->validate([
+            'name'          => 'required|string|max:100',
+            'description'   => 'nullable|string|max:500',
+            'price_monthly' => 'required|integer|min:0',
+            'price_yearly'  => 'required|integer|min:0',
+            'max_users'     => 'required|integer|min:1',
+            'max_projects'  => 'required|integer|min:1',
+            'trial_days'    => 'required|integer|min:0',
+            'sort_order'    => 'required|integer|min:0',
+        ]);
+
+        $plan->update($data);
+
+        return back()->with('success', "Plan « {$plan->name} » mis à jour.");
+    }
+
+    public function planToggle(SubscriptionPlan $plan): RedirectResponse
+    {
+        $plan->update(['is_active' => ! $plan->is_active]);
+        return back()->with('success', 'Statut du plan mis à jour.');
     }
 }

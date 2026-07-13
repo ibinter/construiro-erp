@@ -310,6 +310,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/landing/temoignages/{temoignage}',              [SuperAdminLandingController::class, 'temoignageDestroy'])->name('superadmin.landing.temoignage.destroy');
         Route::post('/landing/settings',                                [SuperAdminLandingController::class, 'settingsUpdate'])->name('superadmin.landing.settings.update');
         Route::patch('/landing/legal/{legalPage}/toggle',               [SuperAdminLandingController::class, 'legalToggle'])->name('superadmin.landing.legal.toggle');
+        Route::patch('/landing/plans/{plan}',                           [SuperAdminLandingController::class, 'planUpdate'])->name('superadmin.landing.plan.update');
+        Route::patch('/landing/plans/{plan}/toggle',                    [SuperAdminLandingController::class, 'planToggle'])->name('superadmin.landing.plan.toggle');
     });
 
     // --- Guide utilisateur PDF (auth) --------------------------------------------------
