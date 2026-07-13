@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Projet de construction (marché / opération). Regroupe des chantiers.
@@ -24,6 +25,16 @@ class Project extends Model
 
     public const STATUSES = ['draft', 'in_progress', 'on_hold', 'completed', 'cancelled'];
     public const TYPES = ['batiment', 'genie_civil', 'route', 'hydraulique', 'vrd', 'autre'];
+
+    protected static function booted(): void
+    {
+        $flush = fn (self $m) => Cache::forget("dashboard_stats_{$m->company_id}")
+            + Cache::forget("dashboard_recent_{$m->company_id}")
+            + Cache::forget("bi_dashboard_{$m->company_id}");
+
+        static::saved($flush);
+        static::deleted($flush);
+    }
 
     protected $fillable = [
         'company_id', 'agency_id', 'manager_id',

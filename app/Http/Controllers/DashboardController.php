@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use App\Models\Site;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -12,33 +13,40 @@ class DashboardController extends Controller
 {
     public function index(Request $request): Response
     {
-        $user = $request->user();
+        $user      = $request->user();
         $companyId = $user->company_id;
+        $currency  = $user->company?->base_currency ?? 'XOF';
 
-        // KPIs réels calculés sur les données de l'entreprise de l'utilisateur.
-        $projectsQuery = Project::where('company_id', $companyId);
-        $sitesQuery    = Site::where('company_id', $companyId);
+        // Cache KPIs 3 minutes par entreprise
+        $stats = Cache::remember("dashboard_stats_{$companyId}", 180, function () use ($companyId, $currency) {
+            $pq = Project::where('company_id', $companyId);
+            $sq = Site::where('company_id', $companyId);
 
-        $activeProjects = (clone $projectsQuery)->where('status', 'in_progress')->count();
-        $totalProjects  = (clone $projectsQuery)->count();
-        $activeSites    = (clone $sitesQuery)->where('status', 'in_progress')->count();
-        $engagedBudget  = (clone $projectsQuery)->whereIn('status', ['in_progress', 'on_hold'])->sum('budget_amount');
-        $avgProgress    = (int) round((clone $projectsQuery)->where('status', 'in_progress')->avg('progress') ?? 0);
+            // Une seule requête agrégée pour tous les KPIs projets
+            $agg = (clone $pq)->selectRaw("
+                COUNT(*) as total,
+                SUM(CASE WHEN status = 'in_progress' THEN 1 ELSE 0 END) as active,
+                SUM(CASE WHEN status IN ('in_progress','on_hold') THEN budget_amount ELSE 0 END) as budget,
+                AVG(CASE WHEN status = 'in_progress' THEN progress END) as avg_progress
+            ")->first();
 
-        $currency = $user->company?->base_currency ?? 'XOF';
+            $activeSites = $sq->where('status', 'in_progress')->count();
 
-        $stats = [
-            ['key' => 'projects', 'label' => __('Projets actifs'),    'value' => $activeProjects,                       'icon' => 'folder-kanban', 'trend' => "{$totalProjects} ".__('au total')],
-            ['key' => 'sites',    'label' => __('Chantiers en cours'), 'value' => $activeSites,                          'icon' => 'construction',  'trend' => __('en activité')],
-            ['key' => 'budget',   'label' => __('Budget engagé'),      'value' => $this->shortMoney($engagedBudget, $currency), 'icon' => 'wallet',  'trend' => __('projets actifs')],
-            ['key' => 'progress', 'label' => __('Avancement moyen'),   'value' => "{$avgProgress} %",                    'icon' => 'trending-up',   'trend' => __('projets en cours')],
-        ];
+            return [
+                ['key' => 'projects', 'label' => __('Projets actifs'),    'value' => (int) $agg->active,                              'icon' => 'folder-kanban', 'trend' => $agg->total . ' ' . __('au total')],
+                ['key' => 'sites',    'label' => __('Chantiers en cours'), 'value' => $activeSites,                                    'icon' => 'construction',  'trend' => __('en activité')],
+                ['key' => 'budget',   'label' => __('Budget engagé'),      'value' => $this->shortMoney((float) $agg->budget, $currency), 'icon' => 'wallet',     'trend' => __('projets actifs')],
+                ['key' => 'progress', 'label' => __('Avancement moyen'),   'value' => ((int) round($agg->avg_progress ?? 0)) . ' %',  'icon' => 'trending-up',   'trend' => __('projets en cours')],
+            ];
+        });
 
-        // 5 derniers projets pour un aperçu rapide.
-        $recentProjects = (clone $projectsQuery)
-            ->latest()
-            ->take(5)
-            ->get(['id', 'code', 'name', 'status', 'progress', 'budget_amount', 'currency']);
+        // 5 derniers projets (cache 2 minutes)
+        $recentProjects = Cache::remember("dashboard_recent_{$companyId}", 120, function () use ($companyId) {
+            return Project::where('company_id', $companyId)
+                ->latest()
+                ->take(5)
+                ->get(['id', 'code', 'name', 'status', 'progress', 'budget_amount', 'currency']);
+        });
 
         return Inertia::render('Dashboard', [
             'stats'          => $stats,

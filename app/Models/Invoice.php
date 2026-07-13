@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Facture. Regroupe des lignes de prestation dont découlent les totaux
@@ -25,6 +26,13 @@ class Invoice extends Model
     use HasFactory, SoftDeletes;
 
     public const STATUSES = ['draft', 'sent', 'partial', 'paid', 'overdue', 'cancelled'];
+
+    protected static function booted(): void
+    {
+        $flush = fn (self $m) => Cache::forget("bi_dashboard_{$m->company_id}");
+        static::saved($flush);
+        static::deleted($flush);
+    }
 
     protected $fillable = [
         'company_id', 'client_id', 'project_id',
