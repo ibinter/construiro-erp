@@ -45,17 +45,11 @@ if (!empty($envVars)) {
 $out = shell_exec("cd $dir && git pull origin master 2>&1");
 logMsg('git pull : ' . trim($out));
 
-// ── 3. Reset OpCache AVANT tout (shared memory entre tous les workers FPM) ──
-if (function_exists('opcache_reset')) {
-    opcache_reset();
-    logMsg('OpCache resetté (shared memory) ✓');
-}
-
-// ── 4. Installer/mettre à jour les dépendances Composer ──────────────────
+// ── 3. Installer/mettre à jour les dépendances Composer ───────────
 $out = shell_exec("cd $dir && composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev 2>&1 | tail -3");
 logMsg('composer install : ' . trim($out));
 
-// ── 5-bis. Extraire les assets si un zip est fourni ──────────────────────
+// ── 4. Extraire les assets si un zip est fourni ────────────────────
 if (!empty($_FILES['assets']['tmp_name'])) {
     $zip = new ZipArchive();
     if ($zip->open($_FILES['assets']['tmp_name']) === true) {
@@ -75,12 +69,17 @@ if (!empty($_FILES['assets']['tmp_name'])) {
 
 // ── 6. Artisan : clear puis rebuild des caches ────────────────────
 $artisanCmds = [
-    'optimize:clear',              // vide config/route/view/event cache
+    'config:clear',
+    'cache:clear',
+    'route:clear',
+    'view:clear',
+    'event:clear',
     'migrate --force',
     'db:seed --class=RolePermissionSeeder --force',
     'db:seed --class=SubscriptionPlanSeeder --force',
     'db:seed --class=LandingSeeder --force',
     'db:seed --class=LegalPageSeeder --force',
+    'package:discover --ansi',
     'config:cache',
     'route:cache',
     'view:cache',
