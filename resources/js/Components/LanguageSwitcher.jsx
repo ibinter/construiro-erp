@@ -1,9 +1,5 @@
-import { router, usePage } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
 
-/**
- * Sélecteur de langue FR / EN. Poste vers /locale/{code} puis Inertia recharge
- * la page avec les nouvelles traductions partagées par le serveur.
- */
 const LOCALES = [
     { code: 'fr', label: 'FR' },
     { code: 'en', label: 'EN' },
@@ -14,7 +10,16 @@ export default function LanguageSwitcher() {
 
     const switchTo = (code) => {
         if (code === locale) return;
-        router.post(`/locale/${code}`, {}, { preserveScroll: true });
+        // Soumission via form natif pour garantir un rechargement complet des shared props
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/locale/${code}`;
+        const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden'; csrfInput.name = '_token'; csrfInput.value = csrf;
+        form.appendChild(csrfInput);
+        document.body.appendChild(form);
+        form.submit();
     };
 
     return (

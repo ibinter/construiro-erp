@@ -21,6 +21,7 @@ class SubscriptionPlanSeeder extends Seeder
                 'max_projects' => 10,
                 'storage_gb' => 5,
                 'trial_days' => 14,
+                'is_active'  => true,
                 'sort_order' => 1,
             ],
             [
@@ -34,6 +35,7 @@ class SubscriptionPlanSeeder extends Seeder
                 'max_projects' => 50,
                 'storage_gb' => 20,
                 'trial_days' => 14,
+                'is_active'  => true,
                 'sort_order' => 2,
             ],
             [
@@ -47,6 +49,7 @@ class SubscriptionPlanSeeder extends Seeder
                 'max_projects' => 9999,
                 'storage_gb' => 100,
                 'trial_days' => 30,
+                'is_active'  => true,
                 'sort_order' => 3,
             ],
         ];

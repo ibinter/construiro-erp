@@ -52,11 +52,12 @@ class DatabaseSeeder extends Seeder
             [
                 'company_id' => $company->id,
                 'agency_id'  => $agency->id,
-                'name'       => 'Administrateur',
-                'password'   => Hash::make('password'),
-                'locale'     => 'fr',
-                'job_title'  => 'Administrateur système',
-                'is_active'  => true,
+                'name'              => 'Administrateur',
+                'password'          => Hash::make('password'),
+                'email_verified_at' => now(),
+                'locale'            => 'fr',
+                'job_title'         => 'Administrateur système',
+                'is_active'         => true,
             ]
         );
         $admin->syncRoles(['super_admin']);
@@ -77,11 +78,12 @@ class DatabaseSeeder extends Seeder
                 [
                     'company_id' => $company->id,
                     'agency_id'  => $agency->id,
-                    'name'       => $name,
-                    'password'   => Hash::make('password'),
-                    'locale'     => 'fr',
-                    'job_title'  => $name,
-                    'is_active'  => true,
+                    'name'              => $name,
+                    'password'          => Hash::make('password'),
+                    'email_verified_at' => now(),
+                    'locale'            => 'fr',
+                    'job_title'         => $name,
+                    'is_active'         => true,
                 ]
             );
             $user->syncRoles([$role]);

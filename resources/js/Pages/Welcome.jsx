@@ -140,7 +140,8 @@ const INTEGRATIONS = [
     { nom: 'WhatsApp Business', desc: 'Notifications et alertes', statut: 'disponible', emoji: '💬' },
     { nom: 'Email & SMS', desc: 'Notifications automatiques', statut: 'disponible', emoji: '📧' },
     { nom: 'API REST', desc: 'Connexion à vos systèmes', statut: 'disponible', emoji: '🔌' },
-    { nom: 'Flutterwave', desc: 'Paiements multicanaux', statut: 'integration', emoji: '💳' },
+    { nom: 'Moneroo', desc: 'Paiements mobile Afrique', statut: 'disponible', emoji: '💳' },
+    { nom: 'Flutterwave', desc: 'Paiements multicanaux', statut: 'integration', emoji: '🔗' },
     { nom: 'Paystack', desc: 'Paiements e-commerce', statut: 'bientot', emoji: '🏦' },
     { nom: 'Stripe', desc: 'Paiements internationaux', statut: 'bientot', emoji: '💰' },
 ];
@@ -150,9 +151,15 @@ const statutColor = { disponible: '#22c55e', integration: BRAND, bientot: '#94a3
 
 /* ── Autres logiciels IBIG Soft ─────────────────────────────── */
 const AUTRES_LOGICIELS = [
-    { nom: 'Anouanze ERP', secteur: 'Associations & ONG', desc: 'Solution de gestion complète pour associations, ONG, coopératives et organisations africaines.', emoji: '🤝', couleur: '#3b82f6' },
-    { nom: 'MediCare+', secteur: 'Santé & Cliniques', desc: 'ERP médical pour cliniques, cabinets et hôpitaux — dossiers patients, facturation, pharmacie.', emoji: '🏥', couleur: '#10b981', bientot: true },
-    { nom: 'EduAdmin', secteur: 'Éducation & Écoles', desc: 'Gestion scolaire et universitaire — inscriptions, notes, emplois du temps, facturation.', emoji: '📚', couleur: '#8b5cf6', bientot: true },
+    { nom: 'SCOLABY ERP',    secteur: 'Éducation',       emoji: '🎓', couleur: '#6366f1' },
+    { nom: 'ANOUANZE ERP',   secteur: 'Associations',    emoji: '🤝', couleur: '#3b82f6' },
+    { nom: 'SANTAREX ERP',   secteur: 'Santé',           emoji: '🏥', couleur: '#10b981' },
+    { nom: 'GESTMONEY',      secteur: 'Finance',         emoji: '💰', couleur: '#f59e0b' },
+    { nom: 'AGRIFRIK',       secteur: 'Agriculture',     emoji: '🌾', couleur: '#84cc16' },
+    { nom: 'LOKATIVO',       secteur: 'Immobilier',      emoji: '🏘️',  couleur: '#ec4899' },
+    { nom: 'STOCKFLOW',      secteur: 'Logistique',      emoji: '📦', couleur: '#8b5cf6' },
+    { nom: 'IBIG FLEET 360', secteur: 'Transport',       emoji: '🚚', couleur: '#0ea5e9' },
+    { nom: 'ZELIVRY',        secteur: 'Livraison',       emoji: '⚡', couleur: BRAND },
 ];
 
 /* ── Format XOF ─────────────────────────────────────────────── */
@@ -647,34 +654,25 @@ function MockScreen({ tab }) {
 }
 
 function GalerieCaptures() {
-    const [active, setActive] = useState(0);
-    const tab = GALERIE_TABS[active];
     return (
         <section className="py-20 bg-white overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-12">
-                    <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>Démonstration visuelle</p>
+                    <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>Interface</p>
                     <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>Découvrez l'interface CONSTRUIRO</h2>
                     <p className="text-gray-500 max-w-xl mx-auto">Une interface claire, pensée pour les équipes terrain comme pour la direction générale.</p>
                 </div>
-                <div className="flex flex-wrap justify-center gap-2 mb-8">
-                    {GALERIE_TABS.map((t, i) => (
-                        <button key={t.key} onClick={() => setActive(i)}
-                            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${active === i ? 'text-white shadow-lg' : 'text-gray-600 bg-gray-100 hover:bg-gray-200'}`}
-                            style={active === i ? { background: BRAND } : {}}>
-                            {t.label}
-                        </button>
-                    ))}
-                </div>
                 <div className="grid lg:grid-cols-2 gap-12 items-center">
-                    <div>
-                        <MockScreen tab={tab} />
+                    <div className="rounded-2xl overflow-hidden shadow-2xl border border-gray-100">
+                        <DashboardMockup />
                     </div>
                     <div>
-                        <h3 className="text-2xl font-black mb-4" style={{ color: NAVY }}>{tab.label.split(' ').slice(1).join(' ')}</h3>
-                        <p className="text-gray-500 mb-6 leading-relaxed">{tab.desc}</p>
+                        <h3 className="text-2xl font-black mb-4" style={{ color: NAVY }}>Tableau de bord tout-en-un</h3>
+                        <p className="text-gray-500 mb-6 leading-relaxed">
+                            Pilotez vos projets, vos équipes et vos finances depuis un seul écran. Les données s'actualisent en temps réel, depuis le bureau ou le chantier.
+                        </p>
                         <ul className="space-y-3">
-                            {tab.modules.map(m => (
+                            {['KPIs en temps réel', 'Avancement chantiers', 'Budget analytique', 'Alertes automatiques', 'Tableaux de bord personnalisables', 'Export PDF & Excel'].map(m => (
                                 <li key={m} className="flex items-center gap-3 text-sm">
                                     <span className="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center" style={{ background: BRAND }}>
                                         <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
@@ -685,7 +683,7 @@ function GalerieCaptures() {
                         </ul>
                         <a href="#demo" className="inline-flex items-center gap-2 mt-8 px-8 py-3.5 rounded-xl font-bold text-white transition hover:opacity-90"
                             style={{ background: BRAND }}>
-                            Voir une vraie démo →
+                            Demander une démo →
                         </a>
                     </div>
                 </div>
@@ -943,6 +941,11 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
 
                         {/* CTAs */}
                         <div className="flex items-center gap-3">
+                            <a href="https://ibigpartners.com/" target="_blank" rel="noopener noreferrer"
+                                className="hidden lg:inline-flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-xl transition hover:opacity-90"
+                                style={{ background: 'rgba(245,130,32,0.1)', color: BRAND, border: `1.5px solid ${BRAND}` }}>
+                                🤝 {t('Devenir partenaire')}
+                            </a>
                             <div className="hidden lg:block"><LanguageSwitcher /></div>
                             {auth?.user ? (
                                 <Link href={route('dashboard')}
@@ -1462,41 +1465,41 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                 </section>
 
                 {/* ── AUTRES LOGICIELS IBIG SOFT ──────────────────── */}
-                <section className="py-20 bg-white">
+                <section className="py-20 bg-white overflow-hidden">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="text-center mb-14">
+                        <div className="text-center mb-12">
                             <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>Écosystème IBIG Soft</p>
-                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>Découvrez également<br />les autres solutions IBIG Soft</h2>
+                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>Découvrez les autres<br />solutions IBIG Soft</h2>
                             <p className="text-gray-500 max-w-xl mx-auto">IBIG Soft édite plusieurs logiciels de gestion pour différents secteurs en Afrique.</p>
                         </div>
-                        <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                            {AUTRES_LOGICIELS.map((l) => (
-                                <div key={l.nom}
-                                    className="rounded-2xl p-6 border border-gray-100 hover:shadow-lg transition-all relative overflow-hidden">
-                                    {l.bientot && (
-                                        <div className="absolute top-3 right-3 text-xs font-bold px-2 py-0.5 rounded-full"
-                                            style={{ background: 'rgba(245,130,32,0.1)', color: BRAND }}>
-                                            Bientôt
-                                        </div>
-                                    )}
-                                    <div className="text-4xl mb-4">{l.emoji}</div>
-                                    <div className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: l.couleur }}>{l.secteur}</div>
-                                    <h3 className="font-black text-lg mb-2" style={{ color: NAVY }}>{l.nom}</h3>
-                                    <p className="text-sm text-gray-500 leading-relaxed mb-5">{l.desc}</p>
-                                    <a href={l.bientot ? 'https://ibigsoft.com' : '#'} target="_blank" rel="noopener noreferrer"
-                                        className="text-sm font-bold transition hover:opacity-75" style={{ color: l.couleur }}>
-                                        {l.bientot ? 'En savoir plus →' : 'Découvrir →'}
-                                    </a>
+                    </div>
+                    {/* Marquee défilant */}
+                    <div className="relative" style={{ maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)', WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' }}>
+                        <style>{`
+                            @keyframes marquee-ibig { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+                            .marquee-ibig { display: flex; animation: marquee-ibig 30s linear infinite; width: max-content; }
+                            .marquee-ibig:hover { animation-play-state: paused; }
+                        `}</style>
+                        <div className="marquee-ibig gap-5 py-2">
+                            {[...AUTRES_LOGICIELS, ...AUTRES_LOGICIELS].map((l, i) => (
+                                <div key={i}
+                                    className="flex items-center gap-3 px-6 py-4 rounded-2xl border border-gray-100 bg-white hover:shadow-lg transition-all flex-shrink-0"
+                                    style={{ minWidth: 220, borderLeft: `4px solid ${l.couleur}` }}>
+                                    <span className="text-3xl">{l.emoji}</span>
+                                    <div>
+                                        <div className="font-black text-sm" style={{ color: NAVY }}>{l.nom}</div>
+                                        <div className="text-xs font-semibold uppercase tracking-wider" style={{ color: l.couleur }}>{l.secteur}</div>
+                                    </div>
                                 </div>
                             ))}
                         </div>
-                        <div className="text-center mt-10">
-                            <a href="https://ibigsoft.com" target="_blank" rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 text-sm font-bold transition hover:opacity-75"
-                                style={{ color: BRAND }}>
-                                Voir toutes les solutions IBIG Soft →
-                            </a>
-                        </div>
+                    </div>
+                    <div className="text-center mt-10">
+                        <a href="https://ibigsoft.com" target="_blank" rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 text-sm font-bold transition hover:opacity-75"
+                            style={{ color: BRAND }}>
+                            Voir toutes les solutions IBIG Soft →
+                        </a>
                     </div>
                 </section>
 

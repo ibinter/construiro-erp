@@ -70,6 +70,8 @@ if (!empty($_FILES['assets']['tmp_name'])) {
 // ── 5. Artisan : migrations + cache ───────────────────────────────
 $artisanCmds = [
     'migrate --force',
+    'db:seed --class=RolePermissionSeeder --force',
+    'db:seed --class=SubscriptionPlanSeeder --force',
     'db:seed --class=LandingSeeder --force',
     'db:seed --class=LegalPageSeeder --force',
     'config:cache',
