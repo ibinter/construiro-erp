@@ -2,6 +2,7 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import ConstruiroLogo from '@/Components/ConstruiroLogo';
 import SaraFloating from '@/Components/SaraFloating';
+import WhatsAppFloating from '@/Components/WhatsAppFloating';
 import PwaBanner from '@/Components/PwaBanner';
 import CookiesBanner from '@/Components/CookiesBanner';
 import LanguageSwitcher from '@/Components/LanguageSwitcher';
@@ -1885,6 +1886,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
 
             {/* ── FLOTTANTS ────────────────────────────────────── */}
             <SaraFloating />
+            <WhatsAppFloating />
             <PwaBanner />
             <CookiesBanner />
         </>

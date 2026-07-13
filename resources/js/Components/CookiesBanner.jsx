@@ -1,231 +1,322 @@
 import { useState, useEffect } from 'react';
+import { usePage } from '@inertiajs/react';
 
 const BRAND = '#F58220';
-const NAVY  = '#1E1E1E';
 const STORAGE_KEY = 'construiro-cookies-consent';
 
-const CATEGORIES = [
+const CATEGORIES_FR = [
     {
         id: 'necessary',
         label: 'Nécessaires',
-        description: 'Indispensables au fonctionnement du site (session, CSRF, sécurité). Ne peuvent pas être désactivés.',
+        description: 'Indispensables au fonctionnement du site (session, CSRF, sécurité).',
         required: true,
         examples: 'session, XSRF-TOKEN',
     },
     {
         id: 'preferences',
         label: 'Préférences',
-        description: 'Mémorisent vos choix d\'interface : langue, thème, paramètres d\'affichage.',
+        description: "Mémorisent vos choix d'interface : langue, thème, affichage.",
         required: false,
         examples: 'locale, theme',
     },
     {
         id: 'statistics',
         label: 'Statistiques',
-        description: 'Nous aident à comprendre comment les visiteurs interagissent avec le site (pages vues, temps de visite).',
+        description: "Nous aident à comprendre comment les visiteurs utilisent le site.",
         required: false,
         examples: 'analytics, _ga',
     },
     {
         id: 'marketing',
         label: 'Marketing',
-        description: 'Utilisés pour personnaliser les annonces et mesurer l\'efficacité des campagnes publicitaires.',
+        description: "Personnalisent les annonces et mesurent l'efficacité des campagnes.",
         required: false,
         examples: 'fbp, _gcl_au',
     },
     {
         id: 'ai',
         label: 'IA & Personnalisation',
-        description: 'Permettent à SARA (notre IA) de mémoriser le contexte de vos conversations et d\'améliorer ses réponses.',
+        description: "Permettent à SARA de mémoriser le contexte de vos conversations.",
         required: false,
         examples: 'sara_session, ai_prefs',
     },
     {
         id: 'external',
         label: 'Contenus externes',
-        description: 'Nécessaires pour afficher des contenus intégrés (vidéos, cartes, widgets tiers).',
+        description: "Nécessaires pour les contenus intégrés (vidéos, cartes, widgets).",
         required: false,
         examples: 'YouTube, Google Maps',
     },
 ];
 
-const defaultConsent = () => {
+const CATEGORIES_EN = [
+    { id: 'necessary',   label: 'Necessary',          description: 'Essential for site operation (session, CSRF, security).',      required: true,  examples: 'session, XSRF-TOKEN' },
+    { id: 'preferences', label: 'Preferences',         description: 'Remember your interface choices: language, theme, display.',    required: false, examples: 'locale, theme' },
+    { id: 'statistics',  label: 'Statistics',          description: 'Help us understand how visitors use the site.',                required: false, examples: 'analytics, _ga' },
+    { id: 'marketing',   label: 'Marketing',           description: 'Personalize ads and measure campaign effectiveness.',          required: false, examples: 'fbp, _gcl_au' },
+    { id: 'ai',          label: 'AI & Personalization', description: 'Allow SARA to remember your conversation context.',           required: false, examples: 'sara_session, ai_prefs' },
+    { id: 'external',    label: 'External Content',    description: 'Required for embedded content (videos, maps, widgets).',       required: false, examples: 'YouTube, Google Maps' },
+];
+
+const defaultConsent = (categories) => {
     const c = {};
-    CATEGORIES.forEach(cat => { c[cat.id] = cat.required; });
+    categories.forEach(cat => { c[cat.id] = cat.required; });
     return c;
 };
 
 export default function CookiesBanner() {
-    const [visible, setVisible]       = useState(false);
-    const [modal, setModal]           = useState(false);
-    const [consent, setConsent]       = useState(defaultConsent());
-    const [saved, setSaved]           = useState(false);
+    const locale = usePage().props?.locale ?? 'fr';
+    const isEn = locale === 'en';
+    const CATEGORIES = isEn ? CATEGORIES_EN : CATEGORIES_FR;
+
+    const [visible,  setVisible]  = useState(false);
+    const [mounted,  setMounted]  = useState(false);
+    const [modal,    setModal]    = useState(false);
+    const [consent,  setConsent]  = useState(() => defaultConsent(CATEGORIES));
+    const [saved,    setSaved]    = useState(false);
 
     useEffect(() => {
         const stored = localStorage.getItem(STORAGE_KEY);
         if (!stored) {
-            setTimeout(() => setVisible(true), 1200);
-        } else {
-            try {
-                const parsed = JSON.parse(stored);
-                if (parsed.consent) setConsent(parsed.consent);
-            } catch {}
+            const t = setTimeout(() => { setVisible(true); setTimeout(() => setMounted(true), 30); }, 1500);
+            return () => clearTimeout(t);
         }
+        try {
+            const parsed = JSON.parse(stored);
+            if (parsed.consent) setConsent(parsed.consent);
+        } catch {}
     }, []);
 
-    const save = (chosenConsent) => {
+    const save = (chosen) => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify({
-            consent: chosenConsent,
+            consent: chosen,
             savedAt: new Date().toISOString(),
-            version: '1.0',
+            version: '1.1',
         }));
-        window.dispatchEvent(new CustomEvent('cookies-consent-updated', { detail: chosenConsent }));
-        setConsent(chosenConsent);
+        window.dispatchEvent(new CustomEvent('cookies-consent-updated', { detail: chosen }));
+        setConsent(chosen);
         setSaved(true);
         setModal(false);
-        setTimeout(() => setVisible(false), 800);
+        setTimeout(() => { setMounted(false); setTimeout(() => setVisible(false), 400); }, 600);
     };
 
-    const acceptAll = () => {
-        const all = {};
-        CATEGORIES.forEach(cat => { all[cat.id] = true; });
-        save(all);
-    };
-
-    const rejectOptional = () => {
-        save(defaultConsent());
-    };
-
-    const saveCustom = () => {
-        save({ ...consent });
-    };
-
-    const toggle = (id) => {
-        setConsent(prev => ({ ...prev, [id]: !prev[id] }));
-    };
+    const acceptAll    = () => { const a = {}; CATEGORIES.forEach(c => { a[c.id] = true; }); save(a); };
+    const rejectOpt    = () => save(defaultConsent(CATEGORIES));
+    const saveCustom   = () => save({ ...consent });
+    const toggle       = (id) => setConsent(prev => ({ ...prev, [id]: !prev[id] }));
 
     if (!visible) return null;
 
+    const T = {
+        title:        isEn ? 'We respect your privacy' : 'Nous respectons votre vie privée',
+        body:         isEn
+            ? 'CONSTRUIRO uses cookies to ensure the site works properly and, with your consent, to analyze traffic and personalize your experience.'
+            : "CONSTRUIRO utilise des cookies pour assurer le bon fonctionnement du site et, avec votre accord, pour analyser notre trafic et personnaliser votre expérience.",
+        policyLink:   isEn ? 'Cookie policy' : 'Politique cookies',
+        customize:    isEn ? 'Customize' : 'Personnaliser',
+        rejectOpt:    isEn ? 'Reject optional' : 'Refuser optionnels',
+        acceptAll:    isEn ? 'Accept all' : 'Tout accepter',
+        saved:        isEn ? '✓ Preferences saved.' : '✓ Préférences enregistrées.',
+        modalTitle:   isEn ? 'Cookie settings' : 'Paramètres des cookies',
+        modalSub:     isEn ? 'Manage your privacy preferences' : 'Gérez vos préférences de confidentialité',
+        required:     isEn ? 'Required' : 'Requis',
+        saveBtn:      isEn ? 'Save my preferences' : 'Enregistrer mes préférences',
+        privacyLink:  isEn ? 'Privacy policy' : 'Confidentialité',
+    };
+
     return (
         <>
-            {/* Bannière principale */}
+            <style>{`
+                @keyframes cookieSlideUp {
+                    from { transform: translateY(100%); opacity: 0; }
+                    to   { transform: translateY(0);    opacity: 1; }
+                }
+                @keyframes cookieSlideDown {
+                    from { transform: translateY(0);    opacity: 1; }
+                    to   { transform: translateY(100%); opacity: 0; }
+                }
+                @keyframes cookieFadeIn {
+                    from { opacity: 0; transform: translateY(6px); }
+                    to   { opacity: 1; transform: translateY(0); }
+                }
+            `}</style>
+
+            {/* ── Bannière principale ──────────────────────────────── */}
             {!modal && (
                 <div
-                    className="fixed bottom-0 left-0 right-0 z-[9999]"
-                    style={{ background: 'rgba(10,10,10,0.97)', borderTop: `3px solid ${BRAND}` }}
+                    className="fixed bottom-0 left-0 right-0 z-[9995]"
+                    style={{
+                        animation: mounted ? 'cookieSlideUp 0.45s cubic-bezier(0.22,1,0.36,1) both' : 'cookieSlideDown 0.35s ease both',
+                        background: 'rgba(10,10,14,0.96)',
+                        backdropFilter: 'blur(16px)',
+                        WebkitBackdropFilter: 'blur(16px)',
+                        borderTop: `3px solid ${BRAND}`,
+                        boxShadow: '0 -8px 40px rgba(0,0,0,0.4)',
+                    }}
                 >
-                    <div className="max-w-6xl mx-auto px-4 py-5 sm:py-6">
+                    <div className="max-w-6xl mx-auto px-4 py-4 sm:py-5">
                         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                            {/* Texte */}
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-1">
+
+                            {/* Icône + texte */}
+                            <div className="flex items-start gap-3 flex-1 min-w-0">
+                                <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5"
+                                    style={{ background: 'rgba(245,130,32,0.15)', border: '1px solid rgba(245,130,32,0.25)' }}>
                                     <span className="text-lg">🍪</span>
-                                    <p className="text-white font-bold text-sm">Nous respectons votre vie privée</p>
                                 </div>
-                                <p className="text-gray-400 text-xs leading-relaxed">
-                                    CONSTRUIRO utilise des cookies pour assurer le bon fonctionnement du site et, avec votre accord, pour analyser notre trafic et personnaliser votre expérience.{' '}
-                                    <a href="/legal/cookies" className="underline hover:text-orange-400 transition" style={{ color: BRAND }}>
-                                        Politique cookies
-                                    </a>
-                                </p>
+                                <div className="min-w-0">
+                                    <p className="text-white font-bold text-sm mb-0.5">{T.title}</p>
+                                    <p className="text-gray-400 text-xs leading-relaxed">
+                                        {T.body}{' '}
+                                        <a href="/legal/cookies"
+                                            className="underline transition"
+                                            style={{ color: BRAND }}
+                                            target="_blank" rel="noopener noreferrer">
+                                            {T.policyLink}
+                                        </a>
+                                    </p>
+                                    {saved && (
+                                        <p className="text-green-400 text-xs mt-1 font-medium">{T.saved}</p>
+                                    )}
+                                </div>
                             </div>
+
                             {/* Boutons */}
                             <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
                                 <button
                                     onClick={() => setModal(true)}
-                                    className="px-4 py-2 rounded-xl text-xs font-medium text-gray-300 hover:text-white transition border border-gray-700 hover:border-gray-500"
-                                    style={{ background: 'rgba(255,255,255,0.05)' }}
+                                    className="px-4 py-2 rounded-xl text-xs font-medium transition"
+                                    style={{
+                                        background: 'rgba(255,255,255,0.06)',
+                                        border: '1px solid rgba(255,255,255,0.12)',
+                                        color: '#cbd5e1',
+                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+                                    onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
                                 >
-                                    Personnaliser
+                                    {T.customize}
                                 </button>
                                 <button
-                                    onClick={rejectOptional}
-                                    className="px-4 py-2 rounded-xl text-xs font-medium text-gray-300 hover:text-white transition border border-gray-700 hover:border-gray-500"
-                                    style={{ background: 'rgba(255,255,255,0.05)' }}
+                                    onClick={rejectOpt}
+                                    className="px-4 py-2 rounded-xl text-xs font-medium transition"
+                                    style={{
+                                        background: 'rgba(255,255,255,0.06)',
+                                        border: '1px solid rgba(255,255,255,0.12)',
+                                        color: '#cbd5e1',
+                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+                                    onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
                                 >
-                                    Refuser optionnels
+                                    {T.rejectOpt}
                                 </button>
                                 <button
                                     onClick={acceptAll}
-                                    className="px-5 py-2 rounded-xl text-xs font-bold text-white transition hover:opacity-90"
-                                    style={{ background: BRAND }}
+                                    className="px-5 py-2 rounded-xl text-xs font-bold text-white transition hover:opacity-90 active:scale-95"
+                                    style={{ background: BRAND, boxShadow: `0 4px 16px rgba(245,130,32,0.35)` }}
                                 >
-                                    Tout accepter
+                                    {T.acceptAll}
                                 </button>
                             </div>
                         </div>
-                        {saved && (
-                            <p className="text-xs mt-2 text-green-400">✓ Vos préférences ont été enregistrées.</p>
-                        )}
                     </div>
                 </div>
             )}
 
-            {/* Modal personnalisation */}
+            {/* ── Modal personnalisation ──────────────────────────── */}
             {modal && (
-                <div className="fixed inset-0 z-[10000] flex items-end sm:items-center justify-center p-0 sm:p-4">
+                <div className="fixed inset-0 z-[9996] flex items-end sm:items-center justify-center p-0 sm:p-4">
                     {/* Overlay */}
                     <div
                         className="absolute inset-0"
-                        style={{ background: 'rgba(0,0,0,0.75)' }}
+                        style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)' }}
                         onClick={() => setModal(false)}
                     />
                     {/* Panneau */}
                     <div
-                        className="relative w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl overflow-hidden shadow-2xl"
-                        style={{ background: '#111', border: `1px solid rgba(245,130,32,0.25)`, maxHeight: '90vh' }}
+                        className="relative w-full sm:max-w-lg flex flex-col"
+                        style={{
+                            background: '#0f1117',
+                            border: '1px solid rgba(245,130,32,0.2)',
+                            borderRadius: '24px 24px 0 0',
+                            maxHeight: '92dvh',
+                            boxShadow: '0 -24px 80px rgba(0,0,0,0.6)',
+                            animation: 'cookieFadeIn 0.3s ease both',
+                        }}
                     >
+                        {/* Poignée mobile */}
+                        <div className="flex justify-center pt-3 pb-1 sm:hidden">
+                            <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.15)' }}/>
+                        </div>
+
                         {/* En-tête */}
-                        <div className="px-6 pt-6 pb-4 border-b" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <h2 className="text-white font-bold text-base">Paramètres des cookies</h2>
-                                    <p className="text-gray-500 text-xs mt-0.5">Gérez vos préférences de confidentialité</p>
+                        <div className="px-6 pt-4 pb-4 flex items-center justify-between flex-shrink-0"
+                            style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+                            <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-xl flex items-center justify-center"
+                                    style={{ background: 'rgba(245,130,32,0.12)', border: '1px solid rgba(245,130,32,0.2)' }}>
+                                    <span className="text-base">🍪</span>
                                 </div>
-                                <button
-                                    onClick={() => setModal(false)}
-                                    className="text-gray-600 hover:text-white p-1.5 rounded-lg transition"
-                                    style={{ background: 'rgba(255,255,255,0.05)' }}
-                                >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                                    </svg>
-                                </button>
+                                <div>
+                                    <h2 className="text-white font-bold text-sm leading-none">{T.modalTitle}</h2>
+                                    <p className="text-gray-500 text-xs mt-0.5">{T.modalSub}</p>
+                                </div>
                             </div>
+                            <button
+                                onClick={() => setModal(false)}
+                                className="w-8 h-8 rounded-xl flex items-center justify-center transition"
+                                style={{ background: 'rgba(255,255,255,0.06)', color: '#64748b' }}
+                                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = '#fff'; }}
+                                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = '#64748b'; }}
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                                </svg>
+                            </button>
                         </div>
 
                         {/* Liste catégories */}
-                        <div className="overflow-y-auto px-6 py-4 space-y-3" style={{ maxHeight: '50vh' }}>
+                        <div className="overflow-y-auto flex-1 px-6 py-4 space-y-2.5" style={{ overscrollBehavior: 'contain' }}>
                             {CATEGORIES.map(cat => (
                                 <div
                                     key={cat.id}
-                                    className="rounded-xl p-4 flex items-start gap-4"
-                                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
+                                    className="rounded-2xl p-4 flex items-start gap-4"
+                                    style={{
+                                        background: consent[cat.id] && !cat.required
+                                            ? 'rgba(245,130,32,0.06)'
+                                            : 'rgba(255,255,255,0.03)',
+                                        border: consent[cat.id] && !cat.required
+                                            ? '1px solid rgba(245,130,32,0.2)'
+                                            : '1px solid rgba(255,255,255,0.06)',
+                                        transition: 'background 0.2s, border-color 0.2s',
+                                    }}
                                 >
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 mb-1">
-                                            <span className="text-white text-sm font-semibold">{cat.label}</span>
+                                            <span className="text-white text-xs font-semibold">{cat.label}</span>
                                             {cat.required && (
                                                 <span className="text-xs px-2 py-0.5 rounded-full font-medium"
-                                                    style={{ background: 'rgba(245,130,32,0.15)', color: BRAND }}>
-                                                    Requis
+                                                    style={{ background: 'rgba(245,130,32,0.12)', color: BRAND }}>
+                                                    {T.required}
                                                 </span>
                                             )}
                                         </div>
-                                        <p className="text-gray-400 text-xs leading-relaxed">{cat.description}</p>
-                                        <p className="text-gray-600 text-xs mt-1">Ex : {cat.examples}</p>
+                                        <p className="text-gray-500 text-xs leading-relaxed">{cat.description}</p>
+                                        <p className="text-gray-700 text-xs mt-1 font-mono">{cat.examples}</p>
                                     </div>
-                                    {/* Toggle */}
+                                    {/* Toggle switch */}
                                     <button
                                         onClick={() => !cat.required && toggle(cat.id)}
                                         disabled={cat.required}
-                                        className={`relative flex-shrink-0 w-11 h-6 rounded-full transition-all duration-200 focus:outline-none ${cat.required ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                                        style={{ background: consent[cat.id] ? BRAND : 'rgba(255,255,255,0.15)' }}
-                                        aria-checked={consent[cat.id]}
                                         role="switch"
+                                        aria-checked={consent[cat.id]}
+                                        className="relative flex-shrink-0 w-11 h-6 rounded-full transition-all duration-200 focus:outline-none focus-visible:ring-2"
+                                        style={{
+                                            background: consent[cat.id] ? BRAND : 'rgba(255,255,255,0.12)',
+                                            opacity: cat.required ? 0.5 : 1,
+                                            cursor: cat.required ? 'not-allowed' : 'pointer',
+                                        }}
                                     >
                                         <span
-                                            className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform duration-200"
+                                            className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200"
                                             style={{ transform: consent[cat.id] ? 'translateX(20px)' : 'translateX(0)' }}
                                         />
                                     </button>
@@ -234,34 +325,46 @@ export default function CookiesBanner() {
                         </div>
 
                         {/* Footer modal */}
-                        <div className="px-6 pb-6 pt-4 border-t space-y-3" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+                        <div className="px-6 py-4 flex-shrink-0 space-y-2.5"
+                            style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
                             <button
                                 onClick={saveCustom}
-                                className="w-full py-3 rounded-xl font-bold text-white text-sm transition hover:opacity-90"
-                                style={{ background: BRAND }}
+                                className="w-full py-3 rounded-2xl font-bold text-white text-sm transition hover:opacity-90 active:scale-[0.98]"
+                                style={{ background: BRAND, boxShadow: `0 4px 20px rgba(245,130,32,0.3)` }}
                             >
-                                Enregistrer mes préférences
+                                {T.saveBtn}
                             </button>
                             <div className="flex gap-2">
                                 <button
-                                    onClick={rejectOptional}
-                                    className="flex-1 py-2.5 rounded-xl text-xs font-medium text-gray-400 hover:text-white transition border border-gray-700"
-                                    style={{ background: 'rgba(255,255,255,0.04)' }}
+                                    onClick={rejectOpt}
+                                    className="flex-1 py-2.5 rounded-2xl text-xs font-medium transition"
+                                    style={{
+                                        background: 'rgba(255,255,255,0.04)',
+                                        border: '1px solid rgba(255,255,255,0.08)',
+                                        color: '#94a3b8',
+                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.color = '#fff'}
+                                    onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
                                 >
-                                    Refuser optionnels
+                                    {T.rejectOpt}
                                 </button>
                                 <button
                                     onClick={acceptAll}
-                                    className="flex-1 py-2.5 rounded-xl text-xs font-medium text-white transition"
-                                    style={{ background: 'rgba(245,130,32,0.2)', border: `1px solid rgba(245,130,32,0.4)` }}
+                                    className="flex-1 py-2.5 rounded-2xl text-xs font-medium text-white transition"
+                                    style={{
+                                        background: 'rgba(245,130,32,0.15)',
+                                        border: '1px solid rgba(245,130,32,0.3)',
+                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(245,130,32,0.25)'}
+                                    onMouseLeave={e => e.currentTarget.style.background = 'rgba(245,130,32,0.15)'}
                                 >
-                                    Tout accepter
+                                    {T.acceptAll}
                                 </button>
                             </div>
-                            <p className="text-gray-600 text-xs text-center">
-                                <a href="/legal/cookies" className="hover:text-gray-400 transition">Politique de cookies</a>
+                            <p className="text-gray-700 text-xs text-center">
+                                <a href="/legal/cookies" className="hover:text-gray-400 transition">{T.policyLink}</a>
                                 {' · '}
-                                <a href="/legal/privacy" className="hover:text-gray-400 transition">Confidentialité</a>
+                                <a href="/legal/privacy" className="hover:text-gray-400 transition">{T.privacyLink}</a>
                             </p>
                         </div>
                     </div>
