@@ -47,6 +47,24 @@ class MobileMoneyController extends Controller
      */
     public function webhook(Request $request, string $operator)
     {
+        // Vérification de la signature HMAC (si configurée pour l'opérateur)
+        $webhookSecret = config("services.mobile_money.{$operator}.webhook_secret");
+        if ($webhookSecret) {
+            $signature = $request->header('X-Callback-Signature')
+                ?? $request->header('X-Hmac-Signature')
+                ?? $request->header('Authorization');
+
+            $expected = 'sha256=' . hash_hmac('sha256', $request->getContent(), $webhookSecret);
+
+            if (!$signature || !hash_equals($expected, $signature)) {
+                \Log::warning("Mobile Money webhook signature mismatch", [
+                    'operator' => $operator,
+                    'ip' => $request->ip(),
+                ]);
+                return response()->json(['error' => 'invalid_signature'], 401);
+            }
+        }
+
         // Normalisation du champ référence selon les conventions des opérateurs
         $reference = $request->input('reference')
             ?? $request->input('externalId')

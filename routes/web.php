@@ -136,11 +136,11 @@ Route::get('/', function () {
     ]);
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'subscription'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // --- Abonnement & Facturation -------------------------------------------
-    Route::prefix('billing')->middleware('subscription')->group(function () {
+    Route::prefix('billing')->group(function () {
         Route::get('/', [BillingController::class, 'index'])->name('billing.index');
         Route::post('/activate', [BillingController::class, 'activate'])->name('billing.activate');
     });

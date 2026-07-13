@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\Mail\TrialExpiringMail;
 use App\Mail\AccountExpiredMail;
+use App\Mail\TrialExpiringMail;
 use App\Models\EmailLog;
-use App\Models\User;
+use App\Models\Subscription;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
 
@@ -26,26 +26,39 @@ class SendSubscriptionExpirationReminders extends Command
     {
         $targetDate = now()->addDays($days)->toDateString();
 
-        User::whereNotNull('subscription_active_until')
-            ->whereDate('subscription_active_until', $targetDate)
-            ->each(function (User $user) use ($days) {
-                $key = "sub_expiring_{$days}d_{$user->id}_{$user->subscription_active_until}";
-
-                if (EmailLog::alreadySent($key)) {
+        Subscription::where('status', 'active')
+            ->whereDate('ends_at', $targetDate)
+            ->with('company.users')
+            ->each(function (Subscription $subscription) use ($days) {
+                $company = $subscription->company;
+                if (!$company) {
                     return;
                 }
 
-                try {
-                    Mail::to($user->email)->send(new TrialExpiringMail(
-                        userName: $user->name,
-                        daysRemaining: $days,
-                        expiresAt: $user->subscription_active_until->format('d/m/Y'),
-                    ));
-                    EmailLog::record('subscription_expiring', $user->email, "Abonnement expire dans {$days} jour(s)", $user->id, $key);
-                    $this->info("Sent J-{$days} subscription reminder to {$user->email}");
-                } catch (\Throwable $e) {
-                    EmailLog::record('subscription_expiring', $user->email, "Abonnement expire dans {$days} jour(s)", $user->id, $key, 'failed', $e->getMessage());
-                    $this->error("Failed for {$user->email}: {$e->getMessage()}");
+                $admins = $company->users()->whereHas('roles', fn ($q) => $q->where('name', 'super_admin'))->get();
+                if ($admins->isEmpty()) {
+                    $admins = $company->users()->take(1)->get();
+                }
+
+                foreach ($admins as $user) {
+                    $key = "sub_expiring_{$days}d_{$user->id}_{$subscription->ends_at->toDateString()}";
+
+                    if (EmailLog::alreadySent($key)) {
+                        continue;
+                    }
+
+                    try {
+                        Mail::to($user->email)->send(new TrialExpiringMail(
+                            userName: $user->name,
+                            daysRemaining: $days,
+                            expiresAt: $subscription->ends_at->format('d/m/Y'),
+                        ));
+                        EmailLog::record('subscription_expiring', $user->email, "Abonnement expire dans {$days} jour(s)", $user->id, $key);
+                        $this->info("Sent J-{$days} subscription reminder to {$user->email}");
+                    } catch (\Throwable $e) {
+                        EmailLog::record('subscription_expiring', $user->email, "Abonnement expire dans {$days} jour(s)", $user->id, $key, 'failed', $e->getMessage());
+                        $this->error("Failed for {$user->email}: {$e->getMessage()}");
+                    }
                 }
             });
     }
@@ -54,26 +67,39 @@ class SendSubscriptionExpirationReminders extends Command
     {
         $yesterday = now()->subDay()->toDateString();
 
-        User::whereNotNull('subscription_active_until')
-            ->whereDate('subscription_active_until', $yesterday)
-            ->each(function (User $user) {
-                $key = "sub_expired_{$user->id}_{$user->subscription_active_until}";
-
-                if (EmailLog::alreadySent($key)) {
+        Subscription::where('status', 'active')
+            ->whereDate('ends_at', $yesterday)
+            ->with('company.users')
+            ->each(function (Subscription $subscription) {
+                $company = $subscription->company;
+                if (!$company) {
                     return;
                 }
 
-                try {
-                    Mail::to($user->email)->send(new AccountExpiredMail(
-                        userName: $user->name,
-                        expiredAt: $user->subscription_active_until->format('d/m/Y'),
-                        isTrial: false,
-                    ));
-                    EmailLog::record('account_expired', $user->email, 'Abonnement expiré', $user->id, $key);
-                    $this->info("Sent subscription expiration notice to {$user->email}");
-                } catch (\Throwable $e) {
-                    EmailLog::record('account_expired', $user->email, 'Abonnement expiré', $user->id, $key, 'failed', $e->getMessage());
-                    $this->error("Failed for {$user->email}: {$e->getMessage()}");
+                $admins = $company->users()->whereHas('roles', fn ($q) => $q->where('name', 'super_admin'))->get();
+                if ($admins->isEmpty()) {
+                    $admins = $company->users()->take(1)->get();
+                }
+
+                foreach ($admins as $user) {
+                    $key = "sub_expired_{$user->id}_{$subscription->ends_at->toDateString()}";
+
+                    if (EmailLog::alreadySent($key)) {
+                        continue;
+                    }
+
+                    try {
+                        Mail::to($user->email)->send(new AccountExpiredMail(
+                            userName: $user->name,
+                            expiredAt: $subscription->ends_at->format('d/m/Y'),
+                            isTrial: false,
+                        ));
+                        EmailLog::record('account_expired', $user->email, 'Abonnement expiré', $user->id, $key);
+                        $this->info("Sent subscription expiration notice to {$user->email}");
+                    } catch (\Throwable $e) {
+                        EmailLog::record('account_expired', $user->email, 'Abonnement expiré', $user->id, $key, 'failed', $e->getMessage());
+                        $this->error("Failed for {$user->email}: {$e->getMessage()}");
+                    }
                 }
             });
     }

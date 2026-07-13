@@ -10,12 +10,34 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CheckSubscription
 {
+    // Routes always accessible regardless of subscription status
+    // (billing to renew, dashboard to see alerts, support to ask for help…)
+    private const EXEMPT_PREFIXES = [
+        'billing',
+        'dashboard',
+        'notifications',
+        'profile',
+        'support',
+        'aide',
+        'onboarding',
+        'locale',
+        'superadmin',
+    ];
+
     public function handle(Request $request, Closure $next): Response
     {
         $user = $request->user();
 
         if (!$user || !$user->company_id) {
             return $next($request);
+        }
+
+        // Always allow exempt routes (billing, dashboard, support, etc.)
+        $path = ltrim($request->path(), '/');
+        foreach (self::EXEMPT_PREFIXES as $prefix) {
+            if ($path === $prefix || str_starts_with($path, $prefix . '/')) {
+                return $next($request);
+            }
         }
 
         $subscription = Subscription::where('company_id', $user->company_id)
