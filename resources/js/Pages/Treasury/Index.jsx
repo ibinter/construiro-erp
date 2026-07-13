@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import AppLayout from '@/Layouts/AppLayout';
 import Icon from '@/Components/Icon';
 import Modal from '@/Components/Modal';
@@ -159,7 +159,7 @@ export default function Index({ accounts, totalBalance, transactions, types, acc
             </div>
 
             {/* Dernières transactions */}
-            <div className="mt-6 overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+            <div className="mt-6 overflow-x-auto rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
                 <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
                     <h3 className="flex items-center gap-2 font-semibold text-slate-800 dark:text-slate-100">
                         <Icon name="arrow-left-right" className="h-5 w-5 text-orange-500" />

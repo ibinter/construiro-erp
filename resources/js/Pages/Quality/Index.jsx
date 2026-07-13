@@ -50,7 +50,7 @@ export default function Index({ controls, filters, controlTypes, results, can })
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder={t('Rechercher un contrôle…')}
-                            className="w-64 rounded-md border-slate-300 pl-9 text-sm focus:border-orange-500 focus:ring-orange-500 dark:border-slate-700 dark:bg-slate-900"
+                            className="w-full sm:w-64 rounded-md border-slate-300 pl-9 text-sm focus:border-orange-500 focus:ring-orange-500 dark:border-slate-700 dark:bg-slate-900"
                         />
                     </div>
                     <select
@@ -87,7 +87,8 @@ export default function Index({ controls, filters, controlTypes, results, can })
             </div>
 
             {/* Tableau */}
-            <div className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+            <div className="rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+                <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800">
                     <thead className="bg-slate-50 dark:bg-slate-800/50">
                         <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
@@ -134,6 +135,7 @@ export default function Index({ controls, filters, controlTypes, results, can })
                         )}
                     </tbody>
                 </table>
+                </div>
             </div>
 
             {/* Pagination */}

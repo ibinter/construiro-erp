@@ -38,7 +38,7 @@ export default function GuestLayout({ children }) {
                     <Link href="/"><ConstruiroLogo size="sm" /></Link>
                 </div>
 
-                <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+                <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6 sm:p-8 border border-gray-100">
                     {children}
                 </div>
 

@@ -97,7 +97,8 @@ export default function Index({ stocks, warehouses, materials, filters, movement
             </div>
 
             {/* Niveaux de stock */}
-            <div className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+            <div className="rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+                <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800">
                     <thead className="bg-slate-50 dark:bg-slate-800/50">
                         <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
@@ -148,6 +149,7 @@ export default function Index({ stocks, warehouses, materials, filters, movement
                         )}
                     </tbody>
                 </table>
+                </div>
             </div>
 
             {/* Derniers mouvements */}

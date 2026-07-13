@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import AppLayout from '@/Layouts/AppLayout';
 import Icon from '@/Components/Icon';
 import Modal from '@/Components/Modal';
@@ -109,6 +109,7 @@ export default function Show({ boq, can }) {
                     <h3 className="font-semibold text-slate-800 dark:text-slate-100">{t('Détail des postes')}</h3>
                 </div>
 
+                <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800">
                     <thead className="bg-slate-50 dark:bg-slate-800/50">
                         <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
@@ -142,7 +143,7 @@ export default function Show({ boq, can }) {
                         )}
                     </tbody>
                 </table>
-
+                </div>
                 {/* Total */}
                 <div className="flex justify-end border-t border-slate-100 px-5 py-4 dark:border-slate-800">
                     <div className="w-full max-w-xs space-y-2 text-sm">

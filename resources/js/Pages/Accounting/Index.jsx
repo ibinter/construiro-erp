@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import AppLayout from '@/Layouts/AppLayout';
 import Icon from '@/Components/Icon';
 import Modal from '@/Components/Modal';
@@ -92,7 +92,7 @@ export default function Index({ entries, accounts, can }) {
                 {entries.data.map((entry) => {
                     const debit = (entry.lines ?? []).reduce((s, l) => s + Number(l.debit || 0), 0);
                     return (
-                        <div key={entry.id} className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+                        <div key={entry.id} className="overflow-x-auto rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
                             <div className="flex items-center justify-between border-b border-slate-100 px-5 py-3 dark:border-slate-800">
                                 <div>
                                     <span className="font-semibold text-slate-800 dark:text-slate-100">{entry.label}</span>

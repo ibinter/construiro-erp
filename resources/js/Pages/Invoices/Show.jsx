@@ -149,6 +149,7 @@ export default function Show({ invoice, can }) {
                     <h3 className="font-semibold text-slate-800 dark:text-slate-100">Détail des prestations</h3>
                 </div>
 
+                <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800">
                     <thead className="bg-slate-50 dark:bg-slate-800/50">
                         <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
@@ -184,6 +185,7 @@ export default function Show({ invoice, can }) {
                         )}
                     </tbody>
                 </table>
+                </div>
 
                 {/* Totaux */}
                 <div className="flex justify-end border-t border-slate-100 px-5 py-4 dark:border-slate-800">

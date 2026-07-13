@@ -4,12 +4,12 @@ import ConstruiroLogo from '@/Components/ConstruiroLogo';
 import { useTrans } from '@/i18n';
 
 /**
- * Sidebar du portail unique. Affiche l'en-tête du portail de l'utilisateur
- * puis les groupes de modules autorisés (calculés côté serveur par
- * App\Support\Navigation). Le contenu s'adapte donc automatiquement au rôle.
+ * Sidebar responsive :
+ * - Mobile (<lg) : fixed overlay (z-50), translate-x pour ouvrir/fermer
+ * - Desktop (≥lg) : sticky dans le flux, largeur w-64 ou w-0
  */
-export default function Sidebar({ open = true }) {
-    const { auth, url } = usePage().props;
+export default function Sidebar({ open = false, onClose }) {
+    const { auth } = usePage().props;
     const currentPath = usePage().url;
     const { t } = useTrans();
     const portal = auth?.portal;
@@ -17,8 +17,26 @@ export default function Sidebar({ open = true }) {
 
     return (
         <aside
-            className={`${open ? 'w-64' : 'w-0'} sticky top-0 z-30 flex h-screen shrink-0 flex-col overflow-hidden border-r border-slate-200 bg-slate-900 text-slate-200 transition-all duration-200 dark:border-slate-800`}
+            className={[
+                // Base
+                'flex flex-col bg-slate-900 text-slate-200 border-r border-slate-800 overflow-hidden transition-all duration-200',
+                // Mobile : fixed overlay
+                'fixed inset-y-0 left-0 z-50 h-full w-64',
+                open ? 'translate-x-0' : '-translate-x-full',
+                // Desktop : sticky dans le flux, pas de translate
+                'lg:relative lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 lg:shrink-0',
+                open ? 'lg:w-64' : 'lg:w-0',
+            ].join(' ')}
         >
+            {/* Bouton fermer (mobile uniquement) */}
+            <button
+                onClick={onClose}
+                className="absolute right-3 top-3 rounded-md p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white lg:hidden"
+                aria-label="Fermer le menu"
+            >
+                <Icon name="x" className="h-4 w-4" />
+            </button>
+
             {/* Marque */}
             <div className="flex items-center px-5 py-4">
                 <ConstruiroLogo size="sm" dark />
@@ -27,7 +45,7 @@ export default function Sidebar({ open = true }) {
             {/* En-tête du portail actif */}
             {portal && (
                 <div className="mx-3 mb-2 flex items-center gap-2 rounded-lg bg-slate-800/70 px-3 py-2">
-                    <Icon name={portal.icon} className="h-4 w-4 text-orange-400" />
+                    <Icon name={portal.icon} className="h-4 w-4 shrink-0 text-orange-400" />
                     <div className="min-w-0">
                         <div className="text-[10px] uppercase tracking-wider text-slate-400">
                             {t('Portail')}
@@ -53,6 +71,7 @@ export default function Sidebar({ open = true }) {
                                     <li key={item.key}>
                                         <Link
                                             href={item.route}
+                                            onClick={onClose}
                                             className={`flex items-center gap-3 rounded-md px-2 py-2 text-sm transition-colors ${
                                                 active
                                                     ? 'bg-orange-500 font-medium text-white'

@@ -8,19 +8,24 @@ import LanguageSwitcher from '@/Components/LanguageSwitcher';
 import NotificationBell from '@/Components/NotificationBell';
 import { useTrans } from '@/i18n';
 
-/**
- * Layout principal de l'application ERP : sidebar adaptative + barre supérieure
- * + zone de contenu. Utilisé par tous les écrans internes.
- */
 export default function AppLayout({ header, children }) {
     const { auth } = usePage().props;
     const user = auth?.user;
     const { t } = useTrans();
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     return (
         <div className="flex min-h-screen bg-slate-100 dark:bg-slate-950">
-            <Sidebar open={sidebarOpen} />
+            {/* Backdrop mobile — clique pour fermer la sidebar */}
+            {sidebarOpen && (
+                <div
+                    className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+                    onClick={() => setSidebarOpen(false)}
+                    aria-hidden="true"
+                />
+            )}
+
+            <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
             <div className="flex min-w-0 flex-1 flex-col">
                 {/* Barre supérieure */}
@@ -34,35 +39,35 @@ export default function AppLayout({ header, children }) {
                             <Icon name="menu" className="h-5 w-5" />
                         </button>
                         {header && (
-                            <h1 className="text-lg font-semibold text-slate-800 dark:text-slate-100">
+                            <h1 className="truncate text-base font-semibold text-slate-800 sm:text-lg dark:text-slate-100">
                                 {t(header)}
                             </h1>
                         )}
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3">
                         <NotificationBell />
                         <LanguageSwitcher />
                         {user?.company && (
                             <span className="hidden items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300 sm:flex">
                                 <Icon name="building-2" className="h-3.5 w-3.5" />
-                                {user.company.name}
+                                <span className="max-w-[120px] truncate">{user.company.name}</span>
                             </span>
                         )}
 
                         <Dropdown>
                             <Dropdown.Trigger>
-                                <button className="flex items-center gap-2 rounded-full py-1 pl-1 pr-3 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800">
-                                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-xs font-bold text-white">
+                                <button className="flex items-center gap-2 rounded-full py-1 pl-1 pr-2 text-sm text-slate-700 hover:bg-slate-100 sm:pr-3 dark:text-slate-200 dark:hover:bg-slate-800">
+                                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-500 text-xs font-bold text-white">
                                         {user?.name?.slice(0, 2).toUpperCase()}
                                     </span>
                                     <span className="hidden text-left leading-tight sm:block">
-                                        <span className="block font-medium">{user?.name}</span>
+                                        <span className="block max-w-[100px] truncate font-medium">{user?.name}</span>
                                         <span className="block text-[11px] text-slate-400">
                                             {user?.job_title}
                                         </span>
                                     </span>
-                                    <Icon name="chevron-down" className="h-4 w-4" />
+                                    <Icon name="chevron-down" className="h-4 w-4 shrink-0" />
                                 </button>
                             </Dropdown.Trigger>
                             <Dropdown.Content>
