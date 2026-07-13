@@ -146,7 +146,7 @@ const INTEGRATIONS = [
     { nom: 'Stripe', desc: 'Paiements internationaux', statut: 'bientot', emoji: '💰' },
 ];
 
-const statutLabel = { disponible: 'Disponible', integration: 'En intégration', bientot: 'Bientôt' };
+const STATUT_LABEL_FR = { disponible: 'Disponible', integration: 'En intégration', bientot: 'Bientôt' };
 const statutColor = { disponible: '#22c55e', integration: BRAND, bientot: '#94a3b8' };
 
 /* ── Autres logiciels IBIG Soft ─────────────────────────────── */
@@ -510,6 +510,7 @@ function HeroSlider({ canRegister }) {
 
 /* ── Formulaire démo ─────────────────────────────────────────── */
 function DemoForm() {
+    const { t } = useTrans();
     const { data, setData, post, processing, wasSuccessful, errors } = useForm({
         name: '', email: '', phone: '', company: '', sector: '', message: '',
     });
@@ -518,8 +519,8 @@ function DemoForm() {
         return (
             <div className="rounded-2xl p-8 text-center" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}>
                 <div className="text-5xl mb-4">✅</div>
-                <p className="text-xl font-bold text-white mb-2">Demande envoyée !</p>
-                <p className="text-orange-100 text-sm">Notre équipe vous contactera dans les 24h ouvrées.</p>
+                <p className="text-xl font-bold text-white mb-2">{t('Demande envoyée !')}</p>
+                <p className="text-orange-100 text-sm">{t('Notre équipe vous contactera dans les 24h ouvrées.')}</p>
             </div>
         );
     }
@@ -530,49 +531,49 @@ function DemoForm() {
         <form onSubmit={(e) => { e.preventDefault(); post('/demo-request'); }} className="space-y-4">
             <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                    <label className="block text-sm font-semibold text-white mb-1.5">Nom complet *</label>
+                    <label className="block text-sm font-semibold text-white mb-1.5">{t('Nom complet *')}</label>
                     <input type="text" required value={data.name} onChange={e => setData('name', e.target.value)}
                         placeholder="Jean Dupont" className={inputCls}/>
                     {errors.name && <p className="text-red-300 text-xs mt-1">{errors.name}</p>}
                 </div>
                 <div>
-                    <label className="block text-sm font-semibold text-white mb-1.5">Email professionnel *</label>
+                    <label className="block text-sm font-semibold text-white mb-1.5">{t('Email professionnel *')}</label>
                     <input type="email" required value={data.email} onChange={e => setData('email', e.target.value)}
                         placeholder="jean@entreprise.com" className={inputCls}/>
                     {errors.email && <p className="text-red-300 text-xs mt-1">{errors.email}</p>}
                 </div>
                 <div>
-                    <label className="block text-sm font-semibold text-white mb-1.5">Téléphone</label>
+                    <label className="block text-sm font-semibold text-white mb-1.5">{t('Téléphone')}</label>
                     <input type="tel" value={data.phone} onChange={e => setData('phone', e.target.value)}
                         placeholder="+225 07 00 00 00 00" className={inputCls}/>
                 </div>
                 <div>
-                    <label className="block text-sm font-semibold text-white mb-1.5">Entreprise *</label>
+                    <label className="block text-sm font-semibold text-white mb-1.5">{t('Entreprise *')}</label>
                     <input type="text" required value={data.company} onChange={e => setData('company', e.target.value)}
                         placeholder="BTP Côte d'Ivoire SA" className={inputCls}/>
                 </div>
             </div>
             <div>
-                <label className="block text-sm font-semibold text-white mb-1.5">Secteur d'activité</label>
+                <label className="block text-sm font-semibold text-white mb-1.5">{t("Secteur d'activité")}</label>
                 <select value={data.sector} onChange={e => setData('sector', e.target.value)} className={inputCls}>
-                    <option value="">— Sélectionnez —</option>
-                    <option>BTP / Construction</option>
-                    <option>Promotion Immobilière</option>
-                    <option>Travaux Publics</option>
-                    <option>Sous-traitance BTP</option>
-                    <option>Autre</option>
+                    <option value="">{t('— Sélectionnez —')}</option>
+                    <option>{t('BTP / Construction')}</option>
+                    <option>{t('Promotion Immobilière')}</option>
+                    <option>{t('Travaux Publics')}</option>
+                    <option>{t('Sous-traitance BTP')}</option>
+                    <option>{t('Autre')}</option>
                 </select>
             </div>
             <div>
-                <label className="block text-sm font-semibold text-white mb-1.5">Message (optionnel)</label>
+                <label className="block text-sm font-semibold text-white mb-1.5">{t('Message (optionnel)')}</label>
                 <textarea rows={3} value={data.message} onChange={e => setData('message', e.target.value)}
-                    placeholder="Décrivez votre besoin ou posez vos questions…"
+                    placeholder={t('Décrivez votre besoin ou posez vos questions…')}
                     className={`${inputCls} resize-none`}/>
             </div>
             <button type="submit" disabled={processing}
                 className="w-full py-4 rounded-xl font-bold text-white text-base transition-all disabled:opacity-60"
                 style={{ background: processing ? '#666' : NAVY, boxShadow: `0 4px 20px rgba(0,0,0,0.4)` }}>
-                {processing ? 'Envoi en cours…' : 'Demander une démo gratuite →'}
+                {processing ? t('Envoi en cours…') : t('Demander une démo gratuite →')}
             </button>
         </form>
     );
@@ -654,22 +655,23 @@ function MockScreen({ tab }) {
 }
 
 function GalerieCaptures() {
+    const { t } = useTrans();
     return (
         <section className="py-20 bg-white overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-12">
-                    <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>Interface</p>
-                    <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>Découvrez l'interface CONSTRUIRO</h2>
-                    <p className="text-gray-500 max-w-xl mx-auto">Une interface claire, pensée pour les équipes terrain comme pour la direction générale.</p>
+                    <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Interface')}</p>
+                    <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>{t("Découvrez l'interface CONSTRUIRO")}</h2>
+                    <p className="text-gray-500 max-w-xl mx-auto">{t('Une interface claire, pensée pour les équipes terrain comme pour la direction générale.')}</p>
                 </div>
                 <div className="grid lg:grid-cols-2 gap-12 items-center">
                     <div className="rounded-2xl overflow-hidden shadow-2xl border border-gray-100">
                         <DashboardMockup />
                     </div>
                     <div>
-                        <h3 className="text-2xl font-black mb-4" style={{ color: NAVY }}>Tableau de bord tout-en-un</h3>
+                        <h3 className="text-2xl font-black mb-4" style={{ color: NAVY }}>{t('Tableau de bord tout-en-un')}</h3>
                         <p className="text-gray-500 mb-6 leading-relaxed">
-                            Pilotez vos projets, vos équipes et vos finances depuis un seul écran. Les données s'actualisent en temps réel, depuis le bureau ou le chantier.
+                            {t("Pilotez vos projets, vos équipes et vos finances depuis un seul écran. Les données s'actualisent en temps réel, depuis le bureau ou le chantier.")}
                         </p>
                         <ul className="space-y-3">
                             {['KPIs en temps réel', 'Avancement chantiers', 'Budget analytique', 'Alertes automatiques', 'Tableaux de bord personnalisables', 'Export PDF & Excel'].map(m => (
@@ -677,13 +679,13 @@ function GalerieCaptures() {
                                     <span className="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center" style={{ background: BRAND }}>
                                         <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
                                     </span>
-                                    <span className="font-medium" style={{ color: NAVY }}>{m}</span>
+                                    <span className="font-medium" style={{ color: NAVY }}>{t(m)}</span>
                                 </li>
                             ))}
                         </ul>
                         <a href="#demo" className="inline-flex items-center gap-2 mt-8 px-8 py-3.5 rounded-xl font-bold text-white transition hover:opacity-90"
                             style={{ background: BRAND }}>
-                            Demander une démo →
+                            {t('Demander une démo →')}
                         </a>
                     </div>
                 </div>
@@ -694,14 +696,15 @@ function GalerieCaptures() {
 
 /* ── Vidéo de présentation ───────────────────────────────────── */
 function VideoPresentation() {
+    const { t } = useTrans();
     const [playing, setPlaying] = useState(false);
     return (
         <section className="py-20" style={{ background: NAVY }}>
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-10">
-                    <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>Présentation</p>
-                    <h2 className="text-4xl font-black text-white mb-4">CONSTRUIRO en 3 minutes</h2>
-                    <p className="text-gray-400 max-w-xl mx-auto">Découvrez comment les entreprises BTP africaines pilotent leurs chantiers avec CONSTRUIRO ERP.</p>
+                    <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Présentation')}</p>
+                    <h2 className="text-4xl font-black text-white mb-4">{t('CONSTRUIRO en 3 minutes')}</h2>
+                    <p className="text-gray-400 max-w-xl mx-auto">{t('Découvrez comment les entreprises BTP africaines pilotent leurs chantiers avec CONSTRUIRO ERP.')}</p>
                 </div>
                 <div className="relative rounded-3xl overflow-hidden cursor-pointer group"
                     style={{ background: '#111', aspectRatio: '16/9', boxShadow: '0 32px 80px rgba(0,0,0,0.5)' }}
@@ -723,22 +726,22 @@ function VideoPresentation() {
                                     <path d="M8 5v14l11-7z"/>
                                 </svg>
                             </div>
-                            <p className="text-white font-bold text-lg mb-1">CONSTRUIRO ERP — Présentation officielle</p>
-                            <p className="text-gray-500 text-sm">Durée estimée : 3 minutes · Disponible prochainement</p>
+                            <p className="text-white font-bold text-lg mb-1">{t('CONSTRUIRO ERP — Présentation officielle')}</p>
+                            <p className="text-gray-500 text-sm">{t('Durée estimée : 3 minutes · Disponible prochainement')}</p>
                         </div>
                     </div>
                     {playing && (
                         <div className="absolute inset-0 flex items-center justify-center" style={{ background: '#000' }}>
-                            <p className="text-white text-sm">Vidéo disponible prochainement sur YouTube</p>
+                            <p className="text-white text-sm">{t('Vidéo disponible prochainement sur YouTube')}</p>
                         </div>
                     )}
                     {/* Bottom bar */}
                     <div className="absolute bottom-0 left-0 right-0 h-1.5" style={{ background: `linear-gradient(to right, ${BRAND}, transparent)` }} />
                 </div>
                 <p className="text-center text-gray-600 text-sm mt-6">
-                    Préférez une démo en live ?{' '}
+                    {t('Préférez une démo en live ?')}{' '}
                     <a href="#demo" className="font-semibold transition hover:opacity-75" style={{ color: BRAND }}>
-                        Demandez une démonstration personnalisée →
+                        {t('Demandez une démonstration personnalisée →')}
                     </a>
                 </p>
             </div>
@@ -762,6 +765,7 @@ const FEATURES_COMPARE = [
 ];
 
 function ComparateurOffres({ plans }) {
+    const { t } = useTrans();
     const p0 = plans[0] || {}, p1 = plans[1] || {}, p2 = plans[2] || {};
     const getValue = (feat, i) => {
         if (feat.values) return feat.values[i] || '—';
@@ -774,8 +778,8 @@ function ComparateurOffres({ plans }) {
         <section className="py-20 bg-gray-50 overflow-x-auto">
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-12">
-                    <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>Comparateur</p>
-                    <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>Ce qui est inclus dans chaque offre</h2>
+                    <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Comparateur')}</p>
+                    <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Ce qui est inclus dans chaque offre')}</h2>
                 </div>
                 <div className="rounded-2xl overflow-hidden border border-gray-200 bg-white shadow-sm">
                     <table className="w-full text-sm">
@@ -789,7 +793,7 @@ function ComparateurOffres({ plans }) {
                                                 style={{ background: BRAND, color: '#fff' }}>RECOMMANDÉ</span>
                                         )}
                                         <div className="text-white font-bold mt-1">{plan.name}</div>
-                                        <div className="text-xs font-normal mt-0.5" style={{ color: BRAND }}>{formatXOF(plan.price_monthly)}/mois</div>
+                                        <div className="text-xs font-normal mt-0.5" style={{ color: BRAND }}>{formatXOF(plan.price_monthly)}{t('/mois')}</div>
                                     </th>
                                 ))}
                             </tr>
@@ -797,7 +801,7 @@ function ComparateurOffres({ plans }) {
                         <tbody>
                             {FEATURES_COMPARE.map((feat, ri) => (
                                 <tr key={feat.label} className={ri % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                                    <td className="px-6 py-3.5 font-medium" style={{ color: NAVY }}>{feat.label}</td>
+                                    <td className="px-6 py-3.5 font-medium" style={{ color: NAVY }}>{t(feat.label)}</td>
                                     {plans.slice(0, 3).map((_, ci) => {
                                         const val = getValue(feat, ci);
                                         return (
@@ -821,7 +825,7 @@ function ComparateurOffres({ plans }) {
                                             style={i === 1
                                                 ? { background: BRAND, color: '#fff' }
                                                 : { border: `2px solid ${BRAND}`, color: BRAND }}>
-                                            Choisir →
+                                            {t('Choisir')} →
                                         </a>
                                     </td>
                                 ))}
@@ -1159,13 +1163,13 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid lg:grid-cols-2 gap-16 items-center">
                             <div>
-                                <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>Pourquoi CONSTRUIRO ?</p>
-                                <h2 className="text-4xl font-black mb-6" style={{ color: NAVY }}>L'ERP pensé pour<br />la réalité africaine</h2>
-                                <p className="text-gray-500 mb-10">Nous ne sommes pas un ERP occidental adapté à l'Afrique. Nous avons été conçus dès le départ pour les PME et groupes BTP africains.</p>
+                                <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Pourquoi CONSTRUIRO ?')}</p>
+                                <h2 className="text-4xl font-black mb-6" style={{ color: NAVY }}>{t("L'ERP pensé pour la réalité africaine")}</h2>
+                                <p className="text-gray-500 mb-10">{t("Nous ne sommes pas un ERP occidental adapté à l'Afrique. Nous avons été conçus dès le départ pour les PME et groupes BTP africains.")}</p>
                                 <div className="space-y-6">
                                     {[
                                         { titre: 'Adapté au contexte local', desc: 'Multi-devises (FCFA, USD, EUR…), sous-traitants locaux, conformité fiscale africaine.' },
-                                        { titre: 'Zéro infrastructure requise', desc: 'Accédez depuis n\'importe quel navigateur. Pas de serveur à installer.' },
+                                        { titre: 'Zéro infrastructure requise', desc: "Accédez depuis n'importe quel navigateur. Pas de serveur à installer." },
                                         { titre: 'Prise en main en quelques heures', desc: 'Interface en français. Vos équipes sont opérationnelles dès le premier jour.' },
                                         { titre: 'Support basé en Afrique', desc: 'Une équipe disponible dans votre fuseau horaire, qui comprend vos contraintes.' },
                                     ].map((r) => (
@@ -1174,19 +1178,19 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                                 <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
                                             </div>
                                             <div>
-                                                <p className="font-bold text-sm mb-0.5" style={{ color: NAVY }}>{r.titre}</p>
-                                                <p className="text-sm text-gray-500">{r.desc}</p>
+                                                <p className="font-bold text-sm mb-0.5" style={{ color: NAVY }}>{t(r.titre)}</p>
+                                                <p className="text-sm text-gray-500">{t(r.desc)}</p>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
                             </div>
                             <div className="rounded-3xl p-8" style={{ background: NAVY }}>
-                                <p className="text-sm font-bold tracking-widest uppercase mb-6" style={{ color: BRAND }}>Inclus dans votre abonnement</p>
+                                <p className="text-sm font-bold tracking-widest uppercase mb-6" style={{ color: BRAND }}>{t('Inclus dans votre abonnement')}</p>
                                 <div className="grid grid-cols-2 gap-4">
                                     {['Suivi temps réel des chantiers','Tableau de bord dirigeant','Alertes et notifications','Exports PDF et Excel','Signature électronique','Assistant IA intégré','Application mobile','Sauvegarde automatique','Multi-utilisateurs','Audit trail complet'].map((f) => (
                                         <div key={f} className="flex items-center gap-2 text-sm text-gray-400">
-                                            <span style={{ color: BRAND }}>⚡</span> {f}
+                                            <span style={{ color: BRAND }}>⚡</span> {t(f)}
                                         </div>
                                     ))}
                                 </div>
@@ -1211,12 +1215,12 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                         <span className="text-2xl">{integ.emoji}</span>
                                         <span className="text-xs font-bold px-2.5 py-1 rounded-full"
                                             style={{ background: `${statutColor[integ.statut]}15`, color: statutColor[integ.statut] }}>
-                                            {statutLabel[integ.statut]}
+                                            {t(STATUT_LABEL_FR[integ.statut])}
                                         </span>
                                     </div>
                                     <div>
                                         <p className="font-bold text-sm" style={{ color: NAVY }}>{integ.nom}</p>
-                                        <p className="text-xs text-gray-400 mt-0.5">{integ.desc}</p>
+                                        <p className="text-xs text-gray-400 mt-0.5">{t(integ.desc)}</p>
                                     </div>
                                 </div>
                             ))}
@@ -1229,17 +1233,19 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid lg:grid-cols-2 gap-16 items-center">
                             <div>
-                                <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>Intelligence artificielle</p>
-                                <h2 className="text-4xl font-black text-white mb-6">Rencontrez <span style={{ color: BRAND }}>SARA</span>,<br />votre assistante IA</h2>
+                                <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Intelligence artificielle')}</p>
+                                <h2 className="text-4xl font-black text-white mb-6">
+                                    {t('Rencontrez')} <span style={{ color: BRAND }}>SARA</span>,<br />{t('votre assistante IA')}
+                                </h2>
                                 <p className="text-gray-400 mb-8 leading-relaxed">
-                                    SARA est l'assistante intelligente intégrée à CONSTRUIRO. Elle aide les visiteurs, prospects et utilisateurs à comprendre le logiciel et à trouver rapidement les réponses dont ils ont besoin.
+                                    {t("SARA est l'assistante intelligente intégrée à CONSTRUIRO. Elle aide les visiteurs, prospects et utilisateurs à comprendre le logiciel et à trouver rapidement les réponses dont ils ont besoin.")}
                                 </p>
                                 <div className="space-y-4 mb-8">
                                     {[
                                         'Présente et explique toutes les fonctionnalités de CONSTRUIRO',
                                         'Guide vos équipes pas à pas dans le logiciel',
                                         'Compare les offres et vous oriente vers la bonne formule',
-                                        'Propose une démonstration dès qu\'elle détecte un intérêt',
+                                        "Propose une démonstration dès qu'elle détecte un intérêt",
                                         'Disponible 24h/24, 7j/7, en français et en anglais',
                                     ].map((f) => (
                                         <div key={f} className="flex gap-3 items-start">
@@ -1247,7 +1253,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                                 style={{ background: BRAND }}>
                                                 <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
                                             </div>
-                                            <p className="text-sm text-gray-300">{f}</p>
+                                            <p className="text-sm text-gray-300">{t(f)}</p>
                                         </div>
                                     ))}
                                 </div>
@@ -1255,7 +1261,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                     className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-white transition-all hover:opacity-90"
                                     style={{ background: BRAND, boxShadow: `0 8px 32px rgba(245,130,32,0.35)` }}
                                     onClick={() => document.getElementById('sara-chat')?.click()}>
-                                    Parler à SARA →
+                                    {t('Parler à SARA →')}
                                 </button>
                             </div>
                             <div>
@@ -1269,23 +1275,23 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                 <section id="securite" className="py-20 bg-white">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-14">
-                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>Sécurité & Conformité</p>
-                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>Vos données en sécurité</h2>
-                            <p className="text-gray-500 max-w-xl mx-auto">La protection de vos informations est au cœur de CONSTRUIRO. Voici nos engagements concrets.</p>
+                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Sécurité & Conformité')}</p>
+                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Vos données en sécurité')}</h2>
+                            <p className="text-gray-500 max-w-xl mx-auto">{t('La protection de vos informations est au cœur de CONSTRUIRO. Voici nos engagements concrets.')}</p>
                         </div>
                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {[
                                 { emoji: '🔒', titre: 'Connexions HTTPS', desc: 'Toutes les communications sont chiffrées. Vos données transitent de manière 100% sécurisée.' },
-                                { emoji: '👥', titre: 'Gestion des rôles', desc: 'Définissez précisément qui voit quoi. 8 niveaux d\'accès configurables selon vos besoins.' },
+                                { emoji: '👥', titre: 'Gestion des rôles', desc: "Définissez précisément qui voit quoi. 8 niveaux d'accès configurables selon vos besoins." },
                                 { emoji: '💾', titre: 'Sauvegardes automatiques', desc: 'Vos données sont sauvegardées automatiquement chaque jour. Restauration disponible à tout moment.' },
-                                { emoji: '📋', titre: 'Journal d\'audit complet', desc: 'Chaque action dans le logiciel est tracée. Retrouvez qui a fait quoi, quand et depuis où.' },
+                                { emoji: '📋', titre: "Journal d'audit complet", desc: 'Chaque action dans le logiciel est tracée. Retrouvez qui a fait quoi, quand et depuis où.' },
                                 { emoji: '🔐', titre: 'Mots de passe sécurisés', desc: 'Hachage bcrypt, authentification à deux facteurs disponible, politique de mot de passe forte.' },
                                 { emoji: '🏢', titre: 'Isolation des données', desc: 'Les données de chaque entreprise sont strictement isolées. Aucun croisement entre clients.' },
                             ].map((s) => (
                                 <div key={s.titre} className="p-6 rounded-2xl border border-gray-100 hover:border-[#F58220] hover:shadow-lg transition-all">
                                     <div className="text-3xl mb-4">{s.emoji}</div>
-                                    <h3 className="font-bold text-base mb-2" style={{ color: NAVY }}>{s.titre}</h3>
-                                    <p className="text-sm text-gray-500 leading-relaxed">{s.desc}</p>
+                                    <h3 className="font-bold text-base mb-2" style={{ color: NAVY }}>{t(s.titre)}</h3>
+                                    <p className="text-sm text-gray-500 leading-relaxed">{t(s.desc)}</p>
                                 </div>
                             ))}
                         </div>
@@ -1298,25 +1304,25 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                         <div className="rounded-3xl overflow-hidden" style={{ background: NAVY }}>
                             <div className="grid lg:grid-cols-2 gap-0">
                                 <div className="p-10 lg:p-14">
-                                    <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>Application Web Progressive</p>
-                                    <h2 className="text-3xl font-black text-white mb-5">Installez CONSTRUIRO<br />sur votre appareil</h2>
+                                    <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Application Web Progressive')}</p>
+                                    <h2 className="text-3xl font-black text-white mb-5">{t('Installez CONSTRUIRO sur votre appareil')}</h2>
                                     <p className="text-gray-400 mb-8 leading-relaxed">
-                                        Accédez plus rapidement à votre espace depuis votre ordinateur, tablette ou smartphone, sans passer par une boutique d'applications.
+                                        {t("Accédez plus rapidement à votre espace depuis votre ordinateur, tablette ou smartphone, sans passer par une boutique d'applications.")}
                                     </p>
                                     <div className="space-y-3 mb-8">
-                                        {['Icône sur votre écran d\'accueil','Ouverture en plein écran','Mises à jour automatiques','Installation légère, aucun fichier lourd','Compatible Android, Windows, Chrome, Edge'].map(f => (
+                                        {["Icône sur votre écran d'accueil",'Ouverture en plein écran','Mises à jour automatiques','Installation légère, aucun fichier lourd','Compatible Android, Windows, Chrome, Edge'].map(f => (
                                             <div key={f} className="flex items-center gap-2 text-sm text-gray-300">
-                                                <span style={{ color: BRAND }}>✓</span> {f}
+                                                <span style={{ color: BRAND }}>✓</span> {t(f)}
                                             </div>
                                         ))}
                                     </div>
                                     <button id="pwa-install-btn"
                                         className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-white transition-all hover:opacity-90"
                                         style={{ background: BRAND }}>
-                                        📲 Installer l'application
+                                        {t("📲 Installer l'application")}
                                     </button>
                                     <p className="text-xs text-gray-600 mt-4">
-                                        Sur iPhone : appuyez sur Partager puis "Ajouter à l'écran d'accueil"
+                                        {t('Sur iPhone : appuyez sur Partager puis "Ajouter à l\'écran d\'accueil"')}
                                     </p>
                                 </div>
                                 <div className="p-10 lg:p-14 flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.03)' }}>
@@ -1331,9 +1337,9 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                 <section id="tarifs" className="py-20 bg-white">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-14">
-                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>Tarification</p>
-                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>Tarifs transparents</h2>
-                            <p className="text-gray-500 max-w-md mx-auto">Payez en FCFA. Pas de frais cachés. Annulez à tout moment.</p>
+                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Tarification')}</p>
+                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Tarifs transparents')}</h2>
+                            <p className="text-gray-500 max-w-md mx-auto">{t('Payez en FCFA. Pas de frais cachés. Annulez à tout moment.')}</p>
                         </div>
                         {plans.length > 0 ? (
                             <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
@@ -1344,21 +1350,21 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                         {i === 1 && (
                                             <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold text-white"
                                                 style={{ background: BRAND }}>
-                                                RECOMMANDÉ
+                                                {t('RECOMMANDÉ')}
                                             </div>
                                         )}
                                         <h3 className={`text-xl font-black mb-1 ${i === 1 ? 'text-white' : ''}`} style={i !== 1 ? { color: NAVY } : {}}>{plan.name}</h3>
                                         {plan.description && <p className={`text-sm mb-5 ${i === 1 ? 'text-gray-400' : 'text-gray-500'}`}>{plan.description}</p>}
                                         <div className="mb-6">
                                             <span className="text-3xl font-black" style={{ color: BRAND }}>{formatXOF(plan.price_monthly)}</span>
-                                            <span className={`text-sm ml-1 ${i === 1 ? 'text-gray-500' : 'text-gray-400'}`}>/mois</span>
+                                            <span className={`text-sm ml-1 ${i === 1 ? 'text-gray-500' : 'text-gray-400'}`}>{t('/mois')}</span>
                                         </div>
                                         <ul className="space-y-3 text-sm flex-1 mb-8">
                                             {[
-                                                plan.max_users >= 9999 ? 'Utilisateurs illimités' : `${plan.max_users} utilisateurs`,
-                                                plan.max_projects >= 9999 ? 'Projets illimités' : `${plan.max_projects} projets`,
-                                                '15+ modules BTP inclus',
-                                                ...(plan.trial_days > 0 ? [`${plan.trial_days} jours d'essai gratuit`] : []),
+                                                plan.max_users >= 9999 ? t('Utilisateurs illimités') : `${plan.max_users} ${t('utilisateurs')}`,
+                                                plan.max_projects >= 9999 ? t('Projets illimités') : `${plan.max_projects} ${t('projets')}`,
+                                                t('15+ modules BTP inclus'),
+                                                ...(plan.trial_days > 0 ? [`${plan.trial_days} ${t('jours d\'essai gratuit')}`] : []),
                                             ].map((item) => (
                                                 <li key={item} className={`flex items-center gap-2 ${i === 1 ? 'text-gray-300' : 'text-gray-600'}`}>
                                                     <span style={{ color: BRAND }}>✓</span> {item}
@@ -1370,18 +1376,18 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                             style={i === 1
                                                 ? { background: BRAND, color: '#fff' }
                                                 : { border: `2px solid ${BRAND}`, color: BRAND }}>
-                                            Commencer l'essai gratuit
+                                            {t('Commencer l\'essai gratuit')}
                                         </a>
                                     </div>
                                 ))}
                             </div>
                         ) : (
                             <div className="text-center py-12">
-                                <p className="text-gray-500 mb-4">Contactez-nous pour un devis personnalisé adapté à votre entreprise.</p>
+                                <p className="text-gray-500 mb-4">{t('Contactez-nous pour un devis personnalisé adapté à votre entreprise.')}</p>
                                 <a href="#demo"
                                     className="inline-block px-8 py-3.5 rounded-xl font-bold text-white transition hover:opacity-90"
                                     style={{ background: BRAND }}>
-                                    Demander un devis →
+                                    {t('Demander un devis →')}
                                 </a>
                             </div>
                         )}
@@ -1397,21 +1403,21 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                         <div className="rounded-3xl p-10 lg:p-14 text-center"
                             style={{ background: 'rgba(245,130,32,0.1)', border: '1px solid rgba(245,130,32,0.25)' }}>
                             <div className="text-5xl mb-5">🤝</div>
-                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>Programme partenaire</p>
-                            <h2 className="text-4xl font-black text-white mb-5">Développez vos revenus<br />avec IBIG PARTNERS</h2>
+                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Programme partenaire')}</p>
+                            <h2 className="text-4xl font-black text-white mb-5">{t('Développez vos revenus avec IBIG PARTNERS')}</h2>
                             <p className="text-gray-400 max-w-xl mx-auto mb-8 leading-relaxed">
-                                Rejoignez gratuitement le programme de partenariat IBIG et recommandez les solutions du groupe à votre réseau. Accédez aux outils, suivez vos recommandations et percevez vos commissions.
+                                {t("Rejoignez gratuitement le programme de partenariat IBIG et recommandez les solutions du groupe à votre réseau. Accédez aux outils, suivez vos recommandations et percevez vos commissions.")}
                             </p>
                             <div className="grid sm:grid-cols-3 gap-6 mb-10 text-left max-w-2xl mx-auto">
                                 {[
-                                    { emoji: '📋', titre: 'Inscription gratuite', desc: 'Rejoignez le programme sans frais d\'entrée.' },
+                                    { emoji: '📋', titre: 'Inscription gratuite', desc: "Rejoignez le programme sans frais d'entrée." },
                                     { emoji: '📊', titre: 'Espace partenaire', desc: 'Accédez à votre tableau de bord dédié.' },
                                     { emoji: '💰', titre: 'Commissions', desc: 'Percevez vos commissions pour chaque client référé.' },
                                 ].map(item => (
                                     <div key={item.titre} className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.05)' }}>
                                         <div className="text-2xl mb-2">{item.emoji}</div>
-                                        <div className="text-white font-bold text-sm mb-1">{item.titre}</div>
-                                        <div className="text-gray-500 text-xs">{item.desc}</div>
+                                        <div className="text-white font-bold text-sm mb-1">{t(item.titre)}</div>
+                                        <div className="text-gray-500 text-xs">{t(item.desc)}</div>
                                     </div>
                                 ))}
                             </div>
@@ -1419,12 +1425,12 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                 <a href="https://ibigpartners.com/" target="_blank" rel="noopener noreferrer"
                                     className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-white transition-all hover:opacity-90"
                                     style={{ background: BRAND, boxShadow: `0 8px 32px rgba(245,130,32,0.35)` }}>
-                                    Devenir partenaire →
+                                    {t('Devenir partenaire →')}
                                 </a>
                                 <a href="https://ibigpartners.com/" target="_blank" rel="noopener noreferrer"
                                     className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-white transition-all hover:bg-white/10"
                                     style={{ border: '2px solid rgba(255,255,255,0.2)' }}>
-                                    Découvrir le programme
+                                    {t('Découvrir le programme')}
                                 </a>
                             </div>
                         </div>
@@ -1468,9 +1474,9 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                 <section className="py-20 bg-white overflow-hidden">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-12">
-                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>Écosystème IBIG Soft</p>
-                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>Découvrez les autres<br />solutions IBIG Soft</h2>
-                            <p className="text-gray-500 max-w-xl mx-auto">IBIG Soft édite plusieurs logiciels de gestion pour différents secteurs en Afrique.</p>
+                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Écosystème IBIG Soft')}</p>
+                            <h2 className="text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Découvrez les autres solutions IBIG Soft')}</h2>
+                            <p className="text-gray-500 max-w-xl mx-auto">{t('IBIG Soft édite plusieurs logiciels de gestion pour différents secteurs en Afrique.')}</p>
                         </div>
                     </div>
                     {/* Marquee défilant */}
@@ -1488,7 +1494,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                     <span className="text-3xl">{l.emoji}</span>
                                     <div>
                                         <div className="font-black text-sm" style={{ color: NAVY }}>{l.nom}</div>
-                                        <div className="text-xs font-semibold uppercase tracking-wider" style={{ color: l.couleur }}>{l.secteur}</div>
+                                        <div className="text-xs font-semibold uppercase tracking-wider" style={{ color: l.couleur }}>{t(l.secteur)}</div>
                                     </div>
                                 </div>
                             ))}
@@ -1498,7 +1504,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                         <a href="https://ibigsoft.com" target="_blank" rel="noopener noreferrer"
                             className="inline-flex items-center gap-2 text-sm font-bold transition hover:opacity-75"
                             style={{ color: BRAND }}>
-                            Voir toutes les solutions IBIG Soft →
+                            {t('Voir toutes les solutions IBIG Soft →')}
                         </a>
                     </div>
                 </section>
@@ -1579,10 +1585,10 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                             <div className="col-span-2 md:col-span-3 lg:col-span-2">
                                 <ConstruiroLogo size="sm" dark />
                                 <p className="text-sm text-slate-400 mt-4 leading-relaxed max-w-xs">
-                                    L'ERP BTP conçu pour les entreprises de construction et de travaux publics en Afrique.
+                                    {t("L'ERP BTP conçu pour les entreprises de construction et de travaux publics en Afrique.")}
                                 </p>
-                                <p className="text-xs mt-4 italic" style={{ color: BRAND }}>CONSTRUIRE. PILOTER. MAÎTRISER.</p>
-                                <p className="text-xs mt-2 text-slate-600">Un produit de <strong className="text-slate-500">IBIG Soft</strong></p>
+                                <p className="text-xs mt-4 italic" style={{ color: BRAND }}>{t('CONSTRUIRE. PILOTER. MAÎTRISER.')}</p>
+                                <p className="text-xs mt-2 text-slate-600">{t('Un produit de')} <strong className="text-slate-500">IBIG Soft</strong></p>
                                 <a href="https://ibigsoft.com" target="_blank" rel="noopener noreferrer"
                                     className="text-xs mt-1 inline-block transition hover:text-[#F58220]" style={{ color: BRAND }}>
                                     ibigsoft.com →
@@ -1601,7 +1607,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
 
                             {/* Col 2 — Navigation */}
                             <div>
-                                <h4 className="text-xs font-bold text-white mb-4 uppercase tracking-wider">Navigation</h4>
+                                <h4 className="text-xs font-bold text-white mb-4 uppercase tracking-wider">{t('Navigation')}</h4>
                                 <ul className="space-y-2.5 text-sm">
                                     {[
                                         { label: 'Accueil', href: '/', anchor: false },
@@ -1610,12 +1616,12 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                         { label: 'Tarifs', href: '#tarifs', anchor: true },
                                         { label: 'Démonstration', href: '#demo', anchor: true },
                                         { label: 'Assistance', href: '/aide', anchor: false },
-                                        { label: 'Connexion', href: route('login'), anchor: false },
+                                        { label: 'Se connecter', href: route('login'), anchor: false },
                                     ].map(l => (
                                         <li key={l.label}>
                                             {l.anchor
-                                                ? <a href={l.href} className="hover:text-[#F58220] transition text-sm">{l.label}</a>
-                                                : <Link href={l.href} className="hover:text-[#F58220] transition text-sm">{l.label}</Link>
+                                                ? <a href={l.href} className="hover:text-[#F58220] transition text-sm">{t(l.label)}</a>
+                                                : <Link href={l.href} className="hover:text-[#F58220] transition text-sm">{t(l.label)}</Link>
                                             }
                                         </li>
                                     ))}
@@ -1624,21 +1630,21 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
 
                             {/* Col 3 — Ressources */}
                             <div>
-                                <h4 className="text-xs font-bold text-white mb-4 uppercase tracking-wider">Ressources</h4>
+                                <h4 className="text-xs font-bold text-white mb-4 uppercase tracking-wider">{t('Ressources')}</h4>
                                 <ul className="space-y-2.5 text-sm">
                                     {[
                                         { label: 'Guide utilisateur', href: '/guide/fr', ext: false },
-                                        { label: 'Centre d\'aide', href: '/aide', ext: false },
+                                        { label: "Centre d'aide", href: '/aide', ext: false },
                                         { label: 'FAQ', href: '#faq', anchor: true },
                                         { label: 'Blog', href: 'https://ibigsoft.com', ext: true },
                                         { label: 'Statut des services', href: 'https://ibigsoft.com', ext: true },
                                     ].map(l => (
                                         <li key={l.label}>
                                             {l.ext
-                                                ? <a href={l.href} target="_blank" rel="noopener noreferrer" className="hover:text-[#F58220] transition text-sm">{l.label}</a>
+                                                ? <a href={l.href} target="_blank" rel="noopener noreferrer" className="hover:text-[#F58220] transition text-sm">{t(l.label)}</a>
                                                 : l.anchor
-                                                ? <a href={l.href} className="hover:text-[#F58220] transition text-sm">{l.label}</a>
-                                                : <Link href={l.href} className="hover:text-[#F58220] transition text-sm">{l.label}</Link>
+                                                ? <a href={l.href} className="hover:text-[#F58220] transition text-sm">{t(l.label)}</a>
+                                                : <Link href={l.href} className="hover:text-[#F58220] transition text-sm">{t(l.label)}</Link>
                                             }
                                         </li>
                                     ))}
@@ -1650,7 +1656,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                 <h4 className="text-xs font-bold text-white mb-4 uppercase tracking-wider">IBIG Soft</h4>
                                 <ul className="space-y-2.5 text-sm">
                                     {[
-                                        { label: 'À propos d\'IBIG Soft', href: 'https://ibigsoft.com', ext: true },
+                                        { label: "À propos d'IBIG Soft", href: 'https://ibigsoft.com', ext: true },
                                         { label: 'Autres logiciels', href: 'https://ibigsoft.com', ext: true },
                                         { label: 'Devenir partenaire', href: 'https://ibigpartners.com/', ext: true },
                                         { label: 'IBIG PARTNERS', href: 'https://ibigpartners.com/', ext: true },
@@ -1659,10 +1665,10 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                     ].map(l => (
                                         <li key={l.label}>
                                             {l.ext
-                                                ? <a href={l.href} target="_blank" rel="noopener noreferrer" className="hover:text-[#F58220] transition text-sm">{l.label}</a>
+                                                ? <a href={l.href} target="_blank" rel="noopener noreferrer" className="hover:text-[#F58220] transition text-sm">{t(l.label)}</a>
                                                 : l.anchor
-                                                    ? <a href={l.href} className="hover:text-[#F58220] transition text-sm">{l.label}</a>
-                                                    : <Link href={l.href} className="hover:text-[#F58220] transition text-sm">{l.label}</Link>
+                                                    ? <a href={l.href} className="hover:text-[#F58220] transition text-sm">{t(l.label)}</a>
+                                                    : <Link href={l.href} className="hover:text-[#F58220] transition text-sm">{t(l.label)}</Link>
                                             }
                                         </li>
                                     ))}
@@ -1671,7 +1677,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
 
                             {/* Col 5 — Légal */}
                             <div>
-                                <h4 className="text-xs font-bold text-white mb-4 uppercase tracking-wider">Légal</h4>
+                                <h4 className="text-xs font-bold text-white mb-4 uppercase tracking-wider">{t('Légal')}</h4>
                                 <ul className="space-y-2.5 text-sm">
                                     {[
                                         { label: 'Mentions légales', href: '/legal/legal' },
@@ -1684,7 +1690,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                         { label: 'Gestion des données', href: '/legal/traitement-donnees' },
                                     ].map(l => (
                                         <li key={l.label}>
-                                            <Link href={l.href} className="hover:text-[#F58220] transition text-sm">{l.label}</Link>
+                                            <Link href={l.href} className="hover:text-[#F58220] transition text-sm">{t(l.label)}</Link>
                                         </li>
                                     ))}
                                 </ul>
@@ -1697,17 +1703,17 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                     <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600">
-                                <p>© {new Date().getFullYear()} CONSTRUIRO ERP — Tous droits réservés.</p>
+                                <p>© {new Date().getFullYear()} CONSTRUIRO ERP — {t('Tous droits réservés.')}</p>
                                 <p className="text-center">
-                                    Logiciel conçu, édité et exploité par <strong className="text-slate-500">IBIG Soft</strong>, une marque de IBIG SARL – Intermark Business International Group.
+                                    {t('Logiciel conçu, édité et exploité par')} <strong className="text-slate-500">IBIG Soft</strong>, une marque de IBIG SARL – Intermark Business International Group.
                                 </p>
                                 <a href="https://ibigsoft.com" target="_blank" rel="noopener noreferrer"
                                     className="hover:text-[#F58220] transition whitespace-nowrap" style={{ color: BRAND }}>
-                                    Découvrir l'éditeur →
+                                    {t("Découvrir l'éditeur →")}
                                 </a>
                             </div>
                             <p className="text-xs text-slate-700 text-center mt-3 max-w-3xl mx-auto">
-                                Toute reproduction, imitation, copie ou utilisation non autorisée du logiciel, de son interface, de son logo, de ses textes ou de sa documentation est interdite.
+                                {t('Toute reproduction, imitation, copie ou utilisation non autorisée du logiciel, de son interface, de son logo, de ses textes ou de sa documentation est interdite.')}
                             </p>
                         </div>
                     </div>

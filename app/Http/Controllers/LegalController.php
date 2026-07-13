@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\LegalPage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -19,7 +20,7 @@ class LegalController extends Controller
             'page' => [
                 'slug'       => $page->slug,
                 'title'      => $page->title(),
-                'content'    => $page->content(),
+                'content'    => Str::markdown($page->content(), ['html_input' => 'allow']),
                 'updated_at' => $page->last_updated_at?->format('d/m/Y'),
             ],
         ]);
