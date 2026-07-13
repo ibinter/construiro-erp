@@ -255,11 +255,12 @@ export default function Index({ projects, selectedProject, tasks, bounds, member
                     </div>
 
                     {/* Liste des tâches */}
-                    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+                    <div className="rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
                         <div className="flex items-center gap-2 border-b border-slate-100 px-5 py-4 dark:border-slate-800">
                             <Icon name="list-checks" className="h-5 w-5 text-orange-500" />
                             <h3 className="font-semibold text-slate-800 dark:text-slate-100">{t('Tâches')} ({tasks.length})</h3>
                         </div>
+                        <div className="overflow-x-auto">
                         <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800">
                             <thead className="bg-slate-50 dark:bg-slate-800/50">
                                 <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
@@ -315,6 +316,7 @@ export default function Index({ projects, selectedProject, tasks, bounds, member
                                 )}
                             </tbody>
                         </table>
+                        </div>
                     </div>
                 </div>
             )}

@@ -93,6 +93,9 @@ Route::post('/demo-request', [DemoRequestController::class, 'store'])->name('dem
 Route::get('/aide',             [AideController::class, 'index'])->name('aide.index');
 Route::get('/aide/{section}',   [AideController::class, 'index'])->name('aide.section')
     ->where('section', 'guide|docs|nouveautes|faq');
+
+// ─── Guide utilisateur PDF (public) ─────────────────────────────────────────
+Route::get('/guide/{locale}', [UserGuideController::class, 'download'])->name('guide.download')->where('locale', 'fr|en');
 Route::redirect('/blog',   'https://ibigsoft.com', 301);
 Route::redirect('/statut', 'https://ibigsoft.com', 301);
 
@@ -308,8 +311,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/landing/legal/{legalPage}/toggle',               [SuperAdminLandingController::class, 'legalToggle'])->name('superadmin.landing.legal.toggle');
     });
 
-    // --- Guide utilisateur PDF --------------------------------------------------
-    Route::get('/guide/{locale}', [UserGuideController::class, 'download'])->name('guide.download')->where('locale', 'fr|en');
+    // --- Guide utilisateur PDF (auth) --------------------------------------------------
+    // Route moved to public section below
 
     // --- Onboarding post-inscription -------------------------------------------
     Route::prefix('onboarding')->group(function () {

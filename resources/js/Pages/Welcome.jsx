@@ -988,22 +988,46 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                         </div>
                     </div>
 
-                    {/* Menu mobile */}
+                    {/* Drawer mobile plein écran */}
                     {mobileMenuOpen && (
-                        <div className="lg:hidden border-t border-gray-100 bg-white px-4 pb-4 pt-3 space-y-1">
-                            {[[t('Fonctionnalités'), '#modules'],[t('Publics'), '#publics'],[t('Tarifs'), '#tarifs'],[t('Démo'), '#demo'],[t('Assistance'), '/aide']].map(([label, href]) => (
-                                <a key={label} href={href} onClick={() => setMobileMenuOpen(false)}
-                                    className="block py-2 text-sm font-medium text-gray-700 hover:text-[#F58220]">{label}</a>
-                            ))}
-                            {canLogin && <Link href={route('login')} className="block py-2 text-sm font-medium text-gray-700 hover:text-[#F58220]">{t('Se connecter')}</Link>}
-                            {canRegister && (
-                                <Link href={route('register')}
-                                    className="block mt-2 text-center py-3 rounded-xl font-bold text-white text-sm"
-                                    style={{ background: BRAND }}>
-                                    {t('Essai gratuit 14 jours')}
-                                </Link>
-                            )}
-                            <div className="pt-2"><LanguageSwitcher /></div>
+                        <div className="lg:hidden fixed inset-0 z-[9998] flex flex-col" style={{ background: NAVY }}>
+                            {/* Header du drawer */}
+                            <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+                                <ConstruiroLogo size="sm" dark />
+                                <button onClick={() => setMobileMenuOpen(false)}
+                                    className="p-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10"
+                                    aria-label="Fermer">
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            {/* Liens */}
+                            <nav className="flex-1 overflow-y-auto px-5 py-6 space-y-1">
+                                {[[t('Fonctionnalités'), '#modules'],[t('Publics'), '#publics'],[t('Tarifs'), '#tarifs'],[t('Démo'), '#demo'],[t('Assistance'), '/aide']].map(([label, href]) => (
+                                    <a key={label} href={href} onClick={() => setMobileMenuOpen(false)}
+                                        className="flex items-center py-3.5 px-4 text-base font-semibold text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition">
+                                        {label}
+                                    </a>
+                                ))}
+                            </nav>
+                            {/* CTA bas */}
+                            <div className="px-5 pb-8 space-y-3">
+                                <div className="mb-4"><LanguageSwitcher /></div>
+                                {canLogin && (
+                                    <Link href={route('login')} onClick={() => setMobileMenuOpen(false)}
+                                        className="block text-center py-3.5 rounded-xl font-bold text-white border border-white/30 hover:bg-white/10 transition text-sm">
+                                        {t('Se connecter')}
+                                    </Link>
+                                )}
+                                {canRegister && (
+                                    <Link href={route('register')} onClick={() => setMobileMenuOpen(false)}
+                                        className="block text-center py-3.5 rounded-xl font-bold text-white text-sm transition"
+                                        style={{ background: BRAND }}>
+                                        {t('Essai gratuit 14 jours')}
+                                    </Link>
+                                )}
+                            </div>
                         </div>
                     )}
                 </nav>
