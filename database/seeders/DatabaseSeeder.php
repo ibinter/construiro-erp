@@ -62,6 +62,22 @@ class DatabaseSeeder extends Seeder
         );
         $admin->syncRoles(['super_admin']);
 
+        // IBIG Soft — compte SuperAdmin global (ibig_superadmin).
+        $ibigAdmin = User::updateOrCreate(
+            ['email' => 'sa@ibigsoft.com'],
+            [
+                'company_id'        => $company->id,
+                'agency_id'         => $agency->id,
+                'name'              => 'IBIG SuperAdmin',
+                'password'          => Hash::make('Ibig@2026!'),
+                'email_verified_at' => now(),
+                'locale'            => 'fr',
+                'job_title'         => 'SuperAdmin IBIG Soft',
+                'is_active'         => true,
+            ]
+        );
+        $ibigAdmin->syncRoles(['ibig_superadmin']);
+
         // 4) Comptes de démonstration pour quelques portails clés.
         $demoUsers = [
             ['directeur_projet',   'Directeur de Projet',    'dp@construiro.com'],
