@@ -243,57 +243,60 @@ function SlideVisualAutomation() {
     );
 }
 
-/* ── Visuel slide devices ─────────────────────────────────────── */
+/* ── Visuel slide devices — responsive ────────────────────────── */
 function SlideVisualDevices() {
     return (
-        <div className="flex items-end justify-center gap-6 w-full max-w-md mx-auto py-4">
-            {/* Desktop */}
-            <div className="flex-1 rounded-lg overflow-hidden" style={{ border: '2px solid rgba(255,255,255,0.2)', maxWidth: 200 }}>
-                <div className="bg-gray-800 py-1.5 px-3 flex gap-1">
-                    <span className="w-2 h-2 rounded-full bg-red-400"/>
-                    <span className="w-2 h-2 rounded-full bg-yellow-400"/>
-                    <span className="w-2 h-2 rounded-full bg-green-400"/>
+        <div className="flex items-end justify-center gap-3 w-full py-4" style={{ maxWidth: '100%' }}>
+            {/* Desktop — largeur adaptative 52% max 200px */}
+            <div className="rounded-lg overflow-hidden flex-none"
+                style={{ width: 'min(52%, 200px)', border: '2px solid rgba(255,255,255,0.2)' }}>
+                <div className="bg-gray-800 py-1 px-2 flex gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-400"/>
+                    <span className="w-1.5 h-1.5 rounded-full bg-yellow-400"/>
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-400"/>
                 </div>
-                <div className="bg-gray-900 p-2 space-y-1">
-                    <div className="h-2 rounded-full bg-gray-700 w-3/4"/>
-                    <div className="h-8 rounded bg-gray-800 flex items-center justify-center">
-                        <span className="text-xs" style={{ color: BRAND }}>CONSTRUIRO</span>
+                <div className="bg-gray-900 p-1.5 space-y-1">
+                    <div className="h-1.5 rounded-full bg-gray-700 w-3/4"/>
+                    <div className="h-6 rounded bg-gray-800 flex items-center justify-center">
+                        <span className="text-xs" style={{ color: BRAND, fontSize: 9 }}>CONSTRUIRO</span>
                     </div>
                     <div className="grid grid-cols-2 gap-1">
-                        <div className="h-5 rounded bg-gray-700"/>
-                        <div className="h-5 rounded bg-gray-700"/>
+                        <div className="h-4 rounded bg-gray-700"/>
+                        <div className="h-4 rounded bg-gray-700"/>
                     </div>
                 </div>
-                <div className="h-2 bg-gray-800"/>
-                <div className="h-1 mx-auto w-8 bg-gray-600 rounded-full mt-1"/>
+                <div className="h-1.5 bg-gray-800"/>
+                <div className="h-1 mx-auto w-6 bg-gray-600 rounded-full mt-0.5"/>
             </div>
-            {/* Tablet */}
-            <div className="rounded-xl overflow-hidden" style={{ border: '2px solid rgba(245,130,32,0.4)', width: 100 }}>
-                <div className="bg-gray-900 p-2 space-y-1">
-                    <div className="h-4 rounded bg-gray-800 flex items-center justify-center">
-                        <span className="text-xs" style={{ color: BRAND, fontSize: 7 }}>CONSTRUIRO</span>
-                    </div>
-                    <div className="h-12 rounded bg-gray-800"/>
-                    <div className="h-3 rounded bg-gray-700"/>
-                </div>
-                <div className="h-2 bg-gray-800 flex justify-center items-center">
-                    <div className="w-4 h-1 rounded-full bg-gray-600"/>
-                </div>
-            </div>
-            {/* Phone */}
-            <div className="rounded-2xl overflow-hidden" style={{ border: '2px solid rgba(255,255,255,0.15)', width: 70 }}>
+            {/* Tablet — 26% max 100px */}
+            <div className="rounded-xl overflow-hidden flex-none"
+                style={{ width: 'min(26%, 100px)', border: '2px solid rgba(245,130,32,0.4)' }}>
                 <div className="bg-gray-900 p-1.5 space-y-1">
                     <div className="h-3 rounded bg-gray-800 flex items-center justify-center">
-                        <span style={{ color: BRAND, fontSize: 5 }} className="font-bold">CONSTRUIRO</span>
+                        <span style={{ color: BRAND, fontSize: 6 }}>CONSTRUIRO</span>
                     </div>
                     <div className="h-10 rounded bg-gray-800"/>
+                    <div className="h-2 rounded bg-gray-700"/>
+                </div>
+                <div className="h-2 bg-gray-800 flex justify-center items-center">
+                    <div className="w-3 h-1 rounded-full bg-gray-600"/>
+                </div>
+            </div>
+            {/* Phone — 18% max 70px */}
+            <div className="rounded-2xl overflow-hidden flex-none"
+                style={{ width: 'min(18%, 70px)', border: '2px solid rgba(255,255,255,0.15)' }}>
+                <div className="bg-gray-900 p-1 space-y-1">
+                    <div className="h-2.5 rounded bg-gray-800 flex items-center justify-center">
+                        <span style={{ color: BRAND, fontSize: 4 }} className="font-bold">C</span>
+                    </div>
+                    <div className="h-8 rounded bg-gray-800"/>
                     <div className="grid grid-cols-2 gap-0.5">
-                        <div className="h-2 rounded bg-gray-700"/>
-                        <div className="h-2 rounded bg-gray-700"/>
+                        <div className="h-1.5 rounded bg-gray-700"/>
+                        <div className="h-1.5 rounded bg-gray-700"/>
                     </div>
                 </div>
-                <div className="h-3 bg-gray-800 flex justify-center items-center">
-                    <div className="w-5 h-1 rounded-full bg-gray-600"/>
+                <div className="h-2 bg-gray-800 flex justify-center items-center">
+                    <div className="w-4 h-0.5 rounded-full bg-gray-600"/>
                 </div>
             </div>
         </div>
@@ -775,13 +778,14 @@ function ComparateurOffres({ plans }) {
         return val ?? '—';
     };
     return (
-        <section className="py-20 bg-gray-50 overflow-x-auto">
+        <section className="py-20 bg-gray-50">
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-12">
                     <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Comparateur')}</p>
                     <h2 className="text-3xl sm:text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Ce qui est inclus dans chaque offre')}</h2>
                 </div>
-                <div className="rounded-2xl overflow-hidden border border-gray-200 bg-white shadow-sm">
+                <div className="overflow-x-auto -mx-4 sm:mx-0 rounded-2xl" style={{ WebkitOverflowScrolling: 'touch' }}>
+                <div className="rounded-2xl overflow-hidden border border-gray-200 bg-white shadow-sm" style={{ minWidth: 560 }}>
                     <table className="w-full text-sm">
                         <thead>
                             <tr style={{ background: NAVY }}>
@@ -833,6 +837,7 @@ function ComparateurOffres({ plans }) {
                         </tbody>
                     </table>
                 </div>
+                </div>
             </div>
         </section>
     );
@@ -857,7 +862,7 @@ function TopBar() {
                         <a href="mailto:contact@ibigsoft.com" className="hover:text-white transition">contact@ibigsoft.com</a>
                     </span>
                 </div>
-                <div className="flex items-center gap-3 text-gray-400">
+                <div className="hidden sm:flex items-center gap-3 text-gray-400">
                     <a href="https://ibigsoft.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition">IBIG Soft</a>
                     <span className="opacity-30">|</span>
                     <a href="/aide" className="hover:text-white transition">{t('Support')}</a>
@@ -874,6 +879,17 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
     const { t } = useTrans();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const temoignagesList = temoignagesProp ?? temoignages;
+
+    useEffect(() => {
+        if (!mobileMenuOpen) return;
+        document.body.style.overflow = 'hidden';
+        const onKey = (e) => { if (e.key === 'Escape') setMobileMenuOpen(false); };
+        window.addEventListener('keydown', onKey);
+        return () => {
+            document.body.style.overflow = '';
+            window.removeEventListener('keydown', onKey);
+        };
+    }, [mobileMenuOpen]);
 
     return (
         <>
@@ -967,7 +983,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                     )}
                                     {canRegister && (
                                         <Link href={route('register')}
-                                            className="text-sm font-semibold px-5 py-2.5 rounded-xl text-white transition hover:opacity-90"
+                                            className="hidden sm:inline-flex text-sm font-semibold px-5 py-2.5 rounded-xl text-white transition hover:opacity-90"
                                             style={{ background: BRAND }}>
                                             {t('Essai gratuit')}
                                         </Link>
@@ -1326,31 +1342,34 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                 {/* ── PWA ─────────────────────────────────────────── */}
                 <section id="pwa" className="py-20 bg-gray-50">
                     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="rounded-3xl overflow-hidden" style={{ background: NAVY }}>
+                        <div className="rounded-3xl" style={{ background: NAVY, overflow: 'clip' }}>
                             <div className="grid lg:grid-cols-2 gap-0">
-                                <div className="p-10 lg:p-14">
+                                <div className="p-6 sm:p-10 lg:p-14">
                                     <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Application Web Progressive')}</p>
-                                    <h2 className="text-3xl font-black text-white mb-5">{t('Installez CONSTRUIRO sur votre appareil')}</h2>
-                                    <p className="text-gray-400 mb-8 leading-relaxed">
+                                    <h2 className="font-black text-white mb-5" style={{ fontSize: 'clamp(1.5rem, 6vw, 2.25rem)', lineHeight: 1.1, overflowWrap: 'break-word' }}>
+                                        {t('Installez CONSTRUIRO sur votre appareil')}
+                                    </h2>
+                                    <p className="text-gray-400 mb-6 leading-relaxed text-sm sm:text-base">
                                         {t("Accédez plus rapidement à votre espace depuis votre ordinateur, tablette ou smartphone, sans passer par une boutique d'applications.")}
                                     </p>
-                                    <div className="space-y-3 mb-8">
+                                    <div className="space-y-3 mb-6">
                                         {["Icône sur votre écran d'accueil",'Ouverture en plein écran','Mises à jour automatiques','Installation légère, aucun fichier lourd','Compatible Android, Windows, Chrome, Edge'].map(f => (
-                                            <div key={f} className="flex items-center gap-2 text-sm text-gray-300">
-                                                <span style={{ color: BRAND }}>✓</span> {t(f)}
+                                            <div key={f} className="text-sm text-gray-300" style={{ display: 'grid', gridTemplateColumns: 'auto minmax(0,1fr)', gap: 10, alignItems: 'start' }}>
+                                                <span style={{ color: BRAND, marginTop: 1 }}>✓</span>
+                                                <span style={{ overflowWrap: 'break-word', wordBreak: 'break-word' }}>{t(f)}</span>
                                             </div>
                                         ))}
                                     </div>
                                     <button id="pwa-install-btn"
-                                        className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-white transition-all hover:opacity-90"
+                                        className="inline-flex items-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-bold text-white transition-all hover:opacity-90 text-sm sm:text-base"
                                         style={{ background: BRAND }}>
                                         {t("📲 Installer l'application")}
                                     </button>
-                                    <p className="text-xs text-gray-600 mt-4">
+                                    <p className="text-xs text-gray-400 mt-4" style={{ overflowWrap: 'break-word' }}>
                                         {t('Sur iPhone : appuyez sur Partager puis "Ajouter à l\'écran d\'accueil"')}
                                     </p>
                                 </div>
-                                <div className="p-10 lg:p-14 flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.03)' }}>
+                                <div className="px-6 pb-6 sm:p-10 lg:p-14 flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.03)' }}>
                                     <SlideVisualDevices />
                                 </div>
                             </div>
