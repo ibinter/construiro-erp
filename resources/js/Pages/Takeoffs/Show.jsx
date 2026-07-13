@@ -107,6 +107,7 @@ export default function Show({ takeoff, can }) {
                         )}
                     </tbody>
                 </table>
+                </div>
             </div>
 
             {takeoff.notes && (
