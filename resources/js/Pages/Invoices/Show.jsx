@@ -73,7 +73,7 @@ export default function Show({ invoice, can }) {
                         {invoice.project ? ` · ${invoice.project.name}` : ''}
                     </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                     <a
                         href={`/invoices/${invoice.id}/pdf`}
                         target="_blank"
@@ -81,6 +81,24 @@ export default function Show({ invoice, can }) {
                         className="inline-flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
                     >
                         <Icon name="file-down" className="h-4 w-4" /> PDF
+                    </a>
+                    {invoice.verify_token && (
+                        <a
+                            href={`/verify/${invoice.verify_token}`}
+                            target="_blank"
+                            rel="noopener"
+                            className="inline-flex items-center gap-2 rounded-md border border-green-300 px-3 py-2 text-sm font-medium text-green-700 hover:bg-green-50 dark:border-green-700 dark:text-green-300"
+                        >
+                            <Icon name="shield-check" className="h-4 w-4" /> {t('Vérifier')}
+                        </a>
+                    )}
+                    <a
+                        href="/export/invoices"
+                        target="_blank"
+                        rel="noopener"
+                        className="inline-flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+                    >
+                        <Icon name="table-2" className="h-4 w-4" /> Excel
                     </a>
                     {can.update && balance > 0 && (
                         <button

@@ -6,6 +6,11 @@ use App\Models\Invoice;
 use App\Models\PurchaseOrder;
 use App\Models\Quote;
 use App\Services\DocumentVerifier;
+use BaconQrCode\Encoder\QrCode as BaconQr;
+use BaconQrCode\Renderer\Image\SvgImageBackEnd;
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Writer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,6 +33,8 @@ class PdfController extends Controller
             'title'      => 'DEVIS',
             'partyLabel' => 'Client',
             'partyName'  => $quote->client_name,
+            'qr_svg'     => $this->makeQrSvg(route('verify.document', $quote->verify_token)),
+            'verify_url' => route('verify.document', $quote->verify_token),
         ], "Devis-{$quote->code}.pdf");
     }
 
@@ -43,6 +50,8 @@ class PdfController extends Controller
             'title'      => 'FACTURE',
             'partyLabel' => 'Client',
             'partyName'  => $invoice->client?->name ?? '—',
+            'qr_svg'     => $this->makeQrSvg(route('verify.document', $invoice->verify_token)),
+            'verify_url' => route('verify.document', $invoice->verify_token),
         ], "Facture-{$invoice->code}.pdf");
     }
 
@@ -58,6 +67,17 @@ class PdfController extends Controller
             'partyLabel' => 'Fournisseur',
             'partyName'  => $purchase->supplier?->name ?? '—',
         ], "BonCommande-{$purchase->code}.pdf");
+    }
+
+    /** Génère un SVG QR code pour l'URL donnée. */
+    private function makeQrSvg(string $url): string
+    {
+        $renderer = new ImageRenderer(
+            new RendererStyle(120),
+            new SvgImageBackEnd()
+        );
+        $writer = new Writer($renderer);
+        return $writer->writeString($url);
     }
 
     /** Charge le gabarit, applique le format A4 et renvoie le flux PDF (aperçu inline). */

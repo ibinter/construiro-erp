@@ -45,6 +45,7 @@ class InvoiceController extends Controller
                 'create' => $user->can('invoicing.create'),
                 'update' => $user->can('invoicing.update'),
                 'delete' => $user->can('invoicing.delete'),
+                'export' => $user->can('invoicing.export'),
             ],
         ]);
     }

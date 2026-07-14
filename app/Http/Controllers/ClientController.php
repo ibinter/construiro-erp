@@ -43,6 +43,7 @@ class ClientController extends Controller
                 'create' => $user->can('clients.create'),
                 'update' => $user->can('clients.update'),
                 'delete' => $user->can('clients.delete'),
+                'export' => $user->can('clients.export'),
             ],
         ]);
     }

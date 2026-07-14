@@ -46,6 +46,7 @@ class QuoteController extends Controller
                 'create' => $user->can('quotes.create'),
                 'update' => $user->can('quotes.update'),
                 'delete' => $user->can('quotes.delete'),
+                'export' => $user->can('quotes.export'),
             ],
         ]);
     }

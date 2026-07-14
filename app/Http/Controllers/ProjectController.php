@@ -44,6 +44,7 @@ class ProjectController extends Controller
                 'create' => $user->can('projects.create'),
                 'update' => $user->can('projects.update'),
                 'delete' => $user->can('projects.delete'),
+                'export' => $user->can('projects.export'),
             ],
         ]);
     }
