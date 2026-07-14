@@ -6,11 +6,7 @@ use App\Models\Invoice;
 use App\Models\PurchaseOrder;
 use App\Models\Quote;
 use App\Services\DocumentVerifier;
-use BaconQrCode\Encoder\QrCode as BaconQr;
-use BaconQrCode\Renderer\Image\SvgImageBackEnd;
-use BaconQrCode\Renderer\ImageRenderer;
-use BaconQrCode\Renderer\RendererStyle\RendererStyle;
-use BaconQrCode\Writer;
+use SimpleSoftwareIO\QrCode\Generator as QrGenerator;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -69,15 +65,10 @@ class PdfController extends Controller
         ], "BonCommande-{$purchase->code}.pdf");
     }
 
-    /** Génère un SVG QR code pour l'URL donnée. */
+    /** Génère un SVG QR code pour l'URL donnée via simplesoftwareio/simple-qrcode. */
     private function makeQrSvg(string $url): string
     {
-        $renderer = new ImageRenderer(
-            new RendererStyle(120),
-            new SvgImageBackEnd()
-        );
-        $writer = new Writer($renderer);
-        return $writer->writeString($url);
+        return (string) (new QrGenerator())->format('svg')->size(120)->generate($url);
     }
 
     /** Charge le gabarit, applique le format A4 et renvoie le flux PDF (aperçu inline). */
