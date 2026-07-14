@@ -20,10 +20,10 @@ class DocumentVerifier
         $token = $document->verify_token ?? Str::random(48);
         $hash  = self::computeHash($document);
 
-        $document->updateQuietly([
-            'verify_token'  => $token,
-            'document_hash' => $hash,
-        ]);
+        // Mettre à jour les attributs en mémoire ET en base (updateQuietly ne touche pas le modèle en mémoire)
+        $document->verify_token  = $token;
+        $document->document_hash = $hash;
+        $document->saveQuietly();
     }
 
     /**
