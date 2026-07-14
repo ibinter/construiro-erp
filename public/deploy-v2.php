@@ -49,6 +49,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['diag'])) {
         echo "opcache_invalidate result: " . var_export($result, true) . "\n";
         echo "File mtime: " . date('Y-m-d H:i:s', filemtime($f)) . "\n";
         echo "File head:\n" . implode("\n", array_slice(file($f), 0, 8));
+    } elseif ($diag === 'laravel-log') {
+        $logFile = $dir . '/storage/logs/laravel.log';
+        if (file_exists($logFile)) {
+            $lines = file($logFile);
+            $last = array_slice($lines, -100);
+            echo implode('', $last);
+        } else {
+            echo "Log file not found: $logFile";
+        }
+    } elseif ($diag === 'artisan-about') {
+        echo shell_exec("cd $dir && php artisan about 2>&1");
+    } elseif ($diag === 'php-error') {
+        echo shell_exec("cd $dir && php -r \"require 'vendor/autoload.php';\" 2>&1");
     }
     exit;
 }
