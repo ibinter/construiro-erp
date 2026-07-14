@@ -2,9 +2,11 @@ import { router } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import Icon from '@/Components/Icon';
 import { useTrans } from '@/i18n';
+import { useState } from 'react';
 
 export default function BackupIndex({ backups = [], can = {} }) {
     const { t } = useTrans();
+    const [restoring, setRestoring] = useState(null);
 
     const handleCreate = () => {
         if (confirm(t('Lancer un backup complet de la base de données ?'))) {
@@ -16,6 +18,21 @@ export default function BackupIndex({ backups = [], can = {} }) {
         if (confirm(t('Supprimer ce backup ? Cette action est irréversible.'))) {
             router.delete(route('backup.destroy', filename));
         }
+    };
+
+    const handleRestore = (filename) => {
+        const confirmed = confirm(
+            `⚠️ ATTENTION — Restauration de la base de données\n\n` +
+            `Fichier : ${filename}\n\n` +
+            `Cette opération va ÉCRASER TOUTES les données actuelles par celles du backup.\n` +
+            `Cette action est IRRÉVERSIBLE.\n\n` +
+            `Êtes-vous absolument certain de vouloir continuer ?`
+        );
+        if (!confirmed) return;
+        setRestoring(filename);
+        router.post(route('backup.restore', filename), {}, {
+            onFinish: () => setRestoring(null),
+        });
     };
 
     return (
@@ -102,6 +119,16 @@ export default function BackupIndex({ backups = [], can = {} }) {
                                                             {t('Télécharger')}
                                                         </a>
                                                     )}
+                                                    {can.create && (
+                                                        <button
+                                                            onClick={() => handleRestore(b.filename)}
+                                                            disabled={restoring === b.filename}
+                                                            className="inline-flex items-center gap-1.5 rounded-lg border border-amber-200 px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-50 disabled:opacity-50 dark:border-amber-800 dark:text-amber-400"
+                                                        >
+                                                            <Icon name="rotate-ccw" className="h-3.5 w-3.5" />
+                                                            {restoring === b.filename ? t('Restauration…') : t('Restaurer')}
+                                                        </button>
+                                                    )}
                                                     {can.delete && (
                                                         <button
                                                             onClick={() => handleDelete(b.filename)}
@@ -125,7 +152,7 @@ export default function BackupIndex({ backups = [], can = {} }) {
                 <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-700 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-300">
                     <Icon name="alert-triangle" className="mt-0.5 h-4 w-4 shrink-0" />
                     <div>
-                        <strong>{t('Restauration')}</strong> — {t('La restauration d\'un backup doit être effectuée par un administrateur système. Téléchargez le fichier .sql.gz et contactez le support si vous avez besoin d\'aide.')}
+                        <strong>{t('Restauration')}</strong> — {t('Le bouton « Restaurer » réimporte le backup sélectionné et écrase toutes les données actuelles. Cette action est irréversible. Créez un backup de l\'état actuel avant de restaurer.')}
                     </div>
                 </div>
             </div>

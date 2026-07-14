@@ -81,6 +81,47 @@ class BackupController extends Controller
         return back()->with('success', 'Backup supprimé.');
     }
 
+    public function restore(Request $request, string $filename): RedirectResponse
+    {
+        $this->authorize('administration.create');
+
+        $filename = basename($filename);
+        if (!preg_match('/^backup_[\w\-]+\.sql\.gz$/', $filename)) {
+            abort(404);
+        }
+
+        $path = storage_path('app/backups/' . $filename);
+        if (!file_exists($path)) {
+            abort(404);
+        }
+
+        $db   = config('database.connections.mysql.database');
+        $user = config('database.connections.mysql.username');
+        $pass = config('database.connections.mysql.password');
+        $host = config('database.connections.mysql.host');
+        $port = config('database.connections.mysql.port', 3306);
+
+        // Décompresser le .gz puis piper dans mysql
+        $cmd = sprintf(
+            'gunzip -c %s | mysql --host=%s --port=%d --user=%s --password=%s %s 2>&1',
+            escapeshellarg($path),
+            escapeshellarg($host),
+            (int) $port,
+            escapeshellarg($user),
+            escapeshellarg($pass),
+            escapeshellarg($db)
+        );
+
+        exec($cmd, $output, $exitCode);
+
+        if ($exitCode !== 0) {
+            \Log::error('Restore backup failed', ['output' => implode("\n", $output)]);
+            return back()->withErrors(['restore' => 'La restauration a échoué. Consultez les logs.']);
+        }
+
+        return back()->with('success', "Base de données restaurée depuis « {$filename} » avec succès.");
+    }
+
     // ── Helpers ──────────────────────────────────────────────────────────────
 
     private function listBackups(): array
