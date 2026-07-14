@@ -62,6 +62,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['diag'])) {
         echo shell_exec("cd $dir && php artisan about 2>&1");
     } elseif ($diag === 'php-error') {
         echo shell_exec("cd $dir && php -r \"require 'vendor/autoload.php';\" 2>&1");
+    } elseif ($diag === 'reset-opcache') {
+        if (function_exists('opcache_reset')) {
+            $result = opcache_reset();
+            echo "opcache_reset(): " . ($result ? "OK — OPcache vidé" : "FAILED") . "\n";
+        } else {
+            echo "OPcache non disponible\n";
+        }
+        echo shell_exec("cd $dir && php artisan config:clear 2>&1");
+        echo shell_exec("cd $dir && php artisan config:cache 2>&1");
+        echo shell_exec("cd $dir && php artisan route:cache 2>&1");
+        echo shell_exec("cd $dir && php artisan view:cache 2>&1");
+        echo "DONE\n";
     }
     exit;
 }
@@ -97,6 +109,12 @@ logMsg('git pull : ' . trim($out));
 // ── 3. Installer/mettre à jour les dépendances Composer ───────────
 $out = shell_exec("cd $dir && composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev 2>&1 | tail -3");
 logMsg('composer install : ' . trim($out));
+
+// ── 3b. Vider l'OPcache après composer install (nouveaux packages) ──
+if (function_exists('opcache_reset')) {
+    opcache_reset();
+    logMsg('OPcache reset après composer install');
+}
 
 // ── 4. Extraire les assets si un zip est fourni ────────────────────
 if (!empty($_FILES['assets']['tmp_name'])) {
