@@ -77,6 +77,7 @@ use App\Http\Controllers\SupportController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\UserGuideController;
 use App\Http\Controllers\ImportController;
+use App\Http\Controllers\BackupController;
 use App\Models\LandingFaq;
 use App\Models\LandingTemoignage;
 use App\Models\SubscriptionPlan;
@@ -139,6 +140,14 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified', 'subscription'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // --- Sauvegardes -----------------------------------------------------------
+    Route::prefix('backup')->name('backup.')->middleware('can:administration.view')->group(function () {
+        Route::get('/',                        [BackupController::class, 'index'])->name('index');
+        Route::post('/',                       [BackupController::class, 'store'])->name('store');
+        Route::get('/{filename}/download',     [BackupController::class, 'download'])->name('download');
+        Route::delete('/{filename}',           [BackupController::class, 'destroy'])->name('destroy');
+    });
 
     // --- Import universel -------------------------------------------------------
     Route::prefix('import')->name('import.')->group(function () {
