@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Invoice;
 use App\Models\PurchaseOrder;
 use App\Models\Quote;
+use App\Services\DocumentVerifier;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,6 +20,7 @@ class PdfController extends Controller
     {
         $this->authorizeCompany($request, $quote->company_id, 'quotes.view');
         $quote->load(['company', 'project', 'lines']);
+        DocumentVerifier::stamp($quote);
 
         return $this->render('pdf.quote', [
             'doc'        => $quote,
@@ -33,6 +35,7 @@ class PdfController extends Controller
     {
         $this->authorizeCompany($request, $invoice->company_id, 'invoicing.view');
         $invoice->load(['company', 'client', 'project', 'lines']);
+        DocumentVerifier::stamp($invoice);
 
         return $this->render('pdf.invoice', [
             'doc'        => $invoice,
