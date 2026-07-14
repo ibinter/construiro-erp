@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Client;
+use App\Models\Contract;
+use App\Models\Employee;
 use App\Models\Invoice;
+use App\Models\Project;
 use App\Models\PurchaseOrder;
 use App\Models\Quote;
 use App\Services\DocumentVerifier;
@@ -63,6 +67,59 @@ class PdfController extends Controller
             'partyLabel' => 'Fournisseur',
             'partyName'  => $purchase->supplier?->name ?? '—',
         ], "BonCommande-{$purchase->code}.pdf");
+    }
+
+    public function project(Request $request, Project $project): Response
+    {
+        $this->authorizeCompany($request, $project->company_id, 'projects.view');
+        $project->load(['company', 'manager:id,name', 'sites']);
+
+        return $this->render('pdf.project', [
+            'project' => $project,
+            'company' => $project->company,
+        ], "Projet-{$project->code}.pdf");
+    }
+
+    public function client(Request $request, Client $client): Response
+    {
+        $this->authorizeCompany($request, $client->company_id, 'clients.view');
+        $client->load('company');
+
+        return $this->render('pdf.client', [
+            'client'  => $client,
+            'company' => $client->company,
+        ], "Client-{$client->code}.pdf");
+    }
+
+    public function employee(Request $request, Employee $employee): Response
+    {
+        $this->authorizeCompany($request, $employee->company_id, 'hr.view');
+        $employee->load(['company', 'site:id,name']);
+
+        $payslips = $employee->payslips()
+            ->orderByDesc('period')
+            ->limit(6)
+            ->get();
+
+        return $this->render('pdf.employee', [
+            'employee' => $employee,
+            'company'  => $employee->company,
+            'payslips' => $payslips,
+        ], "Employe-{$employee->matricule}.pdf");
+    }
+
+    public function contract(Request $request, Contract $contract): Response
+    {
+        $this->authorizeCompany($request, $contract->company_id, 'contracts.view');
+        $contract->load(['company', 'project:id,name']);
+        DocumentVerifier::stamp($contract);
+
+        return $this->render('pdf.contract', [
+            'contract'   => $contract,
+            'company'    => $contract->company,
+            'qr_svg'     => $this->makeQrSvg(route('verify.document', $contract->verify_token)),
+            'verify_url' => route('verify.document', $contract->verify_token),
+        ], "Contrat-{$contract->code}.pdf");
     }
 
     /** Génère un SVG QR code pour l'URL donnée via simplesoftwareio/simple-qrcode. */

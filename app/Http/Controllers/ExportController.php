@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Models\Contract;
 use App\Models\Employee;
 use App\Models\Invoice;
 use App\Models\Material;
 use App\Models\Project;
+use App\Models\Quote;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -139,6 +141,70 @@ class ExportController extends Controller
         return $this->buildXlsx(
             $this->filename('Employes'),
             ['Matricule', 'Nom complet', 'Poste', 'Département', 'Contrat', 'Salaire base', 'Statut'],
+            $rows,
+        );
+    }
+
+    /** Export des devis. */
+    public function quotes(Request $request): StreamedResponse
+    {
+        $user = $request->user();
+        abort_unless($user->can('quotes.view'), 403);
+
+        $rows = Quote::forUser($user)
+            ->with('project:id,name')
+            ->latest()
+            ->get()
+            ->map(fn (Quote $q) => [
+                $q->code,
+                $q->title,
+                $q->client_name,
+                $q->status,
+                $q->currency,
+                $q->subtotal,
+                $q->tax_rate,
+                $q->total,
+                optional($q->date)->format('Y-m-d'),
+                optional($q->valid_until)->format('Y-m-d'),
+                optional($q->project)->name,
+            ]);
+
+        return $this->buildXlsx(
+            $this->filename('Devis'),
+            ['Code', 'Objet', 'Client', 'Statut', 'Devise', 'HT', 'TVA %', 'TTC', 'Date', 'Validité', 'Projet'],
+            $rows,
+        );
+    }
+
+    /** Export des contrats. */
+    public function contracts(Request $request): StreamedResponse
+    {
+        $user = $request->user();
+        abort_unless($user->can('contracts.view'), 403);
+
+        $this->ensureModelAvailable(Contract::class, 'contracts');
+
+        $rows = Contract::forUser($user)
+            ->with('project:id,name')
+            ->latest()
+            ->get()
+            ->map(fn (Contract $c) => [
+                $c->code,
+                $c->title,
+                $c->type,
+                $c->party_name,
+                $c->status,
+                $c->amount,
+                $c->currency,
+                optional($c->start_date)->format('Y-m-d'),
+                optional($c->end_date)->format('Y-m-d'),
+                optional($c->signed_date)->format('Y-m-d'),
+                optional($c->project)->name,
+            ]);
+
+        return $this->buildXlsx(
+            $this->filename('Contrats'),
+            ['Code', 'Objet', 'Type', 'Cocontractant', 'Statut', 'Montant', 'Devise', 'Début', 'Fin', 'Signé le', 'Projet'],
             $rows,
         );
     }

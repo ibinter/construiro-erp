@@ -583,22 +583,28 @@ Route::middleware(['auth', 'verified', 'subscription'])->group(function () {
     Route::post('/ai/ask', [AiAssistantController::class, 'ask'])->middleware('can:ai.view')->name('ai.ask');
 
     // --- Exports PDF (documents professionnels) --------------------------------
-    Route::get('/quotes/{quote}/pdf',      [PdfController::class, 'quote'])->middleware('can:quotes.view')->name('quotes.pdf');
-    Route::get('/invoices/{invoice}/pdf',  [PdfController::class, 'invoice'])->middleware('can:invoicing.view')->name('invoices.pdf');
-    Route::get('/purchases/{purchase}/pdf', [PdfController::class, 'purchase'])->middleware('can:purchases.view')->name('purchases.pdf');
-    Route::get('/payroll/{payslip}/pdf',   [DocumentPdfController::class, 'payslip'])->middleware('can:payroll.view')->name('payroll.pdf');
-    Route::get('/boq/{boq}/pdf',           [DocumentPdfController::class, 'boq'])->middleware('can:boq.view')->name('boq.pdf');
+    Route::get('/quotes/{quote}/pdf',         [PdfController::class, 'quote'])->middleware('can:quotes.view')->name('quotes.pdf');
+    Route::get('/invoices/{invoice}/pdf',     [PdfController::class, 'invoice'])->middleware('can:invoicing.view')->name('invoices.pdf');
+    Route::get('/purchases/{purchase}/pdf',   [PdfController::class, 'purchase'])->middleware('can:purchases.view')->name('purchases.pdf');
+    Route::get('/payroll/{payslip}/pdf',      [DocumentPdfController::class, 'payslip'])->middleware('can:payroll.view')->name('payroll.pdf');
+    Route::get('/boq/{boq}/pdf',             [DocumentPdfController::class, 'boq'])->middleware('can:boq.view')->name('boq.pdf');
+    Route::get('/projects/{project}/pdf',    [PdfController::class, 'project'])->middleware('can:projects.view')->name('projects.pdf');
+    Route::get('/clients/{client}/pdf',      [PdfController::class, 'client'])->middleware('can:clients.view')->name('clients.pdf');
+    Route::get('/hr/{employee}/pdf',         [PdfController::class, 'employee'])->middleware('can:hr.view')->name('hr.pdf');
+    Route::get('/contracts/{contract}/pdf',  [PdfController::class, 'contract'])->middleware('can:contracts.view')->name('contracts.pdf');
 
     // --- Chantiers (vue transversale) ------------------------------------------
     Route::get('/sites',        [SiteIndexController::class, 'index'])->middleware('can:sites.view')->name('sites.index');
     Route::get('/sites/{site}', [SiteIndexController::class, 'show'])->middleware('can:sites.view')->name('sites.overview.show');
 
     // --- Exports Excel (.xlsx) --------------------------------------------------
-    Route::get('/export/projects',  [ExportController::class, 'projects'])->middleware('can:projects.export')->name('export.projects');
-    Route::get('/export/invoices',  [ExportController::class, 'invoices'])->middleware('can:invoicing.export')->name('export.invoices');
-    Route::get('/export/clients',   [ExportController::class, 'clients'])->middleware('can:clients.export')->name('export.clients');
-    Route::get('/export/employees', [ExportController::class, 'employees'])->middleware('can:hr.export')->name('export.employees');
-    Route::get('/export/stocks',    [ExportController::class, 'stocks'])->middleware('can:stocks.export')->name('export.stocks');
+    Route::get('/export/projects',   [ExportController::class, 'projects'])->middleware('can:projects.export')->name('export.projects');
+    Route::get('/export/invoices',   [ExportController::class, 'invoices'])->middleware('can:invoicing.export')->name('export.invoices');
+    Route::get('/export/quotes',     [ExportController::class, 'quotes'])->middleware('can:quotes.view')->name('export.quotes');
+    Route::get('/export/clients',    [ExportController::class, 'clients'])->middleware('can:clients.export')->name('export.clients');
+    Route::get('/export/employees',  [ExportController::class, 'employees'])->middleware('can:hr.export')->name('export.employees');
+    Route::get('/export/contracts',  [ExportController::class, 'contracts'])->middleware('can:contracts.view')->name('export.contracts');
+    Route::get('/export/stocks',     [ExportController::class, 'stocks'])->middleware('can:stocks.export')->name('export.stocks');
 
     // --- GED : téléchargement de fichier ---------------------------------------
     Route::get('/documents/{document}/download', [DocumentController::class, 'download'])->middleware('can:documents.view')->name('documents.download');

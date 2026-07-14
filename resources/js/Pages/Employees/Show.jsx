@@ -84,7 +84,21 @@ export default function Show({ employee, attendances, payslips, can }) {
                         {' · '}<Badge map={DEPARTMENT} status={employee.department} />
                     </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
+                    <a
+                        href={`/hr/${employee.id}/pdf`}
+                        target="_blank" rel="noopener"
+                        className="inline-flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+                    >
+                        <Icon name="file-down" className="h-4 w-4" /> PDF
+                    </a>
+                    <a
+                        href="/export/employees"
+                        target="_blank" rel="noopener"
+                        className="inline-flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+                    >
+                        <Icon name="table-2" className="h-4 w-4" /> Excel
+                    </a>
                     {can.update && (
                         <Link
                             href={`/hr/${employee.id}/edit`}
