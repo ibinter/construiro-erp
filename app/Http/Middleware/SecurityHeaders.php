@@ -14,10 +14,12 @@ class SecurityHeaders
 {
     public function handle(Request $request, Closure $next): Response
     {
+        // Générer le nonce AVANT le rendu Blade pour qu'il soit disponible dans les vues.
+        $nonce = base64_encode(random_bytes(16));
+        app()->instance('csp-nonce', $nonce);
+
         /** @var Response $response */
         $response = $next($request);
-
-        $nonce = base64_encode(random_bytes(16));
 
         // Content Security Policy — ajustée pour Inertia + Vite HMR en dev
         $cspDirectives = app()->isProduction()

@@ -22,14 +22,14 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
-        @routes
+        @routes(nonce: app()->bound('csp-nonce') ? app('csp-nonce') : null)
         @viteReactRefresh
         @vite(['resources/js/app.jsx', "resources/js/Pages/{$page['component']}.jsx"])
         @inertiaHead
     </head>
     <body class="font-sans antialiased">
         @inertia
-        <script>
+        <script nonce="{{ app()->bound('csp-nonce') ? app('csp-nonce') : '' }}">
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {
                     navigator.serviceWorker.register('/sw.js')
