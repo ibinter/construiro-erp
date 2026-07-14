@@ -79,11 +79,20 @@ use App\Http\Controllers\UserGuideController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\IntegrationController;
+use App\Http\Controllers\DocumentVerifyController;
+use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\PreferencesController;
+use App\Http\Controllers\AcademyController;
+use App\Http\Controllers\ChangelogController;
+use App\Http\Controllers\GlobalSearchController;
 use App\Models\LandingFaq;
 use App\Models\LandingTemoignage;
 use App\Models\SubscriptionPlan;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
+// ─── Vérification publique de documents (QR) ────────────────────────────────
+Route::get('/verify/{token}', [DocumentVerifyController::class, 'show'])->name('verify.document');
 
 // ─── SEO ─────────────────────────────────────────────────────────────────────
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
@@ -156,6 +165,29 @@ Route::middleware(['auth', 'verified', 'subscription'])->group(function () {
         Route::get('/{filename}/download',     [BackupController::class, 'download'])->name('download');
         Route::delete('/{filename}',           [BackupController::class, 'destroy'])->name('destroy');
     });
+
+    // --- Paramètres société ----------------------------------------------------
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::get('/',                [SettingsController::class, 'index'])->name('index');
+        Route::put('/organization',    [SettingsController::class, 'updateOrganization'])->name('organization');
+        Route::put('/documents',       [SettingsController::class, 'updateDocuments'])->name('documents');
+        Route::put('/notifications',   [SettingsController::class, 'updateNotifications'])->name('notifications');
+    });
+
+    // --- Préférences utilisateur -----------------------------------------------
+    Route::put('/preferences', [PreferencesController::class, 'update'])->name('preferences.update');
+
+    // --- Académie / Formation --------------------------------------------------
+    Route::prefix('academy')->name('academy.')->group(function () {
+        Route::get('/',           [AcademyController::class, 'index'])->name('index');
+        Route::get('/{category}', [AcademyController::class, 'show'])->name('category');
+    });
+
+    // --- Changelog / Versionnement --------------------------------------------
+    Route::get('/changelog', [ChangelogController::class, 'index'])->name('changelog.index');
+
+    // --- Recherche globale -----------------------------------------------------
+    Route::get('/search', [GlobalSearchController::class, 'index'])->name('search.index');
 
     // --- Import universel -------------------------------------------------------
     Route::prefix('import')->name('import.')->group(function () {
