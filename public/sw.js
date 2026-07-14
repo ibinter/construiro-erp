@@ -1,6 +1,6 @@
-/* CONSTRUIRO ERP — Service Worker v1.0 */
+/* CONSTRUIRO ERP — Service Worker v2.0 */
 
-const CACHE_NAME    = 'construiro-v1';
+const CACHE_NAME    = 'construiro-v2';
 const OFFLINE_URL   = '/offline.html';
 
 // Assets à mettre en cache immédiatement
@@ -84,4 +84,34 @@ self.addEventListener('fetch', (event) => {
 /* ── Message — mise à jour depuis le client ─────────────────── */
 self.addEventListener('message', (event) => {
     if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
+});
+
+/* ── Push notifications ─────────────────────────────────────── */
+self.addEventListener('push', (event) => {
+    if (!event.data) return;
+    let payload;
+    try { payload = event.data.json(); } catch { payload = { title: 'CONSTRUIRO', body: event.data.text() }; }
+
+    event.waitUntil(
+        self.registration.showNotification(payload.title ?? 'CONSTRUIRO', {
+            body:  payload.body ?? '',
+            icon:  '/icons/icon-192.png',
+            badge: '/icons/icon-72.png',
+            data:  { url: payload.url ?? '/' },
+            tag:   payload.tag ?? 'construiro-notif',
+            renotify: true,
+        })
+    );
+});
+
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close();
+    const url = event.notification.data?.url ?? '/';
+    event.waitUntil(
+        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((wins) => {
+            const existing = wins.find((w) => w.url === url);
+            if (existing) return existing.focus();
+            return clients.openWindow(url);
+        })
+    );
 });
