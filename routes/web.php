@@ -78,6 +78,7 @@ use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\UserGuideController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\BackupController;
+use App\Http\Controllers\IntegrationController;
 use App\Models\LandingFaq;
 use App\Models\LandingTemoignage;
 use App\Models\SubscriptionPlan;
@@ -140,6 +141,13 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified', 'subscription'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // --- Intégrations ----------------------------------------------------------
+    Route::prefix('integrations')->name('integrations.')->middleware('can:administration.view')->group(function () {
+        Route::get('/', [IntegrationController::class, 'index'])->name('index');
+        Route::put('/{type}/{provider}', [IntegrationController::class, 'update'])->name('update');
+        Route::post('/{type}/{provider}/test', [IntegrationController::class, 'test'])->name('test');
+    });
 
     // --- Sauvegardes -----------------------------------------------------------
     Route::prefix('backup')->name('backup.')->middleware('can:administration.view')->group(function () {
