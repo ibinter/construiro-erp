@@ -79,7 +79,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['diag'])) {
             echo "Log file not found: $logFile";
         }
     } elseif ($diag === 'seed-permissions') {
-        echo shell_exec("cd $dir && php artisan db:seed --class=RolePermissionSeeder --force 2>&1");
+        // Lance UNIQUEMENT RolePermissionSeeder (namespace complet pour éviter fallback sur DatabaseSeeder)
+        echo shell_exec("cd $dir && php artisan db:seed --class='Database\\\\Seeders\\\\RolePermissionSeeder' --force 2>&1");
+    } elseif ($diag === 'make-superadmin') {
+        // Assigne super_admin à un utilisateur via son email : ?diag=make-superadmin&email=xxx
+        $email = $_GET['email'] ?? '';
+        if (!$email) { echo "Parametre email manquant.\n"; exit; }
+        $cmd = "cd $dir && php artisan tinker --no-interaction --execute=\""
+             . "\\$u = App\\\\Models\\\\User::where('email','$email')->first();"
+             . "if(!\\$u){echo 'Utilisateur introuvable.';exit;}"
+             . "\\$u->syncRoles(['super_admin']);"
+             . "echo 'super_admin assigne a '.\$u->email;\"  2>&1";
+        echo shell_exec($cmd);
     } elseif ($diag === 'artisan-about') {
         echo shell_exec("cd $dir && php artisan about 2>&1");
     } elseif ($diag === 'php-error') {
