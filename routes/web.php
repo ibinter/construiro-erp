@@ -76,6 +76,7 @@ use App\Http\Controllers\AideController;
 use App\Http\Controllers\SupportController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\UserGuideController;
+use App\Http\Controllers\ImportController;
 use App\Models\LandingFaq;
 use App\Models\LandingTemoignage;
 use App\Models\SubscriptionPlan;
@@ -138,6 +139,14 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified', 'subscription'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // --- Import universel -------------------------------------------------------
+    Route::prefix('import')->name('import.')->group(function () {
+        Route::get('/',           [ImportController::class, 'index'])->name('index');
+        Route::post('/preview',   [ImportController::class, 'preview'])->name('preview');
+        Route::post('/validate',  [ImportController::class, 'validateMapping'])->name('validate');
+        Route::post('/execute',   [ImportController::class, 'execute'])->name('execute');
+    });
 
     // --- Abonnement & Facturation -------------------------------------------
     Route::prefix('billing')->group(function () {

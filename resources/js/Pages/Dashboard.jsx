@@ -1,10 +1,11 @@
 import AppLayout from '@/Layouts/AppLayout';
 import Icon from '@/Components/Icon';
+import GuidedTour from '@/Components/GuidedTour';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { PROJECT_STATUS, formatMoney } from '@/constants';
 import { useTrans } from '@/i18n';
 
-export default function Dashboard({ stats = [], recentProjects = [] }) {
+export default function Dashboard({ stats = [], recentProjects = [], isFirstLogin = false }) {
     const { auth } = usePage().props;
     const { t } = useTrans();
     const portal = auth?.portal;
@@ -13,6 +14,7 @@ export default function Dashboard({ stats = [], recentProjects = [] }) {
     return (
         <AppLayout header="Tableau de bord">
             <Head title={t('Tableau de bord')} />
+            <GuidedTour autoStart={isFirstLogin} />
 
             {/* Bandeau d'accueil */}
             <div className="mb-6 rounded-xl bg-gradient-to-r from-slate-900 to-slate-700 p-6 text-white">

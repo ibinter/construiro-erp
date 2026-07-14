@@ -48,9 +48,13 @@ class DashboardController extends Controller
                 ->get(['id', 'code', 'name', 'status', 'progress', 'budget_amount', 'currency']);
         });
 
+        // Visite guidée : true si c'est le tout premier accès au dashboard
+        $isFirstLogin = $user->last_login_at === null;
+
         return Inertia::render('Dashboard', [
             'stats'          => $stats,
             'recentProjects' => $recentProjects,
+            'isFirstLogin'   => $isFirstLogin,
         ]);
     }
 
