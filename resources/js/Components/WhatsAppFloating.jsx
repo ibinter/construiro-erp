@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { usePage } from '@inertiajs/react';
 
-const WA_URL = 'https://wa.me/2252722276014?text=Bonjour%20IBIG%20Soft%2C%20je%20souhaite%20obtenir%20des%20informations%20sur%20CONSTRUIRO%20ERP.';
 const WA_GREEN = '#25D366';
 
 export default function WhatsAppFloating() {
     const [showTooltip, setShowTooltip] = useState(false);
     const [menuIsOpen, setMenuIsOpen]   = useState(false);
-    const locale = usePage().props?.locale ?? 'fr';
+    const { locale = 'fr', whatsapp_number = '2252722276014' } = usePage().props ?? {};
+    const waNumber = whatsapp_number || '2252722276014';
+    const WA_URL = `https://wa.me/${waNumber}?text=${encodeURIComponent('Bonjour IBIG Soft, je souhaite obtenir des informations sur CONSTRUIRO ERP.')}`;
 
     /* Afficher le tooltip après 3s, masquer après 8s */
     useEffect(() => {

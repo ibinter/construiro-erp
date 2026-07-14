@@ -87,6 +87,7 @@ use App\Http\Controllers\ChangelogController;
 use App\Http\Controllers\GlobalSearchController;
 use App\Models\LandingFaq;
 use App\Models\LandingTemoignage;
+use App\Models\Setting;
 use App\Models\SubscriptionPlan;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -138,13 +139,16 @@ Route::get('/', function () {
         'rating'    => $t->rating,
     ])->toArray();
 
+    $whatsappNumber = Setting::get('footer_whatsapp', '2252722276014');
+
     return Inertia::render('Welcome', [
-        'canLogin'      => Route::has('login'),
-        'canRegister'   => Route::has('register'),
-        'auth'          => ['user' => auth()->user()],
-        'plans'         => $plans,
-        'faqs'          => $faqs,
-        'temoignages'   => $temoignages,
+        'canLogin'        => Route::has('login'),
+        'canRegister'     => Route::has('register'),
+        'auth'            => ['user' => auth()->user()],
+        'plans'           => $plans,
+        'faqs'            => $faqs,
+        'temoignages'     => $temoignages,
+        'whatsapp_number' => preg_replace('/\D/', '', $whatsappNumber),
     ]);
 });
 

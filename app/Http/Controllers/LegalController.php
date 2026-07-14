@@ -16,6 +16,15 @@ class LegalController extends Controller
             ->where('is_published', true)
             ->firstOrFail();
 
+        $locale    = app()->getLocale();
+        $allPages  = LegalPage::where('is_published', true)
+            ->orderBy('slug')
+            ->get(['slug', 'title_fr', 'title_en'])
+            ->map(fn($p) => [
+                'slug'  => $p->slug,
+                'title' => ($locale === 'en' && $p->title_en) ? $p->title_en : $p->title_fr,
+            ])->toArray();
+
         return Inertia::render('Legal/Show', [
             'page' => [
                 'slug'       => $page->slug,
@@ -23,6 +32,7 @@ class LegalController extends Controller
                 'content'    => Str::markdown($page->content(), ['html_input' => 'allow']),
                 'updated_at' => $page->last_updated_at?->format('d/m/Y'),
             ],
+            'allPages' => $allPages,
         ]);
     }
 

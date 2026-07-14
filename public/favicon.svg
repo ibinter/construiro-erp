@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <circle cx="16" cy="16" r="16" fill="#F58220"/>
+  <!-- Casque de chantier stylisé -->
+  <path d="M8 20 Q8 16 16 15 Q24 16 24 20 L8 20Z" fill="white" opacity="0.95"/>
+  <path d="M10 20 L10 21.5 Q10 22 10.5 22 L21.5 22 Q22 22 22 21.5 L22 20Z" fill="white" opacity="0.95"/>
+  <path d="M13 15 Q13 10 16 9 Q19 10 19 15Z" fill="white" opacity="0.95"/>
+  <!-- Lettre C sous-jacente pour lisibilité miniature -->
+  <text x="16" y="27" text-anchor="middle" font-size="6" font-weight="900" fill="white" font-family="Arial Black, Arial, sans-serif" opacity="0.9">ERP</text>
+</svg>

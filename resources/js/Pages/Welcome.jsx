@@ -225,6 +225,7 @@ function DashboardMockup() {
 
 /* ── Visuel slide automation ──────────────────────────────────── */
 function SlideVisualAutomation() {
+    const { t } = useTrans();
     return (
         <div className="grid grid-cols-2 gap-3 w-full max-w-md mx-auto">
             {[
@@ -236,8 +237,8 @@ function SlideVisualAutomation() {
                 <div key={item.titre} className="rounded-xl p-4 text-left"
                     style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}>
                     <div className="text-2xl mb-2">{item.icon}</div>
-                    <div className="text-white font-bold text-sm">{item.titre}</div>
-                    <div className="text-gray-400 text-xs mt-0.5">{item.sub}</div>
+                    <div className="text-white font-bold text-sm">{t(item.titre)}</div>
+                    <div className="text-gray-400 text-xs mt-0.5">{t(item.sub)}</div>
                 </div>
             ))}
         </div>
@@ -348,6 +349,7 @@ function SlideVisualAI() {
 
 /* ── Visuel slide sécurité ────────────────────────────────────── */
 function SlideVisualSecurity() {
+    const { t } = useTrans();
     return (
         <div className="w-full max-w-sm mx-auto space-y-3">
             {[
@@ -360,11 +362,11 @@ function SlideVisualSecurity() {
                     style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}>
                     <span className="text-xl">{item.icon}</span>
                     <div className="flex-1">
-                        <div className="text-white text-sm font-semibold">{item.titre}</div>
+                        <div className="text-white text-sm font-semibold">{t(item.titre)}</div>
                     </div>
                     <span className="text-xs font-semibold px-2.5 py-1 rounded-full"
                         style={{ background: 'rgba(34,197,94,0.15)', color: '#22c55e' }}>
-                        {item.val}
+                        {t(item.val)}
                     </span>
                 </div>
             ))}
@@ -1678,7 +1680,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div className="text-center mb-12">
                                 <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>FAQ</p>
-                                <h2 className="text-3xl sm:text-4xl font-black" style={{ color: NAVY }}>Questions fréquentes</h2>
+                                <h2 className="text-3xl sm:text-4xl font-black" style={{ color: NAVY }}>{t('Questions fréquentes')}</h2>
                             </div>
                             <div className="space-y-3">
                                 {faqs.map((faq, i) => (
