@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Agency;
 use App\Models\User;
+use App\Services\LicenseGuard;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -63,6 +64,8 @@ class UserController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        LicenseGuard::checkUserLimit($request->user()->company_id);
+
         $data = $this->validateData($request);
 
         $user = User::create([

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\User;
+use App\Services\LicenseGuard;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -58,6 +59,8 @@ class ProjectController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        LicenseGuard::checkProjectLimit($request->user()->company_id);
+
         $data = $this->validateData($request);
         $data['company_id'] = $request->user()->company_id;
         $data['agency_id'] = $request->user()->agency_id;
