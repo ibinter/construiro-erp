@@ -62,7 +62,7 @@
             <a href="{{ url('/support') }}" class="btn btn-outline">Contacter le support</a>
         </div>
         @yield('extra')
-        <p class="ref">Référence : {{ request()->id() ?? uniqid('ERR-') }} · CONSTRUIRO v{{ config('app.version', '1.0') }}</p>
+        <p class="ref">Référence : {{ uniqid('ERR-') }} · CONSTRUIRO v{{ config('app.version', '1.0') }}</p>
     </div>
 </body>
 </html>

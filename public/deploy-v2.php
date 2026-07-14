@@ -58,6 +58,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['diag'])) {
         } else {
             echo "Log file not found: $logFile";
         }
+    } elseif ($diag === 'laravel-error') {
+        // Affiche le DEBUT de la derniere entree ERROR (le vrai message d'exception)
+        $logFile = $dir . '/storage/logs/laravel.log';
+        if (file_exists($logFile)) {
+            $lines = file($logFile);
+            $lastErrorLine = -1;
+            foreach ($lines as $i => $line) {
+                if (strpos($line, '.ERROR:') !== false) {
+                    $lastErrorLine = $i;
+                }
+            }
+            if ($lastErrorLine === -1) {
+                echo "Aucune entree ERROR trouvee dans le log.\n";
+            } else {
+                $excerpt = array_slice($lines, $lastErrorLine, 60);
+                echo implode('', $excerpt);
+            }
+        } else {
+            echo "Log file not found: $logFile";
+        }
+    } elseif ($diag === 'seed-permissions') {
+        echo shell_exec("cd $dir && php artisan db:seed --class=RolePermissionSeeder --force 2>&1");
     } elseif ($diag === 'artisan-about') {
         echo shell_exec("cd $dir && php artisan about 2>&1");
     } elseif ($diag === 'php-error') {
