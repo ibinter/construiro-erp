@@ -12,6 +12,7 @@ use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\PdfController;
+use App\Http\Controllers\PdfListController;
 use App\Http\Controllers\DocumentPdfController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\SiteIndexController;
@@ -596,6 +597,15 @@ Route::middleware(['auth', 'verified', 'subscription'])->group(function () {
     Route::get('/clients/{client}/pdf',      [PdfController::class, 'client'])->middleware('can:clients.view')->name('clients.pdf');
     Route::get('/hr/{employee}/pdf',         [PdfController::class, 'employee'])->middleware('can:hr.view')->name('hr.pdf');
     Route::get('/contracts/{contract}/pdf',  [PdfController::class, 'contract'])->middleware('can:contracts.view')->name('contracts.pdf');
+
+    // --- Exports PDF (listes modules) — moteur adaptatif ----------------------
+    Route::get('/pdf/projects',   [PdfListController::class, 'projects'])->middleware('can:projects.view')->name('pdf.list.projects');
+    Route::get('/pdf/clients',    [PdfListController::class, 'clients'])->middleware('can:clients.view')->name('pdf.list.clients');
+    Route::get('/pdf/quotes',     [PdfListController::class, 'quotes'])->middleware('can:quotes.view')->name('pdf.list.quotes');
+    Route::get('/pdf/invoices',   [PdfListController::class, 'invoices'])->middleware('can:invoicing.view')->name('pdf.list.invoices');
+    Route::get('/pdf/employees',  [PdfListController::class, 'employees'])->middleware('can:hr.view')->name('pdf.list.employees');
+    Route::get('/pdf/contracts',  [PdfListController::class, 'contracts'])->middleware('can:contracts.view')->name('pdf.list.contracts');
+    Route::get('/pdf/stocks',     [PdfListController::class, 'stocks'])->middleware('can:stocks.view')->name('pdf.list.stocks');
 
     // --- Chantiers (vue transversale) ------------------------------------------
     Route::get('/sites',        [SiteIndexController::class, 'index'])->middleware('can:sites.view')->name('sites.index');
