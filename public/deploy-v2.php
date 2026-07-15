@@ -165,6 +165,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['diag'])) {
         echo shell_exec("cd $dir && php artisan optimize:clear 2>&1");
         echo shell_exec("cd $dir && php artisan optimize 2>&1");
         echo "DONE\n";
+    } elseif ($diag === 'fix-drivers') {
+        // SESSION_DRIVER=file + CACHE_STORE=file → supprime les requêtes SQL de session/cache sur chaque requête
+        $envPath = $dir . '/.env';
+        $env = file_get_contents($envPath);
+        $replacements = [
+            'SESSION_DRIVER' => 'file',
+            'CACHE_STORE'    => 'file',
+            'CACHE_DRIVER'   => 'file',
+        ];
+        foreach ($replacements as $key => $val) {
+            $line = "$key=$val";
+            if (preg_match('/^' . preg_quote($key, '/') . '=/m', $env)) {
+                $env = preg_replace('/^' . preg_quote($key, '/') . '=.*/m', $line, $env);
+                echo "Modifié : $line\n";
+            } else {
+                $env .= "\n$line";
+                echo "Ajouté  : $line\n";
+            }
+        }
+        file_put_contents($envPath, $env);
+        // Vider les anciennes sessions DB et reconstruire les caches
+        echo shell_exec("cd $dir && php artisan optimize:clear 2>&1");
+        echo shell_exec("cd $dir && php artisan optimize 2>&1");
+        echo "\nRésultat .env :\n";
+        echo shell_exec("grep -E 'SESSION_DRIVER|CACHE_STORE|CACHE_DRIVER' $envPath 2>&1");
+        echo "\nDONE\n";
     }
     exit;
 }
