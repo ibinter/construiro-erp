@@ -268,14 +268,83 @@ class ExportController extends Controller
         // Lignes de données à partir de la ligne 2.
         $rowIndex = 2;
         foreach ($rows as $row) {
-            $sheet->fromArray(array_values((array) $row), null, "A{$rowIndex}");
+            // Nettoyer les valeurs : supprimer émojis et caractères non imprimables
+            $cleanRow = array_map(function ($val) {
+                if (is_string($val)) {
+                    // Supprimer les emojis et caractères non-BMP
+                    $val = preg_replace('/[\x{10000}-\x{10FFFF}]/u', '', $val);
+                    // Supprimer les caractères de contrôle
+                    $val = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $val);
+                }
+                return $val;
+            }, array_values((array) $row));
+            $sheet->fromArray($cleanRow, null, "A{$rowIndex}");
             $rowIndex++;
         }
 
-        // Largeurs de colonnes automatiques (bornées pour rester raisonnables).
-        foreach (range('A', $lastColumn) as $column) {
-            $sheet->getColumnDimension($column)->setAutoSize(true);
+        // Largeurs de colonnes intelligentes : auto + bornes min/max par type de colonne.
+        $colIndex = 'A';
+        foreach ($headers as $header) {
+            $sheet->getColumnDimension($colIndex)->setAutoSize(true);
+            $colIndex++;
         }
+
+        // Forcer le recalcul des largeurs et imposer les bornes.
+        $sheet->calculateColumnWidths();
+        $colIndex = 'A';
+        foreach ($headers as $header) {
+            $dim = $sheet->getColumnDimension($colIndex);
+            $currentWidth = $dim->getWidth();
+
+            // Largeur minimale : 8 caractères, maximale : 50 caractères
+            $minWidth = 8;
+            $maxWidth = 50;
+
+            $label = strtolower($header);
+            if (str_contains($label, 'email')) {
+                $maxWidth = 40;
+            } elseif (str_contains($label, 'nom') || str_contains($label, 'name') || str_contains($label, 'objet') || str_contains($label, 'désignation')) {
+                $maxWidth = 45;
+                $minWidth = 15;
+            } elseif (str_contains($label, 'date') || str_contains($label, 'début') || str_contains($label, 'fin') || str_contains($label, 'émission') || str_contains($label, 'échéance')) {
+                $minWidth = 12;
+                $maxWidth = 15;
+            } elseif (str_contains($label, 'code') || str_contains($label, 'ref') || str_contains($label, 'matricule')) {
+                $minWidth = 10;
+                $maxWidth = 20;
+            } elseif (str_contains($label, 'statut') || str_contains($label, 'status') || str_contains($label, 'type')) {
+                $minWidth = 10;
+                $maxWidth = 22;
+            } elseif (in_array($label, ['total', 'montant', 'budget', 'payé', 'reste', 'salaire', 'prix'])) {
+                $minWidth = 12;
+                $maxWidth = 22;
+            } elseif (str_contains($label, '%') || str_contains($label, 'avanc') || str_contains($label, 'taux')) {
+                $minWidth = 8;
+                $maxWidth = 14;
+            }
+
+            if ($currentWidth < $minWidth) {
+                $dim->setWidth($minWidth);
+            }
+            if ($currentWidth > $maxWidth) {
+                $dim->setWidth($maxWidth);
+            }
+
+            $colIndex++;
+        }
+
+        // Paramètres d'impression : paysage A4, ajustement largeur, répétition en-tête.
+        $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+        $sheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+        $sheet->getPageSetup()->setFitToWidth(1);
+        $sheet->getPageSetup()->setFitToHeight(0);
+        $sheet->getPageSetup()->setRepeatRows(new \PhpOffice\PhpSpreadsheet\Worksheet\Dimension('1:1'));
+        $sheet->getPageMargins()->setTop(0.5);
+        $sheet->getPageMargins()->setRight(0.4);
+        $sheet->getPageMargins()->setBottom(0.5);
+        $sheet->getPageMargins()->setLeft(0.4);
+        $sheet->getPageMargins()->setHeader(0.2);
+        $sheet->getPageMargins()->setFooter(0.2);
 
         // Fige la ligne d'en-tête au défilement.
         $sheet->freezePane('A2');
