@@ -338,7 +338,7 @@ class ExportController extends Controller
         $sheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
         $sheet->getPageSetup()->setFitToWidth(1);
         $sheet->getPageSetup()->setFitToHeight(0);
-        $sheet->getPageSetup()->setRepeatRows(new \PhpOffice\PhpSpreadsheet\Worksheet\Dimension('1:1'));
+        $sheet->getPageSetup()->setRowsToRepeatAtTop([1, 1]);
         $sheet->getPageMargins()->setTop(0.5);
         $sheet->getPageMargins()->setRight(0.4);
         $sheet->getPageMargins()->setBottom(0.5);
