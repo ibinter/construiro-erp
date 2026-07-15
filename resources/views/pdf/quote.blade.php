@@ -65,7 +65,7 @@
 
     @if($doc->signed_at)
     <div style="border-top:1px solid #e2e8f0;margin-top:20px;padding-top:10px;font-size:10px;color:#64748b;">
-        ✓ Signé électroniquement par {{ $doc->signed_by }} le {{ \Illuminate\Support\Carbon::parse($doc->signed_at)->format('d/m/Y H:i') }}
+        [OK] Signe electroniquement par {{ $doc->signed_by }} le {{ \Illuminate\Support\Carbon::parse($doc->signed_at)->format('d/m/Y H:i') }}
         — Empreinte : {{ substr($doc->signature_hash, 0, 16) }}…
     </div>
     @endif
