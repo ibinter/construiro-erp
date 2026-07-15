@@ -131,7 +131,11 @@ class PdfController extends Controller
     /** Charge le gabarit, applique le format A4 et renvoie le flux PDF (aperçu inline). */
     private function render(string $view, array $data, string $filename): Response
     {
-        return Pdf::loadView($view, $data)->setPaper('a4')->stream($filename);
+        return Pdf::loadView($view, $data)
+            ->setPaper('a4', 'portrait')
+            ->set_option('defaultFont', 'DejaVu Sans')
+            ->set_option('isRemoteEnabled', false)
+            ->stream($filename);
     }
 
     private function authorizeCompany(Request $request, int $companyId, string $permission): void

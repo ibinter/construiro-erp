@@ -43,6 +43,14 @@
     .totals .paid td { color: #16a34a; }
     .totals .balance td { font-weight: bold; border-top: 1px solid #e2e8f0; }
 
+    /* Empêcher les coupures sur codes, dates, montants */
+    .nowrap { white-space: nowrap; }
+    /* Améliorer les tables de lignes */
+    table.lines tbody tr { page-break-inside: avoid; }
+    /* QR code sizing */
+    .qr-code { width: 28mm; height: 28mm; }
+    .qr-code img, .qr-code svg { width: 100%; height: 100%; }
+
     /* Notes & pied */
     .notes { margin-top: 20px; font-size: 10px; color: #64748b; border-left: 3px solid #f97316; padding: 6px 12px; background: #fff7ed; }
     .foot { position: fixed; bottom: 20px; left: 36px; right: 36px; border-top: 1px solid #e2e8f0; padding-top: 8px; font-size: 9px; color: #94a3b8; text-align: center; }
