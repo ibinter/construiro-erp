@@ -90,6 +90,7 @@ use App\Models\LandingFaq;
 use App\Models\LandingTemoignage;
 use App\Models\Setting;
 use App\Models\SubscriptionPlan;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -114,31 +115,39 @@ Route::redirect('/blog',   'https://ibigsoft.com', 301);
 Route::redirect('/statut', 'https://ibigsoft.com', 301);
 
 Route::get('/', function () {
-    $plans = SubscriptionPlan::where('is_active', true)->orderBy('sort_order')->get()->map(fn($p) => [
-        'id' => $p->id,
-        'name' => $p->name,
-        'description' => $p->description,
-        'price_monthly' => $p->price_monthly,
-        'price_yearly' => $p->price_yearly,
-        'max_users' => $p->max_users,
-        'max_projects' => $p->max_projects,
-        'trial_days' => $p->trial_days,
-    ])->toArray();
-
     $locale = app()->getLocale();
-    $faqs = LandingFaq::active()->get()->map(fn($f) => [
-        'question' => $locale === 'en' && $f->question_en ? $f->question_en : $f->question_fr,
-        'answer'   => $locale === 'en' && $f->answer_en   ? $f->answer_en   : $f->answer_fr,
-    ])->toArray();
 
-    $temoignages = LandingTemoignage::active()->get()->map(fn($t) => [
-        'initiales' => $t->initiales,
-        'nom'       => $t->nom,
-        'poste'     => $t->poste,
-        'ville'     => $t->ville,
-        'texte'     => $locale === 'en' && $t->texte_en ? $t->texte_en : $t->texte_fr,
-        'rating'    => $t->rating,
-    ])->toArray();
+    // Données statiques mises en cache 10 min — elles changent rarement
+    $plans = Cache::remember('landing:plans', 600, fn() =>
+        SubscriptionPlan::where('is_active', true)->orderBy('sort_order')->get()->map(fn($p) => [
+            'id'            => $p->id,
+            'name'          => $p->name,
+            'description'   => $p->description,
+            'price_monthly' => $p->price_monthly,
+            'price_yearly'  => $p->price_yearly,
+            'max_users'     => $p->max_users,
+            'max_projects'  => $p->max_projects,
+            'trial_days'    => $p->trial_days,
+        ])->toArray()
+    );
+
+    $faqs = Cache::remember("landing:faqs:{$locale}", 600, fn() =>
+        LandingFaq::active()->get()->map(fn($f) => [
+            'question' => $locale === 'en' && $f->question_en ? $f->question_en : $f->question_fr,
+            'answer'   => $locale === 'en' && $f->answer_en   ? $f->answer_en   : $f->answer_fr,
+        ])->toArray()
+    );
+
+    $temoignages = Cache::remember("landing:temoignages:{$locale}", 600, fn() =>
+        LandingTemoignage::active()->get()->map(fn($t) => [
+            'initiales' => $t->initiales,
+            'nom'       => $t->nom,
+            'poste'     => $t->poste,
+            'ville'     => $t->ville,
+            'texte'     => $locale === 'en' && $t->texte_en ? $t->texte_en : $t->texte_fr,
+            'rating'    => $t->rating,
+        ])->toArray()
+    );
 
     $whatsappNumber = Setting::get('footer_whatsapp', '2252722276014');
 
