@@ -25,6 +25,9 @@ class PdfTableExportService {
         User    $user,
         array   $options = [],
     ): StreamedResponse {
+        ini_set('memory_limit', '512M');
+        set_time_limit(120);
+
         // 1. Sélectionner le meilleur layout
         $layout = PdfLayoutEngine::selectBestLayout($columnDefs, $rows, $options);
 

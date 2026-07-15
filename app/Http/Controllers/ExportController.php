@@ -247,6 +247,9 @@ class ExportController extends Controller
      */
     private function buildXlsx(string $filename, array $headers, iterable $rows): StreamedResponse
     {
+        ini_set('memory_limit', '512M');
+        set_time_limit(120);
+
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
