@@ -102,10 +102,68 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['diag'])) {
         } else {
             echo "OPcache non disponible\n";
         }
-        echo shell_exec("cd $dir && php artisan config:clear 2>&1");
-        echo shell_exec("cd $dir && php artisan config:cache 2>&1");
-        echo shell_exec("cd $dir && php artisan route:cache 2>&1");
-        echo shell_exec("cd $dir && php artisan view:cache 2>&1");
+        echo shell_exec("cd $dir && php artisan optimize:clear 2>&1");
+        echo shell_exec("cd $dir && php artisan optimize 2>&1");
+        echo "DONE\n";
+    } elseif ($diag === 'perf') {
+        // Diagnostic performance : OPcache, caches Laravel, mémoire PHP
+        echo "=== PHP ===\n";
+        echo "memory_limit    : " . ini_get('memory_limit') . "\n";
+        echo "max_exec_time   : " . ini_get('max_execution_time') . "s\n";
+        echo "PHP version     : " . PHP_VERSION . "\n\n";
+
+        echo "=== OPcache ===\n";
+        if (function_exists('opcache_get_status')) {
+            $op = opcache_get_status(false);
+            if ($op) {
+                echo "enabled         : " . ($op['opcache_enabled'] ? "OUI" : "NON") . "\n";
+                echo "cache_full      : " . ($op['cache_full'] ? "OUI (PROBLÈME)" : "non") . "\n";
+                echo "scripts cached  : " . ($op['opcache_statistics']['num_cached_scripts'] ?? '?') . "\n";
+                echo "hit rate        : " . round(($op['opcache_statistics']['opcache_hit_rate'] ?? 0), 1) . "%\n";
+                echo "memory used     : " . round(($op['memory_usage']['used_memory'] ?? 0) / 1024 / 1024, 1) . " MB\n";
+                echo "memory free     : " . round(($op['memory_usage']['free_memory'] ?? 0) / 1024 / 1024, 1) . " MB\n";
+            } else {
+                echo "OPcache désactivé ou non disponible\n";
+            }
+        } else {
+            echo "opcache_get_status() non disponible\n";
+        }
+
+        echo "\n=== Caches Laravel (bootstrap/cache) ===\n";
+        $cacheDir = $dir . '/bootstrap/cache';
+        $cacheFiles = ['config.php', 'routes-v7.php', 'events.php', 'services.php'];
+        foreach ($cacheFiles as $cf) {
+            $path = $cacheDir . '/' . $cf;
+            if (file_exists($path)) {
+                echo "$cf : OK (" . round(filesize($path) / 1024, 1) . " KB, " . date('d/m H:i', filemtime($path)) . ")\n";
+            } else {
+                echo "$cf : ABSENT — caches non générés !\n";
+            }
+        }
+
+        echo "\n=== Assets Vite (public/build) ===\n";
+        $buildDir = $dir . '/public/build';
+        if (is_dir($buildDir)) {
+            $jsFiles = glob($buildDir . '/assets/*.js');
+            $cssFiles = glob($buildDir . '/assets/*.css');
+            echo "JS chunks   : " . count($jsFiles) . " fichiers\n";
+            echo "CSS chunks  : " . count($cssFiles) . " fichiers\n";
+            $totalSize = 0;
+            foreach (array_merge($jsFiles, $cssFiles) as $f) { $totalSize += filesize($f); }
+            echo "Taille totale : " . round($totalSize / 1024 / 1024, 2) . " MB\n";
+            foreach ($jsFiles as $f) {
+                echo "  " . basename($f) . " : " . round(filesize($f) / 1024, 0) . " KB\n";
+            }
+        } else {
+            echo "public/build/ introuvable\n";
+        }
+
+        echo "\n=== Artisan optimize (forcer) ===\n";
+        echo shell_exec("cd $dir && php artisan optimize 2>&1");
+        echo "DONE\n";
+    } elseif ($diag === 'optimize') {
+        echo shell_exec("cd $dir && php artisan optimize:clear 2>&1");
+        echo shell_exec("cd $dir && php artisan optimize 2>&1");
         echo "DONE\n";
     }
     exit;
@@ -167,30 +225,21 @@ if (!empty($_FILES['assets']['tmp_name'])) {
     logMsg('Aucun zip assets fourni — build non mis à jour');
 }
 
-// ── 6. Artisan : clear puis rebuild des caches ────────────────────
+// ── 6. Artisan : migrations + seeders essentiels + rebuild caches ──
+// NOTE : les seeders de données (Landing, FAQ, Legal) ne tournent PAS
+// à chaque deploy — ils sont idempotents mais lents et bloquent le process.
+// Lancer manuellement via ?diag=seed-permissions si besoin.
 $artisanCmds = [
-    'config:clear',
-    'cache:clear',
-    'route:clear',
-    'view:clear',
-    'event:clear',
+    'optimize:clear',
     'migrate --force',
-    'db:seed --class=RolePermissionSeeder --force',
-    'db:seed --class=SubscriptionPlanSeeder --force',
-    'db:seed --class=LandingSeeder --force',
-    'db:seed --class=LegalPageSeeder --force',
-    'db:seed --class=IbigSuperAdminSeeder --force',
-    'db:seed --class=LandingFaqSeeder --force',
+    'db:seed --class=\'Database\\Seeders\\RolePermissionSeeder\' --force',
     'package:discover --ansi',
-    'config:cache',
-    'route:cache',
-    'view:cache',
-    'event:cache',
+    'optimize',
     'storage:link',
 ];
 
 foreach ($artisanCmds as $cmd) {
-    $out = shell_exec("cd $dir && php artisan $cmd 2>&1 | tail -2");
+    $out = shell_exec("cd $dir && php artisan $cmd 2>&1 | tail -3");
     logMsg("artisan $cmd : " . trim($out));
 }
 
