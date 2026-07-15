@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class LandingFaq extends Model
 {
     protected $fillable = [
+        'category',
         'question_fr', 'question_en',
         'answer_fr', 'answer_en',
         'sort_order', 'is_active',
