@@ -8,6 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('smtp_settings')) {
+            return;
+        }
         Schema::create('smtp_settings', function (Blueprint $table) {
             $table->id();
             $table->string('host')->default('smtp.mailgun.org');

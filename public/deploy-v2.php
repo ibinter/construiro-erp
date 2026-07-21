@@ -191,6 +191,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['diag'])) {
         file_put_contents($envPath, $env);
         echo shell_exec("cd $dir && php artisan config:clear 2>&1");
         echo "\nMAIL configuré. DONE\n";
+    } elseif ($diag === 'check-mail') {
+        // Affiche la config MAIL courante (sans le mot de passe)
+        $envPath = $dir . '/.env';
+        $env = file_get_contents($envPath);
+        $keys = ['MAIL_MAILER','MAIL_HOST','MAIL_PORT','MAIL_USERNAME','MAIL_ENCRYPTION','MAIL_FROM_ADDRESS','MAIL_FROM_NAME','QUEUE_CONNECTION'];
+        foreach ($keys as $k) {
+            if (preg_match('/^' . preg_quote($k, '/') . '=(.*)$/m', $env, $m)) {
+                echo "$k=" . trim($m[1]) . "\n";
+            } else {
+                echo "$k=(non défini)\n";
+            }
+        }
+        echo "\n=== Jobs en attente ===\n";
+        echo shell_exec("cd $dir && php artisan queue:monitor database 2>&1 | head -10") ?: "";
+        // Compte les jobs dans la table
+        echo shell_exec("cd $dir && php artisan tinker --no-interaction --execute=\"echo 'Jobs en attente: '.DB::table('jobs')->count();echo ' | Échoués: '.DB::table('failed_jobs')->count();\" 2>&1");
+    } elseif ($diag === 'run-jobs') {
+        // Traite les jobs en attente (une seule passe, timeout 60s)
+        echo "=== Traitement des jobs en queue ===\n";
+        $output = shell_exec("cd $dir && timeout 60 php artisan queue:work --once --timeout=30 --tries=3 2>&1");
+        echo $output ?: "(aucun output)\n";
+        echo "\nJobs restants:\n";
+        echo shell_exec("cd $dir && php artisan tinker --no-interaction --execute=\"echo DB::table('jobs')->count().' jobs en attente';\" 2>&1");
+        echo "\nDONE\n";
+    } elseif ($diag === 'start-worker') {
+        // Lance un worker en arrière-plan (persistant jusqu'au prochain déploiement)
+        $pidFile = $dir . '/storage/queue-worker.pid';
+        // Vérifier si un worker tourne déjà
+        if (file_exists($pidFile)) {
+            $pid = trim(file_get_contents($pidFile));
+            $running = shell_exec("ps -p $pid -o pid= 2>/dev/null");
+            if ($running) {
+                echo "Worker déjà actif (PID $pid)\n";
+                exit;
+            }
+        }
+        $cmd = "cd $dir && php artisan queue:work --sleep=3 --tries=3 --timeout=60 --daemon > $dir/storage/logs/queue-worker.log 2>&1 & echo $!";
+        $pid = trim(shell_exec($cmd));
+        file_put_contents($pidFile, $pid);
+        echo "Worker démarré (PID $pid)\n";
+        echo "Logs: $dir/storage/logs/queue-worker.log\n";
+        echo "DONE\n";
+    } elseif ($diag === 'worker-logs') {
+        $log = $dir . '/storage/logs/queue-worker.log';
+        if (file_exists($log)) {
+            $lines = file($log);
+            echo implode('', array_slice($lines, -50));
+        } else {
+            echo "Aucun log de worker.\n";
+        }
     } elseif ($diag === 'fix-drivers') {
         // SESSION_DRIVER=file + CACHE_STORE=file → supprime les requêtes SQL de session/cache sur chaque requête
         $envPath = $dir . '/.env';

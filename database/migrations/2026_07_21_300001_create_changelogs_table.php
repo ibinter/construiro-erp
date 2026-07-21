@@ -8,6 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('changelogs')) {
+            return;
+        }
         Schema::create('changelogs', function (Blueprint $table) {
             $table->id();
             $table->string('version', 20);  // ex: v2.4.1
