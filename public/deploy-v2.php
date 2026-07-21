@@ -234,44 +234,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['diag'])) {
         echo "Logs: $dir/storage/logs/queue-worker.log\n";
         echo "DONE\n";
     } elseif ($diag === 'send-test') {
-        // Envoie un email de test — écrit un script PHP tmp et l'exécute via artisan
-        // Usage: ?diag=send-test&to=email@example.com
-        $to = $_GET['to'] ?? 'patriceky@gmail.com';
-        $tmpFile = sys_get_temp_dir() . '/construiro_mail_test.php';
-        $script = <<<'PHPEOF'
-require __DIR__ . '/vendor/autoload.php';
-$app = require_once __DIR__ . '/bootstrap/app.php';
-$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
-$kernel->bootstrap();
-try {
-    Illuminate\Support\Facades\Mail::raw(
-        'Test SMTP depuis CONSTRUIRO ERP - ' . date('Y-m-d H:i:s'),
-        function ($m) use ($to) {
-            $m->to($to)->subject('[TEST] SMTP CONSTRUIRO ERP');
-        }
-    );
-    echo "EMAIL_SENT_OK\n";
-} catch (Exception $e) {
-    echo "EMAIL_ERROR: " . $e->getMessage() . "\n";
-    echo "Class: " . get_class($e) . "\n";
-}
-PHPEOF;
-        $script = str_replace('use ($to)', 'use ($to)', $script);
-        // Injecter $to dans le script
-        $script = str_replace("function (\$m) use (\$to)", "function (\$m) use (\$to)", $script);
-        $finalScript = '<?php $to = ' . var_export($to, true) . '; ?>' . "\n" . substr($script, 5);
-        file_put_contents($tmpFile, $finalScript);
-        echo "=== Test envoi email vers: $to ===\n";
-        $output = shell_exec("cd $dir && php $tmpFile 2>&1");
-        echo $output . "\n";
-        unlink($tmpFile);
+        // Envoie un email de test — Usage: ?diag=send-test&to=email@example.com
+        $to = addslashes($_GET['to'] ?? 'patriceky@gmail.com');
+        $toDisplay = $_GET['to'] ?? 'patriceky@gmail.com';
+        $tmpFile = sys_get_temp_dir() . '/construiro_mail_test_' . time() . '.php';
+        $phpCode  = "<?php\n";
+        $phpCode .= "define('LARAVEL_START', microtime(true));\n";
+        $phpCode .= "require '" . addslashes($dir) . "/vendor/autoload.php';\n";
+        $phpCode .= "\$app = require_once '" . addslashes($dir) . "/bootstrap/app.php';\n";
+        $phpCode .= "\$kernel = \$app->make(Illuminate\\Contracts\\Console\\Kernel::class);\n";
+        $phpCode .= "\$kernel->bootstrap();\n";
+        $phpCode .= "try {\n";
+        $phpCode .= "    Illuminate\\Support\\Facades\\Mail::raw('Test SMTP CONSTRUIRO ERP - ' . date('Y-m-d H:i:s'), function(\$msg) {\n";
+        $phpCode .= "        \$msg->to('" . $to . "')->subject('[TEST] SMTP CONSTRUIRO ERP');\n";
+        $phpCode .= "    });\n";
+        $phpCode .= "    echo 'EMAIL_SENT_OK';\n";
+        $phpCode .= "} catch (Exception \$e) {\n";
+        $phpCode .= "    echo 'EMAIL_ERROR: ' . \$e->getMessage();\n";
+        $phpCode .= "}\n";
+        file_put_contents($tmpFile, $phpCode);
+        echo "=== Test envoi email vers: $toDisplay ===\n";
+        $output = shell_exec("php $tmpFile 2>&1");
+        echo ($output ?: '(aucune sortie)') . "\n";
+        @unlink($tmpFile);
         // Config SMTP actuelle (sans password)
-        echo "=== Config SMTP actuelle ===\n";
+        echo "\n=== Config SMTP actuelle ===\n";
         $envPath = $dir . '/.env';
         $env = file_get_contents($envPath);
         foreach (['MAIL_MAILER','MAIL_HOST','MAIL_PORT','MAIL_USERNAME','MAIL_ENCRYPTION','MAIL_FROM_ADDRESS'] as $k) {
-            if (preg_match('/^' . preg_quote($k, '/') . '=(.*)$/m', $env, $m)) {
-                echo "$k=" . trim($m[1]) . "\n";
+            if (preg_match('/^' . preg_quote($k, '/') . '=(.*)$/m', $env, $mx)) {
+                echo "$k=" . trim($mx[1]) . "\n";
             }
         }
     } elseif ($diag === 'worker-logs') {
