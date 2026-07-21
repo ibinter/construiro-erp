@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\PaymentConfirmedMail;
 use App\Models\Subscription;
 use App\Models\SubscriptionInvoice;
 use App\Models\SubscriptionPlan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -80,12 +82,29 @@ class BillingController extends Controller
             return back()->withErrors(['activation_key' => 'Clé d\'activation invalide ou déjà utilisée.']);
         }
 
+        $endsAt = now()->addMonth();
+
         $subscription->update([
             'status' => 'active',
             'starts_at' => now(),
-            'ends_at' => now()->addMonth(),
+            'ends_at' => $endsAt,
             'activation_key' => null,
         ]);
+
+        $subscription->load('plan');
+
+        try {
+            Mail::to($request->user()->email)->send(new PaymentConfirmedMail(
+                userName: $request->user()->name,
+                planName: $subscription->plan?->name ?? 'Standard',
+                amount: '—',
+                reference: (string) $subscription->id,
+                paidAt: now()->format('d/m/Y'),
+                accessUntil: $endsAt->format('d/m/Y'),
+            ));
+        } catch (\Exception $e) {
+            \Log::warning('PaymentConfirmedMail failed: ' . $e->getMessage());
+        }
 
         return back()->with('success', 'Abonnement activé avec succès.');
     }

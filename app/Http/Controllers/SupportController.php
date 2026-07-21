@@ -131,7 +131,23 @@ class SupportController extends Controller
     {
         abort_if($ticket->company_id !== $request->user()->company_id, 403);
 
-        $ticket->update(['status' => 'closed']);
+        $ticket->update(['status' => 'closed', 'resolved_at' => now()]);
+
+        $ticket->loadMissing('user');
+
+        try {
+            $recipient = $ticket->user?->email ?? $request->user()->email;
+            $recipientName = $ticket->user?->name ?? $request->user()->name;
+            Mail::to($recipient)->send(new TicketResolvedMail(
+                userName: $recipientName,
+                ticketNumber: $ticket->number,
+                subject: $ticket->subject,
+                resolution: 'Votre ticket a été fermé par notre équipe.',
+                ticketUrl: route('support.show', $ticket),
+            ));
+        } catch (\Exception $e) {
+            \Log::warning('TicketResolvedMail failed: ' . $e->getMessage());
+        }
 
         return back()->with('success', 'Ticket fermé.');
     }

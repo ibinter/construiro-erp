@@ -45,6 +45,15 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
+        try {
+            \Mail::to($user->email)->send(new \App\Mail\WelcomeMail(
+                userName: $user->name,
+                companyName: $user->company?->name ?? '',
+            ));
+        } catch (\Exception $e) {
+            \Log::warning('WelcomeMail failed: ' . $e->getMessage());
+        }
+
         Auth::login($user);
 
         return redirect(route('dashboard', absolute: false));

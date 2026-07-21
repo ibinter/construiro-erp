@@ -27,5 +27,10 @@ class AppServiceProvider extends ServiceProvider
         Gate::before(function ($user, string $ability) {
             return $user->hasRole('super_admin') ? true : null;
         });
+
+        \Illuminate\Support\Facades\Event::listen(
+            \Illuminate\Auth\Events\Login::class,
+            \App\Listeners\SendSuspiciousLoginNotification::class,
+        );
     }
 }
