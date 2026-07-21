@@ -182,7 +182,7 @@ Route::middleware(['auth', 'verified', 'subscription'])->group(function () {
     });
 
     // --- Paramètres société ----------------------------------------------------
-    Route::prefix('settings')->name('settings.')->group(function () {
+    Route::prefix('settings')->name('settings.')->middleware('can:administration.view')->group(function () {
         Route::get('/',                [SettingsController::class, 'index'])->name('index');
         Route::put('/organization',    [SettingsController::class, 'updateOrganization'])->name('organization');
         Route::put('/documents',       [SettingsController::class, 'updateDocuments'])->name('documents');
@@ -582,7 +582,7 @@ Route::middleware(['auth', 'verified', 'subscription'])->group(function () {
     Route::delete('/documents/{document}',  [DocumentController::class, 'destroy'])->middleware('can:documents.delete')->name('documents.destroy');
 
     // --- Signature électronique ------------------------------------------------
-    Route::post('/sign/{model}/{id}',                     [SignatureController::class, 'sign'])->name('signature.sign');
+    Route::post('/sign/{model}/{id}',                     [SignatureController::class, 'sign'])->middleware('can:e_signature.create')->name('signature.sign');
     Route::get('/e-signature',                            [SignatureController::class, 'index'])->middleware('can:e_signature.view')->name('e_signature.index');
     Route::post('/e-signature',                           [SignatureController::class, 'store'])->middleware('can:e_signature.create')->name('e_signature.store');
     Route::post('/e-signature/{signatureRequest}/status', [SignatureController::class, 'updateStatus'])->middleware('can:e_signature.update')->name('e_signature.status');

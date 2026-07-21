@@ -101,18 +101,30 @@ class BackupController extends Controller
         $host = config('database.connections.mysql.host');
         $port = config('database.connections.mysql.port', 3306);
 
-        // Décompresser le .gz puis piper dans mysql
-        $cmd = sprintf(
-            'gunzip -c %s | mysql --host=%s --port=%d --user=%s --password=%s %s 2>&1',
-            escapeshellarg($path),
-            escapeshellarg($host),
-            (int) $port,
-            escapeshellarg($user),
-            escapeshellarg($pass),
-            escapeshellarg($db)
-        );
+        // Écriture du mot de passe dans un fichier de config temporaire (non visible dans ps aux)
+        $tempConfig = tempnam(sys_get_temp_dir(), 'mysql_');
+        file_put_contents($tempConfig, "[client]\npassword={$pass}\n");
+        chmod($tempConfig, 0600);
 
-        exec($cmd, $output, $exitCode);
+        try {
+            // Décompresser le .gz puis piper dans mysql
+            $cmd = sprintf(
+                'gunzip -c %s | mysql --defaults-extra-file=%s --host=%s --port=%d --user=%s %s 2>&1',
+                escapeshellarg($path),
+                escapeshellarg($tempConfig),
+                escapeshellarg($host),
+                (int) $port,
+                escapeshellarg($user),
+                escapeshellarg($db)
+            );
+
+            exec($cmd, $output, $exitCode);
+        } finally {
+            // Toujours supprimer le fichier de config, même en cas d'erreur
+            if (file_exists($tempConfig)) {
+                unlink($tempConfig);
+            }
+        }
 
         if ($exitCode !== 0) {
             \Log::error('Restore backup failed', ['output' => implode("\n", $output)]);
