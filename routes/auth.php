@@ -8,6 +8,8 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\TwoFactorChallengeController;
+use App\Http\Controllers\Auth\TwoFactorController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
@@ -56,4 +58,27 @@ Route::middleware('auth')->group(function () {
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
+
+    // ── Configuration 2FA (depuis la page Profil) ───────────────────────────
+    Route::get('/user/two-factor', [TwoFactorController::class, 'show'])
+        ->name('two-factor.show');
+
+    Route::post('/user/two-factor/enable', [TwoFactorController::class, 'enable'])
+        ->name('two-factor.enable');
+
+    Route::post('/user/two-factor/confirm', [TwoFactorController::class, 'confirm'])
+        ->name('two-factor.confirm');
+
+    Route::delete('/user/two-factor', [TwoFactorController::class, 'disable'])
+        ->name('two-factor.disable');
+
+    Route::post('/user/two-factor/recovery-codes', [TwoFactorController::class, 'regenerateCodes'])
+        ->name('two-factor.recovery-codes');
+
+    // ── Challenge 2FA (après la connexion, avant accès au dashboard) ────────
+    Route::get('/two-factor-challenge', [TwoFactorChallengeController::class, 'show'])
+        ->name('two-factor.challenge');
+
+    Route::post('/two-factor-challenge', [TwoFactorChallengeController::class, 'store'])
+        ->name('two-factor.challenge.store');
 });

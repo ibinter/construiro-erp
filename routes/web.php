@@ -162,7 +162,7 @@ Route::get('/', function () {
     ]);
 });
 
-Route::middleware(['auth', 'verified', 'subscription'])->group(function () {
+Route::middleware(['auth', 'verified', 'subscription', 'two-factor'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // --- Intégrations ----------------------------------------------------------
@@ -210,6 +210,12 @@ Route::middleware(['auth', 'verified', 'subscription'])->group(function () {
         Route::post('/preview',   [ImportController::class, 'preview'])->name('preview');
         Route::post('/validate',  [ImportController::class, 'validateMapping'])->name('validate');
         Route::post('/execute',   [ImportController::class, 'execute'])->name('execute');
+        // ── 5 imports enrichis ────────────────────────────────────────────────
+        Route::post('/projects',  [ImportController::class, 'projects'])->middleware('can:projects.create')->name('projects');
+        Route::post('/quotes',    [ImportController::class, 'quotes'])->middleware('can:quotes.create')->name('quotes');
+        Route::post('/invoices',  [ImportController::class, 'invoices'])->middleware('can:invoicing.create')->name('invoices');
+        Route::post('/stocks',    [ImportController::class, 'stocks'])->middleware('can:stocks.edit')->name('stocks');
+        Route::post('/equipment', [ImportController::class, 'equipment'])->middleware('can:equipment.create')->name('equipment');
     });
 
     // --- Abonnement & Facturation -------------------------------------------

@@ -39,6 +39,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_active',
         'must_change_password',
         'last_login_at',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
+        'two_factor_confirmed_at',
     ];
 
     /**
@@ -49,6 +52,8 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $hidden = [
         'password',
         'remember_token',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
     ];
 
     /**
@@ -59,12 +64,15 @@ class User extends Authenticatable implements MustVerifyEmail
     protected function casts(): array
     {
         return [
-            'email_verified_at'    => 'datetime',
-            'last_login_at'        => 'datetime',
-            'password'             => 'hashed',
-            'is_active'            => 'boolean',
-            'must_change_password' => 'boolean',
-            'preferences'          => 'array',
+            'email_verified_at'         => 'datetime',
+            'last_login_at'             => 'datetime',
+            'password'                  => 'hashed',
+            'is_active'                 => 'boolean',
+            'must_change_password'      => 'boolean',
+            'preferences'               => 'array',
+            'two_factor_secret'         => 'encrypted',
+            'two_factor_recovery_codes' => 'encrypted:array',
+            'two_factor_confirmed_at'   => 'datetime',
         ];
     }
 
@@ -96,5 +104,29 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isSuperAdmin(): bool
     {
         return $this->hasRole('super_admin');
+    }
+
+    /**
+     * Indique si le 2FA est activé et confirmé pour cet utilisateur.
+     */
+    public function hasTwoFactorEnabled(): bool
+    {
+        return !is_null($this->two_factor_secret)
+            && !is_null($this->two_factor_confirmed_at);
+    }
+
+    /**
+     * Génère 8 codes de récupération alphanumériques de 16 caractères.
+     * Format : XXXX-XXXX-XXXX-XXXX pour la lisibilité.
+     *
+     * @return array<int, string>
+     */
+    public function generateRecoveryCodes(): array
+    {
+        $codes = [];
+        for ($i = 0; $i < 8; $i++) {
+            $codes[] = implode('-', str_split(strtoupper(bin2hex(random_bytes(8))), 4));
+        }
+        return $codes;
     }
 }

@@ -35,6 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'subscription' => \App\Http\Middleware\CheckSubscription::class,
             'superadmin'   => \App\Http\Middleware\SuperAdminOnly::class,
             'module'       => \App\Http\Middleware\CheckModuleAccess::class,
+            'two-factor'   => \App\Http\Middleware\RequiresTwoFactorAuthentication::class,
         ]);
 
         // Exclure les webhooks Mobile Money du CSRF (appelés par les opérateurs)
