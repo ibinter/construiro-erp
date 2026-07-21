@@ -2,13 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Budget;
+use App\Models\BudgetLine;
 use App\Models\Client;
 use App\Models\Contract;
 use App\Models\Employee;
+use App\Models\Equipment;
 use App\Models\Invoice;
 use App\Models\Material;
+use App\Models\Payslip;
 use App\Models\Project;
+use App\Models\PurchaseOrder;
 use App\Models\Quote;
+use App\Models\Subcontractor;
+use App\Models\Supplier;
+use App\Models\TreasuryTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -234,6 +242,234 @@ class ExportController extends Controller
         return $this->buildXlsx(
             $this->filename('Stocks'),
             ['Code', 'Nom', 'Catégorie', 'Unité', 'Prix réf', 'Seuil', 'Stock courant'],
+            $rows,
+        );
+    }
+
+    /** Export des fournisseurs. */
+    public function suppliers(Request $request): StreamedResponse
+    {
+        $user = $request->user();
+        abort_unless($user->can('suppliers.view'), 403);
+
+        $this->ensureModelAvailable(Supplier::class, 'suppliers');
+
+        $rows = Supplier::forUser($user)
+            ->orderBy('name')
+            ->get()
+            ->map(fn (Supplier $s) => [
+                $s->code,
+                $s->name,
+                $s->category,
+                $s->contact_name,
+                $s->phone,
+                $s->email,
+                $s->city,
+                $s->country,
+                $s->is_active ? 'Actif' : 'Inactif',
+            ]);
+
+        return $this->buildXlsx(
+            $this->filename('Fournisseurs'),
+            ['Code', 'Nom', 'Catégorie', 'Contact', 'Téléphone', 'Email', 'Ville', 'Pays', 'Statut'],
+            $rows,
+        );
+    }
+
+    /** Export des sous-traitants. */
+    public function subcontractors(Request $request): StreamedResponse
+    {
+        $user = $request->user();
+        abort_unless($user->can('subcontractors.view'), 403);
+
+        $this->ensureModelAvailable(Subcontractor::class, 'subcontractors');
+
+        $rows = Subcontractor::forUser($user)
+            ->orderBy('name')
+            ->get()
+            ->map(fn (Subcontractor $s) => [
+                $s->code,
+                $s->name,
+                $s->specialty,
+                $s->contact_name,
+                $s->phone,
+                $s->email,
+                $s->city,
+                $s->country,
+                $s->rating,
+                $s->is_active ? 'Actif' : 'Inactif',
+            ]);
+
+        return $this->buildXlsx(
+            $this->filename('Sous-traitants'),
+            ['Code', 'Nom', 'Spécialité', 'Contact', 'Téléphone', 'Email', 'Ville', 'Pays', 'Note /5', 'Statut'],
+            $rows,
+        );
+    }
+
+    /** Export du parc matériel (équipements). */
+    public function equipment(Request $request): StreamedResponse
+    {
+        $user = $request->user();
+        abort_unless($user->can('equipment.view'), 403);
+
+        $this->ensureModelAvailable(Equipment::class, 'equipment');
+
+        $rows = Equipment::forUser($user)
+            ->with('currentSite:id,name')
+            ->orderBy('name')
+            ->get()
+            ->map(fn (Equipment $e) => [
+                $e->code,
+                $e->name,
+                $e->category,
+                $e->brand,
+                $e->model,
+                $e->registration,
+                $e->status,
+                optional($e->currentSite)->name,
+                optional($e->acquisition_date)->format('Y-m-d'),
+                $e->acquisition_value,
+                $e->currency,
+            ]);
+
+        return $this->buildXlsx(
+            $this->filename('Equipements'),
+            ['Code', 'Désignation', 'Type', 'Marque', 'Modèle', 'Immatriculation', 'État', 'Site affecté', 'Date acquisition', 'Valeur', 'Devise'],
+            $rows,
+        );
+    }
+
+    /** Export des bons de commande (achats). */
+    public function purchases(Request $request): StreamedResponse
+    {
+        $user = $request->user();
+        abort_unless($user->can('purchases.view'), 403);
+
+        $this->ensureModelAvailable(PurchaseOrder::class, 'purchase_orders');
+
+        $rows = PurchaseOrder::forUser($user)
+            ->with(['supplier:id,name', 'project:id,name'])
+            ->latest('order_date')
+            ->get()
+            ->map(fn (PurchaseOrder $po) => [
+                $po->code,
+                optional($po->order_date)->format('Y-m-d'),
+                optional($po->supplier)->name,
+                optional($po->project)->name,
+                $po->subtotal,
+                $po->tax_rate,
+                $po->tax_amount,
+                $po->total,
+                $po->currency,
+                $po->status,
+                optional($po->expected_date)->format('Y-m-d'),
+            ]);
+
+        return $this->buildXlsx(
+            $this->filename('Achats-BC'),
+            ['Numéro', 'Date commande', 'Fournisseur', 'Projet', 'Montant HT', 'TVA %', 'TVA', 'Total TTC', 'Devise', 'Statut', 'Livraison prévue'],
+            $rows,
+        );
+    }
+
+    /** Export des lignes budgétaires (budget prévisionnel vs réalisé). */
+    public function budgets(Request $request): StreamedResponse
+    {
+        $user = $request->user();
+        abort_unless($user->can('budget.view'), 403);
+
+        $this->ensureModelAvailable(Budget::class, 'budgets');
+
+        $rows = Budget::forUser($user)
+            ->with(['project:id,name', 'lines'])
+            ->latest()
+            ->get()
+            ->flatMap(fn (Budget $b) => $b->lines->map(fn (BudgetLine $l) => [
+                $b->code,
+                $b->title,
+                optional($b->project)->name,
+                $b->fiscal_year,
+                $l->label,
+                $l->category,
+                $l->planned_amount,
+                $l->actual_amount,
+                (float) $l->actual_amount - (float) $l->planned_amount,
+                $b->status,
+                $b->currency,
+            ]));
+
+        return $this->buildXlsx(
+            $this->filename('Budget'),
+            ['Code budget', 'Intitulé', 'Projet', 'Exercice', 'Ligne', 'Catégorie', 'Montant prévu', 'Montant réel', 'Écart', 'Statut', 'Devise'],
+            $rows,
+        );
+    }
+
+    /** Export des transactions de trésorerie. */
+    public function treasury(Request $request): StreamedResponse
+    {
+        $user = $request->user();
+        abort_unless($user->can('treasury.view'), 403);
+
+        $this->ensureModelAvailable(TreasuryTransaction::class, 'treasury_transactions');
+
+        $rows = TreasuryTransaction::forUser($user)
+            ->with('cashAccount:id,name')
+            ->orderByDesc('date')
+            ->get()
+            ->map(fn (TreasuryTransaction $t) => [
+                optional($t->date)->format('Y-m-d'),
+                $t->description,
+                $t->type === 'in' ? 'Entrée' : 'Sortie',
+                $t->category,
+                $t->amount,
+                optional($t->cashAccount)->name,
+                $t->reference,
+            ]);
+
+        return $this->buildXlsx(
+            $this->filename('Tresorerie'),
+            ['Date', 'Description', 'Type', 'Catégorie', 'Montant', 'Compte', 'Référence'],
+            $rows,
+        );
+    }
+
+    /** Export des bulletins de paie. */
+    public function payslips(Request $request): StreamedResponse
+    {
+        $user = $request->user();
+        abort_unless($user->can('hr.export'), 403);
+
+        $this->ensureModelAvailable(Payslip::class, 'payslips');
+
+        $rows = Payslip::forUser($user)
+            ->with('employee:id,first_name,last_name,matricule')
+            ->orderByDesc('period')
+            ->get()
+            ->map(fn (Payslip $p) => [
+                optional($p->employee)->matricule,
+                optional($p->employee) ? trim(optional($p->employee)->first_name . ' ' . optional($p->employee)->last_name) : null,
+                $p->period,
+                $p->country_code,
+                $p->base_salary,
+                $p->overtime_amount,
+                $p->transport_allowance,
+                $p->housing_allowance,
+                $p->other_allowances,
+                $p->gross_salary,
+                $p->cnps_employee,
+                $p->its_amount,
+                $p->advance_deductions,
+                $p->deductions,
+                $p->net_salary,
+                $p->currency,
+                $p->status,
+            ]);
+
+        return $this->buildXlsx(
+            $this->filename('Bulletins-Paie'),
+            ['Matricule', 'Employé', 'Période', 'Pays', 'Salaire base', 'Heures sup', 'Transport', 'Logement', 'Autres primes', 'Salaire brut', 'CNPS salarié', 'ITS', 'Avances', 'Total retenues', 'Net à payer', 'Devise', 'Statut'],
             $rows,
         );
     }

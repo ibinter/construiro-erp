@@ -627,7 +627,14 @@ Route::middleware(['auth', 'verified', 'subscription'])->group(function () {
     Route::get('/export/clients',    [ExportController::class, 'clients'])->middleware('can:clients.export')->name('export.clients');
     Route::get('/export/employees',  [ExportController::class, 'employees'])->middleware('can:hr.export')->name('export.employees');
     Route::get('/export/contracts',  [ExportController::class, 'contracts'])->middleware('can:contracts.view')->name('export.contracts');
-    Route::get('/export/stocks',     [ExportController::class, 'stocks'])->middleware('can:stocks.export')->name('export.stocks');
+    Route::get('/export/stocks',          [ExportController::class, 'stocks'])->middleware('can:stocks.export')->name('export.stocks');
+    Route::get('/export/suppliers',       [ExportController::class, 'suppliers'])->middleware('can:suppliers.view')->name('export.suppliers');
+    Route::get('/export/subcontractors',  [ExportController::class, 'subcontractors'])->middleware('can:subcontractors.view')->name('export.subcontractors');
+    Route::get('/export/equipment',       [ExportController::class, 'equipment'])->middleware('can:equipment.view')->name('export.equipment');
+    Route::get('/export/purchases',       [ExportController::class, 'purchases'])->middleware('can:purchases.view')->name('export.purchases');
+    Route::get('/export/budgets',         [ExportController::class, 'budgets'])->middleware('can:budget.view')->name('export.budgets');
+    Route::get('/export/treasury',        [ExportController::class, 'treasury'])->middleware('can:treasury.view')->name('export.treasury');
+    Route::get('/export/payslips',        [ExportController::class, 'payslips'])->middleware('can:hr.export')->name('export.payslips');
 
     // --- GED : téléchargement de fichier ---------------------------------------
     Route::get('/documents/{document}/download', [DocumentController::class, 'download'])->middleware('can:documents.view')->name('documents.download');

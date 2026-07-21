@@ -55,18 +55,18 @@ class ImportController extends Controller
             'unique_on' => 'email',
         ],
         'products' => [
-            'label'    => 'Articles / Produits',
-            'model'    => \App\Models\Product::class,
+            'label'    => 'Matériaux / Articles',
+            'model'    => \App\Models\Material::class,
             'columns'  => [
                 'name'        => ['label' => 'Désignation *', 'required' => true],
-                'reference'   => ['label' => 'Référence *',  'required' => true],
+                'code'        => ['label' => 'Code / Référence *', 'required' => true],
                 'description' => ['label' => 'Description',  'required' => false],
                 'unit'        => ['label' => 'Unité',        'required' => false],
                 'unit_price'  => ['label' => 'Prix unitaire','required' => false, 'rule' => 'numeric'],
                 'category'    => ['label' => 'Catégorie',    'required' => false],
-                'stock_qty'   => ['label' => 'Stock initial','required' => false, 'rule' => 'numeric'],
+                'min_stock'   => ['label' => 'Stock minimum','required' => false, 'rule' => 'numeric'],
             ],
-            'unique_on' => 'reference',
+            'unique_on' => 'code',
         ],
     ];
 
