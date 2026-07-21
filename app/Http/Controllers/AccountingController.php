@@ -125,6 +125,83 @@ class AccountingController extends Controller
         return back()->with('success', 'Écriture enregistrée.');
     }
 
+    /**
+     * Formulaire d'édition d'une écriture existante.
+     * Vérifie l'appartenance au tenant avant d'afficher.
+     */
+    public function edit(Request $request, JournalEntry $journalEntry): Response
+    {
+        $user = $request->user();
+        abort_unless($journalEntry->company_id === $user->company_id, 403);
+
+        // Blocage si l'écriture est verrouillée (exercice clôturé).
+        // Le champ `locked` est optionnel — ignoré si absent du modèle.
+        abort_if((bool) ($journalEntry->locked ?? false), 403, 'Cette écriture appartient à un exercice clôturé.');
+
+        $journalEntry->load('lines.account:id,code,label');
+
+        return Inertia::render('Accounting/Edit', [
+            'entry'    => $journalEntry,
+            'accounts' => Account::forUser($user)->orderBy('code')->get(['id', 'code', 'label', 'type']),
+        ]);
+    }
+
+    /**
+     * Met à jour une écriture de journal et recrée ses lignes en transaction.
+     * Bloque si l'exercice est clôturé. Valide l'équilibre débit/crédit.
+     */
+    public function update(Request $request, JournalEntry $journalEntry): RedirectResponse
+    {
+        $user      = $request->user();
+        $companyId = $user->company_id;
+
+        abort_unless($journalEntry->company_id === $companyId, 403);
+        abort_if((bool) ($journalEntry->locked ?? false), 403, 'Cette écriture appartient à un exercice clôturé.');
+
+        $data = $request->validate([
+            'date'               => ['required', 'date'],
+            'piece_number'       => ['nullable', 'string', 'max:50'],
+            'label'              => ['required', 'string', 'max:255'],
+            'lines'              => ['required', 'array', 'min:2'],
+            'lines.*.account_id' => ['required', 'integer', Rule::exists('accounts', 'id')->where('company_id', $companyId)],
+            'lines.*.label'      => ['nullable', 'string', 'max:255'],
+            'lines.*.debit'      => ['required', 'numeric', 'min:0'],
+            'lines.*.credit'     => ['required', 'numeric', 'min:0'],
+        ]);
+
+        $totalDebit  = round(array_sum(array_column($data['lines'], 'debit')), 2);
+        $totalCredit = round(array_sum(array_column($data['lines'], 'credit')), 2);
+
+        if ($totalDebit !== $totalCredit || $totalDebit <= 0) {
+            throw ValidationException::withMessages([
+                'lines' => "L'écriture doit être équilibrée : total débit ({$totalDebit}) ≠ total crédit ({$totalCredit}).",
+            ]);
+        }
+
+        DB::transaction(function () use ($journalEntry, $data) {
+            $journalEntry->update([
+                'date'         => $data['date'],
+                'piece_number' => $data['piece_number'] ?? null,
+                'label'        => $data['label'],
+            ]);
+
+            // Recréation des lignes : suppression puis insertion.
+            $journalEntry->lines()->delete();
+
+            foreach ($data['lines'] as $line) {
+                $journalEntry->lines()->create([
+                    'account_id' => $line['account_id'],
+                    'label'      => $line['label'] ?? null,
+                    'debit'      => $line['debit'] ?? 0,
+                    'credit'     => $line['credit'] ?? 0,
+                ]);
+            }
+        });
+
+        return redirect()->route('accounting.index')
+            ->with('success', 'Écriture mise à jour.');
+    }
+
     /** Supprime une écriture de journal et ses lignes après vérification du company_id. */
     public function destroy(Request $request, JournalEntry $entry): RedirectResponse
     {

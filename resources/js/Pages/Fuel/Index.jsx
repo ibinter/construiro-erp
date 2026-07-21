@@ -7,7 +7,7 @@ import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
-import { Head, router, useForm } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import { formatMoney } from '@/constants';
 import { useTrans } from '@/i18n';
 
@@ -27,6 +27,11 @@ function StatCard({ icon, label, value }) {
         </div>
     );
 }
+
+const deleteLog = (id) => {
+    if (!window.confirm('Confirmer la suppression de ce plein ?')) return;
+    router.delete(`/fuel/${id}`, { preserveScroll: true });
+};
 
 export default function Index({ logs, filters, equipments, totals, can }) {
     const { t } = useTrans();
@@ -103,6 +108,7 @@ export default function Index({ logs, filters, equipments, totals, can }) {
                             <th className="px-4 py-3">{t('Coût total')}</th>
                             <th className="px-4 py-3">{t('Compteur')}</th>
                             <th className="px-4 py-3">{t('Station')}</th>
+                            <th className="px-4 py-3"></th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -122,6 +128,28 @@ export default function Index({ logs, filters, equipments, totals, can }) {
                                     {log.odometer != null ? Number(log.odometer).toLocaleString('fr-FR') : '—'}
                                 </td>
                                 <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{log.station ?? '—'}</td>
+                                <td className="px-4 py-3">
+                                    <div className="flex items-center gap-2">
+                                        {can.update && (
+                                            <Link
+                                                href={`/fuel/${log.id}/edit`}
+                                                className="rounded p-1 text-slate-400 hover:text-orange-500"
+                                                title={t('Modifier')}
+                                            >
+                                                <Icon name="pencil" className="h-4 w-4" />
+                                            </Link>
+                                        )}
+                                        {can.delete && (
+                                            <button
+                                                onClick={() => deleteLog(log.id)}
+                                                className="rounded p-1 text-slate-400 hover:text-red-500"
+                                                title={t('Supprimer')}
+                                            >
+                                                <Icon name="trash" className="h-4 w-4" />
+                                            </button>
+                                        )}
+                                    </div>
+                                </td>
                             </tr>
                         ))}
 

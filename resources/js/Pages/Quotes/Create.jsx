@@ -5,30 +5,32 @@ import { useTrans } from '@/i18n';
 
 export default function Create({ clients, projects, statuses }) {
     const { t } = useTrans();
+
     const form = useForm({
-        code: '',
-        title: '',
-        client_id: '',
+        code:        '',
+        title:       '',
+        client_id:   '',
         client_name: '',
-        project_id: '',
-        status: 'draft',
-        currency: 'XOF',
-        tax_rate: 18,
-        date: '',
+        project_id:  '',
+        status:      'draft',
+        currency:    'XOF',
+        tax_rate:    18,
+        date:        '',
         valid_until: '',
-        notes: '',
+        notes:       '',
         lines: [
             { designation: '', unit: 'u', quantity: 1, unit_price: 0 },
         ],
     });
 
-    const submit = (e) => {
-        e.preventDefault();
-        form.post('/quotes');
+    /** Enregistre avec le statut choisi. */
+    const submitWithStatus = (targetStatus) => (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+        form.transform((data) => ({ ...data, status: targetStatus })).post('/quotes');
     };
 
     return (
-        <AppLayout header="Nouveau devis">
+        <AppLayout header={t('Nouveau devis')}>
             <Head title={t('Nouveau devis')} />
             <div className="mx-auto max-w-5xl">
                 <QuoteForm
@@ -36,8 +38,9 @@ export default function Create({ clients, projects, statuses }) {
                     clients={clients}
                     projects={projects}
                     statuses={statuses}
-                    onSubmit={submit}
-                    submitLabel={t('Créer le devis')}
+                    onSubmit={submitWithStatus('draft')}
+                    onSubmitSend={submitWithStatus('sent')}
+                    submitLabel={t('Enregistrer brouillon')}
                 />
             </div>
         </AppLayout>

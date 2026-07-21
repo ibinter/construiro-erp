@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 /**
  * Facture. Regroupe des lignes de prestation dont découlent les totaux
@@ -29,6 +30,12 @@ class Invoice extends Model
 
     protected static function booted(): void
     {
+        static::creating(function (self $m): void {
+            if (empty($m->verify_token)) {
+                $m->verify_token = Str::random(48);
+            }
+        });
+
         $flush = fn (self $m) => Cache::forget("bi_dashboard_{$m->company_id}");
         static::saved($flush);
         static::deleted($flush);
@@ -40,6 +47,7 @@ class Invoice extends Model
         'issue_date', 'due_date',
         'tax_rate', 'subtotal', 'tax_amount', 'total', 'amount_paid',
         'notes',
+        'verify_token', 'document_hash',
     ];
 
     protected $casts = [

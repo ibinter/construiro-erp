@@ -7,7 +7,7 @@ import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
-import { Head, router, useForm } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import { formatMoney } from '@/constants';
 import { useTrans } from '@/i18n';
 
@@ -35,6 +35,11 @@ function TypeBadge({ type }) {
         </span>
     );
 }
+
+const deleteRecord = (id) => {
+    if (!window.confirm('Confirmer la suppression de cet entretien ?')) return;
+    router.delete(`/maintenance/${id}`, { preserveScroll: true });
+};
 
 export default function Index({ records, filters, types, equipments, totalCost, can }) {
     const { t } = useTrans();
@@ -110,6 +115,7 @@ export default function Index({ records, filters, types, equipments, totalCost, 
                             <th className="px-4 py-3">{t('Type')}</th>
                             <th className="px-4 py-3">{t('Description')}</th>
                             <th className="px-4 py-3">{t('Coût')}</th>
+                            <th className="px-4 py-3"></th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -126,6 +132,35 @@ export default function Index({ records, filters, types, equipments, totalCost, 
                                 <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{record.description}</td>
                                 <td className="px-4 py-3 font-medium text-slate-800 dark:text-slate-100">
                                     {formatMoney(record.cost, record.equipment?.currency ?? 'XOF')}
+                                </td>
+                                <td className="px-4 py-3">
+                                    <div className="flex items-center gap-2">
+                                        <Link
+                                            href={`/maintenance/${record.id}`}
+                                            className="rounded p-1 text-slate-400 hover:text-orange-500"
+                                            title={t('Voir le détail')}
+                                        >
+                                            <Icon name="eye" className="h-4 w-4" />
+                                        </Link>
+                                        {can.update && (
+                                            <Link
+                                                href={`/maintenance/${record.id}/edit`}
+                                                className="rounded p-1 text-slate-400 hover:text-orange-500"
+                                                title={t('Modifier')}
+                                            >
+                                                <Icon name="pencil" className="h-4 w-4" />
+                                            </Link>
+                                        )}
+                                        {can.delete && (
+                                            <button
+                                                onClick={() => deleteRecord(record.id)}
+                                                className="rounded p-1 text-slate-400 hover:text-red-500"
+                                                title={t('Supprimer')}
+                                            >
+                                                <Icon name="trash" className="h-4 w-4" />
+                                            </button>
+                                        )}
+                                    </div>
                                 </td>
                             </tr>
                         ))}

@@ -75,6 +75,46 @@ class CostAccountingController extends Controller
         ]);
     }
 
+    /** Formulaire d'édition d'une écriture analytique. */
+    public function edit(Request $request, CostEntry $costEntry): Response
+    {
+        $user = $request->user();
+        abort_unless($costEntry->company_id === $user->company_id, 403);
+
+        $costEntry->load('project:id,name');
+
+        return Inertia::render('CostAccounting/Edit', [
+            'entry'    => $costEntry,
+            'projects' => Project::where('company_id', $user->company_id)->orderBy('name')->get(['id', 'name']),
+            'axes'     => CostEntry::AXES,
+            'types'    => CostEntry::TYPES,
+        ]);
+    }
+
+    /** Met à jour une écriture analytique existante. */
+    public function update(Request $request, CostEntry $costEntry): RedirectResponse
+    {
+        $user      = $request->user();
+        $companyId = $user->company_id;
+
+        abort_unless($costEntry->company_id === $companyId, 403);
+
+        $data = $request->validate([
+            'project_id' => ['nullable', 'integer', Rule::exists('projects', 'id')->where('company_id', $companyId)],
+            'date'       => ['required', 'date'],
+            'axis'       => ['required', Rule::in(CostEntry::AXES)],
+            'label'      => ['required', 'string', 'max:255'],
+            'type'       => ['required', Rule::in(CostEntry::TYPES)],
+            'amount'     => ['required', 'numeric', 'min:0.01'],
+            'reference'  => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $costEntry->update($data);
+
+        return redirect()->route('cost_accounting.index')
+            ->with('success', 'Écriture analytique mise à jour.');
+    }
+
     /** Enregistre une écriture analytique (charge ou produit) sur un axe. */
     public function store(Request $request): RedirectResponse
     {

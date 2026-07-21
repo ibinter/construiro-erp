@@ -167,6 +167,7 @@ class BoqController extends Controller
         return $request->validate([
             'code'       => ['required', 'string', 'max:50', Rule::unique('boqs')->where('company_id', $companyId)->ignore($boq?->id)],
             'title'      => ['required', 'string', 'max:255'],
+            'lot'        => ['nullable', 'string', 'max:150'],
             'client_id'  => ['nullable', 'integer', Rule::exists('clients', 'id')->where('company_id', $companyId)],
             'status'     => ['required', Rule::in(Boq::STATUSES)],
             'currency'   => ['required', 'string', 'size:3'],

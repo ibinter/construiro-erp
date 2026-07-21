@@ -45,6 +45,8 @@ class MaintenanceController extends Controller
             'totalCost'  => (float) $totalCost,
             'can'        => [
                 'create' => $user->can('maintenance.create'),
+                'update' => $user->can('maintenance.update'),
+                'delete' => $user->can('maintenance.delete'),
             ],
         ]);
     }
@@ -75,6 +77,82 @@ class MaintenanceController extends Controller
 
         return redirect()->route('maintenance.index')
             ->with('success', 'Entretien enregistré.');
+    }
+
+    /**
+     * Affiche le détail d'un entretien.
+     * Route GET /maintenance/{record} (can:maintenance.view).
+     */
+    public function show(Request $request, MaintenanceRecord $maintenanceRecord): Response
+    {
+        $user = $request->user();
+        abort_unless($maintenanceRecord->company_id === $user->company_id, 403);
+
+        return Inertia::render('Maintenance/Show', [
+            'record' => $maintenanceRecord->load('equipment:id,name,code,category,currency'),
+            'can'    => [
+                'update' => $user->can('maintenance.update'),
+                'delete' => $user->can('maintenance.delete'),
+            ],
+        ]);
+    }
+
+    /**
+     * Formulaire de modification d'un entretien.
+     * Route GET /maintenance/{record}/edit (can:maintenance.update).
+     */
+    public function edit(Request $request, MaintenanceRecord $maintenanceRecord): Response
+    {
+        $user = $request->user();
+        abort_unless($maintenanceRecord->company_id === $user->company_id, 403);
+
+        return Inertia::render('Maintenance/Edit', [
+            'record'     => $maintenanceRecord->load('equipment:id,name,code,category'),
+            'equipments' => $this->equipments($user),
+            'types'      => MaintenanceRecord::TYPES,
+        ]);
+    }
+
+    /**
+     * Met à jour un entretien.
+     * Route PUT /maintenance/{record} (can:maintenance.update).
+     */
+    public function update(Request $request, MaintenanceRecord $maintenanceRecord): RedirectResponse
+    {
+        $user = $request->user();
+        abort_unless($maintenanceRecord->company_id === $user->company_id, 403);
+
+        $data = $request->validate([
+            'equipment_id' => [
+                'required', 'integer',
+                Rule::exists('equipment', 'id')->where('company_id', $user->company_id),
+            ],
+            'type'         => ['required', Rule::in(MaintenanceRecord::TYPES)],
+            'description'  => ['required', 'string', 'max:255'],
+            'cost'         => ['required', 'numeric', 'min:0'],
+            'performed_at' => ['required', 'date'],
+            'notes'        => ['nullable', 'string'],
+        ]);
+
+        $maintenanceRecord->update($data);
+
+        return redirect()->route('maintenance.show', $maintenanceRecord)
+            ->with('success', 'Entretien mis à jour.');
+    }
+
+    /**
+     * Supprime un entretien.
+     * Route DELETE /maintenance/{record} (can:maintenance.delete).
+     */
+    public function destroy(Request $request, MaintenanceRecord $maintenanceRecord): RedirectResponse
+    {
+        $user = $request->user();
+        abort_unless($maintenanceRecord->company_id === $user->company_id, 403);
+
+        $maintenanceRecord->delete();
+
+        return redirect()->route('maintenance.index')
+            ->with('success', 'Entretien supprimé.');
     }
 
     /** Équipements de l'entreprise pour le sélecteur du formulaire. */

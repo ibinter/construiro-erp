@@ -25,6 +25,7 @@ class EmployeeController extends Controller
 
         $employees = Employee::forUser($user)
             ->with('site:id,name')
+            ->withCount('attendances')
             ->when($request->string('search')->toString(), function ($query, $search) {
                 $query->where(fn ($q) => $q
                     ->where('matricule', 'like', "%{$search}%")
@@ -80,10 +81,18 @@ class EmployeeController extends Controller
 
         $employee->load('site:id,name', 'agency:id,name');
 
+        // Pointages des 30 derniers jours (pour l'historique + le calendrier).
         $attendances = $employee->attendances()
             ->with('site:id,name')
             ->latest('date')
-            ->limit(10)
+            ->limit(30)
+            ->get();
+
+        // Stats du mois en cours (KPIs).
+        $now  = now();
+        $monthAtt = $employee->attendances()
+            ->whereYear('date', $now->year)
+            ->whereMonth('date', $now->month)
             ->get();
 
         $payslips = $employee->payslips()
@@ -91,10 +100,28 @@ class EmployeeController extends Controller
             ->limit(6)
             ->get();
 
-        return Inertia::render('Employees/Show', [
+        $dernierSalaire = null;
+        if ($payslips->isNotEmpty()) {
+            $last = $payslips->first();
+            $dernierSalaire = [
+                'amount'   => (float) $last->net_salary,
+                'currency' => $last->currency,
+                'period'   => $last->period,
+            ];
+        }
+
+        $kpis = [
+            'presences'       => $monthAtt->whereIn('status', ['present', 'half_day'])->count(),
+            'absences'        => $monthAtt->where('status', 'absent')->count(),
+            'heures_sup'      => (float) $monthAtt->sum('overtime_hours'),
+            'dernier_salaire' => $dernierSalaire,
+        ];
+
+        return Inertia::render('HR/Show', [
             'employee'    => $employee,
             'attendances' => $attendances,
             'payslips'    => $payslips,
+            'kpis'        => $kpis,
             'can'         => [
                 'update' => $request->user()->can('hr.update'),
                 'delete' => $request->user()->can('hr.delete'),

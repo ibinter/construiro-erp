@@ -5,27 +5,30 @@ import { useTrans } from '@/i18n';
 
 export default function Create({ clients, projects, statuses, unitPrices }) {
     const { t } = useTrans();
+
     const form = useForm({
-        code: '',
-        title: '',
-        client_id: '',
+        code:       '',
+        title:      '',
+        lot:        '',
+        client_id:  '',
         project_id: '',
-        status: 'draft',
-        currency: 'XOF',
-        notes: '',
+        status:     'draft',
+        currency:   'XOF',
+        notes:      '',
         lines: [
             { designation: '', unit: 'u', quantity: 1, unit_price: 0 },
         ],
     });
 
-    const submit = (e) => {
-        e.preventDefault();
-        form.post('/boq');
+    /** Soumet avec un statut cible (draft ou validated). */
+    const submitWithStatus = (targetStatus) => (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+        form.transform((data) => ({ ...data, status: targetStatus })).post('/boq');
     };
 
     return (
-        <AppLayout header="Nouveau DQE">
-            <Head title={t('Nouveau DQE')} />
+        <AppLayout header={t('Nouveau DPGF')}>
+            <Head title={t('Nouveau DPGF')} />
             <div className="mx-auto max-w-5xl">
                 <BoqForm
                     form={form}
@@ -33,8 +36,9 @@ export default function Create({ clients, projects, statuses, unitPrices }) {
                     projects={projects}
                     statuses={statuses}
                     unitPrices={unitPrices}
-                    onSubmit={submit}
-                    submitLabel={t('Créer le DQE')}
+                    onSubmit={submitWithStatus('draft')}
+                    onSubmitValidate={submitWithStatus('validated')}
+                    submitLabel={t('Enregistrer brouillon')}
                 />
             </div>
         </AppLayout>

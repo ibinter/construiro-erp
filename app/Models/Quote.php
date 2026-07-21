@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 /**
  * Devis (Bureau d'études). Regroupe des lignes de prestation dont découlent
@@ -25,6 +26,15 @@ class Quote extends Model
 
     public const STATUSES = ['draft', 'sent', 'accepted', 'rejected', 'expired'];
 
+    protected static function booted(): void
+    {
+        static::creating(function (self $m): void {
+            if (empty($m->verify_token)) {
+                $m->verify_token = Str::random(48);
+            }
+        });
+    }
+
     protected $fillable = [
         'company_id', 'project_id', 'client_id',
         'code', 'title', 'client_name',
@@ -32,6 +42,7 @@ class Quote extends Model
         'subtotal', 'tax_amount', 'total',
         'date', 'valid_until', 'notes',
         'signed_at', 'signed_by', 'signature_hash', 'signature_ip',
+        'verify_token', 'document_hash',
     ];
 
     protected $casts = [

@@ -46,6 +46,8 @@ class FuelController extends Controller
             ],
             'can'        => [
                 'create' => $user->can('fuel.create'),
+                'update' => $user->can('fuel.update'),
+                'delete' => $user->can('fuel.delete'),
             ],
         ]);
     }
@@ -79,6 +81,65 @@ class FuelController extends Controller
 
         return redirect()->route('fuel.index')
             ->with('success', 'Plein de carburant enregistré.');
+    }
+
+    /**
+     * Formulaire de modification d'un plein.
+     * Route GET /fuel/{fuel_log}/edit (can:fuel.update).
+     */
+    public function edit(Request $request, FuelLog $fuelLog): Response
+    {
+        $user = $request->user();
+        abort_unless($fuelLog->company_id === $user->company_id, 403);
+
+        return Inertia::render('Fuel/Edit', [
+            'fuelLog'    => $fuelLog->load('equipment:id,name,code,category'),
+            'equipments' => $this->equipments($user),
+        ]);
+    }
+
+    /**
+     * Met à jour un plein de carburant.
+     * Route PUT /fuel/{fuel_log} (can:fuel.update).
+     */
+    public function update(Request $request, FuelLog $fuelLog): RedirectResponse
+    {
+        $user = $request->user();
+        abort_unless($fuelLog->company_id === $user->company_id, 403);
+
+        $data = $request->validate([
+            'equipment_id' => [
+                'required', 'integer',
+                Rule::exists('equipment', 'id')->where('company_id', $user->company_id),
+            ],
+            'date'       => ['required', 'date'],
+            'quantity'   => ['required', 'numeric', 'min:0'],
+            'unit_price' => ['required', 'numeric', 'min:0'],
+            'odometer'   => ['nullable', 'numeric', 'min:0'],
+            'station'    => ['nullable', 'string', 'max:255'],
+            'notes'      => ['nullable', 'string'],
+        ]);
+
+        // total_cost est recalculé automatiquement par le modèle (boot saving).
+        $fuelLog->update($data);
+
+        return redirect()->route('fuel.index')
+            ->with('success', 'Plein de carburant mis à jour.');
+    }
+
+    /**
+     * Supprime un plein de carburant.
+     * Route DELETE /fuel/{fuel_log} (can:fuel.delete).
+     */
+    public function destroy(Request $request, FuelLog $fuelLog): RedirectResponse
+    {
+        $user = $request->user();
+        abort_unless($fuelLog->company_id === $user->company_id, 403);
+
+        $fuelLog->delete();
+
+        return redirect()->route('fuel.index')
+            ->with('success', 'Plein de carburant supprimé.');
     }
 
     /** Équipements de l'entreprise (engins + véhicules d'abord) pour le sélecteur. */

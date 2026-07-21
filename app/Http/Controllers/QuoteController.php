@@ -86,7 +86,7 @@ class QuoteController extends Controller
     {
         $this->authorizeCompany($request->user(), $quote);
 
-        $quote->load(['lines', 'project:id,name']);
+        $quote->load(['lines', 'project:id,name', 'client:id,name']);
 
         return Inertia::render('Quotes/Show', [
             'quote' => $quote,

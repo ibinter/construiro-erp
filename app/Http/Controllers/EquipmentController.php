@@ -24,6 +24,7 @@ class EquipmentController extends Controller
 
         $equipment = Equipment::forUser($user)
             ->with('currentSite:id,name')
+            ->withCount('maintenanceRecords')
             ->when($request->string('search')->toString(), function ($query, $search) {
                 $query->where(fn ($q) => $q
                     ->where('name', 'like', "%{$search}%")

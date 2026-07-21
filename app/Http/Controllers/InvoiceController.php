@@ -94,10 +94,20 @@ class InvoiceController extends Controller
     {
         $this->authorizeCompany($request->user(), $invoice);
 
-        $invoice->load(['lines', 'client:id,name', 'project:id,name']);
+        $invoice->load(['lines', 'client:id,name,email', 'project:id,name']);
+
+        $totals = [
+            'subtotal'    => (float) $invoice->subtotal,
+            'tax_rate'    => (float) $invoice->tax_rate,
+            'tax_amount'  => (float) $invoice->tax_amount,
+            'total'       => (float) $invoice->total,
+            'amount_paid' => (float) $invoice->amount_paid,
+            'balance'     => (float) $invoice->balance,
+        ];
 
         return Inertia::render('Invoices/Show', [
             'invoice' => $invoice,
+            'totals'  => $totals,
             'can'     => [
                 'update' => $request->user()->can('invoicing.update'),
                 'delete' => $request->user()->can('invoicing.delete'),
@@ -150,6 +160,43 @@ class InvoiceController extends Controller
 
         return redirect()->route('invoices.index')
             ->with('success', 'Facture supprimée.');
+    }
+
+    /**
+     * Marque la facture comme entièrement payée (solde = total TTC).
+     */
+    public function markPaid(Request $request, Invoice $invoice): RedirectResponse
+    {
+        $this->authorizeCompany($request->user(), $invoice);
+
+        abort_if($invoice->status === 'paid', 422, 'La facture est déjà entièrement payée.');
+
+        $invoice->amount_paid = $invoice->total;
+        $invoice->status = 'paid';
+        $invoice->save();
+
+        return redirect()->route('invoices.show', $invoice)
+            ->with('success', 'Facture marquée comme payée.');
+    }
+
+    /**
+     * Envoie la facture par email au client (statut basculé à "sent" si brouillon).
+     * L'envoi effectif via Mailable est à brancher selon la config SMTP de l'entreprise.
+     */
+    public function sendEmail(Request $request, Invoice $invoice): RedirectResponse
+    {
+        $this->authorizeCompany($request->user(), $invoice);
+
+        // Bascule le statut brouillon → envoyée.
+        if ($invoice->status === 'draft') {
+            $invoice->status = 'sent';
+            $invoice->save();
+        }
+
+        // TODO: Mail::to($invoice->client?->email)->send(new \App\Mail\InvoiceMail($invoice));
+
+        return redirect()->route('invoices.show', $invoice)
+            ->with('success', 'Facture marquée comme envoyée. Configurez le SMTP pour activer l\'envoi réel.');
     }
 
     /**

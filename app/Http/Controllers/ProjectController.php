@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Budget;
+use App\Models\CostEntry;
+use App\Models\Document;
 use App\Models\Project;
+use App\Models\Task;
 use App\Models\User;
 use App\Services\LicenseGuard;
 use Illuminate\Http\RedirectResponse;
@@ -78,12 +82,46 @@ class ProjectController extends Controller
 
         $project->load(['manager:id,name', 'sites' => fn ($q) => $q->latest()]);
 
+        // 5 tâches récentes avec le responsable
+        $recentTasks = Task::where('project_id', $project->id)
+            ->with('assignee:id,name')
+            ->latest()
+            ->limit(5)
+            ->get(['id', 'name', 'status', 'progress', 'start_date', 'end_date', 'assignee_id']);
+
+        // Budget prévisionnel (somme des budgets validés ou total du projet si aucun budget)
+        $budgetPlanned = (float) Budget::where('project_id', $project->id)->sum('total_amount');
+        if ($budgetPlanned === 0.0) {
+            $budgetPlanned = (float) $project->budget_amount;
+        }
+
+        // Dépenses réelles (écritures analytiques de type charge)
+        $budgetSpent = (float) CostEntry::where('project_id', $project->id)
+            ->where('type', 'charge')
+            ->sum('amount');
+
+        // Comptage des documents GED
+        $documentsCount = Document::where('project_id', $project->id)->count();
+
+        // Jours restants avant la date de fin (négatif = dépassé, null = pas de date de fin)
+        $daysRemaining = $project->end_date
+            ? (int) now()->startOfDay()->diffInDays($project->end_date->startOfDay(), false)
+            : null;
+
         return Inertia::render('Projects/Show', [
-            'project' => $project,
-            'can'     => [
-                'update'      => $request->user()->can('projects.update'),
-                'delete'      => $request->user()->can('projects.delete'),
-                'createSite'  => $request->user()->can('sites.create'),
+            'project'         => $project,
+            'recent_tasks'    => $recentTasks,
+            'budget_progress' => [
+                'planned' => $budgetPlanned,
+                'spent'   => $budgetSpent,
+            ],
+            'sites_count'     => $project->sites->count(),
+            'documents_count' => $documentsCount,
+            'days_remaining'  => $daysRemaining,
+            'can'             => [
+                'update'     => $request->user()->can('projects.update'),
+                'delete'     => $request->user()->can('projects.delete'),
+                'createSite' => $request->user()->can('sites.create'),
             ],
         ]);
     }

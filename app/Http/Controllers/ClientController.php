@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Models\Invoice;
+use App\Models\Quote;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -22,6 +24,7 @@ class ClientController extends Controller
         $user = $request->user();
 
         $clients = Client::forUser($user)
+            ->withCount(['invoices', 'quotes'])
             ->when($request->string('search')->toString(), function ($query, $search) {
                 $query->where(fn ($q) => $q
                     ->where('name', 'like', "%{$search}%")
@@ -70,9 +73,41 @@ class ClientController extends Controller
     {
         $this->authorizeCompany($request->user(), $client);
 
+        // 5 dernières factures du client
+        $invoices = Invoice::where('client_id', $client->id)
+            ->latest('issue_date')
+            ->limit(5)
+            ->get(['id', 'code', 'status', 'total', 'amount_paid', 'currency', 'issue_date', 'due_date']);
+
+        // 5 derniers devis du client
+        $quotes = Quote::where('client_id', $client->id)
+            ->latest('date')
+            ->limit(5)
+            ->get(['id', 'code', 'title', 'status', 'total', 'currency', 'date', 'valid_until']);
+
+        // Statistiques financières
+        $invoiceBase = Invoice::where('client_id', $client->id);
+        $caTotal         = (float) (clone $invoiceBase)->sum('total');
+        $invoicesPaid    = (float) (clone $invoiceBase)->where('status', 'paid')->sum('total');
+        $invoicesPending = (float) (clone $invoiceBase)
+            ->whereIn('status', ['sent', 'partial', 'overdue'])
+            ->selectRaw('COALESCE(SUM(total - amount_paid), 0) as pending')
+            ->value('pending');
+        $quotesCount = Quote::where('client_id', $client->id)->count();
+
+        $stats = [
+            'ca_total'          => $caTotal,
+            'invoices_paid'     => $invoicesPaid,
+            'invoices_pending'  => $invoicesPending,
+            'quotes_count'      => $quotesCount,
+        ];
+
         return Inertia::render('Clients/Show', [
-            'client' => $client,
-            'can'    => [
+            'client'   => $client,
+            'invoices' => $invoices,
+            'quotes'   => $quotes,
+            'stats'    => $stats,
+            'can'      => [
                 'update' => $request->user()->can('clients.update'),
                 'delete' => $request->user()->can('clients.delete'),
             ],

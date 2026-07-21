@@ -25,6 +25,7 @@ class BudgetController extends Controller
 
         $budgets = Budget::forUser($user)
             ->with('project:id,name')
+            ->withCount('lines')
             ->when($request->string('search')->toString(), function ($query, $search) {
                 $query->where(fn ($q) => $q
                     ->where('code', 'like', "%{$search}%")

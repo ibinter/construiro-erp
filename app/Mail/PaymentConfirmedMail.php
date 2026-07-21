@@ -16,12 +16,15 @@ class PaymentConfirmedMail extends Mailable
         public string $userName,
         public string $planName,
         public string $amount,
-        public string $reference,
-        public string $paidAt,
-        public string $accessUntil,
+        public string $currency     = 'FCFA',
+        public string $reference    = '',
+        public string $paidAt       = '',
+        public string $accessUntil  = '',
+        public string $invoiceUrl   = '',
         public string $dashboardUrl = '',
     ) {
         $this->dashboardUrl = $dashboardUrl ?: url('/dashboard');
+        $this->invoiceUrl   = $invoiceUrl   ?: url('/billing/invoices');
     }
 
     public function envelope(): Envelope

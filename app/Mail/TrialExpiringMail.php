@@ -14,16 +14,21 @@ class TrialExpiringMail extends Mailable
 
     public function __construct(
         public string $userName,
-        public int $daysRemaining,
+        public int    $daysLeft,
         public string $expiresAt,
-        public string $renewUrl = '',
+        public bool   $isTrial    = true,
+        public string $renewUrl   = '',
     ) {
         $this->renewUrl = $renewUrl ?: url('/billing');
     }
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: "Votre essai CONSTRUIRO expire dans {$this->daysRemaining} jour(s)");
+        $label = $this->isTrial ? 'essai' : 'abonnement';
+
+        return new Envelope(
+            subject: "Votre {$label} CONSTRUIRO expire dans {$this->daysLeft} jour(s)",
+        );
     }
 
     public function content(): Content

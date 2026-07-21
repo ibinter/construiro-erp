@@ -22,9 +22,12 @@ class Boq extends Model
 
     public const STATUSES = ['draft', 'validated'];
 
+    // NOTE : si le champ `lot` n'existe pas encore en base, ajouter la migration :
+    // php artisan make:migration add_lot_to_boqs_table
+    // Schema::table('boqs', fn($t) => $t->string('lot', 150)->nullable()->after('title'));
     protected $fillable = [
         'company_id', 'project_id', 'client_id',
-        'code', 'title', 'status', 'currency', 'total', 'notes',
+        'code', 'title', 'lot', 'status', 'currency', 'total', 'notes',
     ];
 
     protected $casts = [

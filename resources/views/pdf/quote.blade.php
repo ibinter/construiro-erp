@@ -70,8 +70,16 @@
     </div>
     @endif
 
-    <div class="foot">
-        {{ $company->name ?? 'CONSTRUIRO' }} — Document généré par CONSTRUIRO ERP le {{ now()->format('d/m/Y à H:i') }}
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:16px;">
+        <div class="foot" style="margin-top:0;">
+            {{ $company->name ?? 'CONSTRUIRO' }} — Document généré par CONSTRUIRO ERP le {{ now()->format('d/m/Y à H:i') }}
+        </div>
+        @if(!empty($qr_svg))
+        <div style="text-align:center;flex-shrink:0;margin-left:16px;">
+            <div style="width:80px;height:80px;">{!! $qr_svg !!}</div>
+            <div style="font-size:8px;color:#64748b;margin-top:3px;">Vérifier l'authenticité</div>
+        </div>
+        @endif
     </div>
 </div>
 </body>

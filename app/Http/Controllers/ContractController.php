@@ -75,9 +75,27 @@ class ContractController extends Controller
 
         $contract->load('project:id,name');
 
+        // Avancement temporel (% de la durée écoulée entre start_date et end_date).
+        $avancement = 0;
+        if ($contract->start_date && $contract->end_date) {
+            $now   = now();
+            $start = $contract->start_date;
+            $end   = $contract->end_date;
+
+            if ($now->gte($end)) {
+                $avancement = 100;
+            } elseif ($now->gt($start)) {
+                $totalDays   = max(1, $start->diffInDays($end));
+                $elapsedDays = $start->diffInDays($now);
+                $avancement  = (int) round($elapsedDays / $totalDays * 100);
+            }
+        }
+
         return Inertia::render('Contracts/Show', [
-            'contract' => $contract,
-            'can'      => [
+            'contract'   => $contract,
+            'avancement' => $avancement,
+            'documents'  => [],   // Module Documents à venir – placeholder vide
+            'can'        => [
                 'update' => $request->user()->can('contracts.update'),
                 'delete' => $request->user()->can('contracts.delete'),
                 'sign'   => $request->user()->can('contracts.update'),

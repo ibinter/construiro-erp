@@ -313,6 +313,8 @@ Route::middleware(['auth', 'verified', 'subscription', 'two-factor'])->group(fun
     Route::put('/invoices/{invoice}',    [InvoiceController::class, 'update'])->middleware('can:invoicing.update')->name('invoices.update');
     Route::delete('/invoices/{invoice}', [InvoiceController::class, 'destroy'])->middleware('can:invoicing.delete')->name('invoices.destroy');
     Route::post('/invoices/{invoice}/payment', [InvoiceController::class, 'registerPayment'])->middleware('can:invoicing.update')->name('invoices.payment');
+    Route::post('/invoices/{invoice}/mark-paid', [InvoiceController::class, 'markPaid'])->middleware('can:invoicing.update')->name('invoices.mark-paid');
+    Route::post('/invoices/{invoice}/send-email', [InvoiceController::class, 'sendEmail'])->middleware('can:invoicing.update')->name('invoices.send-email');
     Route::post('/invoices/{invoice}/mobile-money', [MobileMoneyController::class, 'initiate'])->middleware('can:invoicing.update')->name('mobile-money.initiate');
 
     // --- Module Matériaux ------------------------------------------------------
@@ -354,7 +356,9 @@ Route::middleware(['auth', 'verified', 'subscription', 'two-factor'])->group(fun
     Route::get('/purchases/{purchase}',      [PurchaseController::class, 'show'])->middleware('can:purchases.view')->name('purchases.show');
     Route::get('/purchases/{purchase}/edit', [PurchaseController::class, 'edit'])->middleware('can:purchases.update')->name('purchases.edit');
     Route::put('/purchases/{purchase}',      [PurchaseController::class, 'update'])->middleware('can:purchases.update')->name('purchases.update');
-    Route::delete('/purchases/{purchase}',   [PurchaseController::class, 'destroy'])->middleware('can:purchases.delete')->name('purchases.destroy');
+    Route::delete('/purchases/{purchase}',        [PurchaseController::class, 'destroy'])->middleware('can:purchases.delete')->name('purchases.destroy');
+    Route::post('/purchases/{purchase}/confirm',       [PurchaseController::class, 'confirm'])->middleware('can:purchases.update')->name('purchases.confirm');
+    Route::post('/purchases/{purchase}/mark-received', [PurchaseController::class, 'markReceived'])->middleware('can:purchases.update')->name('purchases.mark-received');
 
     // --- Module Parc matériel --------------------------------------------------
     Route::get('/equipment',                     [EquipmentController::class, 'index'])->middleware('can:equipment.view')->name('equipment.index');
@@ -614,10 +618,18 @@ Route::middleware(['auth', 'verified', 'subscription', 'two-factor'])->group(fun
     Route::get('/vehicles/{equipment}',  [VehicleController::class, 'show'])->middleware('can:vehicles.view')->name('vehicles.show');
 
     // --- Carburant / Maintenance -----------------------------------------------
-    Route::get('/fuel',         [FuelController::class, 'index'])->middleware('can:fuel.view')->name('fuel.index');
-    Route::post('/fuel',        [FuelController::class, 'storeLog'])->middleware('can:fuel.create')->name('fuel.store');
-    Route::get('/maintenance',  [MaintenanceController::class, 'index'])->middleware('can:maintenance.view')->name('maintenance.index');
-    Route::post('/maintenance', [MaintenanceController::class, 'store'])->middleware('can:maintenance.create')->name('maintenance.store');
+    Route::get('/fuel',                      [FuelController::class, 'index'])->middleware('can:fuel.view')->name('fuel.index');
+    Route::post('/fuel',                     [FuelController::class, 'storeLog'])->middleware('can:fuel.create')->name('fuel.store');
+    Route::get('/fuel/{fuelLog}/edit',       [FuelController::class, 'edit'])->middleware('can:fuel.update')->name('fuel.edit');
+    Route::put('/fuel/{fuelLog}',            [FuelController::class, 'update'])->middleware('can:fuel.update')->name('fuel.update');
+    Route::delete('/fuel/{fuelLog}',         [FuelController::class, 'destroy'])->middleware('can:fuel.delete')->name('fuel.destroy');
+
+    Route::get('/maintenance',                            [MaintenanceController::class, 'index'])->middleware('can:maintenance.view')->name('maintenance.index');
+    Route::post('/maintenance',                           [MaintenanceController::class, 'store'])->middleware('can:maintenance.create')->name('maintenance.store');
+    Route::get('/maintenance/{maintenanceRecord}',        [MaintenanceController::class, 'show'])->middleware('can:maintenance.view')->name('maintenance.show');
+    Route::get('/maintenance/{maintenanceRecord}/edit',   [MaintenanceController::class, 'edit'])->middleware('can:maintenance.update')->name('maintenance.edit');
+    Route::put('/maintenance/{maintenanceRecord}',        [MaintenanceController::class, 'update'])->middleware('can:maintenance.update')->name('maintenance.update');
+    Route::delete('/maintenance/{maintenanceRecord}',     [MaintenanceController::class, 'destroy'])->middleware('can:maintenance.delete')->name('maintenance.destroy');
 
     // --- Budget ----------------------------------------------------------------
     Route::get('/budget',               [BudgetController::class, 'index'])->middleware('can:budget.view')->name('budget.index');
@@ -629,15 +641,19 @@ Route::middleware(['auth', 'verified', 'subscription', 'two-factor'])->group(fun
     Route::delete('/budget/{budget}',   [BudgetController::class, 'destroy'])->middleware('can:budget.delete')->name('budget.destroy');
 
     // --- Comptabilité analytique -----------------------------------------------
-    Route::get('/cost-accounting',  [CostAccountingController::class, 'index'])->middleware('can:cost_accounting.view')->name('cost_accounting.index');
-    Route::post('/cost-accounting', [CostAccountingController::class, 'store'])->middleware('can:cost_accounting.create')->name('cost_accounting.store');
+    Route::get('/cost-accounting',                       [CostAccountingController::class, 'index'])->middleware('can:cost_accounting.view')->name('cost_accounting.index');
+    Route::post('/cost-accounting',                      [CostAccountingController::class, 'store'])->middleware('can:cost_accounting.create')->name('cost_accounting.store');
+    Route::get('/cost-accounting/{costEntry}/edit',      [CostAccountingController::class, 'edit'])->middleware('can:cost_accounting.update')->name('cost_accounting.edit');
+    Route::put('/cost-accounting/{costEntry}',           [CostAccountingController::class, 'update'])->middleware('can:cost_accounting.update')->name('cost_accounting.update');
 
     // --- Comptabilité générale (journal SYSCOHADA) -----------------------------
-    Route::get('/accounting',            [AccountingController::class, 'index'])->middleware('can:accounting.view')->name('accounting.index');
-    Route::get('/accounting/accounts',   [AccountingController::class, 'accounts'])->middleware('can:accounting.view')->name('accounting.accounts');
-    Route::post('/accounting/accounts',  [AccountingController::class, 'storeAccount'])->middleware('can:accounting.create')->name('accounting.accounts.store');
-    Route::post('/accounting',           [AccountingController::class, 'store'])->middleware('can:accounting.create')->name('accounting.store');
-    Route::delete('/accounting/{entry}', [AccountingController::class, 'destroy'])->middleware('can:accounting.delete')->name('accounting.destroy');
+    Route::get('/accounting',                            [AccountingController::class, 'index'])->middleware('can:accounting.view')->name('accounting.index');
+    Route::get('/accounting/accounts',                   [AccountingController::class, 'accounts'])->middleware('can:accounting.view')->name('accounting.accounts');
+    Route::post('/accounting/accounts',                  [AccountingController::class, 'storeAccount'])->middleware('can:accounting.create')->name('accounting.accounts.store');
+    Route::post('/accounting',                           [AccountingController::class, 'store'])->middleware('can:accounting.create')->name('accounting.store');
+    Route::get('/accounting/{journalEntry}/edit',        [AccountingController::class, 'edit'])->middleware('can:accounting.update')->name('accounting.edit');
+    Route::put('/accounting/{journalEntry}',             [AccountingController::class, 'update'])->middleware('can:accounting.update')->name('accounting.update');
+    Route::delete('/accounting/{entry}',                 [AccountingController::class, 'destroy'])->middleware('can:accounting.delete')->name('accounting.destroy');
 
     // --- Encaissements ---------------------------------------------------------
     Route::get('/incoming-payments',                        [IncomingPaymentController::class, 'index'])->middleware('can:incoming_payments.view')->name('incoming-payments.index');

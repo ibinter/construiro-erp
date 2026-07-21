@@ -85,13 +85,61 @@ class PurchaseController extends Controller
 
         $purchase->load(['lines', 'supplier:id,name', 'project:id,name']);
 
+        $totals = [
+            'subtotal'   => (float) $purchase->subtotal,
+            'tax_rate'   => (float) $purchase->tax_rate,
+            'tax_amount' => (float) $purchase->tax_amount,
+            'total'      => (float) $purchase->total,
+        ];
+
         return Inertia::render('Purchases/Show', [
-            'order' => $purchase,
-            'can'   => [
+            'order'  => $purchase,
+            'totals' => $totals,
+            'can'    => [
                 'update' => $request->user()->can('purchases.update'),
                 'delete' => $request->user()->can('purchases.delete'),
             ],
         ]);
+    }
+
+    /**
+     * Confirme le bon de commande (statut draft|sent → confirmed).
+     */
+    public function confirm(Request $request, PurchaseOrder $purchase): RedirectResponse
+    {
+        $this->authorizeCompany($request->user(), $purchase);
+
+        abort_unless(
+            in_array($purchase->status, ['draft', 'sent'], true),
+            422,
+            'Seul un bon de commande brouillon ou envoyé peut être confirmé.'
+        );
+
+        $purchase->status = 'confirmed';
+        $purchase->save();
+
+        return redirect()->route('purchases.show', $purchase)
+            ->with('success', 'Bon de commande confirmé.');
+    }
+
+    /**
+     * Marque le bon de commande comme reçu (statut confirmed → received).
+     */
+    public function markReceived(Request $request, PurchaseOrder $purchase): RedirectResponse
+    {
+        $this->authorizeCompany($request->user(), $purchase);
+
+        abort_unless(
+            $purchase->status === 'confirmed',
+            422,
+            'Seul un bon de commande confirmé peut être marqué comme reçu.'
+        );
+
+        $purchase->status = 'received';
+        $purchase->save();
+
+        return redirect()->route('purchases.show', $purchase)
+            ->with('success', 'Livraison enregistrée. Bon de commande marqué comme reçu.');
     }
 
     public function edit(Request $request, PurchaseOrder $purchase): Response
