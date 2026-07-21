@@ -16,6 +16,9 @@ export default function ImportIndex({ types }) {
     const [skipDups, setSkipDups]         = useState(true);
     const fileRef = useRef();
 
+    // Config du type sélectionné (label, execute_route, columns)
+    const typeConfig = types.find(tp => tp.key === selectedType);
+
     // ── Étape 2 : aperçu ──────────────────────────────────────────────────────
     const handlePreview = async () => {
         if (!selectedType || !file) return;
@@ -49,7 +52,9 @@ export default function ImportIndex({ types }) {
     // ── Étape 4 : exécution ──────────────────────────────────────────────────
     const handleExecute = () => {
         if (!preview) return;
-        router.post(route('import.execute'), {
+        // Les 5 nouveaux types ont leur propre route enrichie ; les autres utilisent la route générique.
+        const executeRoute = typeConfig?.execute_route ?? 'import.execute';
+        router.post(route(executeRoute), {
             type:      selectedType,
             mapping:   mapping,
             tmp_path:  preview.tmp_path,
@@ -112,11 +117,40 @@ export default function ImportIndex({ types }) {
                             </div>
                         </div>
 
-                        <div className="mt-5 flex justify-end">
+                        {/* Colonnes attendues pour le type sélectionné */}
+                        {typeConfig?.columns?.length > 0 && (
+                            <div className="mt-4 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 dark:border-blue-900/40 dark:bg-blue-900/20">
+                                <p className="mb-1.5 text-xs font-semibold text-blue-700 dark:text-blue-300">
+                                    {t('Colonnes attendues dans le fichier')} — {typeConfig.label}
+                                </p>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {typeConfig.columns.map((col, i) => (
+                                        <span key={i} className="rounded bg-blue-100 px-2 py-0.5 text-xs text-blue-800 dark:bg-blue-800/40 dark:text-blue-200">
+                                            {col}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="mt-5 flex items-center justify-between gap-3">
+                            {/* Lien template CSV */}
+                            {selectedType && ['projects','quotes','invoices','stocks','equipment'].includes(selectedType) && (
+                                <a
+                                    href={`/templates/import/${
+                                        { projects: 'projets', quotes: 'devis', invoices: 'factures', stocks: 'stocks', equipment: 'equipements' }[selectedType]
+                                    }-template.csv`}
+                                    download
+                                    className="inline-flex items-center gap-1.5 text-xs text-slate-500 underline-offset-2 hover:text-orange-500 hover:underline"
+                                >
+                                    <Icon name="download" className="h-3.5 w-3.5" />
+                                    {t('Télécharger le modèle CSV')}
+                                </a>
+                            )}
                             <button
                                 onClick={handlePreview}
                                 disabled={!selectedType || !file || loading}
-                                className="inline-flex items-center gap-2 rounded-lg bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-50"
+                                className="ml-auto inline-flex items-center gap-2 rounded-lg bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-50"
                             >
                                 {loading
                                     ? <><Icon name="loader" className="h-4 w-4 animate-spin" />{t('Analyse…')}</>

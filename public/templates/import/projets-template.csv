@@ -1,0 +1,4 @@
+Nom;Code;Client;Description;Statut;Date début;Date fin;Budget;Lieu;Type
+Construction Villa Dupont;PROJ-00001;Dupont SA;Rénovation complète villa 5 pièces;En cours;15/01/2026;30/06/2026;85000000;Abidjan;Résidentiel
+Extension Entrepôt LogiCo;PROJ-00002;LogiCo SARL;Agrandissement entrepôt logistique +500m²;Planifié;01/03/2026;31/12/2026;120000000;Bouaké;Industriel
+Réhabilitation Lycée Moderne;PROJ-00003;;Réfection des salles de classe bâtiment A;Terminé;01/09/2025;28/02/2026;45000000;Yamoussoukro;Infrastructure publique

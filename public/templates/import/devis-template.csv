@@ -1,0 +1,4 @@
+Numéro;Client;Projet;Objet / Intitulé;Montant HT;TVA (%);Statut;Date émission;Date validité;Devise
+DEV-2026-001;Dupont SA;Construction Villa Dupont;Fourniture et pose carrelage salon;4500000;18;Envoyé;10/07/2026;10/08/2026;XOF
+DEV-2026-002;LogiCo SARL;;Étude géotechnique site Bouaké;1200000;18;Brouillon;15/07/2026;15/09/2026;XOF
+DEV-2026-003;Mairie d'Abidjan;Réhabilitation Lycée Moderne;Peinture intérieure bâtiment A;890000;0;Accepté;01/06/2026;01/07/2026;XOF

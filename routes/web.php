@@ -97,6 +97,42 @@ use Inertia\Inertia;
 // ─── Vérification publique de documents (QR) ────────────────────────────────
 Route::get('/verify/{token}', [DocumentVerifyController::class, 'show'])->name('verify.document');
 
+// Vérification par type + numéro (bons de commande, bulletins de paie)
+Route::get('/verify/{type}/{number}', function (string $type, string $number) {
+    $models = [
+        'po'      => [\App\Models\PurchaseOrder::class, 'code'],
+        'payslip' => [\App\Models\Payslip::class,       'id'],
+    ];
+
+    if (!isset($models[$type])) {
+        abort(404);
+    }
+
+    [$modelClass, $field] = $models[$type];
+
+    if (!class_exists($modelClass)) {
+        abort(404);
+    }
+
+    $doc = $modelClass::where($field, $number)->first();
+
+    if (!$doc) {
+        return Inertia::render('Verify/NotFound', ['number' => $number]);
+    }
+
+    $typeLabels = [
+        'po'      => 'Bon de commande',
+        'payslip' => 'Bulletin de paie',
+    ];
+
+    return Inertia::render('Verify/Found', [
+        'type'   => $typeLabels[$type] ?? $type,
+        'number' => $number,
+        'date'   => $doc->created_at?->format('d/m/Y'),
+        'status' => $doc->status ?? 'valid',
+    ]);
+})->name('verify.typed');
+
 // ─── SEO ─────────────────────────────────────────────────────────────────────
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 

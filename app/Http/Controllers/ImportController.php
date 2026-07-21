@@ -68,6 +68,101 @@ class ImportController extends Controller
             ],
             'unique_on' => 'code',
         ],
+
+        // ── 5 nouveaux types ────────────────────────────────────────────────────
+
+        'projects' => [
+            'label'         => 'Projets',
+            'model'         => \App\Models\Project::class,
+            'execute_route' => 'import.projects',
+            'columns'       => [
+                'name'         => ['label' => 'Nom *',            'required' => true],
+                'code'         => ['label' => 'Code / Référence', 'required' => false],
+                'client'       => ['label' => 'Client',           'required' => false],
+                'description'  => ['label' => 'Description',      'required' => false],
+                'status'       => ['label' => 'Statut',           'required' => false],
+                'start_date'   => ['label' => 'Date début',       'required' => false],
+                'end_date'     => ['label' => 'Date fin',         'required' => false],
+                'budget'       => ['label' => 'Budget',           'required' => false, 'rule' => 'numeric'],
+                'location'     => ['label' => 'Lieu / Ville',     'required' => false],
+                'project_type' => ['label' => 'Type de projet',   'required' => false],
+            ],
+            'unique_on' => 'code',
+        ],
+
+        'quotes' => [
+            'label'         => 'Devis',
+            'model'         => \App\Models\Quote::class,
+            'execute_route' => 'import.quotes',
+            'columns'       => [
+                'number'      => ['label' => 'Numéro *',         'required' => true],
+                'client'      => ['label' => 'Client',           'required' => false],
+                'project'     => ['label' => 'Projet',           'required' => false],
+                'title'       => ['label' => 'Objet / Intitulé', 'required' => false],
+                'amount'      => ['label' => 'Montant HT',       'required' => false, 'rule' => 'numeric'],
+                'tax_rate'    => ['label' => 'TVA (%)',           'required' => false, 'rule' => 'numeric'],
+                'status'      => ['label' => 'Statut',           'required' => false],
+                'issue_date'  => ['label' => 'Date émission',    'required' => false],
+                'valid_until' => ['label' => 'Date validité',    'required' => false],
+                'currency'    => ['label' => 'Devise',           'required' => false],
+            ],
+            'unique_on' => 'number',
+        ],
+
+        'invoices' => [
+            'label'         => 'Factures',
+            'model'         => \App\Models\Invoice::class,
+            'execute_route' => 'import.invoices',
+            'columns'       => [
+                'number'     => ['label' => 'Numéro *',       'required' => true],
+                'client'     => ['label' => 'Client',         'required' => false],
+                'project'    => ['label' => 'Projet',         'required' => false],
+                'title'      => ['label' => 'Objet',          'required' => false],
+                'amount'     => ['label' => 'Montant HT',     'required' => false, 'rule' => 'numeric'],
+                'tax_rate'   => ['label' => 'TVA (%)',         'required' => false, 'rule' => 'numeric'],
+                'status'     => ['label' => 'Statut',         'required' => false],
+                'issue_date' => ['label' => 'Date émission',  'required' => false],
+                'due_date'   => ['label' => 'Échéance',       'required' => false],
+                'currency'   => ['label' => 'Devise',         'required' => false],
+            ],
+            'unique_on' => 'number',
+        ],
+
+        'stocks' => [
+            'label'         => 'Stocks / Matériaux',
+            'model'         => \App\Models\Material::class,
+            'execute_route' => 'import.stocks',
+            'columns'       => [
+                'code'       => ['label' => 'Code / Référence', 'required' => false],
+                'name'       => ['label' => 'Désignation *',    'required' => true],
+                'quantity'   => ['label' => 'Quantité',         'required' => false, 'rule' => 'numeric'],
+                'unit'       => ['label' => 'Unité',            'required' => false],
+                'unit_price' => ['label' => 'Prix unitaire',    'required' => false, 'rule' => 'numeric'],
+                'min_stock'  => ['label' => 'Stock minimum',    'required' => false, 'rule' => 'numeric'],
+                'location'   => ['label' => 'Emplacement',      'required' => false],
+                'supplier'   => ['label' => 'Fournisseur',      'required' => false],
+            ],
+            'unique_on' => 'code',
+        ],
+
+        'equipment' => [
+            'label'         => 'Équipements',
+            'model'         => \App\Models\Equipment::class,
+            'execute_route' => 'import.equipment',
+            'columns'       => [
+                'code'           => ['label' => 'Code / Référence',   'required' => false],
+                'name'           => ['label' => 'Désignation / Nom *', 'required' => true],
+                'type'           => ['label' => 'Type / Catégorie',    'required' => false],
+                'brand'          => ['label' => 'Marque',              'required' => false],
+                'model'          => ['label' => 'Modèle',              'required' => false],
+                'serial_number'  => ['label' => 'Numéro de série',     'required' => false],
+                'purchase_date'  => ['label' => "Date d'achat",        'required' => false],
+                'purchase_price' => ['label' => 'Coût / Prix achat',   'required' => false, 'rule' => 'numeric'],
+                'status'         => ['label' => 'État',                'required' => false],
+                'location'       => ['label' => 'Site / Emplacement',  'required' => false],
+            ],
+            'unique_on' => 'serial_number',
+        ],
     ];
 
     // ── 1. Sélection du type ─────────────────────────────────────────────────
@@ -76,8 +171,10 @@ class ImportController extends Controller
     {
         return Inertia::render('Import/Index', [
             'types' => collect(self::IMPORTABLE_TYPES)->map(fn ($cfg, $key) => [
-                'key'   => $key,
-                'label' => $cfg['label'],
+                'key'           => $key,
+                'label'         => $cfg['label'],
+                'execute_route' => $cfg['execute_route'] ?? 'import.execute',
+                'columns'       => collect($cfg['columns'])->map(fn ($col) => $col['label'])->values(),
             ])->values(),
         ]);
     }
@@ -308,5 +405,513 @@ class ImportController extends Controller
             $rules[$field] = implode('|', $r);
         }
         return $rules;
+    }
+
+    // ── 5 méthodes d'import enrichies ────────────────────────────────────────
+
+    /**
+     * Import Projets
+     * POST /import/projects
+     */
+    public function projects(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'mapping'   => 'required|array',
+            'tmp_path'  => 'required|string',
+            'skip_dups' => 'boolean',
+        ]);
+
+        $user      = $request->user();
+        $companyId = $user->company_id;
+        $skipDups  = $request->boolean('skip_dups', true);
+
+        $path = storage_path('app/' . $request->tmp_path);
+        $ext  = pathinfo($path, PATHINFO_EXTENSION);
+        $rows = in_array($ext, ['xlsx', 'xls']) ? $this->readExcel($path) : $this->readCsv($path);
+        array_shift($rows);
+
+        $cfg = self::IMPORTABLE_TYPES['projects'];
+        [$inserted, $skipped, $failed] = [0, 0, 0];
+
+        DB::beginTransaction();
+        try {
+            foreach (array_chunk($rows, 100) as $chunk) {
+                foreach ($chunk as $row) {
+                    $mapped = $this->applyMapping($row, $request->mapping, $cfg['columns']);
+
+                    // Génération automatique du code si absent
+                    if (empty($mapped['code'])) {
+                        $mapped['code'] = 'PROJ-' . strtoupper(substr(uniqid(), -5));
+                    }
+
+                    // Dédoublonnage par code
+                    if ($skipDups && \App\Models\Project::where('company_id', $companyId)->where('code', $mapped['code'])->exists()) {
+                        $skipped++;
+                        continue;
+                    }
+
+                    // Mapping statut FR → EN
+                    if (!empty($mapped['status'])) {
+                        $mapped['status'] = $this->mapProjectStatus($mapped['status']);
+                    }
+
+                    // Parsing dates flexibles
+                    $mapped['start_date'] = $this->parseFlexDate($mapped['start_date'] ?? null);
+                    $mapped['end_date']   = $this->parseFlexDate($mapped['end_date'] ?? null);
+
+                    // Budget : nettoyage
+                    $budgetRaw = $mapped['budget'] ?? null;
+
+                    \App\Models\Project::create([
+                        'company_id'    => $companyId,
+                        'code'          => $mapped['code'],
+                        'name'          => $mapped['name'] ?? '',
+                        'client_name'   => $mapped['client'] ?? null,
+                        'description'   => $mapped['description'] ?? null,
+                        'status'        => $mapped['status'] ?? 'planned',
+                        'start_date'    => $mapped['start_date'],
+                        'end_date'      => $mapped['end_date'],
+                        'budget_amount' => is_numeric($budgetRaw) ? $budgetRaw : null,
+                        'city'          => $mapped['location'] ?? null,
+                        'type'          => $mapped['project_type'] ?? null,
+                    ]);
+                    $inserted++;
+                }
+            }
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return back()->withErrors(['import' => 'Erreur import projets : ' . $e->getMessage()]);
+        }
+        @unlink($path);
+
+        return redirect()->route('import.index')
+            ->with('success', "Import Projets — {$inserted} créés, {$skipped} doublons ignorés, {$failed} erreurs.");
+    }
+
+    /**
+     * Import Devis
+     * POST /import/quotes
+     */
+    public function quotes(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'mapping'   => 'required|array',
+            'tmp_path'  => 'required|string',
+            'skip_dups' => 'boolean',
+        ]);
+
+        $user      = $request->user();
+        $companyId = $user->company_id;
+        $skipDups  = $request->boolean('skip_dups', true);
+
+        $path = storage_path('app/' . $request->tmp_path);
+        $ext  = pathinfo($path, PATHINFO_EXTENSION);
+        $rows = in_array($ext, ['xlsx', 'xls']) ? $this->readExcel($path) : $this->readCsv($path);
+        array_shift($rows);
+
+        $cfg = self::IMPORTABLE_TYPES['quotes'];
+        [$inserted, $skipped, $failed] = [0, 0, 0];
+
+        DB::beginTransaction();
+        try {
+            foreach (array_chunk($rows, 100) as $chunk) {
+                foreach ($chunk as $row) {
+                    $mapped = $this->applyMapping($row, $request->mapping, $cfg['columns']);
+
+                    if (empty($mapped['number'])) { $failed++; continue; }
+
+                    // Dédoublonnage par numéro (= code)
+                    if ($skipDups && \App\Models\Quote::where('company_id', $companyId)->where('code', $mapped['number'])->exists()) {
+                        $skipped++;
+                        continue;
+                    }
+
+                    // Lookups FK
+                    $clientId  = !empty($mapped['client'])  ? $this->findClientIdByName($mapped['client'], $companyId)  : null;
+                    $projectId = !empty($mapped['project']) ? $this->findProjectIdByName($mapped['project'], $companyId) : null;
+
+                    // Statut FR → EN
+                    $status = $this->mapQuoteStatus($mapped['status'] ?? '');
+
+                    $subtotal = is_numeric($mapped['amount'] ?? null) ? (float) $mapped['amount'] : 0.0;
+                    $taxRate  = is_numeric($mapped['tax_rate'] ?? null) ? (float) $mapped['tax_rate'] : 0.0;
+                    $taxAmt   = round($subtotal * $taxRate / 100, 2);
+
+                    \App\Models\Quote::create([
+                        'company_id'  => $companyId,
+                        'code'        => $mapped['number'],
+                        'client_id'   => $clientId,
+                        'client_name' => $mapped['client'] ?? null,
+                        'project_id'  => $projectId,
+                        'title'       => $mapped['title'] ?? null,
+                        'subtotal'    => $subtotal,
+                        'tax_rate'    => $taxRate,
+                        'tax_amount'  => $taxAmt,
+                        'total'       => round($subtotal + $taxAmt, 2),
+                        'status'      => $status,
+                        'date'        => $this->parseFlexDate($mapped['issue_date'] ?? null) ?? now()->toDateString(),
+                        'valid_until' => $this->parseFlexDate($mapped['valid_until'] ?? null),
+                        'currency'    => $mapped['currency'] ?? 'XOF',
+                    ]);
+                    $inserted++;
+                }
+            }
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return back()->withErrors(['import' => 'Erreur import devis : ' . $e->getMessage()]);
+        }
+        @unlink($path);
+
+        return redirect()->route('import.index')
+            ->with('success', "Import Devis — {$inserted} créés, {$skipped} doublons ignorés, {$failed} erreurs.");
+    }
+
+    /**
+     * Import Factures
+     * POST /import/invoices
+     */
+    public function invoices(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'mapping'   => 'required|array',
+            'tmp_path'  => 'required|string',
+            'skip_dups' => 'boolean',
+        ]);
+
+        $user      = $request->user();
+        $companyId = $user->company_id;
+        $skipDups  = $request->boolean('skip_dups', true);
+
+        $path = storage_path('app/' . $request->tmp_path);
+        $ext  = pathinfo($path, PATHINFO_EXTENSION);
+        $rows = in_array($ext, ['xlsx', 'xls']) ? $this->readExcel($path) : $this->readCsv($path);
+        array_shift($rows);
+
+        $cfg = self::IMPORTABLE_TYPES['invoices'];
+        [$inserted, $skipped, $failed] = [0, 0, 0];
+
+        DB::beginTransaction();
+        try {
+            foreach (array_chunk($rows, 100) as $chunk) {
+                foreach ($chunk as $row) {
+                    $mapped = $this->applyMapping($row, $request->mapping, $cfg['columns']);
+
+                    if (empty($mapped['number'])) { $failed++; continue; }
+
+                    // Dédoublonnage par numéro (= code)
+                    if ($skipDups && \App\Models\Invoice::where('company_id', $companyId)->where('code', $mapped['number'])->exists()) {
+                        $skipped++;
+                        continue;
+                    }
+
+                    $clientId  = !empty($mapped['client'])  ? $this->findClientIdByName($mapped['client'], $companyId)  : null;
+                    $projectId = !empty($mapped['project']) ? $this->findProjectIdByName($mapped['project'], $companyId) : null;
+
+                    $status   = $this->mapInvoiceStatus($mapped['status'] ?? '');
+                    $subtotal = is_numeric($mapped['amount'] ?? null) ? (float) $mapped['amount'] : 0.0;
+                    $taxRate  = is_numeric($mapped['tax_rate'] ?? null) ? (float) $mapped['tax_rate'] : 0.0;
+                    $taxAmt   = round($subtotal * $taxRate / 100, 2);
+
+                    \App\Models\Invoice::create([
+                        'company_id'  => $companyId,
+                        'code'        => $mapped['number'],
+                        'client_id'   => $clientId,
+                        'project_id'  => $projectId,
+                        'subtotal'    => $subtotal,
+                        'tax_rate'    => $taxRate,
+                        'tax_amount'  => $taxAmt,
+                        'total'       => round($subtotal + $taxAmt, 2),
+                        'amount_paid' => 0,
+                        'status'      => $status,
+                        'issue_date'  => $this->parseFlexDate($mapped['issue_date'] ?? null) ?? now()->toDateString(),
+                        'due_date'    => $this->parseFlexDate($mapped['due_date'] ?? null),
+                        'currency'    => $mapped['currency'] ?? 'XOF',
+                        'notes'       => $mapped['title'] ?? null,
+                    ]);
+                    $inserted++;
+                }
+            }
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return back()->withErrors(['import' => 'Erreur import factures : ' . $e->getMessage()]);
+        }
+        @unlink($path);
+
+        return redirect()->route('import.index')
+            ->with('success', "Import Factures — {$inserted} créées, {$skipped} doublons ignorés, {$failed} erreurs.");
+    }
+
+    /**
+     * Import Stocks / Matériaux (updateOrCreate)
+     * POST /import/stocks
+     */
+    public function stocks(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'mapping'   => 'required|array',
+            'tmp_path'  => 'required|string',
+            'skip_dups' => 'boolean',
+        ]);
+
+        $user      = $request->user();
+        $companyId = $user->company_id;
+
+        $path = storage_path('app/' . $request->tmp_path);
+        $ext  = pathinfo($path, PATHINFO_EXTENSION);
+        $rows = in_array($ext, ['xlsx', 'xls']) ? $this->readExcel($path) : $this->readCsv($path);
+        array_shift($rows);
+
+        $cfg = self::IMPORTABLE_TYPES['stocks'];
+        [$inserted, $updated, $failed] = [0, 0, 0];
+
+        DB::beginTransaction();
+        try {
+            foreach (array_chunk($rows, 100) as $chunk) {
+                foreach ($chunk as $row) {
+                    $mapped = $this->applyMapping($row, $request->mapping, $cfg['columns']);
+
+                    if (empty($mapped['name'])) { $failed++; continue; }
+
+                    // Recherche par code, puis par similarité sur le nom
+                    $existing = null;
+                    if (!empty($mapped['code'])) {
+                        $existing = \App\Models\Material::where('company_id', $companyId)
+                            ->where('code', $mapped['code'])->first();
+                    }
+                    if (!$existing && !empty($mapped['name'])) {
+                        $candidates = \App\Models\Material::where('company_id', $companyId)->get(['id', 'name']);
+                        foreach ($candidates as $candidate) {
+                            similar_text(strtolower($mapped['name']), strtolower($candidate->name), $pct);
+                            if ($pct >= 80) { $existing = $candidate; break; }
+                        }
+                    }
+
+                    $attributes = ['company_id' => $companyId, 'code' => $mapped['code'] ?? null];
+                    $values     = array_filter([
+                        'name'       => $mapped['name'],
+                        'unit'       => $mapped['unit'] ?? null,
+                        'unit_price' => is_numeric($mapped['unit_price'] ?? null) ? $mapped['unit_price'] : null,
+                        'min_stock'  => is_numeric($mapped['min_stock']  ?? null) ? $mapped['min_stock']  : null,
+                        'category'   => $mapped['supplier'] ?? null,  // Fournisseur → category si disponible
+                    ], fn ($v) => $v !== null);
+
+                    if ($existing) {
+                        $existing->update($values);
+                        // Ajustement de stock via mouvement si quantité fournie
+                        if (is_numeric($mapped['quantity'] ?? null) && $mapped['quantity'] > 0) {
+                            \App\Models\StockMovement::create([
+                                'company_id'  => $companyId,
+                                'material_id' => $existing->id,
+                                'type'        => 'adjustment',
+                                'quantity'    => (float) $mapped['quantity'],
+                                'notes'       => 'Import CSV',
+                                'moved_at'    => now()->toDateString(),
+                            ]);
+                        }
+                        $updated++;
+                    } else {
+                        $material = \App\Models\Material::create(array_merge(['company_id' => $companyId], $values, [
+                            'code' => $mapped['code'] ?? ('MAT-' . strtoupper(substr(uniqid(), -5))),
+                            'name' => $mapped['name'],
+                        ]));
+                        if (is_numeric($mapped['quantity'] ?? null) && $mapped['quantity'] > 0) {
+                            \App\Models\StockMovement::create([
+                                'company_id'  => $companyId,
+                                'material_id' => $material->id,
+                                'type'        => 'adjustment',
+                                'quantity'    => (float) $mapped['quantity'],
+                                'notes'       => 'Import CSV — stock initial',
+                                'moved_at'    => now()->toDateString(),
+                            ]);
+                        }
+                        $inserted++;
+                    }
+                }
+            }
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return back()->withErrors(['import' => 'Erreur import stocks : ' . $e->getMessage()]);
+        }
+        @unlink($path);
+
+        return redirect()->route('import.index')
+            ->with('success', "Import Stocks — {$inserted} créés, {$updated} mis à jour.");
+    }
+
+    /**
+     * Import Équipements
+     * POST /import/equipment
+     */
+    public function equipment(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'mapping'   => 'required|array',
+            'tmp_path'  => 'required|string',
+            'skip_dups' => 'boolean',
+        ]);
+
+        $user      = $request->user();
+        $companyId = $user->company_id;
+        $skipDups  = $request->boolean('skip_dups', true);
+
+        $path = storage_path('app/' . $request->tmp_path);
+        $ext  = pathinfo($path, PATHINFO_EXTENSION);
+        $rows = in_array($ext, ['xlsx', 'xls']) ? $this->readExcel($path) : $this->readCsv($path);
+        array_shift($rows);
+
+        $cfg = self::IMPORTABLE_TYPES['equipment'];
+        [$inserted, $skipped, $failed] = [0, 0, 0];
+
+        DB::beginTransaction();
+        try {
+            foreach (array_chunk($rows, 100) as $chunk) {
+                foreach ($chunk as $row) {
+                    $mapped = $this->applyMapping($row, $request->mapping, $cfg['columns']);
+
+                    if (empty($mapped['name'])) { $failed++; continue; }
+
+                    // Dédoublonnage : numéro de série (registration), puis code
+                    $uniqueKey = $mapped['serial_number'] ?? $mapped['code'] ?? null;
+                    if ($skipDups && $uniqueKey) {
+                        $exists = \App\Models\Equipment::where('company_id', $companyId)
+                            ->where(fn ($q) => $q->where('registration', $uniqueKey)->orWhere('code', $uniqueKey))
+                            ->exists();
+                        if ($exists) { $skipped++; continue; }
+                    }
+
+                    $status = $this->mapEquipmentStatus($mapped['status'] ?? '');
+
+                    \App\Models\Equipment::create([
+                        'company_id'       => $companyId,
+                        'code'             => $mapped['code'] ?? ('EQ-' . strtoupper(substr(uniqid(), -5))),
+                        'name'             => $mapped['name'],
+                        'category'         => $mapped['type'] ?? null,
+                        'brand'            => $mapped['brand'] ?? null,
+                        'model'            => $mapped['model'] ?? null,
+                        'registration'     => $mapped['serial_number'] ?? null,
+                        'acquisition_date' => $this->parseFlexDate($mapped['purchase_date'] ?? null),
+                        'acquisition_value'=> is_numeric($mapped['purchase_price'] ?? null) ? $mapped['purchase_price'] : null,
+                        'status'           => $status,
+                        'notes'            => $mapped['location'] ?? null,
+                        'is_active'        => true,
+                    ]);
+                    $inserted++;
+                }
+            }
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return back()->withErrors(['import' => 'Erreur import équipements : ' . $e->getMessage()]);
+        }
+        @unlink($path);
+
+        return redirect()->route('import.index')
+            ->with('success', "Import Équipements — {$inserted} créés, {$skipped} doublons ignorés, {$failed} erreurs.");
+    }
+
+    // ── Helpers enrichis ─────────────────────────────────────────────────────
+
+    /**
+     * Parse une date en acceptant dd/mm/yyyy, dd-mm-yyyy, ou yyyy-mm-dd.
+     * Retourne une chaîne yyyy-mm-dd ou null.
+     */
+    private function parseFlexDate(?string $val): ?string
+    {
+        if (!$val || trim($val) === '') return null;
+        $val = trim($val);
+
+        // Format dd/mm/yyyy ou dd-mm-yyyy
+        if (preg_match('#^(\d{1,2})[/\-](\d{1,2})[/\-](\d{4})$#', $val, $m)) {
+            return sprintf('%04d-%02d-%02d', (int) $m[3], (int) $m[2], (int) $m[1]);
+        }
+        // Format yyyy-mm-dd (ou yyyy/mm/dd)
+        if (preg_match('#^(\d{4})[/\-](\d{1,2})[/\-](\d{1,2})$#', $val, $m)) {
+            return sprintf('%04d-%02d-%02d', (int) $m[1], (int) $m[2], (int) $m[3]);
+        }
+        return null;
+    }
+
+    private function mapProjectStatus(string $val): string
+    {
+        return match (strtolower(trim($val))) {
+            'en cours', 'en_cours', 'in progress', 'in_progress' => 'in_progress',
+            'terminé', 'termine', 'completed', 'done', 'fini'    => 'completed',
+            'suspendu', 'suspended', 'on hold', 'on_hold'        => 'on_hold',
+            'annulé', 'annule', 'cancelled', 'canceled'          => 'cancelled',
+            default                                               => 'planned',
+        };
+    }
+
+    private function mapQuoteStatus(string $val): string
+    {
+        return match (strtolower(trim($val))) {
+            'envoyé', 'envoye', 'sent'                    => 'sent',
+            'accepté', 'accepte', 'accepted', 'signé'     => 'accepted',
+            'refusé', 'refuse', 'rejected', 'décliné'     => 'rejected',
+            'expiré', 'expire', 'expired'                  => 'expired',
+            default                                        => 'draft',
+        };
+    }
+
+    private function mapInvoiceStatus(string $val): string
+    {
+        return match (strtolower(trim($val))) {
+            'envoyée', 'envoyé', 'sent'                    => 'sent',
+            'payée', 'payee', 'paid', 'réglée'             => 'paid',
+            'en retard', 'retard', 'overdue', 'impayée'    => 'overdue',
+            'annulée', 'annulee', 'cancelled', 'canceled'  => 'cancelled',
+            default                                         => 'draft',
+        };
+    }
+
+    private function mapEquipmentStatus(string $val): string
+    {
+        return match (strtolower(trim($val))) {
+            'en service', 'en_service', 'in_use', 'utilisé' => 'in_use',
+            'maintenance', 'en maintenance', 'révision'      => 'maintenance',
+            'hors service', 'hors_service', 'out_of_service',
+            'défectueux', 'cassé'                            => 'out_of_service',
+            default                                          => 'available',
+        };
+    }
+
+    /**
+     * Recherche un client par nom (exact d'abord, puis similarité > 70 %).
+     */
+    private function findClientIdByName(string $name, int $companyId): ?int
+    {
+        $exact = \App\Models\Client::where('company_id', $companyId)
+            ->whereRaw('LOWER(name) = ?', [strtolower($name)])->value('id');
+        if ($exact) return $exact;
+
+        $candidates = \App\Models\Client::where('company_id', $companyId)->get(['id', 'name']);
+        $best = null; $bestPct = 0;
+        foreach ($candidates as $c) {
+            similar_text(strtolower($name), strtolower($c->name), $pct);
+            if ($pct > $bestPct) { $bestPct = $pct; $best = $c; }
+        }
+        return ($bestPct >= 70) ? $best?->id : null;
+    }
+
+    /**
+     * Recherche un projet par nom (exact d'abord, puis similarité > 70 %).
+     */
+    private function findProjectIdByName(string $name, int $companyId): ?int
+    {
+        $exact = \App\Models\Project::where('company_id', $companyId)
+            ->whereRaw('LOWER(name) = ?', [strtolower($name)])->value('id');
+        if ($exact) return $exact;
+
+        $candidates = \App\Models\Project::where('company_id', $companyId)->get(['id', 'name']);
+        $best = null; $bestPct = 0;
+        foreach ($candidates as $c) {
+            similar_text(strtolower($name), strtolower($c->name), $pct);
+            if ($pct > $bestPct) { $bestPct = $pct; $best = $c; }
+        }
+        return ($bestPct >= 70) ? $best?->id : null;
     }
 }
