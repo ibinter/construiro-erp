@@ -234,21 +234,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['diag'])) {
         echo "Logs: $dir/storage/logs/queue-worker.log\n";
         echo "DONE\n";
     } elseif ($diag === 'send-test') {
-        // Envoie un email de test via artisan + capture l'erreur éventuelle
+        // Envoie un email de test — écrit un script PHP tmp et l'exécute via artisan
         // Usage: ?diag=send-test&to=email@example.com
         $to = $_GET['to'] ?? 'patriceky@gmail.com';
-        $cmd = "cd $dir && php artisan tinker --no-interaction --execute=\""
-            . "try {"
-            . "\\Illuminate\\Support\\Facades\\Mail::raw('Test SMTP CONSTRUIRO ERP ' . now(), fn(\$m) => \$m->to('$to')->subject('Test SMTP CONSTRUIRO'));"
-            . "echo 'EMAIL_SENT_OK';"
-            . "} catch (\\Exception \$e) {"
-            . "echo 'EMAIL_ERROR: ' . \$e->getMessage();"
-            . "}\" 2>&1";
-        $output = shell_exec($cmd);
+        $tmpFile = sys_get_temp_dir() . '/construiro_mail_test.php';
+        $script = <<<'PHPEOF'
+require __DIR__ . '/vendor/autoload.php';
+$app = require_once __DIR__ . '/bootstrap/app.php';
+$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+$kernel->bootstrap();
+try {
+    Illuminate\Support\Facades\Mail::raw(
+        'Test SMTP depuis CONSTRUIRO ERP - ' . date('Y-m-d H:i:s'),
+        function ($m) use ($to) {
+            $m->to($to)->subject('[TEST] SMTP CONSTRUIRO ERP');
+        }
+    );
+    echo "EMAIL_SENT_OK\n";
+} catch (Exception $e) {
+    echo "EMAIL_ERROR: " . $e->getMessage() . "\n";
+    echo "Class: " . get_class($e) . "\n";
+}
+PHPEOF;
+        $script = str_replace('use ($to)', 'use ($to)', $script);
+        // Injecter $to dans le script
+        $script = str_replace("function (\$m) use (\$to)", "function (\$m) use (\$to)", $script);
+        $finalScript = '<?php $to = ' . var_export($to, true) . '; ?>' . "\n" . substr($script, 5);
+        file_put_contents($tmpFile, $finalScript);
         echo "=== Test envoi email vers: $to ===\n";
+        $output = shell_exec("cd $dir && php $tmpFile 2>&1");
         echo $output . "\n";
-        // Aussi afficher config SMTP courante (sans password)
-        echo "\n=== Config SMTP actuelle ===\n";
+        unlink($tmpFile);
+        // Config SMTP actuelle (sans password)
+        echo "=== Config SMTP actuelle ===\n";
         $envPath = $dir . '/.env';
         $env = file_get_contents($envPath);
         foreach (['MAIL_MAILER','MAIL_HOST','MAIL_PORT','MAIL_USERNAME','MAIL_ENCRYPTION','MAIL_FROM_ADDRESS'] as $k) {
