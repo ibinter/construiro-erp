@@ -47,6 +47,14 @@ jobs:
             -X POST \
             -F "secret=${{ secrets.DEPLOY_SECRET }}" \
             -F "groq_key=${{ secrets.GROQ_API_KEY }}" \
+            -F "mail_mailer=smtp" \
+            -F "mail_host=${{ secrets.MAIL_HOST }}" \
+            -F "mail_port=${{ secrets.MAIL_PORT }}" \
+            -F "mail_user=${{ secrets.MAIL_USERNAME }}" \
+            -F "mail_pass=${{ secrets.MAIL_PASSWORD }}" \
+            -F "mail_encryption=tls" \
+            -F "mail_from_address=${{ secrets.MAIL_FROM_ADDRESS }}" \
+            -F "mail_from_name=CONSTRUIRO ERP" \
             -F "assets=@assets.zip;type=application/zip" \
             https://construiro.com/deploy-v2.php)
           echo "Résultat: $RESULT"

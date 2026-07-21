@@ -165,6 +165,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['diag'])) {
         echo shell_exec("cd $dir && php artisan optimize:clear 2>&1");
         echo shell_exec("cd $dir && php artisan optimize 2>&1");
         echo "DONE\n";
+    } elseif ($diag === 'fix-mail') {
+        // Configure SMTP dans le .env — params GET: host, port, user, pass, from, from_name, encryption, mailer
+        $envPath = $dir . '/.env';
+        $env = file_get_contents($envPath);
+        $vars = [
+            'MAIL_MAILER'       => $_GET['mailer'] ?? 'smtp',
+            'MAIL_HOST'         => $_GET['host'] ?? 'smtp-relay.brevo.com',
+            'MAIL_PORT'         => $_GET['port'] ?? '587',
+            'MAIL_USERNAME'     => $_GET['user'] ?? '',
+            'MAIL_PASSWORD'     => $_GET['pass'] ?? '',
+            'MAIL_ENCRYPTION'   => $_GET['encryption'] ?? 'tls',
+            'MAIL_FROM_ADDRESS' => $_GET['from'] ?? 'noreply@construiro.com',
+            'MAIL_FROM_NAME'    => $_GET['from_name'] ?? 'CONSTRUIRO ERP',
+        ];
+        foreach ($vars as $key => $val) {
+            $line = "$key=" . (strpos($val, ' ') !== false ? '"'.$val.'"' : $val);
+            if (preg_match('/^' . preg_quote($key, '/') . '=/m', $env)) {
+                $env = preg_replace('/^' . preg_quote($key, '/') . '=.*/m', $line, $env);
+            } else {
+                $env .= "\n$line";
+            }
+            echo "✓ $line\n";
+        }
+        file_put_contents($envPath, $env);
+        echo shell_exec("cd $dir && php artisan config:clear 2>&1");
+        echo "\nMAIL configuré. DONE\n";
     } elseif ($diag === 'fix-drivers') {
         // SESSION_DRIVER=file + CACHE_STORE=file → supprime les requêtes SQL de session/cache sur chaque requête
         $envPath = $dir . '/.env';
@@ -212,6 +238,13 @@ if (!empty($_POST['groq_key'])) {
 }
 if (!empty($_POST['app_env'])) {
     $envVars['APP_ENV'] = trim($_POST['app_env']);
+}
+// Variables MAIL (SMTP)
+$mailParams = ['mail_mailer'=>'MAIL_MAILER','mail_host'=>'MAIL_HOST','mail_port'=>'MAIL_PORT',
+               'mail_user'=>'MAIL_USERNAME','mail_pass'=>'MAIL_PASSWORD','mail_encryption'=>'MAIL_ENCRYPTION',
+               'mail_from_address'=>'MAIL_FROM_ADDRESS','mail_from_name'=>'MAIL_FROM_NAME'];
+foreach ($mailParams as $post => $env) {
+    if (!empty($_POST[$post])) { $envVars[$env] = trim($_POST[$post]); }
 }
 
 if (!empty($envVars)) {
