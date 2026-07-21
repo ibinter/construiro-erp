@@ -33,7 +33,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'subscription' => \App\Http\Middleware\CheckSubscription::class,
-            'superadmin' => \App\Http\Middleware\SuperAdminOnly::class,
+            'superadmin'   => \App\Http\Middleware\SuperAdminOnly::class,
+            'module'       => \App\Http\Middleware\CheckModuleAccess::class,
         ]);
 
         // Exclure les webhooks Mobile Money du CSRF (appelés par les opérateurs)

@@ -460,59 +460,59 @@ Route::middleware(['auth', 'verified', 'subscription'])->group(function () {
 
     // ===================== VAGUE 5 =====================
 
-    // --- BPU (bibliothèque de prix unitaires) ----------------------------------
-    Route::get('/unit-prices',                  [UnitPriceController::class, 'index'])->middleware('can:unit_prices.view')->name('unit_prices.index');
-    Route::get('/unit-prices/create',           [UnitPriceController::class, 'create'])->middleware('can:unit_prices.create')->name('unit_prices.create');
-    Route::post('/unit-prices',                 [UnitPriceController::class, 'store'])->middleware('can:unit_prices.create')->name('unit_prices.store');
-    Route::get('/unit-prices/{unitPrice}',      [UnitPriceController::class, 'show'])->middleware('can:unit_prices.view')->name('unit_prices.show');
-    Route::get('/unit-prices/{unitPrice}/edit', [UnitPriceController::class, 'edit'])->middleware('can:unit_prices.update')->name('unit_prices.edit');
-    Route::put('/unit-prices/{unitPrice}',      [UnitPriceController::class, 'update'])->middleware('can:unit_prices.update')->name('unit_prices.update');
-    Route::delete('/unit-prices/{unitPrice}',   [UnitPriceController::class, 'destroy'])->middleware('can:unit_prices.delete')->name('unit_prices.destroy');
+    // --- Bureau d'études : BPU, Métré, DQE, Registre (module:design_office) -----
+    Route::middleware('module:design_office')->group(function () {
+        Route::get('/unit-prices',                  [UnitPriceController::class, 'index'])->middleware('can:unit_prices.view')->name('unit_prices.index');
+        Route::get('/unit-prices/create',           [UnitPriceController::class, 'create'])->middleware('can:unit_prices.create')->name('unit_prices.create');
+        Route::post('/unit-prices',                 [UnitPriceController::class, 'store'])->middleware('can:unit_prices.create')->name('unit_prices.store');
+        Route::get('/unit-prices/{unitPrice}',      [UnitPriceController::class, 'show'])->middleware('can:unit_prices.view')->name('unit_prices.show');
+        Route::get('/unit-prices/{unitPrice}/edit', [UnitPriceController::class, 'edit'])->middleware('can:unit_prices.update')->name('unit_prices.edit');
+        Route::put('/unit-prices/{unitPrice}',      [UnitPriceController::class, 'update'])->middleware('can:unit_prices.update')->name('unit_prices.update');
+        Route::delete('/unit-prices/{unitPrice}',   [UnitPriceController::class, 'destroy'])->middleware('can:unit_prices.delete')->name('unit_prices.destroy');
 
-    // --- Métré -----------------------------------------------------------------
-    Route::get('/takeoff',                [TakeoffController::class, 'index'])->middleware('can:takeoff.view')->name('takeoff.index');
-    Route::get('/takeoff/create',         [TakeoffController::class, 'create'])->middleware('can:takeoff.create')->name('takeoff.create');
-    Route::post('/takeoff',               [TakeoffController::class, 'store'])->middleware('can:takeoff.create')->name('takeoff.store');
-    Route::get('/takeoff/{takeoff}',      [TakeoffController::class, 'show'])->middleware('can:takeoff.view')->name('takeoff.show');
-    Route::get('/takeoff/{takeoff}/edit', [TakeoffController::class, 'edit'])->middleware('can:takeoff.update')->name('takeoff.edit');
-    Route::put('/takeoff/{takeoff}',      [TakeoffController::class, 'update'])->middleware('can:takeoff.update')->name('takeoff.update');
-    Route::delete('/takeoff/{takeoff}',   [TakeoffController::class, 'destroy'])->middleware('can:takeoff.delete')->name('takeoff.destroy');
+        Route::get('/takeoff',                [TakeoffController::class, 'index'])->middleware('can:takeoff.view')->name('takeoff.index');
+        Route::get('/takeoff/create',         [TakeoffController::class, 'create'])->middleware('can:takeoff.create')->name('takeoff.create');
+        Route::post('/takeoff',               [TakeoffController::class, 'store'])->middleware('can:takeoff.create')->name('takeoff.store');
+        Route::get('/takeoff/{takeoff}',      [TakeoffController::class, 'show'])->middleware('can:takeoff.view')->name('takeoff.show');
+        Route::get('/takeoff/{takeoff}/edit', [TakeoffController::class, 'edit'])->middleware('can:takeoff.update')->name('takeoff.edit');
+        Route::put('/takeoff/{takeoff}',      [TakeoffController::class, 'update'])->middleware('can:takeoff.update')->name('takeoff.update');
+        Route::delete('/takeoff/{takeoff}',   [TakeoffController::class, 'destroy'])->middleware('can:takeoff.delete')->name('takeoff.destroy');
 
-    // --- DQE -------------------------------------------------------------------
-    Route::get('/boq',              [BoqController::class, 'index'])->middleware('can:boq.view')->name('boq.index');
-    Route::get('/boq/create',       [BoqController::class, 'create'])->middleware('can:boq.create')->name('boq.create');
-    Route::post('/boq',             [BoqController::class, 'store'])->middleware('can:boq.create')->name('boq.store');
-    Route::get('/boq/{boq}',        [BoqController::class, 'show'])->middleware('can:boq.view')->name('boq.show');
-    Route::get('/boq/{boq}/edit',   [BoqController::class, 'edit'])->middleware('can:boq.update')->name('boq.edit');
-    Route::put('/boq/{boq}',        [BoqController::class, 'update'])->middleware('can:boq.update')->name('boq.update');
-    Route::delete('/boq/{boq}',     [BoqController::class, 'destroy'])->middleware('can:boq.delete')->name('boq.destroy');
+        Route::get('/boq',              [BoqController::class, 'index'])->middleware('can:boq.view')->name('boq.index');
+        Route::get('/boq/create',       [BoqController::class, 'create'])->middleware('can:boq.create')->name('boq.create');
+        Route::post('/boq',             [BoqController::class, 'store'])->middleware('can:boq.create')->name('boq.store');
+        Route::get('/boq/{boq}',        [BoqController::class, 'show'])->middleware('can:boq.view')->name('boq.show');
+        Route::get('/boq/{boq}/edit',   [BoqController::class, 'edit'])->middleware('can:boq.update')->name('boq.edit');
+        Route::put('/boq/{boq}',        [BoqController::class, 'update'])->middleware('can:boq.update')->name('boq.update');
+        Route::delete('/boq/{boq}',     [BoqController::class, 'destroy'])->middleware('can:boq.delete')->name('boq.destroy');
 
-    // --- Bureau d'études (registre) ---------------------------------------------
-    Route::get('/design-office',              [StudyController::class, 'index'])->middleware('can:design_office.view')->name('studies.index');
-    Route::get('/design-office/create',       [StudyController::class, 'create'])->middleware('can:design_office.create')->name('studies.create');
-    Route::post('/design-office',             [StudyController::class, 'store'])->middleware('can:design_office.create')->name('studies.store');
-    Route::get('/design-office/{study}',      [StudyController::class, 'show'])->middleware('can:design_office.view')->name('studies.show');
-    Route::get('/design-office/{study}/edit', [StudyController::class, 'edit'])->middleware('can:design_office.update')->name('studies.edit');
-    Route::put('/design-office/{study}',      [StudyController::class, 'update'])->middleware('can:design_office.update')->name('studies.update');
-    Route::delete('/design-office/{study}',   [StudyController::class, 'destroy'])->middleware('can:design_office.delete')->name('studies.destroy');
+        Route::get('/design-office',              [StudyController::class, 'index'])->middleware('can:design_office.view')->name('studies.index');
+        Route::get('/design-office/create',       [StudyController::class, 'create'])->middleware('can:design_office.create')->name('studies.create');
+        Route::post('/design-office',             [StudyController::class, 'store'])->middleware('can:design_office.create')->name('studies.store');
+        Route::get('/design-office/{study}',      [StudyController::class, 'show'])->middleware('can:design_office.view')->name('studies.show');
+        Route::get('/design-office/{study}/edit', [StudyController::class, 'edit'])->middleware('can:design_office.update')->name('studies.edit');
+        Route::put('/design-office/{study}',      [StudyController::class, 'update'])->middleware('can:design_office.update')->name('studies.update');
+        Route::delete('/design-office/{study}',   [StudyController::class, 'destroy'])->middleware('can:design_office.delete')->name('studies.destroy');
+    });
 
-    // --- CRM (opportunités) ----------------------------------------------------
-    Route::get('/crm',                    [OpportunityController::class, 'index'])->middleware('can:crm.view')->name('crm.index');
-    Route::get('/crm/create',             [OpportunityController::class, 'create'])->middleware('can:crm.create')->name('crm.create');
-    Route::post('/crm',                   [OpportunityController::class, 'store'])->middleware('can:crm.create')->name('crm.store');
-    Route::get('/crm/{opportunity}',      [OpportunityController::class, 'show'])->middleware('can:crm.view')->name('crm.show');
-    Route::get('/crm/{opportunity}/edit', [OpportunityController::class, 'edit'])->middleware('can:crm.update')->name('crm.edit');
-    Route::put('/crm/{opportunity}',      [OpportunityController::class, 'update'])->middleware('can:crm.update')->name('crm.update');
-    Route::delete('/crm/{opportunity}',   [OpportunityController::class, 'destroy'])->middleware('can:crm.delete')->name('crm.destroy');
+    // --- CRM : Opportunités + Appels d'offres (module:crm) --------------------
+    Route::middleware('module:crm')->group(function () {
+        Route::get('/crm',                    [OpportunityController::class, 'index'])->middleware('can:crm.view')->name('crm.index');
+        Route::get('/crm/create',             [OpportunityController::class, 'create'])->middleware('can:crm.create')->name('crm.create');
+        Route::post('/crm',                   [OpportunityController::class, 'store'])->middleware('can:crm.create')->name('crm.store');
+        Route::get('/crm/{opportunity}',      [OpportunityController::class, 'show'])->middleware('can:crm.view')->name('crm.show');
+        Route::get('/crm/{opportunity}/edit', [OpportunityController::class, 'edit'])->middleware('can:crm.update')->name('crm.edit');
+        Route::put('/crm/{opportunity}',      [OpportunityController::class, 'update'])->middleware('can:crm.update')->name('crm.update');
+        Route::delete('/crm/{opportunity}',   [OpportunityController::class, 'destroy'])->middleware('can:crm.delete')->name('crm.destroy');
 
-    // --- Appels d'offres -------------------------------------------------------
-    Route::get('/tenders',               [TenderController::class, 'index'])->middleware('can:tenders.view')->name('tenders.index');
-    Route::get('/tenders/create',        [TenderController::class, 'create'])->middleware('can:tenders.create')->name('tenders.create');
-    Route::post('/tenders',              [TenderController::class, 'store'])->middleware('can:tenders.create')->name('tenders.store');
-    Route::get('/tenders/{tender}',      [TenderController::class, 'show'])->middleware('can:tenders.view')->name('tenders.show');
-    Route::get('/tenders/{tender}/edit', [TenderController::class, 'edit'])->middleware('can:tenders.update')->name('tenders.edit');
-    Route::put('/tenders/{tender}',      [TenderController::class, 'update'])->middleware('can:tenders.update')->name('tenders.update');
-    Route::delete('/tenders/{tender}',   [TenderController::class, 'destroy'])->middleware('can:tenders.delete')->name('tenders.destroy');
+        Route::get('/tenders',               [TenderController::class, 'index'])->middleware('can:tenders.view')->name('tenders.index');
+        Route::get('/tenders/create',        [TenderController::class, 'create'])->middleware('can:tenders.create')->name('tenders.create');
+        Route::post('/tenders',              [TenderController::class, 'store'])->middleware('can:tenders.create')->name('tenders.store');
+        Route::get('/tenders/{tender}',      [TenderController::class, 'show'])->middleware('can:tenders.view')->name('tenders.show');
+        Route::get('/tenders/{tender}/edit', [TenderController::class, 'edit'])->middleware('can:tenders.update')->name('tenders.edit');
+        Route::put('/tenders/{tender}',      [TenderController::class, 'update'])->middleware('can:tenders.update')->name('tenders.update');
+        Route::delete('/tenders/{tender}',   [TenderController::class, 'destroy'])->middleware('can:tenders.delete')->name('tenders.destroy');
+    });
 
     // --- Engins / Véhicules (vues filtrées du parc) ----------------------------
     Route::get('/machinery',             [MachineryController::class, 'index'])->middleware('can:machinery.view')->name('machinery.index');
@@ -563,14 +563,16 @@ Route::middleware(['auth', 'verified', 'subscription'])->group(function () {
     Route::put('/outgoing-payments/{outgoingPayment}',      [OutgoingPaymentController::class, 'update'])->middleware('can:outgoing_payments.update')->name('outgoing-payments.update');
     Route::delete('/outgoing-payments/{outgoingPayment}',   [OutgoingPaymentController::class, 'destroy'])->middleware('can:outgoing_payments.delete')->name('outgoing-payments.destroy');
 
-    // --- Laboratoire -----------------------------------------------------------
-    Route::get('/laboratory',                   [LaboratoryController::class, 'index'])->middleware('can:laboratory.view')->name('laboratory.index');
-    Route::get('/laboratory/create',            [LaboratoryController::class, 'create'])->middleware('can:laboratory.create')->name('laboratory.create');
-    Route::post('/laboratory',                  [LaboratoryController::class, 'store'])->middleware('can:laboratory.create')->name('laboratory.store');
-    Route::get('/laboratory/{laboratory}',      [LaboratoryController::class, 'show'])->middleware('can:laboratory.view')->name('laboratory.show');
-    Route::get('/laboratory/{laboratory}/edit', [LaboratoryController::class, 'edit'])->middleware('can:laboratory.update')->name('laboratory.edit');
-    Route::put('/laboratory/{laboratory}',      [LaboratoryController::class, 'update'])->middleware('can:laboratory.update')->name('laboratory.update');
-    Route::delete('/laboratory/{laboratory}',   [LaboratoryController::class, 'destroy'])->middleware('can:laboratory.delete')->name('laboratory.destroy');
+    // --- Laboratoire (module:laboratory) --------------------------------------
+    Route::middleware('module:laboratory')->group(function () {
+        Route::get('/laboratory',                   [LaboratoryController::class, 'index'])->middleware('can:laboratory.view')->name('laboratory.index');
+        Route::get('/laboratory/create',            [LaboratoryController::class, 'create'])->middleware('can:laboratory.create')->name('laboratory.create');
+        Route::post('/laboratory',                  [LaboratoryController::class, 'store'])->middleware('can:laboratory.create')->name('laboratory.store');
+        Route::get('/laboratory/{laboratory}',      [LaboratoryController::class, 'show'])->middleware('can:laboratory.view')->name('laboratory.show');
+        Route::get('/laboratory/{laboratory}/edit', [LaboratoryController::class, 'edit'])->middleware('can:laboratory.update')->name('laboratory.edit');
+        Route::put('/laboratory/{laboratory}',      [LaboratoryController::class, 'update'])->middleware('can:laboratory.update')->name('laboratory.update');
+        Route::delete('/laboratory/{laboratory}',   [LaboratoryController::class, 'destroy'])->middleware('can:laboratory.delete')->name('laboratory.destroy');
+    });
 
     // --- GED (documents) -------------------------------------------------------
     Route::get('/documents',                [DocumentController::class, 'index'])->middleware('can:documents.view')->name('documents.index');
@@ -581,20 +583,27 @@ Route::middleware(['auth', 'verified', 'subscription'])->group(function () {
     Route::put('/documents/{document}',     [DocumentController::class, 'update'])->middleware('can:documents.update')->name('documents.update');
     Route::delete('/documents/{document}',  [DocumentController::class, 'destroy'])->middleware('can:documents.delete')->name('documents.destroy');
 
-    // --- Signature électronique ------------------------------------------------
-    Route::post('/sign/{model}/{id}',                     [SignatureController::class, 'sign'])->middleware('can:e_signature.create')->name('signature.sign');
-    Route::get('/e-signature',                            [SignatureController::class, 'index'])->middleware('can:e_signature.view')->name('e_signature.index');
-    Route::post('/e-signature',                           [SignatureController::class, 'store'])->middleware('can:e_signature.create')->name('e_signature.store');
-    Route::post('/e-signature/{signatureRequest}/status', [SignatureController::class, 'updateStatus'])->middleware('can:e_signature.update')->name('e_signature.status');
+    // --- Signature électronique (module:e_signature) --------------------------
+    // /sign reste accessible aux signataires externes (sans module check)
+    Route::post('/sign/{model}/{id}', [SignatureController::class, 'sign'])->middleware('can:e_signature.create')->name('signature.sign');
+    Route::middleware('module:e_signature')->group(function () {
+        Route::get('/e-signature',                            [SignatureController::class, 'index'])->middleware('can:e_signature.view')->name('e_signature.index');
+        Route::post('/e-signature',                           [SignatureController::class, 'store'])->middleware('can:e_signature.create')->name('e_signature.store');
+        Route::post('/e-signature/{signatureRequest}/status', [SignatureController::class, 'updateStatus'])->middleware('can:e_signature.update')->name('e_signature.status');
+    });
 
-    // --- Tableau de bord BI ----------------------------------------------------
-    Route::get('/bi', [BiController::class, 'index'])->middleware('can:bi.view')->name('bi.index');
+    // --- BI & Rapports (module:bi) ---------------------------------------------
+    Route::middleware('module:bi')->group(function () {
+        Route::get('/bi',      [BiController::class, 'index'])->middleware('can:bi.view')->name('bi.index');
+        Route::get('/bi/pdf',  [BiController::class, 'pdf'])->middleware('can:reports.view')->name('bi.pdf');
+        Route::get('/reports', [ReportController::class, 'index'])->middleware('can:reports.view')->name('reports.index');
+    });
 
-    // --- Rapports & BI / Assistant IA ------------------------------------------
-    Route::get('/reports', [ReportController::class, 'index'])->middleware('can:reports.view')->name('reports.index');
-    Route::get('/bi/pdf',  [BiController::class, 'pdf'])->middleware('can:reports.view')->name('bi.pdf');
-    Route::get('/ai',      [AiAssistantController::class, 'index'])->middleware('can:ai.view')->name('ai.index');
-    Route::post('/ai/ask', [AiAssistantController::class, 'ask'])->middleware('can:ai.view')->name('ai.ask');
+    // --- Assistant IA (module:ai) ----------------------------------------------
+    Route::middleware('module:ai')->group(function () {
+        Route::get('/ai',      [AiAssistantController::class, 'index'])->middleware('can:ai.view')->name('ai.index');
+        Route::post('/ai/ask', [AiAssistantController::class, 'ask'])->middleware('can:ai.view')->name('ai.ask');
+    });
 
     // --- Exports PDF (documents professionnels) --------------------------------
     Route::get('/quotes/{quote}/pdf',         [PdfController::class, 'quote'])->middleware('can:quotes.view')->name('quotes.pdf');

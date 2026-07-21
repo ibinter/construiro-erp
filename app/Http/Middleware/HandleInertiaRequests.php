@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Subscription;
 use App\Models\SupportSession;
 use App\Support\Navigation;
 use Illuminate\Http\Request;
@@ -65,6 +66,16 @@ class HandleInertiaRequests extends Middleware
                     ->where('expires_at', '>', now())
                     ->with('company:id,name')
                     ->first()?->only(['id', 'reason', 'expires_at', 'company'])
+                : null,
+            // Modules accessibles selon le plan d'abonnement actif.
+            // null = tous les modules inclus. array = slugs autorisés.
+            'subscription_modules' => fn () => $user?->company_id
+                ? Subscription::where('company_id', $user->company_id)
+                    ->whereIn('status', ['active', 'trial'])
+                    ->latest()
+                    ->first()
+                    ?->plan
+                    ?->modules
                 : null,
         ];
     }
