@@ -217,6 +217,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['diag'])) {
         echo "\nJobs restants:\n";
         echo shell_exec("cd $dir && php artisan tinker --no-interaction --execute=\"echo DB::table('jobs')->count().' jobs en attente';\" 2>&1");
         echo "\nDONE\n";
+    } elseif ($diag === 'restart-worker') {
+        // Tue le worker en cours et en lance un nouveau
+        $pidFile = $dir . '/storage/queue-worker.pid';
+        if (file_exists($pidFile)) {
+            $pid = trim(file_get_contents($pidFile));
+            shell_exec("kill $pid 2>/dev/null");
+            unlink($pidFile);
+            echo "Worker $pid arrêté.\n";
+            sleep(1);
+        }
+        $cmd = "cd $dir && php artisan queue:work --sleep=3 --tries=3 --timeout=60 --daemon > $dir/storage/logs/queue-worker.log 2>&1 & echo $!";
+        $pid = trim(shell_exec($cmd));
+        file_put_contents($pidFile, $pid);
+        echo "Nouveau worker démarré (PID $pid)\n";
+        echo "DONE\n";
     } elseif ($diag === 'start-worker') {
         // Lance un worker en arrière-plan (persistant jusqu'au prochain déploiement)
         $pidFile = $dir . '/storage/queue-worker.pid';
