@@ -19,13 +19,15 @@ class Company extends Model
         'country', 'city', 'address', 'phone', 'email', 'website',
         'logo_path', 'base_currency', 'locale', 'timezone', 'is_active', 'settings',
         'enabled_modules', 'onboarding_completed_at',
+        'status', 'suspended_at', 'suspension_reason',
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
-        'settings'  => 'array',
-        'enabled_modules' => 'array',
+        'is_active'               => 'boolean',
+        'settings'                => 'array',
+        'enabled_modules'         => 'array',
         'onboarding_completed_at' => 'datetime',
+        'suspended_at'            => 'datetime',
     ];
 
     public function agencies(): HasMany
