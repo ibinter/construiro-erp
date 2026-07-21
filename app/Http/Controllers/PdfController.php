@@ -10,6 +10,7 @@ use App\Models\Project;
 use App\Models\PurchaseOrder;
 use App\Models\Quote;
 use App\Services\DocumentVerifier;
+use App\Services\QrCodeService;
 use SimpleSoftwareIO\QrCode\Generator as QrGenerator;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -60,12 +61,16 @@ class PdfController extends Controller
         $this->authorizeCompany($request, $purchase->company_id, 'purchases.view');
         $purchase->load(['company', 'supplier', 'project', 'lines']);
 
+        $verifyUrl = QrCodeService::verificationUrl('po', $purchase->code);
+
         return $this->render('pdf.purchase', [
             'doc'        => $purchase,
             'company'    => $purchase->company,
             'title'      => 'BON DE COMMANDE',
             'partyLabel' => 'Fournisseur',
             'partyName'  => $purchase->supplier?->name ?? '—',
+            'qr_svg'     => QrCodeService::makeSvg($verifyUrl),
+            'verify_url' => $verifyUrl,
         ], "BonCommande-{$purchase->code}.pdf");
     }
 

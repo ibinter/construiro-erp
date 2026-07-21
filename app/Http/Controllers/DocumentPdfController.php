@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Boq;
 use App\Models\Payslip;
+use App\Services\QrCodeService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,9 +23,13 @@ class DocumentPdfController extends Controller
         $matricule = $payslip->employee?->matricule ?? 'NA';
         $period    = str_replace(['/', ' '], '-', (string) $payslip->period);
 
+        $verifyUrl = QrCodeService::verificationUrl('payslip', (string) $payslip->id);
+
         return $this->render('pdf.payslip', [
-            'doc'     => $payslip,
-            'company' => $payslip->company,
+            'doc'        => $payslip,
+            'company'    => $payslip->company,
+            'qr_svg'     => QrCodeService::makeSvg($verifyUrl),
+            'verify_url' => $verifyUrl,
         ], "Bulletin-{$matricule}-{$period}.pdf");
     }
 

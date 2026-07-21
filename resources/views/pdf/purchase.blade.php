@@ -65,6 +65,13 @@
     <div class="foot">
         {{ $company->name ?? 'CONSTRUIRO' }} — Bon de commande généré par CONSTRUIRO ERP le {{ now()->format('d/m/Y à H:i') }}
     </div>
+
+    @if(!empty($qr_svg))
+    <div style="position:absolute; bottom:20px; right:20px; text-align:center;">
+        {!! $qr_svg !!}
+        <p style="font-size:7px; margin-top:4px; color:#666;">Vérifier ce document</p>
+    </div>
+    @endif
 </div>
 </body>
 </html>

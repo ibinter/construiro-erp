@@ -106,7 +106,7 @@ class ExportController extends Controller
 
         $rows = Client::forUser($user)
             ->orderBy('name')
-            ->get()
+            ->cursor()
             ->map(fn (Client $c) => [
                 $c->code,
                 $c->name,
@@ -135,7 +135,7 @@ class ExportController extends Controller
         $rows = Employee::forUser($user)
             ->orderBy('last_name')
             ->orderBy('first_name')
-            ->get()
+            ->cursor()
             ->map(fn (Employee $e) => [
                 $e->matricule,
                 $e->full_name,
@@ -256,7 +256,7 @@ class ExportController extends Controller
 
         $rows = Supplier::forUser($user)
             ->orderBy('name')
-            ->get()
+            ->cursor()
             ->map(fn (Supplier $s) => [
                 $s->code,
                 $s->name,
@@ -286,7 +286,7 @@ class ExportController extends Controller
 
         $rows = Subcontractor::forUser($user)
             ->orderBy('name')
-            ->get()
+            ->cursor()
             ->map(fn (Subcontractor $s) => [
                 $s->code,
                 $s->name,

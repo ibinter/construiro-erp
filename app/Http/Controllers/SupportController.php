@@ -7,9 +7,9 @@ use App\Mail\TicketResolvedMail;
 use App\Models\KnowledgeBaseArticle;
 use App\Models\SupportMessage;
 use App\Models\SupportTicket;
+use App\Jobs\SendMailJob;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -102,14 +102,15 @@ class SupportController extends Controller
             'resolved_target_at'        => now()->addHours(self::SLA_RESOLVE_H),
         ]);
 
-        try {
-            Mail::to($request->user()->email)->send(new TicketCreatedMail(
+        dispatch(new SendMailJob(
+            $request->user()->email,
+            new TicketCreatedMail(
                 userName:     $request->user()->name,
                 ticketNumber: $ticket->number,
                 subject:      $ticket->subject,
                 priority:     $ticket->priority,
-            ));
-        } catch (\Throwable) {}
+            ),
+        ));
 
         return redirect()->route('support.show', $ticket)->with('success', "Ticket {$ticket->number} créé.");
     }
@@ -327,19 +328,18 @@ class SupportController extends Controller
 
         $ticket->loadMissing('user');
 
-        try {
-            $recipient     = $ticket->user?->email ?? $request->user()->email;
-            $recipientName = $ticket->user?->name ?? $request->user()->name;
-            Mail::to($recipient)->send(new TicketResolvedMail(
+        $recipient     = $ticket->user?->email ?? $request->user()->email;
+        $recipientName = $ticket->user?->name ?? $request->user()->name;
+        dispatch(new SendMailJob(
+            $recipient,
+            new TicketResolvedMail(
                 userName:     $recipientName,
                 ticketNumber: $ticket->number,
                 subject:      $ticket->subject,
                 resolution:   'Votre ticket a été fermé par notre équipe.',
                 ticketUrl:    route('support.show', $ticket),
-            ));
-        } catch (\Throwable $e) {
-            \Log::warning('TicketResolvedMail failed: ' . $e->getMessage());
-        }
+            ),
+        ));
 
         return back()->with('success', 'Ticket fermé.');
     }

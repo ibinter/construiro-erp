@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendMailJob;
 use App\Mail\PaymentConfirmedMail;
 use App\Models\Subscription;
 use App\Models\SubscriptionInvoice;
 use App\Models\SubscriptionPlan;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -93,18 +93,17 @@ class BillingController extends Controller
 
         $subscription->load('plan');
 
-        try {
-            Mail::to($request->user()->email)->send(new PaymentConfirmedMail(
+        dispatch(new SendMailJob(
+            $request->user()->email,
+            new PaymentConfirmedMail(
                 userName: $request->user()->name,
                 planName: $subscription->plan?->name ?? 'Standard',
                 amount: '—',
                 reference: (string) $subscription->id,
                 paidAt: now()->format('d/m/Y'),
                 accessUntil: $endsAt->format('d/m/Y'),
-            ));
-        } catch (\Exception $e) {
-            \Log::warning('PaymentConfirmedMail failed: ' . $e->getMessage());
-        }
+            ),
+        ));
 
         return back()->with('success', 'Abonnement activé avec succès.');
     }

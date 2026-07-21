@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendMailJob;
+use App\Mail\WelcomeMail;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -45,14 +47,13 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        try {
-            \Mail::to($user->email)->send(new \App\Mail\WelcomeMail(
+        dispatch(new SendMailJob(
+            $user->email,
+            new WelcomeMail(
                 userName: $user->name,
                 companyName: $user->company?->name ?? '',
-            ));
-        } catch (\Exception $e) {
-            \Log::warning('WelcomeMail failed: ' . $e->getMessage());
-        }
+            ),
+        ));
 
         Auth::login($user);
 
