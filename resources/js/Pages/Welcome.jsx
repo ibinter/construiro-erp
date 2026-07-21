@@ -7,6 +7,7 @@ import PwaBanner from '@/Components/PwaBanner';
 import CookiesBanner from '@/Components/CookiesBanner';
 import LanguageSwitcher from '@/Components/LanguageSwitcher';
 import { useTrans } from '@/i18n';
+import SectionAide from '@/Components/Landing/SectionAide';
 
 const BRAND = '#F58220';
 const NAVY  = '#1E1E1E';
@@ -884,9 +885,27 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
     const { t } = useTrans();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [billingCycle, setBillingCycle] = useState('monthly');
+    const [deferredPrompt, setDeferredPrompt] = useState(null);
     const temoignagesList = temoignagesProp ?? temoignages;
     const hamburgerRef  = useRef(null);
     const closeButtonRef = useRef(null);
+
+    // PWA install prompt
+    useEffect(() => {
+        const handler = (e) => {
+            e.preventDefault();
+            setDeferredPrompt(e);
+        };
+        window.addEventListener('beforeinstallprompt', handler);
+        return () => window.removeEventListener('beforeinstallprompt', handler);
+    }, []);
+
+    const handlePwaInstall = () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(() => setDeferredPrompt(null));
+        }
+    };
 
     useEffect(() => {
         if (mobileMenuOpen) {
@@ -1398,6 +1417,171 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                     </div>
                 </section>
 
+                {/* ── EXPORTS VITRINE ─────────────────────────────── */}
+                <section id="exports" className="py-20 bg-white">
+                    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center mb-12">
+                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Exports professionnels')}</p>
+                            <h2 className="text-3xl sm:text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Documents prêts à l\'envoi en un clic')}</h2>
+                            <p className="text-gray-500 max-w-xl mx-auto">
+                                {t('CONSTRUIRO génère automatiquement des documents professionnels conformes, signés et vérifiables.')}
+                            </p>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {/* Carte 1 — Facture PDF */}
+                            <div className="rounded-2xl border border-gray-100 overflow-hidden hover:border-orange-200 hover:shadow-xl transition-all duration-200">
+                                <div className="px-6 pt-6 pb-4" style={{ background: 'rgba(245,130,32,0.05)' }}>
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(245,130,32,0.15)', color: BRAND }}>
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                                                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                                                <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                                            </svg>
+                                        </div>
+                                        <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: 'rgba(34,197,94,0.1)', color: '#22c55e' }}>
+                                            {t('Signé & vérifiable')}
+                                        </span>
+                                    </div>
+                                    {/* Mockup facture */}
+                                    <div className="rounded-xl overflow-hidden shadow-md" style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.06)' }}>
+                                        <div className="px-4 pt-3 pb-2 flex justify-between items-start" style={{ borderBottom: '2px solid rgba(245,130,32,0.2)' }}>
+                                            <div>
+                                                <div className="w-16 h-2.5 rounded" style={{ background: BRAND, opacity: 0.7 }} />
+                                                <div className="w-10 h-1.5 rounded mt-1.5 bg-gray-200" />
+                                            </div>
+                                            <div className="text-right">
+                                                <div className="text-xs font-black" style={{ color: NAVY }}>FACTURE</div>
+                                                <div className="text-xs text-gray-400">#2026-0041</div>
+                                            </div>
+                                        </div>
+                                        <div className="px-4 py-2.5 space-y-1.5">
+                                            {[['Béton B25 — 50 m³', '1 250 000'], ['Main-d\'œuvre chantier', '480 000'], ['Transport matériaux', '120 000']].map(([label, amt]) => (
+                                                <div key={label} className="flex justify-between text-xs">
+                                                    <span className="text-gray-500">{label}</span>
+                                                    <span className="font-semibold" style={{ color: NAVY }}>{amt} F</span>
+                                                </div>
+                                            ))}
+                                            <div className="flex justify-between text-xs font-black pt-1.5" style={{ borderTop: '1px solid #f1f5f9', color: BRAND }}>
+                                                <span>TOTAL TTC</span>
+                                                <span>1 850 000 FCFA</span>
+                                            </div>
+                                        </div>
+                                        <div className="px-4 pb-2 flex items-center gap-2">
+                                            <div className="w-8 h-8 rounded flex items-center justify-center flex-shrink-0" style={{ background: '#f8fafc', border: '1px solid #e2e8f0' }}>
+                                                <svg viewBox="0 0 20 20" fill="none" className="w-4 h-4 text-gray-400"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm0 1.5a6.5 6.5 0 110 13 6.5 6.5 0 010-13zM7 8h6M7 10h4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                                            </div>
+                                            <span className="text-xs text-gray-400">{t('QR de vérification intégré')}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="px-6 py-4">
+                                    <h3 className="font-black text-sm mb-1" style={{ color: NAVY }}>{t('Facture PDF avec QR code')}</h3>
+                                    <p className="text-xs text-gray-500">{t('Générez des factures professionnelles avec QR de vérification, conformes aux normes fiscales africaines.')}</p>
+                                </div>
+                            </div>
+
+                            {/* Carte 2 — Export Excel */}
+                            <div className="rounded-2xl border border-gray-100 overflow-hidden hover:border-orange-200 hover:shadow-xl transition-all duration-200">
+                                <div className="px-6 pt-6 pb-4" style={{ background: 'rgba(34,197,94,0.03)' }}>
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(34,197,94,0.1)', color: '#16a34a' }}>
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                                                <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+                                                <path d="M6 13l2 2 4-4"/>
+                                            </svg>
+                                        </div>
+                                        <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: 'rgba(34,197,94,0.1)', color: '#16a34a' }}>
+                                            {t('Tous modules')}
+                                        </span>
+                                    </div>
+                                    {/* Mockup tableau Excel */}
+                                    <div className="rounded-xl overflow-hidden shadow-md" style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.06)' }}>
+                                        <div className="px-3 py-1.5 flex items-center gap-1.5 text-xs font-bold text-white" style={{ background: '#16a34a' }}>
+                                            <svg viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3"><path d="M14 0H2a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V2a2 2 0 00-2-2zm-1 13H3V3h10v10zM5 5h2v2H5zm0 3h2v2H5zm3-3h2v2H8zm0 3h2v2H8zm3-3h1v2h-1zm0 3h1v2h-1z"/></svg>
+                                            {t('Rapport_Chantiers_Juillet_2026.xlsx')}
+                                        </div>
+                                        <table className="w-full text-xs">
+                                            <thead>
+                                                <tr style={{ background: '#f0fdf4' }}>
+                                                    {['Chantier', 'Budget', 'Réel', '%'].map(h => (
+                                                        <th key={h} className="px-2 py-1.5 text-left font-bold text-gray-600">{h}</th>
+                                                    ))}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {[['Résidence Cocody', '85M', '82M', '96%'], ['Route TP-N5', '120M', '108M', '90%'], ['Pont de Kayes', '200M', '95M', '47%']].map(([n, b, r, p]) => (
+                                                    <tr key={n} style={{ borderTop: '1px solid #f1f5f9' }}>
+                                                        <td className="px-2 py-1 text-gray-700 font-medium">{n}</td>
+                                                        <td className="px-2 py-1 text-gray-500">{b}</td>
+                                                        <td className="px-2 py-1 text-gray-500">{r}</td>
+                                                        <td className="px-2 py-1 font-bold" style={{ color: '#16a34a' }}>{p}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div className="px-6 py-4">
+                                    <h3 className="font-black text-sm mb-1" style={{ color: NAVY }}>{t('Export Excel complet')}</h3>
+                                    <p className="text-xs text-gray-500">{t('Exportez toutes vos données en Excel : projets, finances, RH, stock, équipements — pour analyse et reporting.')}</p>
+                                </div>
+                            </div>
+
+                            {/* Carte 3 — Rapport BI PDF */}
+                            <div className="rounded-2xl border border-gray-100 overflow-hidden hover:border-orange-200 hover:shadow-xl transition-all duration-200">
+                                <div className="px-6 pt-6 pb-4" style={{ background: 'rgba(99,102,241,0.03)' }}>
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(99,102,241,0.1)', color: '#6366f1' }}>
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                                                <line x1="18" y1="20" x2="18" y2="10"/>
+                                                <line x1="12" y1="20" x2="12" y2="4"/>
+                                                <line x1="6"  y1="20" x2="6"  y2="14"/>
+                                                <line x1="2" y1="20" x2="22" y2="20"/>
+                                            </svg>
+                                        </div>
+                                        <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: 'rgba(99,102,241,0.1)', color: '#6366f1' }}>
+                                            {t('Personnalisable')}
+                                        </span>
+                                    </div>
+                                    {/* Mockup rapport BI */}
+                                    <div className="rounded-xl overflow-hidden shadow-md p-3 space-y-2" style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.06)' }}>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs font-black" style={{ color: NAVY }}>{t('Rapport BI — Juillet 2026')}</span>
+                                            <span className="text-xs px-1.5 py-0.5 rounded font-bold" style={{ background: 'rgba(245,130,32,0.1)', color: BRAND }}>PDF</span>
+                                        </div>
+                                        {/* Mini graphique barres */}
+                                        <div className="flex items-end gap-1 h-12 pt-2">
+                                            {[55, 72, 48, 90, 63, 85, 70].map((h, i) => (
+                                                <div key={i} className="flex-1 rounded-t" style={{ height: `${h}%`, background: i === 3 ? BRAND : (i === 5 ? '#6366f1' : '#e2e8f0') }} />
+                                            ))}
+                                        </div>
+                                        <div className="grid grid-cols-3 gap-1.5 pt-1">
+                                            {[['CA Total', '412M FCFA', BRAND], ['Projets', '24 actifs', '#6366f1'], ['Marge', '+18.4%', '#16a34a']].map(([label, val, color]) => (
+                                                <div key={label} className="text-center p-1 rounded-lg" style={{ background: '#f8fafc' }}>
+                                                    <div className="text-xs font-black" style={{ color }}>{val}</div>
+                                                    <div className="text-xs text-gray-400" style={{ fontSize: 9 }}>{label}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="px-6 py-4">
+                                    <h3 className="font-black text-sm mb-1" style={{ color: NAVY }}>{t('Rapport BI PDF')}</h3>
+                                    <p className="text-xs text-gray-500">{t('Générez des rapports de gestion personnalisés avec KPIs, graphiques et analyses — en PDF haute qualité.')}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="text-center mt-10">
+                            <a href="#demo"
+                                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-bold text-white transition hover:opacity-90"
+                                style={{ background: BRAND, boxShadow: `0 8px 32px rgba(245,130,32,0.3)` }}>
+                                {t('Voir une démo des exports →')}
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
                 {/* ── SÉCURITÉ ────────────────────────────────────── */}
                 <section id="securite" className="py-20 bg-white">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1447,7 +1631,9 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                         ))}
                                     </div>
                                     <button id="pwa-install-btn"
-                                        className="inline-flex items-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-bold text-white transition-all hover:opacity-90 text-sm sm:text-base"
+                                        onClick={handlePwaInstall}
+                                        disabled={!deferredPrompt}
+                                        className="inline-flex items-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-bold text-white transition-all hover:opacity-90 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
                                         style={{ background: BRAND }}>
                                         {t("📲 Installer l'application")}
                                     </button>
@@ -1698,6 +1884,9 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                     </section>
                 )}
 
+                {/* ── CENTRE D'AIDE VITRINE ───────────────────────── */}
+                <SectionAide onOpenSara={() => document.getElementById('sara-chat')?.click()} />
+
                 {/* ── DEMO FORM ────────────────────────────────────── */}
                 <section id="demo" className="py-20" style={{ background: BRAND }}>
                     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1746,10 +1935,10 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
 
-                            {/* Col 1 — Identité (span 2 sur lg) */}
-                            <div className="col-span-2 md:col-span-3 lg:col-span-2">
+                            {/* Col 1 — CONSTRUIRO (identité) */}
+                            <div>
                                 <ConstruiroLogo size="sm" dark />
-                                <p className="text-sm text-slate-400 mt-4 leading-relaxed max-w-xs">
+                                <p className="text-sm text-slate-400 mt-4 leading-relaxed">
                                     {t("L'ERP BTP conçu pour les entreprises de construction et de travaux publics en Afrique.")}
                                 </p>
                                 <p className="text-xs mt-4 italic" style={{ color: BRAND }}>{t('CONSTRUIRE. PILOTER. MAÎTRISER.')}</p>
@@ -1758,19 +1947,38 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                     className="text-xs mt-1 inline-block transition hover:text-[#F58220]" style={{ color: BRAND }}>
                                     ibigsoft.com →
                                 </a>
-                                <div className="flex gap-3 mt-5">
-                                    <a href="tel:+2252722276014" className="text-xs text-slate-500 hover:text-white transition flex items-center gap-1">
-                                        📞 +225 27 22 27 60 14
-                                    </a>
-                                </div>
-                                <div className="mt-1">
-                                    <a href="mailto:contact@ibigsoft.com" className="text-xs text-slate-500 hover:text-white transition">
-                                        📧 contact@ibigsoft.com
-                                    </a>
-                                </div>
                             </div>
 
-                            {/* Col 2 — Navigation */}
+                            {/* Col 2 — Contact */}
+                            <div>
+                                <h4 className="text-xs font-bold text-white mb-4 uppercase tracking-wider">{t('Contact')}</h4>
+                                <ul className="space-y-3 text-xs">
+                                    <li>
+                                        <a href="tel:+2252722276014" className="text-slate-400 hover:text-white transition flex items-start gap-2">
+                                            <span className="mt-0.5">📞</span>
+                                            <span>+225 27 22 27 60 14</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="mailto:contact@ibigsoft.com" className="text-slate-400 hover:text-white transition flex items-start gap-2">
+                                            <span className="mt-0.5">📧</span>
+                                            <span>contact@ibigsoft.com</span>
+                                        </a>
+                                    </li>
+                                    <li className="flex items-start gap-2 text-slate-500">
+                                        <span className="mt-0.5">📍</span>
+                                        <span>Abidjan, Côte d'Ivoire<br />Afrique de l'Ouest</span>
+                                    </li>
+                                    <li>
+                                        <a href="#demo" className="text-slate-400 hover:text-white transition flex items-start gap-2">
+                                            <span className="mt-0.5">💬</span>
+                                            <span>{t('Formulaire de contact')}</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            {/* Col 3 — Navigation */}
                             <div>
                                 <h4 className="text-xs font-bold text-white mb-4 uppercase tracking-wider">{t('Navigation')}</h4>
                                 <ul className="space-y-2.5 text-sm">
@@ -1793,7 +2001,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                 </ul>
                             </div>
 
-                            {/* Col 3 — Ressources */}
+                            {/* Col 4 — Ressources */}
                             <div>
                                 <h4 className="text-xs font-bold text-white mb-4 uppercase tracking-wider">{t('Ressources')}</h4>
                                 <ul className="space-y-2.5 text-sm">
@@ -1816,7 +2024,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                 </ul>
                             </div>
 
-                            {/* Col 4 — IBIG Soft */}
+                            {/* Col 5 — IBIG Soft */}
                             <div>
                                 <h4 className="text-xs font-bold text-white mb-4 uppercase tracking-wider">IBIG Soft</h4>
                                 <ul className="space-y-2.5 text-sm">
@@ -1840,7 +2048,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                 </ul>
                             </div>
 
-                            {/* Col 5 — Légal */}
+                            {/* Col 6 — Légal */}
                             <div>
                                 <h4 className="text-xs font-bold text-white mb-4 uppercase tracking-wider">{t('Légal')}</h4>
                                 <ul className="space-y-2.5 text-sm">

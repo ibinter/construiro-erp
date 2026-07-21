@@ -330,7 +330,7 @@ export default function SupportShow({ ticket, can_manage, statuses }) {
                 ) : (
                     <div className="alert alert-info text-sm">
                         Ce ticket est {STATUS_LABELS[ticket.status]?.toLowerCase() ?? ticket.status}.
-                        {isClosed && ' Cliquez « Réouvrir » si vous avez besoin de plus d'aide.'}
+                        {isClosed && " Cliquez « Réouvrir » si vous avez besoin de plus d'aide."}
                     </div>
                 )}
 

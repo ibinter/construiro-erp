@@ -30,6 +30,11 @@
         @viteReactRefresh
         @vite(['resources/js/app.jsx', "resources/js/Pages/{$page['component']}.jsx"])
         @inertiaHead
+
+        <!-- Analytics Plausible — léger, sans cookies, conforme RGPD -->
+        @production
+        <script defer data-domain="construiro.com" src="https://plausible.io/js/script.js"></script>
+        @endproduction
     </head>
     <body class="font-sans antialiased">
         @inertia
