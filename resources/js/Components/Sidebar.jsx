@@ -4,11 +4,19 @@ import ConstruiroLogo from '@/Components/ConstruiroLogo';
 import { useTrans } from '@/i18n';
 
 const SUPERADMIN_NAV = [
-    { key: 'sa-dashboard',  label: 'Tableau de bord',  icon: 'layout-dashboard', route: '/superadmin' },
-    { key: 'sa-clients',    label: 'Clients',           icon: 'building-2',       route: '/superadmin/clients' },
-    { key: 'sa-prospects',  label: 'Prospects / Démos', icon: 'users',            route: '/superadmin/prospects' },
-    { key: 'sa-support',    label: 'Sessions Support',  icon: 'headphones',       route: '/superadmin/support-sessions' },
-    { key: 'sa-landing',    label: 'Landing Page',      icon: 'globe',            route: '/superadmin/landing' },
+    { key: 'sa-dashboard',        label: 'Tableau de bord',       icon: 'layout-dashboard', route: '/superadmin' },
+    { key: 'sa-companies',        label: 'Entreprises',           icon: 'building-2',       route: '/superadmin/clients' },
+    { key: 'sa-subscriptions',    label: 'Abonnements',           icon: 'credit-card',      route: '/superadmin/subscriptions' },
+    { key: 'sa-plans',            label: 'Plans tarifaires',      icon: 'tag',              route: '/superadmin/plans' },
+    { key: 'sa-offers',           label: 'Offres personnalisées', icon: 'gift',             route: '/superadmin/offers' },
+    { key: 'sa-support',          label: 'Tickets support',       icon: 'life-buoy',        route: '/superadmin/support' },
+    { key: 'sa-users',            label: 'Utilisateurs globaux',  icon: 'users',            route: '/superadmin/users' },
+    { key: 'sa-email-templates',  label: 'Templates emails',      icon: 'mail',             route: '/superadmin/email-templates' },
+    { key: 'sa-smtp',             label: 'Configuration SMTP',    icon: 'settings',         route: '/superadmin/smtp' },
+    { key: 'sa-changelogs',       label: 'Changelog',             icon: 'git-branch',       route: '/superadmin/changelogs' },
+    { key: 'sa-landing',          label: 'Landing page admin',    icon: 'globe',            route: '/superadmin/landing' },
+    { key: 'sa-reports',          label: 'Rapports / Stats',      icon: 'bar-chart-2',      route: '/superadmin/reports' },
+    { key: 'sa-prospects',        label: 'Prospects / Démos',     icon: 'user-plus',        route: '/superadmin/prospects' },
 ];
 
 /**

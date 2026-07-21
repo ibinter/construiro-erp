@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             SubscriptionPlanSeeder::class,
             LegalPageSeeder::class,
             LandingSeeder::class,
+            EmailTemplateSeeder::class,
         ]);
 
         // 2) Entreprise + agence de démonstration.
