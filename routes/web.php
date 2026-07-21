@@ -66,9 +66,13 @@ use App\Http\Controllers\NotificationPreferenceController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboard;
 use App\Http\Controllers\SuperAdmin\ClientController as SuperAdminClientController;
+use App\Http\Controllers\SuperAdmin\CustomOfferController as SuperAdminCustomOfferController;
 use App\Http\Controllers\SuperAdmin\ProspectController as SuperAdminProspectController;
 use App\Http\Controllers\SuperAdmin\SupportSessionController;
 use App\Http\Controllers\SuperAdmin\LandingController as SuperAdminLandingController;
+use App\Http\Controllers\SuperAdmin\EmailTemplateController as SuperAdminEmailTemplateController;
+use App\Http\Controllers\SuperAdmin\SmtpController as SuperAdminSmtpController;
+use App\Http\Controllers\SuperAdmin\ChangelogController as SuperAdminChangelogController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\LegalController;
 use App\Http\Controllers\DemoRequestController;
@@ -197,6 +201,14 @@ Route::get('/', function () {
         'whatsapp_number' => preg_replace('/\D/', '', $whatsappNumber),
     ]);
 });
+
+// --- Changelog public (sans authentification) ----------------------------------
+Route::get('/changelog', function () {
+    $entries = \App\Models\Changelog::where('is_published', true)
+        ->orderByDesc('published_at')
+        ->get();
+    return inertia('Changelog', ['entries' => $entries]);
+})->name('changelog');
 
 Route::middleware(['auth', 'verified', 'subscription', 'two-factor'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -409,11 +421,23 @@ Route::middleware(['auth', 'verified', 'subscription', 'two-factor'])->group(fun
         Route::get('/clients/{company}',                    [SuperAdminClientController::class, 'show'])->name('superadmin.clients.show');
         Route::post('/clients/{company}/subscription',      [SuperAdminClientController::class, 'grantSubscription'])->name('superadmin.clients.grant');
         Route::patch('/clients/{company}/toggle',           [SuperAdminClientController::class, 'toggleActive'])->name('superadmin.clients.toggle');
+        Route::post('/clients/{company}/suspend',           [SuperAdminClientController::class, 'suspend'])->name('superadmin.clients.suspend');
+        Route::post('/clients/{company}/reactivate',        [SuperAdminClientController::class, 'reactivate'])->name('superadmin.clients.reactivate');
+        // Offres personnalisées
+        Route::get('/offers',                               [SuperAdminCustomOfferController::class, 'index'])->name('superadmin.offers.index');
+        Route::post('/offers',                              [SuperAdminCustomOfferController::class, 'store'])->name('superadmin.offers.store');
+        Route::delete('/offers/{offer}',                    [SuperAdminCustomOfferController::class, 'destroy'])->name('superadmin.offers.destroy');
         Route::get('/prospects',                            [SuperAdminProspectController::class, 'index'])->name('superadmin.prospects.index');
         Route::patch('/prospects/{demoRequest}/status',     [SuperAdminProspectController::class, 'updateStatus'])->name('superadmin.prospects.status');
         Route::get('/support-sessions',                      [SupportSessionController::class, 'index'])->name('superadmin.support-sessions.index');
         Route::post('/support-sessions',                     [SupportSessionController::class, 'create'])->name('superadmin.support-sessions.create');
         Route::post('/support-sessions/{session}/end',       [SupportSessionController::class, 'end'])->name('superadmin.support-sessions.end');
+
+        // Gestion des templates d'emails
+        Route::get('/email-templates',                              [SuperAdminEmailTemplateController::class, 'index'])->name('superadmin.email-templates.index');
+        Route::get('/email-templates/{emailTemplate}/edit',        [SuperAdminEmailTemplateController::class, 'edit'])->name('superadmin.email-templates.edit');
+        Route::put('/email-templates/{emailTemplate}',             [SuperAdminEmailTemplateController::class, 'update'])->name('superadmin.email-templates.update');
+        Route::get('/email-templates/{emailTemplate}/preview',     [SuperAdminEmailTemplateController::class, 'preview'])->name('superadmin.email-templates.preview');
 
         // Landing page management
         Route::get('/landing',                                          [SuperAdminLandingController::class, 'index'])->name('superadmin.landing.index');
@@ -427,6 +451,23 @@ Route::middleware(['auth', 'verified', 'subscription', 'two-factor'])->group(fun
         Route::patch('/landing/legal/{legalPage}/toggle',               [SuperAdminLandingController::class, 'legalToggle'])->name('superadmin.landing.legal.toggle');
         Route::patch('/landing/plans/{plan}',                           [SuperAdminLandingController::class, 'planUpdate'])->name('superadmin.landing.plan.update');
         Route::patch('/landing/plans/{plan}/toggle',                    [SuperAdminLandingController::class, 'planToggle'])->name('superadmin.landing.plan.toggle');
+
+        // --- Configuration SMTP ------------------------------------------------
+        Route::get('/smtp',                         [SuperAdminSmtpController::class, 'show'])->name('superadmin.smtp.show');
+        Route::put('/smtp',                         [SuperAdminSmtpController::class, 'update'])->name('superadmin.smtp.update');
+        Route::post('/smtp/test',                   [SuperAdminSmtpController::class, 'test'])->name('superadmin.smtp.test');
+
+        // --- Historique MRR ----------------------------------------------------
+        Route::get('/mrr-history',                  [SuperAdminDashboard::class, 'mrrHistory'])->name('superadmin.mrr.history');
+
+        // --- Gestion Changelog -------------------------------------------------
+        Route::get('/changelogs',                                   [SuperAdminChangelogController::class, 'index'])->name('superadmin.changelogs.index');
+        Route::get('/changelogs/create',                            [SuperAdminChangelogController::class, 'create'])->name('superadmin.changelogs.create');
+        Route::post('/changelogs',                                  [SuperAdminChangelogController::class, 'store'])->name('superadmin.changelogs.store');
+        Route::get('/changelogs/{changelog}/edit',                  [SuperAdminChangelogController::class, 'edit'])->name('superadmin.changelogs.edit');
+        Route::put('/changelogs/{changelog}',                       [SuperAdminChangelogController::class, 'update'])->name('superadmin.changelogs.update');
+        Route::delete('/changelogs/{changelog}',                    [SuperAdminChangelogController::class, 'destroy'])->name('superadmin.changelogs.destroy');
+        Route::post('/changelogs/{changelog}/publish',              [SuperAdminChangelogController::class, 'publish'])->name('superadmin.changelogs.publish');
     });
 
     // --- Guide utilisateur PDF (auth) --------------------------------------------------

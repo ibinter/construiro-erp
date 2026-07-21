@@ -32,5 +32,25 @@ class AppServiceProvider extends ServiceProvider
             \Illuminate\Auth\Events\Login::class,
             \App\Listeners\SendSuspiciousLoginNotification::class,
         );
+
+        // Charger la config SMTP depuis la base de données si disponible
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('smtp_settings')) {
+                $smtp = \App\Models\SmtpSetting::active();
+                if ($smtp) {
+                    config([
+                        'mail.mailers.smtp.host'       => $smtp->host,
+                        'mail.mailers.smtp.port'       => $smtp->port,
+                        'mail.mailers.smtp.username'   => $smtp->username,
+                        'mail.mailers.smtp.password'   => $smtp->password,
+                        'mail.mailers.smtp.encryption' => $smtp->encryption === 'null' ? null : $smtp->encryption,
+                        'mail.from.address'            => $smtp->from_address,
+                        'mail.from.name'               => $smtp->from_name,
+                    ]);
+                }
+            }
+        } catch (\Exception) {
+            // Table non encore migrée — ignorer silencieusement
+        }
     }
 }
