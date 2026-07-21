@@ -233,6 +233,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['diag'])) {
         echo "Worker démarré (PID $pid)\n";
         echo "Logs: $dir/storage/logs/queue-worker.log\n";
         echo "DONE\n";
+    } elseif ($diag === 'send-test') {
+        // Envoie un email de test via artisan + capture l'erreur éventuelle
+        // Usage: ?diag=send-test&to=email@example.com
+        $to = $_GET['to'] ?? 'patriceky@gmail.com';
+        $cmd = "cd $dir && php artisan tinker --no-interaction --execute=\""
+            . "try {"
+            . "\\Illuminate\\Support\\Facades\\Mail::raw('Test SMTP CONSTRUIRO ERP ' . now(), fn(\$m) => \$m->to('$to')->subject('Test SMTP CONSTRUIRO'));"
+            . "echo 'EMAIL_SENT_OK';"
+            . "} catch (\\Exception \$e) {"
+            . "echo 'EMAIL_ERROR: ' . \$e->getMessage();"
+            . "}\" 2>&1";
+        $output = shell_exec($cmd);
+        echo "=== Test envoi email vers: $to ===\n";
+        echo $output . "\n";
+        // Aussi afficher config SMTP courante (sans password)
+        echo "\n=== Config SMTP actuelle ===\n";
+        $envPath = $dir . '/.env';
+        $env = file_get_contents($envPath);
+        foreach (['MAIL_MAILER','MAIL_HOST','MAIL_PORT','MAIL_USERNAME','MAIL_ENCRYPTION','MAIL_FROM_ADDRESS'] as $k) {
+            if (preg_match('/^' . preg_quote($k, '/') . '=(.*)$/m', $env, $m)) {
+                echo "$k=" . trim($m[1]) . "\n";
+            }
+        }
     } elseif ($diag === 'worker-logs') {
         $log = $dir . '/storage/logs/queue-worker.log';
         if (file_exists($log)) {
