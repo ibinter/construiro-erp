@@ -126,6 +126,22 @@ class PayslipController extends Controller
             ->get(['id', 'matricule', 'first_name', 'last_name', 'base_salary', 'currency']);
     }
 
+    /**
+     * Supprime un bulletin de paie.
+     * Seul un bulletin en statut « draft » peut être supprimé.
+     */
+    public function destroy(Request $request, Payslip $payslip): RedirectResponse
+    {
+        $this->authorizeCompany($request->user(), $payslip);
+        abort_unless($payslip->status === 'draft', 403, 'Seul un bulletin en brouillon peut être supprimé.');
+
+        $period = $payslip->period;
+        $payslip->delete();
+
+        return redirect()->route('payroll.index', ['period' => $period])
+            ->with('success', 'Bulletin supprimé.');
+    }
+
     /** Empêche l'accès à un bulletin d'une autre entreprise. */
     private function authorizeCompany(User $user, Payslip $payslip): void
     {

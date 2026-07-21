@@ -2,13 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Budget;
+use App\Models\BudgetLine;
 use App\Models\Client;
 use App\Models\Contract;
 use App\Models\Employee;
+use App\Models\Equipment;
 use App\Models\Invoice;
 use App\Models\Material;
+use App\Models\Payslip;
 use App\Models\Project;
+use App\Models\PurchaseOrder;
 use App\Models\Quote;
+use App\Models\Subcontractor;
+use App\Models\Supplier;
+use App\Models\TreasuryTransaction;
 use App\Services\Pdf\PdfTableExportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -290,6 +298,277 @@ class PdfListController extends Controller
             company: $user->company,
             user:    $user,
             options: ['filename' => 'Stocks-' . now()->format('Y-m-d') . '.pdf'],
+        );
+    }
+
+    public function suppliers(Request $request): StreamedResponse
+    {
+        $user = $request->user();
+        abort_unless($user->can('suppliers.view'), 403);
+        abort_unless(Schema::hasTable('suppliers'), 404);
+
+        $rows = Supplier::forUser($user)
+            ->orderBy('name')
+            ->get()
+            ->map(fn(Supplier $s) => [
+                'name'     => $s->name,
+                'category' => $s->category ?? '—',
+                'contact'  => $s->contact_name ?? '—',
+                'email'    => $s->email ?? '—',
+                'phone'    => $s->phone ?? '—',
+                'city'     => $s->city ?? '—',
+                'country'  => $s->country ?? '—',
+                'status'   => $s->is_active ? 'Actif' : 'Inactif',
+            ])->toArray();
+
+        return PdfTableExportService::export(
+            title:      'Liste des Fournisseurs',
+            columnDefs: [
+                ['key' => 'name',     'label' => 'Nom',        'type' => 'name',       'priority' => 'essential'],
+                ['key' => 'category', 'label' => 'Catégorie',  'type' => 'status',     'priority' => 'important'],
+                ['key' => 'contact',  'label' => 'Contact',    'type' => 'name',       'priority' => 'important'],
+                ['key' => 'email',    'label' => 'Email',      'type' => 'email',      'priority' => 'secondary'],
+                ['key' => 'phone',    'label' => 'Téléphone',  'type' => 'phone',      'priority' => 'important', 'nowrap' => true],
+                ['key' => 'city',     'label' => 'Ville',      'type' => 'short_text', 'priority' => 'secondary'],
+                ['key' => 'country',  'label' => 'Pays',       'type' => 'short_text', 'priority' => 'secondary'],
+                ['key' => 'status',   'label' => 'Statut',     'type' => 'status',     'priority' => 'essential'],
+            ],
+            rows:    $rows,
+            company: $user->company,
+            user:    $user,
+            options: ['filename' => 'Fournisseurs-' . now()->format('Y-m-d') . '.pdf'],
+        );
+    }
+
+    public function subcontractors(Request $request): StreamedResponse
+    {
+        $user = $request->user();
+        abort_unless($user->can('subcontractors.view'), 403);
+        abort_unless(Schema::hasTable('subcontractors'), 404);
+
+        $rows = Subcontractor::forUser($user)
+            ->orderBy('name')
+            ->get()
+            ->map(fn(Subcontractor $s) => [
+                'name'      => $s->name,
+                'specialty' => $s->specialty ?? '—',
+                'contact'   => $s->contact_name ?? '—',
+                'email'     => $s->email ?? '—',
+                'phone'     => $s->phone ?? '—',
+                'status'    => $s->is_active ? 'Actif' : 'Inactif',
+            ])->toArray();
+
+        return PdfTableExportService::export(
+            title:      'Liste des Sous-traitants',
+            columnDefs: [
+                ['key' => 'name',      'label' => 'Nom',          'type' => 'name',   'priority' => 'essential'],
+                ['key' => 'specialty', 'label' => 'Spécialité',   'type' => 'status', 'priority' => 'important'],
+                ['key' => 'contact',   'label' => 'Contact',      'type' => 'name',   'priority' => 'important'],
+                ['key' => 'email',     'label' => 'Email',        'type' => 'email',  'priority' => 'secondary'],
+                ['key' => 'phone',     'label' => 'Téléphone',    'type' => 'phone',  'priority' => 'important', 'nowrap' => true],
+                ['key' => 'status',    'label' => 'Statut',       'type' => 'status', 'priority' => 'essential'],
+            ],
+            rows:    $rows,
+            company: $user->company,
+            user:    $user,
+            options: ['filename' => 'Sous-traitants-' . now()->format('Y-m-d') . '.pdf'],
+        );
+    }
+
+    public function equipment(Request $request): StreamedResponse
+    {
+        $user = $request->user();
+        abort_unless($user->can('equipment.view'), 403);
+        abort_unless(class_exists(Equipment::class) && Schema::hasTable('equipment'), 404);
+
+        $rows = Equipment::forUser($user)
+            ->with('currentSite:id,name')
+            ->orderBy('code')
+            ->get()
+            ->map(fn(Equipment $e) => [
+                'code'             => $e->code,
+                'name'             => $e->name,
+                'category'         => $e->category ?? '—',
+                'brand'            => trim(($e->brand ?? '') . ' ' . ($e->model ?? '')) ?: '—',
+                'status'           => $e->status,
+                'site'             => $e->currentSite?->name ?? '—',
+                'acquisition_date' => $e->acquisition_date ? $e->acquisition_date->format('d/m/Y') : '—',
+            ])->toArray();
+
+        return PdfTableExportService::export(
+            title:      'Liste des Équipements',
+            columnDefs: [
+                ['key' => 'code',             'label' => 'Code',          'type' => 'code',       'priority' => 'essential', 'nowrap' => true],
+                ['key' => 'name',             'label' => 'Désignation',   'type' => 'name',       'priority' => 'essential'],
+                ['key' => 'category',         'label' => 'Type',          'type' => 'status',     'priority' => 'important'],
+                ['key' => 'brand',            'label' => 'Marque/Modèle', 'type' => 'short_text', 'priority' => 'important'],
+                ['key' => 'status',           'label' => 'État',          'type' => 'status',     'priority' => 'essential'],
+                ['key' => 'site',             'label' => 'Site assigné',  'type' => 'short_text', 'priority' => 'important'],
+                ['key' => 'acquisition_date', 'label' => 'Acquisition',   'type' => 'date',       'priority' => 'secondary', 'nowrap' => true],
+            ],
+            rows:    $rows,
+            company: $user->company,
+            user:    $user,
+            options: ['filename' => 'Equipements-' . now()->format('Y-m-d') . '.pdf'],
+        );
+    }
+
+    public function purchases(Request $request): StreamedResponse
+    {
+        $user = $request->user();
+        abort_unless($user->can('purchases.view'), 403);
+        abort_unless(class_exists(PurchaseOrder::class) && Schema::hasTable('purchase_orders'), 404);
+
+        $rows = PurchaseOrder::forUser($user)
+            ->with(['supplier:id,name', 'project:id,name'])
+            ->latest('order_date')
+            ->get()
+            ->map(fn(PurchaseOrder $p) => [
+                'code'       => $p->code,
+                'date'       => $p->order_date ? $p->order_date->format('d/m/Y') : '—',
+                'supplier'   => $p->supplier?->name ?? '—',
+                'project'    => $p->project?->name ?? '—',
+                'total'      => $p->total ? number_format((float)$p->total, 0, ',', ' ') . ' ' . $p->currency : '—',
+                'currency'   => $p->currency ?? '—',
+                'status'     => $p->status,
+            ])->toArray();
+
+        return PdfTableExportService::export(
+            title:      'Liste des Bons de Commande',
+            columnDefs: [
+                ['key' => 'code',     'label' => 'Numéro',      'type' => 'code',       'priority' => 'essential', 'nowrap' => true],
+                ['key' => 'date',     'label' => 'Date',        'type' => 'date',       'priority' => 'essential', 'nowrap' => true],
+                ['key' => 'supplier', 'label' => 'Fournisseur', 'type' => 'name',       'priority' => 'essential'],
+                ['key' => 'project',  'label' => 'Projet',      'type' => 'short_text', 'priority' => 'important'],
+                ['key' => 'total',    'label' => 'TTC',         'type' => 'amount',     'priority' => 'essential', 'nowrap' => true],
+                ['key' => 'currency', 'label' => 'Devise',      'type' => 'status',     'priority' => 'secondary', 'nowrap' => true],
+                ['key' => 'status',   'label' => 'Statut',      'type' => 'status',     'priority' => 'essential'],
+            ],
+            rows:    $rows,
+            company: $user->company,
+            user:    $user,
+            options: ['filename' => 'BonsDeCommande-' . now()->format('Y-m-d') . '.pdf'],
+        );
+    }
+
+    public function budgets(Request $request): StreamedResponse
+    {
+        $user = $request->user();
+        abort_unless($user->can('budget.view'), 403);
+        abort_unless(class_exists(Budget::class) && Schema::hasTable('budgets'), 404);
+
+        $rows = Budget::forUser($user)
+            ->with(['project:id,name', 'lines'])
+            ->latest()
+            ->get()
+            ->flatMap(fn(Budget $b) => $b->lines->map(fn(BudgetLine $l) => [
+                'projet'    => $b->project?->name ?? $b->title,
+                'ligne'     => $l->label,
+                'categorie' => $l->category ?? '—',
+                'prevu'     => number_format((float)$l->planned_amount, 0, ',', ' '),
+                'reel'      => number_format((float)$l->actual_amount, 0, ',', ' '),
+                'ecart'     => number_format((float)$l->planned_amount - (float)$l->actual_amount, 0, ',', ' '),
+                'pct'       => (float)$l->planned_amount > 0
+                    ? number_format(((float)$l->actual_amount / (float)$l->planned_amount) * 100, 1) . '%'
+                    : '—',
+            ]))->toArray();
+
+        return PdfTableExportService::export(
+            title:      'Budget Prévisionnel — Détail des Lignes',
+            columnDefs: [
+                ['key' => 'projet',    'label' => 'Projet',      'type' => 'name',       'priority' => 'essential'],
+                ['key' => 'ligne',     'label' => 'Ligne',       'type' => 'name',       'priority' => 'essential'],
+                ['key' => 'categorie', 'label' => 'Catégorie',   'type' => 'short_text', 'priority' => 'important'],
+                ['key' => 'prevu',     'label' => 'Prévu',       'type' => 'amount',     'priority' => 'essential', 'nowrap' => true],
+                ['key' => 'reel',      'label' => 'Réel',        'type' => 'amount',     'priority' => 'essential', 'nowrap' => true],
+                ['key' => 'ecart',     'label' => 'Écart',       'type' => 'amount',     'priority' => 'important', 'nowrap' => true],
+                ['key' => 'pct',       'label' => '% consommé',  'type' => 'percentage', 'priority' => 'important', 'nowrap' => true],
+            ],
+            rows:    $rows,
+            company: $user->company,
+            user:    $user,
+            options: ['filename' => 'Budget-' . now()->format('Y-m-d') . '.pdf'],
+        );
+    }
+
+    public function treasury(Request $request): StreamedResponse
+    {
+        $user = $request->user();
+        abort_unless($user->can('treasury.view'), 403);
+        abort_unless(Schema::hasTable('treasury_transactions'), 404);
+
+        $rows = TreasuryTransaction::forUser($user)
+            ->with(['cashAccount:id,name', 'project:id,name'])
+            ->latest('date')
+            ->latest('id')
+            ->get()
+            ->map(fn(TreasuryTransaction $tx) => [
+                'date'        => $tx->date ? $tx->date->format('d/m/Y') : '—',
+                'description' => $tx->description ?? '—',
+                'type'        => $tx->type === 'in' ? 'Entrée' : 'Sortie',
+                'montant'     => number_format((float)$tx->amount, 0, ',', ' '),
+                'compte'      => $tx->cashAccount?->name ?? '—',
+                'reference'   => $tx->reference ?? '—',
+            ])->toArray();
+
+        return PdfTableExportService::export(
+            title:      'Journal de Trésorerie',
+            columnDefs: [
+                ['key' => 'date',        'label' => 'Date',        'type' => 'date',       'priority' => 'essential', 'nowrap' => true],
+                ['key' => 'description', 'label' => 'Description', 'type' => 'name',       'priority' => 'essential'],
+                ['key' => 'type',        'label' => 'Type',        'type' => 'status',     'priority' => 'essential'],
+                ['key' => 'montant',     'label' => 'Montant',     'type' => 'amount',     'priority' => 'essential', 'nowrap' => true],
+                ['key' => 'compte',      'label' => 'Compte',      'type' => 'short_text', 'priority' => 'important'],
+                ['key' => 'reference',   'label' => 'Référence',   'type' => 'short_text', 'priority' => 'secondary'],
+            ],
+            rows:    $rows,
+            company: $user->company,
+            user:    $user,
+            options: ['filename' => 'Tresorerie-' . now()->format('Y-m-d') . '.pdf'],
+        );
+    }
+
+    public function payslips(Request $request): StreamedResponse
+    {
+        $user = $request->user();
+        abort_unless($user->can('payroll.view'), 403);
+        abort_unless(class_exists(Payslip::class) && Schema::hasTable('payslips'), 404);
+
+        $period = $request->string('period')->toString() ?: now()->format('Y-m');
+
+        $rows = Payslip::forUser($user)
+            ->with('employee:id,matricule,first_name,last_name')
+            ->where('period', $period)
+            ->latest('id')
+            ->get()
+            ->map(fn(Payslip $p) => [
+                'employe'   => $p->employee ? trim($p->employee->first_name . ' ' . $p->employee->last_name) : '—',
+                'matricule' => $p->employee?->matricule ?? '—',
+                'periode'   => $p->period ?? '—',
+                'brut'      => number_format((float)$p->gross_salary, 0, ',', ' '),
+                'retenues'  => number_format((float)$p->deductions, 0, ',', ' '),
+                'net'       => number_format((float)$p->net_salary, 0, ',', ' '),
+                'statut'    => $p->status,
+            ])->toArray();
+
+        return PdfTableExportService::export(
+            title:      'Bulletins de Paie — ' . $period,
+            columnDefs: [
+                ['key' => 'employe',   'label' => 'Employé',   'type' => 'name',   'priority' => 'essential'],
+                ['key' => 'matricule', 'label' => 'Matricule', 'type' => 'code',   'priority' => 'important', 'nowrap' => true],
+                ['key' => 'periode',   'label' => 'Période',   'type' => 'date',   'priority' => 'essential', 'nowrap' => true],
+                ['key' => 'brut',      'label' => 'Brut',      'type' => 'amount', 'priority' => 'essential', 'nowrap' => true],
+                ['key' => 'retenues',  'label' => 'Retenues',  'type' => 'amount', 'priority' => 'important', 'nowrap' => true],
+                ['key' => 'net',       'label' => 'Net',       'type' => 'amount', 'priority' => 'essential', 'nowrap' => true],
+                ['key' => 'statut',    'label' => 'Statut',    'type' => 'status', 'priority' => 'essential'],
+            ],
+            rows:    $rows,
+            company: $user->company,
+            user:    $user,
+            options: [
+                'filename' => 'Paie-' . $period . '.pdf',
+                'subtitle' => 'Période : ' . $period,
+            ],
         );
     }
 }

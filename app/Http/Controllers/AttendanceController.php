@@ -74,6 +74,57 @@ class AttendanceController extends Controller
             ->with('success', 'Pointage enregistré.');
     }
 
+    /** Formulaire d'édition d'un pointage. */
+    public function edit(Request $request, Attendance $attendance): Response
+    {
+        $user = $request->user();
+        abort_unless($attendance->company_id === $user->company_id, 403);
+
+        return Inertia::render('Attendance/Edit', [
+            'attendance' => $attendance->load(['employee:id,matricule,first_name,last_name', 'site:id,name']),
+            'employees'  => $this->employees($user),
+            'sites'      => $this->sites($user),
+            'statuses'   => Attendance::STATUSES,
+        ]);
+    }
+
+    /** Met à jour un pointage existant. */
+    public function update(Request $request, Attendance $attendance): RedirectResponse
+    {
+        $user = $request->user();
+        abort_unless($attendance->company_id === $user->company_id, 403);
+        $companyId = $user->company_id;
+
+        $data = $request->validate([
+            'employee_id'    => ['required', 'integer', Rule::exists('employees', 'id')->where('company_id', $companyId)],
+            'date'           => ['required', 'date'],
+            'status'         => ['required', Rule::in(Attendance::STATUSES)],
+            'hours_worked'   => ['required', 'numeric', 'min:0', 'max:24'],
+            'overtime_hours' => ['nullable', 'numeric', 'min:0', 'max:24'],
+            'site_id'        => ['nullable', 'integer', Rule::exists('sites', 'id')->where('company_id', $companyId)],
+            'notes'          => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $data['overtime_hours'] = $data['overtime_hours'] ?? 0;
+        $attendance->update($data);
+
+        return redirect()->route('attendance.index', ['date' => $data['date']])
+            ->with('success', 'Pointage mis à jour.');
+    }
+
+    /** Supprime un pointage après vérification du company_id. */
+    public function destroy(Request $request, Attendance $attendance): RedirectResponse
+    {
+        $user = $request->user();
+        abort_unless($attendance->company_id === $user->company_id, 403);
+
+        $date = $attendance->date->toDateString();
+        $attendance->delete();
+
+        return redirect()->route('attendance.index', ['date' => $date])
+            ->with('success', 'Pointage supprimé.');
+    }
+
     /** Employés actifs de l'entreprise, candidats au pointage. */
     private function employees(User $user)
     {

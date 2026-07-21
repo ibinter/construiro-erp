@@ -151,6 +151,57 @@ class TreasuryController extends Controller
         return back()->with('success', 'Transaction enregistrée.');
     }
 
+    /** Formulaire d'édition d'une transaction. */
+    public function edit(Request $request, TreasuryTransaction $transaction): Response
+    {
+        $user = $request->user();
+        abort_unless($transaction->company_id === $user->company_id, 403);
+
+        return Inertia::render('Treasury/Edit', [
+            'transaction' => $transaction->load(['cashAccount:id,name,currency', 'project:id,name']),
+            'accounts'    => CashAccount::forUser($user)->orderBy('name')->get(['id', 'name', 'type', 'currency']),
+            'projects'    => Project::forUser($user)->orderBy('name')->get(['id', 'name', 'code']),
+            'types'       => TreasuryTransaction::TYPES,
+        ]);
+    }
+
+    /** Met à jour une transaction existante. */
+    public function update(Request $request, TreasuryTransaction $transaction): RedirectResponse
+    {
+        $user = $request->user();
+        abort_unless($transaction->company_id === $user->company_id, 403);
+        $companyId = $user->company_id;
+
+        $data = $request->validate([
+            'cash_account_id' => ['required', 'integer', Rule::exists('cash_accounts', 'id')->where('company_id', $companyId)],
+            'project_id'      => ['nullable', 'integer', Rule::exists('projects', 'id')->where('company_id', $companyId)],
+            'type'            => ['required', Rule::in(TreasuryTransaction::TYPES)],
+            'category'        => ['nullable', 'string', 'max:255'],
+            'amount'          => ['required', 'numeric', 'min:0.01'],
+            'date'            => ['required', 'date'],
+            'reference'       => ['nullable', 'string', 'max:255'],
+            'description'     => ['nullable', 'string'],
+        ]);
+
+        $transaction->update($data);
+
+        return redirect()->route('treasury.accounts.show', $data['cash_account_id'])
+            ->with('success', 'Transaction mise à jour.');
+    }
+
+    /** Supprime une transaction après vérification du company_id. */
+    public function destroy(Request $request, TreasuryTransaction $transaction): RedirectResponse
+    {
+        $user = $request->user();
+        abort_unless($transaction->company_id === $user->company_id, 403);
+
+        $accountId = $transaction->cash_account_id;
+        $transaction->delete();
+
+        return redirect()->route('treasury.accounts.show', $accountId)
+            ->with('success', 'Transaction supprimée.');
+    }
+
     /** Dernières transactions pour affichage sur le tableau de bord. */
     private function recentTransactions(User $user)
     {

@@ -124,4 +124,17 @@ class AccountingController extends Controller
 
         return back()->with('success', 'Écriture enregistrée.');
     }
+
+    /** Supprime une écriture de journal et ses lignes après vérification du company_id. */
+    public function destroy(Request $request, JournalEntry $entry): RedirectResponse
+    {
+        $user = $request->user();
+        abort_unless($entry->company_id === $user->company_id, 403);
+
+        $entry->lines()->delete();
+        $entry->delete();
+
+        return redirect()->route('accounting.index')
+            ->with('success', 'Écriture de journal supprimée.');
+    }
 }
