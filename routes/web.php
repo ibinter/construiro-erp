@@ -407,6 +407,9 @@ Route::middleware(['auth', 'verified', 'subscription'])->group(function () {
         Route::get('/{ticket}',                 [SupportController::class, 'show'])->name('support.show');
         Route::post('/{ticket}/reply',          [SupportController::class, 'reply'])->name('support.reply');
         Route::post('/{ticket}/close',          [SupportController::class, 'close'])->name('support.close');
+        Route::post('/{ticket}/message',        [SupportController::class, 'addMessage'])->name('support.message');
+        Route::patch('/{ticket}/status',        [SupportController::class, 'updateStatus'])->name('support.status');
+        Route::post('/{ticket}/reopen',         [SupportController::class, 'reopen'])->name('support.reopen');
     });
 
     // --- Module RH — Employés --------------------------------------------------
@@ -419,14 +422,18 @@ Route::middleware(['auth', 'verified', 'subscription'])->group(function () {
     Route::delete('/hr/{employee}',  [EmployeeController::class, 'destroy'])->middleware('can:hr.delete')->name('hr.destroy');
 
     // --- Module Pointage -------------------------------------------------------
-    Route::get('/attendance',  [AttendanceController::class, 'index'])->middleware('can:attendance.view')->name('attendance.index');
-    Route::post('/attendance', [AttendanceController::class, 'store'])->middleware('can:attendance.create')->name('attendance.store');
+    Route::get('/attendance',                         [AttendanceController::class, 'index'])->middleware('can:attendance.view')->name('attendance.index');
+    Route::post('/attendance',                        [AttendanceController::class, 'store'])->middleware('can:attendance.create')->name('attendance.store');
+    Route::get('/attendance/{attendance}/edit',       [AttendanceController::class, 'edit'])->middleware('can:attendance.update')->name('attendance.edit');
+    Route::put('/attendance/{attendance}',            [AttendanceController::class, 'update'])->middleware('can:attendance.update')->name('attendance.update');
+    Route::delete('/attendance/{attendance}',         [AttendanceController::class, 'destroy'])->middleware('can:attendance.delete')->name('attendance.destroy');
 
     // --- Module Paie -----------------------------------------------------------
-    Route::get('/payroll',                 [PayslipController::class, 'index'])->middleware('can:payroll.view')->name('payroll.index');
-    Route::post('/payroll',                [PayslipController::class, 'store'])->middleware('can:payroll.create')->name('payroll.store');
+    Route::get('/payroll',                   [PayslipController::class, 'index'])->middleware('can:payroll.view')->name('payroll.index');
+    Route::post('/payroll',                  [PayslipController::class, 'store'])->middleware('can:payroll.create')->name('payroll.store');
     Route::post('/payroll/generate',         [PayslipController::class, 'generateAll'])->middleware('can:payroll.create')->name('payroll.generate');
     Route::post('/payroll/{payslip}/status', [PayslipController::class, 'updateStatus'])->middleware('can:payroll.update')->name('payroll.status');
+    Route::delete('/payroll/{payslip}',      [PayslipController::class, 'destroy'])->middleware('can:payroll.delete')->name('payroll.destroy');
 
     // --- Module Planning & Gantt -----------------------------------------------
     Route::get('/planning',          [PlanningController::class, 'index'])->middleware('can:planning.view')->name('planning.index');
@@ -435,10 +442,13 @@ Route::middleware(['auth', 'verified', 'subscription'])->group(function () {
     Route::delete('/planning/{task}', [PlanningController::class, 'destroy'])->middleware('can:planning.delete')->name('planning.destroy');
 
     // --- Module Trésorerie -----------------------------------------------------
-    Route::get('/treasury',                     [TreasuryController::class, 'index'])->middleware('can:treasury.view')->name('treasury.index');
-    Route::post('/treasury/accounts',           [TreasuryController::class, 'storeAccount'])->middleware('can:treasury.create')->name('treasury.accounts.store');
-    Route::get('/treasury/accounts/{account}',  [TreasuryController::class, 'showAccount'])->middleware('can:treasury.view')->name('treasury.accounts.show');
-    Route::post('/treasury/transactions',       [TreasuryController::class, 'storeTransaction'])->middleware('can:treasury.create')->name('treasury.transactions.store');
+    Route::get('/treasury',                                        [TreasuryController::class, 'index'])->middleware('can:treasury.view')->name('treasury.index');
+    Route::post('/treasury/accounts',                              [TreasuryController::class, 'storeAccount'])->middleware('can:treasury.create')->name('treasury.accounts.store');
+    Route::get('/treasury/accounts/{account}',                     [TreasuryController::class, 'showAccount'])->middleware('can:treasury.view')->name('treasury.accounts.show');
+    Route::post('/treasury/transactions',                          [TreasuryController::class, 'storeTransaction'])->middleware('can:treasury.create')->name('treasury.transactions.store');
+    Route::get('/treasury/transactions/{transaction}/edit',        [TreasuryController::class, 'edit'])->middleware('can:treasury.update')->name('treasury.transactions.edit');
+    Route::put('/treasury/transactions/{transaction}',             [TreasuryController::class, 'update'])->middleware('can:treasury.update')->name('treasury.transactions.update');
+    Route::delete('/treasury/transactions/{transaction}',          [TreasuryController::class, 'destroy'])->middleware('can:treasury.delete')->name('treasury.transactions.destroy');
 
     // --- Module QHSE (incidents / sécurité) ------------------------------------
     Route::get('/hse',            [HseIncidentController::class, 'index'])->middleware('can:qhse.view')->name('hse.index');
@@ -540,10 +550,11 @@ Route::middleware(['auth', 'verified', 'subscription'])->group(function () {
     Route::post('/cost-accounting', [CostAccountingController::class, 'store'])->middleware('can:cost_accounting.create')->name('cost_accounting.store');
 
     // --- Comptabilité générale (journal SYSCOHADA) -----------------------------
-    Route::get('/accounting',           [AccountingController::class, 'index'])->middleware('can:accounting.view')->name('accounting.index');
-    Route::get('/accounting/accounts',  [AccountingController::class, 'accounts'])->middleware('can:accounting.view')->name('accounting.accounts');
-    Route::post('/accounting/accounts', [AccountingController::class, 'storeAccount'])->middleware('can:accounting.create')->name('accounting.accounts.store');
-    Route::post('/accounting',          [AccountingController::class, 'store'])->middleware('can:accounting.create')->name('accounting.store');
+    Route::get('/accounting',            [AccountingController::class, 'index'])->middleware('can:accounting.view')->name('accounting.index');
+    Route::get('/accounting/accounts',   [AccountingController::class, 'accounts'])->middleware('can:accounting.view')->name('accounting.accounts');
+    Route::post('/accounting/accounts',  [AccountingController::class, 'storeAccount'])->middleware('can:accounting.create')->name('accounting.accounts.store');
+    Route::post('/accounting',           [AccountingController::class, 'store'])->middleware('can:accounting.create')->name('accounting.store');
+    Route::delete('/accounting/{entry}', [AccountingController::class, 'destroy'])->middleware('can:accounting.delete')->name('accounting.destroy');
 
     // --- Encaissements ---------------------------------------------------------
     Route::get('/incoming-payments',                        [IncomingPaymentController::class, 'index'])->middleware('can:incoming_payments.view')->name('incoming-payments.index');
@@ -623,7 +634,14 @@ Route::middleware(['auth', 'verified', 'subscription'])->group(function () {
     Route::get('/pdf/invoices',   [PdfListController::class, 'invoices'])->middleware('can:invoicing.view')->name('pdf.list.invoices');
     Route::get('/pdf/employees',  [PdfListController::class, 'employees'])->middleware('can:hr.view')->name('pdf.list.employees');
     Route::get('/pdf/contracts',  [PdfListController::class, 'contracts'])->middleware('can:contracts.view')->name('pdf.list.contracts');
-    Route::get('/pdf/stocks',     [PdfListController::class, 'stocks'])->middleware('can:stocks.view')->name('pdf.list.stocks');
+    Route::get('/pdf/stocks',         [PdfListController::class, 'stocks'])->middleware('can:stocks.view')->name('pdf.list.stocks');
+    Route::get('/pdf/suppliers',      [PdfListController::class, 'suppliers'])->middleware('can:suppliers.view')->name('pdf.list.suppliers');
+    Route::get('/pdf/subcontractors', [PdfListController::class, 'subcontractors'])->middleware('can:subcontractors.view')->name('pdf.list.subcontractors');
+    Route::get('/pdf/equipment',      [PdfListController::class, 'equipment'])->middleware('can:equipment.view')->name('pdf.list.equipment');
+    Route::get('/pdf/purchases',      [PdfListController::class, 'purchases'])->middleware('can:purchases.view')->name('pdf.list.purchases');
+    Route::get('/pdf/budgets',        [PdfListController::class, 'budgets'])->middleware('can:budget.view')->name('pdf.list.budgets');
+    Route::get('/pdf/treasury',       [PdfListController::class, 'treasury'])->middleware('can:treasury.view')->name('pdf.list.treasury');
+    Route::get('/pdf/payslips',       [PdfListController::class, 'payslips'])->middleware('can:payroll.view')->name('pdf.list.payslips');
 
     // --- Chantiers (vue transversale) ------------------------------------------
     Route::get('/sites',        [SiteIndexController::class, 'index'])->middleware('can:sites.view')->name('sites.index');
