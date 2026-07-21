@@ -169,17 +169,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['diag'])) {
         // Configure SMTP dans le .env — params GET: host, port, user, pass, from, from_name, encryption, mailer
         $envPath = $dir . '/.env';
         $env = file_get_contents($envPath);
+        $env = ltrim($env, "\xEF\xBB\xBF"); // Supprimer BOM
         $vars = [
             'MAIL_MAILER'       => $_GET['mailer'] ?? 'smtp',
-            'MAIL_HOST'         => $_GET['host'] ?? 'smtp-relay.brevo.com',
-            'MAIL_PORT'         => $_GET['port'] ?? '587',
+            'MAIL_HOST'         => $_GET['host'] ?? 'mail.ibigsoft.com',
+            'MAIL_PORT'         => $_GET['port'] ?? '465',
             'MAIL_USERNAME'     => $_GET['user'] ?? '',
             'MAIL_PASSWORD'     => $_GET['pass'] ?? '',
-            'MAIL_ENCRYPTION'   => $_GET['encryption'] ?? 'tls',
-            'MAIL_FROM_ADDRESS' => $_GET['from'] ?? 'noreply@construiro.com',
+            'MAIL_ENCRYPTION'   => $_GET['encryption'] ?? 'ssl',
+            'MAIL_FROM_ADDRESS' => $_GET['from'] ?? 'construiro@ibigsoft.com',
             'MAIL_FROM_NAME'    => $_GET['from_name'] ?? 'CONSTRUIRO ERP',
         ];
         foreach ($vars as $key => $val) {
+            $val  = str_replace("\xEF\xBB\xBF", '', trim($val)); // Supprimer BOM dans la valeur
             $line = "$key=" . (strpos($val, ' ') !== false ? '"'.$val.'"' : $val);
             if (preg_match('/^' . preg_quote($key, '/') . '=/m', $env)) {
                 $env = preg_replace('/^' . preg_quote($key, '/') . '=.*/m', $line, $env);
@@ -399,7 +401,11 @@ function updateEnvFile(string $path, array $vars): void {
         return;
     }
     $content = file_get_contents($path);
+    // Supprimer BOM UTF-8 en début de fichier
+    $content = ltrim($content, "\xEF\xBB\xBF");
     foreach ($vars as $key => $value) {
+        // Supprimer BOM éventuel dans la valeur
+        $value   = str_replace("\xEF\xBB\xBF", '', trim($value));
         $escaped = addcslashes($value, '"\\');
         $line    = "$key=\"$escaped\"";
         // Replace existing key or append
