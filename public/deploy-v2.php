@@ -81,6 +81,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['diag'])) {
     } elseif ($diag === 'seed-permissions') {
         // Lance UNIQUEMENT RolePermissionSeeder (namespace complet pour éviter fallback sur DatabaseSeeder)
         echo shell_exec("cd $dir && php artisan db:seed --class='Database\\\\Seeders\\\\RolePermissionSeeder' --force 2>&1");
+    } elseif ($diag === 'seed-payment') {
+        // Initialise les 11 méthodes de paiement (idempotent via updateOrCreate)
+        echo shell_exec("cd $dir && php artisan db:seed --class='Database\\\\Seeders\\\\PaymentMethodSeeder' --force 2>&1");
+    } elseif ($diag === 'seed-faq') {
+        // Initialise les 190 entrées FAQ (idempotent via updateOrCreate)
+        echo shell_exec("cd $dir && php artisan db:seed --class='Database\\\\Seeders\\\\LandingFaqSeeder' --force 2>&1");
     } elseif ($diag === 'make-superadmin') {
         // Assigne super_admin à un utilisateur via son email : ?diag=make-superadmin&email=xxx
         $email = $_GET['email'] ?? '';
