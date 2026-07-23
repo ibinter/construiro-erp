@@ -132,5 +132,6 @@ class DatabaseSeeder extends Seeder
         $this->call(PaymentsSeeder::class);       // encaissements + décaissements
         $this->call(DocsLabSeeder::class);        // essais labo + documents + signatures
         $this->call(AiSeeder::class);             // historique assistant IA (démo)
+        $this->call(AcademySeeder::class);        // catégories + ressources Académie (à venir)
     }
 }

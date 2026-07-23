@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { Link, router, usePage } from '@inertiajs/react';
+import { useState } from 'react';
+import { Link, usePage } from '@inertiajs/react';
 import Sidebar from '@/Components/Sidebar';
 import BottomNav from '@/Components/BottomNav';
 import Dropdown from '@/Components/Dropdown';
@@ -7,80 +7,8 @@ import Icon from '@/Components/Icon';
 import Toast from '@/Components/Toast';
 import LanguageSwitcher from '@/Components/LanguageSwitcher';
 import NotificationBell from '@/Components/NotificationBell';
+import GlobalSearch from '@/Components/GlobalSearch';
 import { useTrans } from '@/i18n';
-
-/* ─── GlobalSearch ─────────────────────────────────────────────────────────── */
-const TYPE_ICONS = { project: '🏗️', client: '👤', invoice: '📄', quote: '📋', employee: '👷', contract: '📝' };
-
-function GlobalSearch() {
-    const [q, setQ] = useState('');
-    const [results, setResults] = useState([]);
-    const [open, setOpen] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const ref = useRef(null);
-    const timer = useRef(null);
-
-    useEffect(() => {
-        const handler = e => { if (!ref.current?.contains(e.target)) setOpen(false); };
-        document.addEventListener('mousedown', handler);
-        return () => document.removeEventListener('mousedown', handler);
-    }, []);
-
-    const search = val => {
-        setQ(val);
-        clearTimeout(timer.current);
-        if (val.length < 2) { setResults([]); setOpen(false); return; }
-        setLoading(true);
-        timer.current = setTimeout(async () => {
-            try {
-                const r = await fetch(route('search.index') + '?q=' + encodeURIComponent(val), {
-                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
-                });
-                const data = await r.json();
-                setResults(data.results ?? []);
-                setOpen(true);
-            } finally { setLoading(false); }
-        }, 280);
-    };
-
-    const go = url => { setOpen(false); setQ(''); router.visit(url); };
-
-    return (
-        <div ref={ref} className="relative hidden md:block">
-            <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 dark:bg-slate-800 dark:border-slate-700 px-3 py-1.5 w-56 lg:w-72">
-                <Icon name="search" className="h-4 w-4 text-slate-400 shrink-0" />
-                <input
-                    value={q}
-                    onChange={e => search(e.target.value)}
-                    onFocus={() => results.length > 0 && setOpen(true)}
-                    placeholder="Rechercher…"
-                    className="flex-1 bg-transparent text-sm outline-none text-slate-700 dark:text-slate-200 placeholder-slate-400"
-                />
-                {loading && <span className="animate-spin text-slate-400 text-xs">⟳</span>}
-            </div>
-
-            {open && results.length > 0 && (
-                <div className="absolute left-0 top-full mt-1 w-80 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-xl z-50 overflow-hidden">
-                    {results.map((r, i) => (
-                        <button key={i} onClick={() => go(r.url)}
-                            className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-                            <span className="text-lg">{TYPE_ICONS[r.type] ?? '📁'}</span>
-                            <span className="flex-1 min-w-0">
-                                <span className="block text-sm font-medium text-slate-800 dark:text-slate-200 truncate">{r.label}</span>
-                                {r.sub && <span className="block text-xs text-slate-400 truncate">{r.sub}</span>}
-                            </span>
-                        </button>
-                    ))}
-                </div>
-            )}
-            {open && results.length === 0 && q.length >= 2 && !loading && (
-                <div className="absolute left-0 top-full mt-1 w-80 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-xl z-50 p-4 text-center text-sm text-slate-400">
-                    Aucun résultat pour « {q} »
-                </div>
-            )}
-        </div>
-    );
-}
 
 export default function AppLayout({ header, title, breadcrumbs = [], children }) {
     const { auth, subscription } = usePage().props;
@@ -162,6 +90,13 @@ export default function AppLayout({ header, title, breadcrumbs = [], children })
                         </Dropdown>
                     </div>
                 </header>
+
+                {/* Bannière environnement de démonstration */}
+                {auth?.user?.company?.is_demo && (
+                    <div className="text-center text-xs font-bold py-2 px-4 text-white" style={{ background: '#ef4444' }}>
+                        🎭 {t('ENVIRONNEMENT DE DÉMONSTRATION — Les données sont fictives et réinitialisées régulièrement')}
+                    </div>
+                )}
 
                 {/* Bandeau abonnement grâce / expiration imminente */}
                 {subscription && (subscription.is_grace || (subscription.days_remaining <= 7 && subscription.status !== 'expired')) && (

@@ -68,6 +68,7 @@ use App\Http\Controllers\PaymentGatewayController;
 use App\Http\Controllers\WebhookPaymentController;
 use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboard;
 use App\Http\Controllers\SuperAdmin\ClientController as SuperAdminClientController;
+use App\Http\Controllers\SuperAdmin\BackupController as SuperAdminBackupController;
 use App\Http\Controllers\SuperAdmin\CustomOfferController as SuperAdminCustomOfferController;
 use App\Http\Controllers\SuperAdmin\ProspectController as SuperAdminProspectController;
 use App\Http\Controllers\SuperAdmin\SupportSessionController;
@@ -90,6 +91,7 @@ use App\Http\Controllers\DocumentVerifyController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\PreferencesController;
 use App\Http\Controllers\AcademyController;
+use App\Http\Controllers\SuperAdmin\AcademyController as SuperAdminAcademyController;
 use App\Http\Controllers\ChangelogController;
 use App\Http\Controllers\GlobalSearchController;
 use App\Models\LandingFaq;
@@ -243,10 +245,8 @@ Route::middleware(['auth', 'verified', 'subscription', 'two-factor'])->group(fun
     Route::put('/preferences', [PreferencesController::class, 'update'])->name('preferences.update');
 
     // --- Académie / Formation --------------------------------------------------
-    Route::prefix('academy')->name('academy.')->group(function () {
-        Route::get('/',           [AcademyController::class, 'index'])->name('index');
-        Route::get('/{category}', [AcademyController::class, 'show'])->name('category');
-    });
+    Route::get('/academy', [AcademyController::class, 'index'])->name('academy.index');
+    Route::post('/academy/resources/{resource}/progress', [AcademyController::class, 'markProgress'])->name('academy.progress');
 
     // --- Changelog / Versionnement --------------------------------------------
     Route::get('/changelog', [ChangelogController::class, 'index'])->name('changelog.index');
@@ -256,10 +256,14 @@ Route::middleware(['auth', 'verified', 'subscription', 'two-factor'])->group(fun
 
     // --- Import universel -------------------------------------------------------
     Route::prefix('import')->name('import.')->group(function () {
-        Route::get('/',           [ImportController::class, 'index'])->name('index');
-        Route::post('/preview',   [ImportController::class, 'preview'])->name('preview');
-        Route::post('/validate',  [ImportController::class, 'validateMapping'])->name('validate');
-        Route::post('/execute',   [ImportController::class, 'execute'])->name('execute');
+        Route::get('/',                      [ImportController::class, 'index'])->name('index');
+        Route::post('/preview',              [ImportController::class, 'preview'])->name('preview');
+        Route::post('/validate',             [ImportController::class, 'validateMapping'])->name('validate');
+        Route::post('/execute',              [ImportController::class, 'execute'])->name('execute');
+        // ── Flux simplifié (upload + mapping en une seule requête) ────────────
+        Route::post('/run',                  [ImportController::class, 'run'])->name('run');
+        // ── Téléchargement de modèle CSV ──────────────────────────────────────
+        Route::get('/template/{module}',     [ImportController::class, 'template'])->name('template');
         // ── 5 imports enrichis ────────────────────────────────────────────────
         Route::post('/projects',  [ImportController::class, 'projects'])->middleware('can:projects.create')->name('projects');
         Route::post('/quotes',    [ImportController::class, 'quotes'])->middleware('can:quotes.create')->name('quotes');
@@ -505,6 +509,24 @@ Route::middleware(['auth', 'verified', 'subscription', 'two-factor'])->group(fun
         // --- Configuration IA plateforme (SARA multi-fournisseur) --------------
         Route::get('/ai-setting',  [\App\Http\Controllers\SuperAdmin\AiSettingController::class, 'edit'])->name('superadmin.ai-setting.edit');
         Route::put('/ai-setting',  [\App\Http\Controllers\SuperAdmin\AiSettingController::class, 'update'])->name('superadmin.ai-setting.update');
+
+        // --- Journal d'utilisation IA & quotas SARA ----------------------------
+        Route::get('/ai-usage', [\App\Http\Controllers\SuperAdmin\AiUsageController::class, 'index'])->name('superadmin.ai-usage.index');
+
+        // --- Académie / Formation (CRUD contenu) --------------------------------
+        Route::post('/academy/{academy}/publish',        [SuperAdminAcademyController::class, 'publish'])->name('superadmin.academy.publish');
+        Route::resource('academy', SuperAdminAcademyController::class)->except(['show', 'create', 'edit'])->names([
+            'index'   => 'superadmin.academy.index',
+            'store'   => 'superadmin.academy.store',
+            'update'  => 'superadmin.academy.update',
+            'destroy' => 'superadmin.academy.destroy',
+        ]);
+
+        // --- Sauvegardes & Restauration ----------------------------------------
+        Route::get('/backups',                      [SuperAdminBackupController::class, 'index'])->name('superadmin.backups.index');
+        Route::post('/backups/run',                 [SuperAdminBackupController::class, 'run'])->name('superadmin.backups.run');
+        Route::get('/backups/{backup}/download',    [SuperAdminBackupController::class, 'download'])->name('superadmin.backups.download');
+        Route::delete('/backups/{backup}',          [SuperAdminBackupController::class, 'destroy'])->name('superadmin.backups.destroy');
     });
 
     // --- Guide utilisateur PDF (auth) --------------------------------------------------

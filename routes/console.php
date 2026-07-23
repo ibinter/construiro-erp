@@ -11,3 +11,5 @@ Artisan::command('inspire', function () {
 Schedule::command('construiro:trial-reminders')->dailyAt('08:00');
 Schedule::command('construiro:subscription-reminders')->dailyAt('08:00');
 Schedule::command('construiro:expire-payment-orders')->hourly();
+Schedule::command('construiro:backup --type=database')->dailyAt('02:00');
+Schedule::command('construiro:backup --type=full')->weeklyOn(0, '03:00'); // dimanche 3h

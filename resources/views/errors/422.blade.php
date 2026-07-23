@@ -1,0 +1,5 @@
+@extends('errors.layout')
+@section('code', '422')
+@section('title', 'Données invalides')
+@section('emoji', '⚠️')
+@section('message', 'Les informations soumises sont incorrectes ou incomplètes. Vérifiez les champs du formulaire et réessayez.')

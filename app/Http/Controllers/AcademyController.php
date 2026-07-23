@@ -2,95 +2,78 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\TrainingCategory;
+use App\Models\TrainingProgress;
+use App\Models\TrainingResource;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class AcademyController extends Controller
 {
-    private const CATALOG = [
-        [
-            'slug'        => 'demarrage',
-            'title_fr'    => 'Démarrage rapide',
-            'title_en'    => 'Quick Start',
-            'icon'        => '🚀',
-            'description' => 'Configurez CONSTRUIRO en moins de 30 minutes.',
-            'lessons'     => [
-                ['title' => 'Créer votre entreprise', 'duration' => '5 min', 'type' => 'video'],
-                ['title' => 'Ajouter vos premiers utilisateurs', 'duration' => '4 min', 'type' => 'video'],
-                ['title' => 'Paramétrer les modules', 'duration' => '6 min', 'type' => 'video'],
-                ['title' => 'Votre premier projet BTP', 'duration' => '8 min', 'type' => 'video'],
-            ],
-        ],
-        [
-            'slug'        => 'projets',
-            'title_fr'    => 'Gestion de projets',
-            'title_en'    => 'Project Management',
-            'icon'        => '🏗️',
-            'description' => 'Maîtrisez le suivi de chantiers, plannings et budgets.',
-            'lessons'     => [
-                ['title' => 'Créer et configurer un projet', 'duration' => '7 min', 'type' => 'video'],
-                ['title' => 'Planning Gantt & jalons', 'duration' => '10 min', 'type' => 'video'],
-                ['title' => 'Suivi budgétaire en temps réel', 'duration' => '8 min', 'type' => 'video'],
-                ['title' => 'Rapports d\'avancement', 'duration' => '6 min', 'type' => 'video'],
-            ],
-        ],
-        [
-            'slug'        => 'facturation',
-            'title_fr'    => 'Facturation & devis',
-            'title_en'    => 'Invoicing & Quotes',
-            'icon'        => '📄',
-            'description' => 'Créez des devis professionnels et gérez vos factures.',
-            'lessons'     => [
-                ['title' => 'Créer un devis avec QR code', 'duration' => '6 min', 'type' => 'video'],
-                ['title' => 'Convertir un devis en facture', 'duration' => '4 min', 'type' => 'video'],
-                ['title' => 'Suivi des paiements', 'duration' => '5 min', 'type' => 'video'],
-                ['title' => 'Relances automatiques', 'duration' => '5 min', 'type' => 'video'],
-            ],
-        ],
-        [
-            'slug'        => 'rh',
-            'title_fr'    => 'Ressources humaines',
-            'title_en'    => 'Human Resources',
-            'icon'        => '👷',
-            'description' => 'Gérez vos équipes, contrats et paie.',
-            'lessons'     => [
-                ['title' => 'Ajouter un employé', 'duration' => '5 min', 'type' => 'video'],
-                ['title' => 'Gérer les présences', 'duration' => '6 min', 'type' => 'video'],
-                ['title' => 'Générer les fiches de paie', 'duration' => '7 min', 'type' => 'video'],
-                ['title' => 'Contrats et avenants', 'duration' => '5 min', 'type' => 'video'],
-            ],
-        ],
-        [
-            'slug'        => 'ia',
-            'title_fr'    => 'Assistant IA SARA',
-            'title_en'    => 'AI Assistant SARA',
-            'icon'        => '🤖',
-            'description' => 'Exploitez SARA pour analyser vos données et générer des rapports.',
-            'lessons'     => [
-                ['title' => 'Présentation de SARA', 'duration' => '3 min', 'type' => 'video'],
-                ['title' => 'Analyser vos finances avec SARA', 'duration' => '8 min', 'type' => 'video'],
-                ['title' => 'Générer un rapport de chantier', 'duration' => '6 min', 'type' => 'video'],
-                ['title' => 'Questions & réponses avancées', 'duration' => '7 min', 'type' => 'video'],
-            ],
-        ],
-    ];
-
-    public function index(): Response
+    /**
+     * GET /academy
+     * Page principale : catégories + ressources publiées + progression utilisateur.
+     */
+    public function index(Request $request): Response
     {
+        $categories = TrainingCategory::active()
+            ->with([
+                'resources' => fn ($q) => $q->orderBy('sort_order'),
+            ])
+            ->orderBy('sort_order')
+            ->get();
+
+        $userProgress = auth()->check()
+            ? TrainingProgress::where('user_id', auth()->id())
+                ->pluck('resource_id')
+                ->toArray()
+            : [];
+
+        $mappedCategories = $categories->map(function ($cat) {
+            return [
+                'id'         => $cat->id,
+                'slug'       => $cat->slug,
+                'name_fr'    => $cat->name_fr,
+                'name_en'    => $cat->name_en,
+                'icon'       => $cat->icon,
+                'color'      => $cat->color,
+                'sort_order' => $cat->sort_order,
+                'resources'  => $cat->resources->map(fn ($r) => [
+                    'id'               => $r->id,
+                    'type'             => $r->type,
+                    'title_fr'         => $r->title_fr,
+                    'title_en'         => $r->title_en,
+                    'description_fr'   => $r->description_fr,
+                    'duration_minutes' => $r->duration_minutes,
+                    'level'            => $r->level,
+                    'is_published'     => $r->is_published,
+                    'sort_order'       => $r->sort_order,
+                    'view_count'       => $r->view_count,
+                ]),
+            ];
+        });
+
         return Inertia::render('Academy/Index', [
-            'categories' => self::CATALOG,
+            'categories'    => $mappedCategories,
+            'completed_ids' => $userProgress,
         ]);
     }
 
-    public function show(string $category): Response
+    /**
+     * POST /academy/resources/{resource}/progress
+     * Marquer une ressource comme vue / complétée.
+     */
+    public function markProgress(Request $request, TrainingResource $resource): JsonResponse
     {
-        $cat = collect(self::CATALOG)->firstWhere('slug', $category);
+        TrainingProgress::updateOrCreate(
+            ['user_id' => auth()->id(), 'resource_id' => $resource->id],
+            ['completed' => $request->boolean('completed'), 'last_viewed_at' => now()]
+        );
 
-        abort_if(!$cat, 404);
+        $resource->increment('view_count');
 
-        return Inertia::render('Academy/Category', [
-            'category' => $cat,
-        ]);
+        return response()->json(['ok' => true]);
     }
 }

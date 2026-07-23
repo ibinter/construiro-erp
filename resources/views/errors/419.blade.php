@@ -1,9 +1,10 @@
 @extends('errors.layout')
 @section('code', '419')
 @section('title', 'Session expirée')
-@section('message', 'Votre session a expiré pour des raisons de sécurité. Veuillez recharger la page et réessayer.')
+@section('emoji', '⏱️')
+@section('message', 'Votre session a expiré pour des raisons de sécurité. Rechargez la page et recommencez votre action.')
 @section('extra')
-<div style="margin-top:1rem">
-    <a href="{{ url()->previous() }}" class="btn btn-primary" onclick="window.location.reload(); return false;">↺ Recharger la page</a>
+<div style="margin-bottom:1.5rem">
+    <a href="javascript:window.location.reload()" class="btn btn-primary">↺ Recharger la page</a>
 </div>
 @endsection

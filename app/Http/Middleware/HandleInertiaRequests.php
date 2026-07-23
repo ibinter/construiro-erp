@@ -46,7 +46,10 @@ class HandleInertiaRequests extends Middleware
                     'job_title' => $user->job_title,
                     'locale'      => $user->locale,
                     'preferences' => $user->preferences ?? (object)[],
-                    'company'     => $user->company?->only(['id', 'name', 'base_currency']),
+                    'company'     => $user->company ? array_merge(
+                        $user->company->only(['id', 'name', 'base_currency']),
+                        ['is_demo' => (bool) $user->company->is_demo]
+                    ) : null,
                     'roles'       => $user->getRoleNames(),
                 ] : null,
                 'portal'     => $user ? Navigation::portal($user, $locale) : null,

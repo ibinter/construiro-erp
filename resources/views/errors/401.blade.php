@@ -1,0 +1,5 @@
+@extends('errors.layout')
+@section('code', '401')
+@section('title', 'Authentification requise')
+@section('emoji', '🔐')
+@section('message', 'Vous devez être connecté pour accéder à cette page. Veuillez vous connecter et réessayer.')

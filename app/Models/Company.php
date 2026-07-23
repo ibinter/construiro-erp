@@ -20,10 +20,12 @@ class Company extends Model
         'logo_path', 'base_currency', 'locale', 'timezone', 'is_active', 'settings',
         'enabled_modules', 'onboarding_completed_at',
         'status', 'suspended_at', 'suspension_reason',
+        'is_demo',
     ];
 
     protected $casts = [
         'is_active'               => 'boolean',
+        'is_demo'                 => 'boolean',
         'settings'                => 'array',
         'enabled_modules'         => 'array',
         'onboarding_completed_at' => 'datetime',

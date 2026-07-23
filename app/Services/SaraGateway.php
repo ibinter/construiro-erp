@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\AiSetting;
+use App\Models\AiUsageLog;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -33,28 +34,83 @@ class SaraGateway
      * @param  array<int, array{role: string, content: string}>  $messages
      *         Messages conversation (sans le system prompt).
      * @param  string|null  $systemPrompt  Instruction système à injecter.
+     * @param  string|null  $context       Contexte d'appel : public, internal, support.
      */
-    public function chat(array $messages, ?string $systemPrompt = null): string
+    public function chat(array $messages, ?string $systemPrompt = null, ?string $context = null): string
     {
         if (! $this->config->sara_enabled) {
             return 'SARA est temporairement désactivée.';
         }
 
-        return match ($this->config->provider) {
-            AiSetting::PROVIDER_GROQ      => $this->callGroq($messages, $systemPrompt),
-            AiSetting::PROVIDER_OPENAI    => $this->callOpenAI($messages, $systemPrompt),
-            AiSetting::PROVIDER_ANTHROPIC => $this->callAnthropic($messages, $systemPrompt),
-            AiSetting::PROVIDER_GOOGLE    => $this->callGoogle($messages, $systemPrompt),
-            AiSetting::PROVIDER_MISTRAL   => $this->callMistral($messages, $systemPrompt),
-            // Grok (xAI) : endpoint OpenAI-compatible
-            AiSetting::PROVIDER_GROK      => $this->callOpenAICompatible(
-                $messages, $systemPrompt,
-                $this->apiKey('GROK_API_KEY'),
-                'https://api.x.ai/v1/chat/completions',
-                $this->config->model ?? 'grok-2-latest',
-            ),
-            default => $this->callGroq($messages, $systemPrompt),
-        };
+        // --- Vérification du quota journalier par société ----------------------
+        $companyId = auth()->user()?->company_id;
+
+        if ($companyId !== null) {
+            $dailyLimit = $this->config->getConfigValue('daily_limit_per_company');
+
+            if ($dailyLimit !== null && (int) $dailyLimit > 0) {
+                $todayCount = AiUsageLog::todayCountForCompany((int) $companyId);
+
+                if ($todayCount >= (int) $dailyLimit) {
+                    return 'Quota journalier atteint. Veuillez réessayer demain ou contacter support@ibigsoft.com.';
+                }
+            }
+        }
+
+        // --- Appel fournisseur avec mesure du temps ----------------------------
+        $startTime    = microtime(true);
+        $errorMessage = null;
+        $success      = true;
+
+        try {
+            $response = match ($this->config->provider) {
+                AiSetting::PROVIDER_GROQ      => $this->callGroq($messages, $systemPrompt),
+                AiSetting::PROVIDER_OPENAI    => $this->callOpenAI($messages, $systemPrompt),
+                AiSetting::PROVIDER_ANTHROPIC => $this->callAnthropic($messages, $systemPrompt),
+                AiSetting::PROVIDER_GOOGLE    => $this->callGoogle($messages, $systemPrompt),
+                AiSetting::PROVIDER_MISTRAL   => $this->callMistral($messages, $systemPrompt),
+                // Grok (xAI) : endpoint OpenAI-compatible
+                AiSetting::PROVIDER_GROK      => $this->callOpenAICompatible(
+                    $messages, $systemPrompt,
+                    $this->apiKey('GROK_API_KEY'),
+                    'https://api.x.ai/v1/chat/completions',
+                    $this->config->model ?? 'grok-2-latest',
+                ),
+                default => $this->callGroq($messages, $systemPrompt),
+            };
+        } catch (\Throwable $e) {
+            $success      = false;
+            $errorMessage = substr($e->getMessage(), 0, 500);
+            $response     = 'Je rencontre une difficulté technique. Contactez-nous : contact@ibigsoft.com';
+        }
+
+        $responseTime = (int) ((microtime(true) - $startTime) * 1000);
+
+        // --- Journal d'utilisation ---------------------------------------------
+        // Approximation : 4 caractères ≈ 1 token (heuristique universelle)
+        $inputTokens  = (int) (strlen(json_encode($messages)) / 4);
+        $outputTokens = (int) (strlen($response) / 4);
+
+        try {
+            AiUsageLog::create([
+                'company_id'       => $companyId,
+                'user_id'          => auth()->id(),
+                'context'          => $context ?? 'internal',
+                'provider'         => $this->config->provider ?? 'groq',
+                'model'            => $this->config->model ?? 'llama-3.1-8b-instant',
+                'input_tokens'     => $inputTokens,
+                'output_tokens'    => $outputTokens,
+                'total_tokens'     => $inputTokens + $outputTokens,
+                'response_time_ms' => $responseTime,
+                'success'          => $success,
+                'error_message'    => $errorMessage,
+            ]);
+        } catch (\Throwable $e) {
+            // Ne jamais bloquer l'utilisateur à cause du journal
+            Log::warning('SaraGateway: impossible d'enregistrer le log IA', ['error' => $e->getMessage()]);
+        }
+
+        return $response;
     }
 
     public function isEnabled(): bool

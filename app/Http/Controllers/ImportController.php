@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ImportLog;
+use App\Services\ImportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -21,6 +23,8 @@ use Inertia\Response;
  */
 class ImportController extends Controller
 {
+    public function __construct(private ImportService $importService) {}
+
     /** Types d'entités importables et leur configuration */
     public const IMPORTABLE_TYPES = [
         'clients' => [
@@ -169,13 +173,38 @@ class ImportController extends Controller
 
     public function index(): Response
     {
+        $types = collect(self::IMPORTABLE_TYPES)->map(fn ($cfg, $key) => [
+            'key'           => $key,
+            'label'         => $cfg['label'],
+            'execute_route' => $cfg['execute_route'] ?? 'import.execute',
+            'columns'       => collect($cfg['columns'])->map(fn ($col) => $col['label'])->values(),
+            'column_keys'   => array_keys($cfg['columns']),
+        ])->values();
+
+        $logs = [];
+        if (auth()->check() && auth()->user()->company_id) {
+            $logs = ImportLog::where('company_id', auth()->user()->company_id)
+                ->orderByDesc('created_at')
+                ->limit(10)
+                ->get()
+                ->map(fn ($l) => [
+                    'id'         => $l->id,
+                    'module'     => $l->module,
+                    'filename'   => $l->filename,
+                    'status'     => $l->status,
+                    'total'      => $l->total_rows,
+                    'imported'   => $l->imported_rows,
+                    'skipped'    => $l->skipped_rows,
+                    'errors'     => $l->error_rows,
+                    'created_at' => $l->created_at->format('d/m/Y H:i'),
+                ])
+                ->toArray();
+        }
+
         return Inertia::render('Import/Index', [
-            'types' => collect(self::IMPORTABLE_TYPES)->map(fn ($cfg, $key) => [
-                'key'           => $key,
-                'label'         => $cfg['label'],
-                'execute_route' => $cfg['execute_route'] ?? 'import.execute',
-                'columns'       => collect($cfg['columns'])->map(fn ($col) => $col['label'])->values(),
-            ])->values(),
+            'types'   => $types,
+            'modules' => $types, // alias — même données, utilisé par le flux /run
+            'logs'    => $logs,
         ]);
     }
 
@@ -330,6 +359,141 @@ class ImportController extends Controller
 
         return redirect()->route('import.index')
             ->with('success', "Import terminé — {$inserted} créés, {$skipped} doublons ignorés, {$failed} erreurs.");
+    }
+
+    // ── run() : flux simplifié upload → ImportLog → import ──────────────────
+
+    /**
+     * POST /import/run
+     *
+     * Flux stateless : reçoit le fichier + module + mapping en une seule requête.
+     * Crée un ImportLog, parse, valide, insère, puis retourne un rapport.
+     */
+    public function run(Request $request): RedirectResponse
+    {
+        $moduleKeys = implode(',', array_keys(self::IMPORTABLE_TYPES));
+
+        $request->validate([
+            'file'    => 'required|file|max:10240|mimes:csv,txt,xlsx,xls',
+            'module'  => "required|in:{$moduleKeys}",
+            'mapping' => 'required|array',
+        ]);
+
+        $user   = $request->user();
+        $module = $request->module;
+        $cfg    = self::IMPORTABLE_TYPES[$module];
+
+        $log = ImportLog::create([
+            'company_id'     => $user->company_id,
+            'user_id'        => $user->id,
+            'module'         => $module,
+            'filename'       => $request->file('file')->getClientOriginalName(),
+            'status'         => 'processing',
+            'column_mapping' => $request->mapping,
+        ]);
+
+        try {
+            // Parse
+            $data    = $this->importService->parseFile($request->file('file'));
+            $mapping = $request->mapping; // ['fileCol' => 'dbCol']
+
+            // Appliquer le mapping
+            $mapped = $this->importService->applyMapping($data['rows'], $mapping);
+
+            // Construire les règles de validation depuis la config du module
+            $rules = [];
+            foreach ($cfg['columns'] as $field => $colCfg) {
+                $r   = [];
+                $r[] = ($colCfg['required'] ?? false) ? 'required' : 'nullable';
+                if (isset($colCfg['rule'])) {
+                    $r[] = $colCfg['rule'];
+                } else {
+                    $r[] = 'string';
+                    $r[] = 'max:255';
+                }
+                $rules[$field] = implode('|', $r);
+            }
+
+            $validated = $this->importService->validateRows($mapped, $rules);
+
+            // Insertion par lots
+            $modelClass = $cfg['model'];
+            $imported   = 0;
+            $skipped    = 0;
+
+            DB::beginTransaction();
+            $uniqueOn = $cfg['unique_on'] ?? null;
+            foreach (array_chunk($validated['valid'], 100) as $chunk) {
+                foreach ($chunk as $row) {
+                    $row['company_id'] = $user->company_id;
+
+                    // Dédoublonnage
+                    if ($uniqueOn && !empty($row[$uniqueOn])) {
+                        $exists = $modelClass::where('company_id', $user->company_id)
+                            ->where($uniqueOn, $row[$uniqueOn])
+                            ->exists();
+                        if ($exists) {
+                            $skipped++;
+                            continue;
+                        }
+                    }
+
+                    $modelClass::create($row);
+                    $imported++;
+                }
+            }
+            DB::commit();
+
+            $log->update([
+                'status'        => 'completed',
+                'total_rows'    => count($data['rows']),
+                'imported_rows' => $imported,
+                'skipped_rows'  => $skipped,
+                'error_rows'    => count($validated['errors']),
+                'errors'        => $validated['errors'],
+            ]);
+
+            $msg = "{$imported} ligne(s) importée(s)";
+            if ($skipped > 0) {
+                $msg .= ", {$skipped} doublon(s) ignoré(s)";
+            }
+            if (count($validated['errors']) > 0) {
+                $msg .= ', ' . count($validated['errors']) . ' erreur(s)';
+            }
+
+            return redirect()->route('import.index')->with('success', $msg . '.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            $log->update([
+                'status' => 'failed',
+                'errors' => [['message' => $e->getMessage()]],
+            ]);
+
+            return back()->withErrors(['file' => "Erreur lors de l'import : " . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * GET /import/template/{module}
+     *
+     * Télécharge un modèle CSV (avec BOM UTF-8) pour le module demandé.
+     */
+    public function template(string $module): \Symfony\Component\HttpFoundation\StreamedResponse
+    {
+        abort_unless(isset(self::IMPORTABLE_TYPES[$module]), 404);
+
+        $columns = array_keys(self::IMPORTABLE_TYPES[$module]['columns']);
+        $label   = self::IMPORTABLE_TYPES[$module]['label'];
+
+        return response()->streamDownload(function () use ($columns) {
+            $h = fopen('php://output', 'w');
+            // BOM UTF-8 pour compatibilité Excel
+            fprintf($h, chr(0xEF) . chr(0xBB) . chr(0xBF));
+            fputcsv($h, $columns, ';');
+            // Ligne exemple vide
+            fputcsv($h, array_fill(0, count($columns), ''), ';');
+            fclose($h);
+        }, "modele-import-{$module}.csv", ['Content-Type' => 'text/csv; charset=UTF-8']);
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────

@@ -1,4 +1,5 @@
 @extends('errors.layout')
 @section('code', '500')
-@section('title', 'Erreur serveur')
-@section('message', 'Une erreur interne s\'est produite. Notre équipe a été notifiée automatiquement. Réessayez dans quelques instants.')
+@section('title', 'Erreur interne du serveur')
+@section('emoji', '⚡')
+@section('message', 'Une erreur inattendue s\'est produite. Notre équipe technique a été notifiée. Réessayez dans quelques instants.')

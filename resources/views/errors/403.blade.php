@@ -1,4 +1,5 @@
 @extends('errors.layout')
 @section('code', '403')
 @section('title', 'Accès refusé')
-@section('message', 'Vous n\'avez pas les permissions nécessaires pour accéder à cette ressource. Si vous pensez qu\'il s\'agit d\'une erreur, contactez votre administrateur.')
+@section('emoji', '🚫')
+@section('message', 'Vous n\'avez pas les droits nécessaires pour accéder à cette ressource. Contactez votre administrateur si vous pensez que c\'est une erreur.')
