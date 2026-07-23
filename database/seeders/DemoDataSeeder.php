@@ -43,7 +43,11 @@ class DemoDataSeeder extends Seeder
             ]
         );
         if (method_exists($adminUser, 'syncRoles')) {
-            $adminUser->syncRoles(['admin']);
+            try {
+                $adminUser->syncRoles(['direction_generale']);
+            } catch (\Throwable) {
+                // Rôles pas encore seedés — ignorer
+            }
         }
 
         // Abonnement démo actif
