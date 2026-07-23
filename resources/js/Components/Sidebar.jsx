@@ -19,6 +19,11 @@ const SUPERADMIN_NAV = [
     { key: 'sa-prospects',        label: 'Prospects / Démos',     icon: 'user-plus',        route: '/superadmin/prospects' },
     { key: 'sa-payment-config',   label: 'Méthodes de paiement',  icon: 'credit-card',      route: '/superadmin/payment-config' },
     { key: 'sa-payment-orders',   label: 'Ordres de paiement',    icon: 'file-text',        route: '/superadmin/payment-orders' },
+    { key: 'sa-vouchers',         label: 'Vouchers prépayés',     icon: 'ticket',           route: '/superadmin/vouchers' },
+    { key: 'sa-academy',          label: 'Académie — Contenu',    icon: 'book-open',        route: '/superadmin/academy' },
+    { key: 'sa-ai-setting',       label: 'Configuration IA',      icon: 'cpu',              route: '/superadmin/ai-setting' },
+    { key: 'sa-ai-usage',         label: 'Journal IA',            icon: 'activity',         route: '/superadmin/ai-usage' },
+    { key: 'sa-backups',          label: 'Sauvegardes',           icon: 'database',         route: '/superadmin/backups' },
 ];
 
 /**
@@ -100,6 +105,9 @@ export default function Sidebar({ open = false, onClose }) {
                                 : null;
                             return (
                                 <li key={item.key}>
+                                    {item.key === 'sa-backups' && (
+                                        <div className="mt-3 px-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">Infrastructure</div>
+                                    )}
                                     <Link
                                         href={item.route}
                                         onClick={onClose}

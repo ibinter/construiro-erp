@@ -74,6 +74,8 @@ class Navigation
             'reports'           => '/reports',
             'ai'                => '/ai',
             'administration' => '/admin/users',
+            'academy'        => '/academy',
+            'import'         => '/import',
         ];
 
         foreach ($groups as $groupKey => $groupLabels) {

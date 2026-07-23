@@ -136,6 +136,10 @@ return [
         'reports'          => ['group' => 'transverse','icon' => 'bar-chart-3',    'name' => ['fr' => 'Rapports & BI',          'en' => 'Reports & BI']],
         'ai'               => ['group' => 'transverse','icon' => 'sparkles',       'name' => ['fr' => 'Intelligence Artificielle','en' => 'Artificial Intelligence']],
         'administration'   => ['group' => 'transverse','icon' => 'settings',       'name' => ['fr' => 'Administration',         'en' => 'Administration']],
+
+        // Outils transverses (accessibles à tous les utilisateurs authentifiés)
+        'academy'          => ['group' => 'outils',   'icon' => 'book-open',      'actions' => ['view'], 'name' => ['fr' => 'Académie',               'en' => 'Academy']],
+        'import'           => ['group' => 'outils',   'icon' => 'upload',         'actions' => ['view', 'create'], 'name' => ['fr' => 'Import de données', 'en' => 'Data Import']],
     ],
 
     /*
@@ -153,5 +157,6 @@ return [
         'finance'    => ['fr' => 'Finances',            'en' => 'Finance'],
         'qhse'       => ['fr' => 'QHSE & Qualité',      'en' => 'HSE & Quality'],
         'transverse' => ['fr' => 'Transverse',          'en' => 'Cross-functional'],
+        'outils'     => ['fr' => 'Outils & Ressources', 'en' => 'Tools & Resources'],
     ],
 ];
