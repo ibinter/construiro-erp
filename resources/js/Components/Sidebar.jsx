@@ -24,6 +24,7 @@ const SUPERADMIN_NAV = [
     { key: 'sa-ai-setting',       label: 'Configuration IA',      icon: 'cpu',              route: '/superadmin/ai-setting' },
     { key: 'sa-ai-usage',         label: 'Journal IA',            icon: 'activity',         route: '/superadmin/ai-usage' },
     { key: 'sa-backups',          label: 'Sauvegardes',           icon: 'database',         route: '/superadmin/backups' },
+    { key: 'sa-recette',          label: 'Checklist Recette §38', icon: 'clipboard-check',  route: '/superadmin/recette' },
 ];
 
 /**

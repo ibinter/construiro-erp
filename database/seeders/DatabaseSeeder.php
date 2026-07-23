@@ -133,5 +133,6 @@ class DatabaseSeeder extends Seeder
         $this->call(DocsLabSeeder::class);        // essais labo + documents + signatures
         $this->call(AiSeeder::class);             // historique assistant IA (démo)
         $this->call(AcademySeeder::class);        // catégories + ressources Académie (à venir)
+        $this->call(PracticalCasesSeeder::class); // §12.2 cas pratiques guidés (is_published=true)
     }
 }

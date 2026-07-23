@@ -527,6 +527,9 @@ Route::middleware(['auth', 'verified', 'subscription', 'two-factor'])->group(fun
         Route::post('/backups/run',                 [SuperAdminBackupController::class, 'run'])->name('superadmin.backups.run');
         Route::get('/backups/{backup}/download',    [SuperAdminBackupController::class, 'download'])->name('superadmin.backups.download');
         Route::delete('/backups/{backup}',          [SuperAdminBackupController::class, 'destroy'])->name('superadmin.backups.destroy');
+
+        // --- §38 Checklist Recette formelle ------------------------------------
+        Route::get('/recette', fn () => \Inertia\Inertia::render('SuperAdmin/Recette/Index'))->name('superadmin.recette');
     });
 
     // --- Guide utilisateur PDF (auth) --------------------------------------------------

@@ -90,6 +90,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['diag'])) {
     } elseif ($diag === 'seed-faq') {
         // Initialise les 190 entrées FAQ (idempotent via updateOrCreate)
         echo shell_exec("cd $dir && php artisan db:seed --class='Database\\Seeders\\LandingFaqSeeder' --force 2>&1");
+    } elseif ($diag === 'seed-practical-cases') {
+        // §12.2 Cas pratiques Académie (is_published=true, type=document)
+        echo shell_exec("cd $dir && php artisan db:seed --class='Database\\Seeders\\PracticalCasesSeeder' --force 2>&1");
     } elseif ($diag === 'make-superadmin') {
         // Assigne super_admin à un utilisateur via son email : ?diag=make-superadmin&email=xxx
         $email = $_GET['email'] ?? '';
