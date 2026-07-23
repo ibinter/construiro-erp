@@ -152,17 +152,6 @@ const STATUT_LABEL_FR = { disponible: 'Disponible', integration: 'En intégratio
 const statutColor = { disponible: '#22c55e', integration: BRAND, bientot: '#94a3b8' };
 
 /* ── Autres logiciels IBIG Soft ─────────────────────────────── */
-const AUTRES_LOGICIELS = [
-    { nom: 'SCOLABY ERP',    secteur: 'Éducation',       emoji: '🎓', couleur: '#6366f1' },
-    { nom: 'ANOUANZE ERP',   secteur: 'Associations',    emoji: '🤝', couleur: '#3b82f6' },
-    { nom: 'SANTAREX ERP',   secteur: 'Santé',           emoji: '🏥', couleur: '#10b981' },
-    { nom: 'GESTMONEY',      secteur: 'Finance',         emoji: '💰', couleur: '#f59e0b' },
-    { nom: 'AGRIFRIK',       secteur: 'Agriculture',     emoji: '🌾', couleur: '#84cc16' },
-    { nom: 'LOKATIVO',       secteur: 'Immobilier',      emoji: '🏘️',  couleur: '#ec4899' },
-    { nom: 'STOCKFLOW',      secteur: 'Logistique',      emoji: '📦', couleur: '#8b5cf6' },
-    { nom: 'IBIG FLEET 360', secteur: 'Transport',       emoji: '🚚', couleur: '#0ea5e9' },
-    { nom: 'ZELIVRY',        secteur: 'Livraison',       emoji: '⚡', couleur: BRAND },
-];
 
 /* ── Format XOF ─────────────────────────────────────────────── */
 function formatXOF(amount) {
@@ -906,6 +895,22 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
             deferredPrompt.userChoice.then(() => setDeferredPrompt(null));
         }
     };
+
+    /* Script universel IBIG SOFT — carrousel solutions + footer cross-produits */
+    useEffect(() => {
+        if (typeof window === 'undefined' || window.IBIGSOFT) return;
+        const script = document.createElement('script');
+        script.src = '/js/ibigsoft-universal.js';
+        script.setAttribute('data-solution', 'construiro');
+        script.setAttribute('data-accent', '#F58220');
+        script.setAttribute('data-render', 'all');
+        script.setAttribute('data-masquer-courante', 'false');
+        script.setAttribute('data-speed', '45');
+        document.body.appendChild(script);
+        return () => {
+            if (document.body.contains(script)) document.body.removeChild(script);
+        };
+    }, []);
 
     useEffect(() => {
         if (mobileMenuOpen) {
@@ -1821,44 +1826,9 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                     </div>
                 </section>
 
-                {/* ── AUTRES LOGICIELS IBIG SOFT ──────────────────── */}
-                <section className="py-20 bg-white overflow-hidden">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="text-center mb-12">
-                            <p className="text-sm font-bold tracking-widest uppercase mb-3" style={{ color: BRAND }}>{t('Écosystème IBIG Soft')}</p>
-                            <h2 className="text-3xl sm:text-4xl font-black mb-4" style={{ color: NAVY }}>{t('Découvrez les autres solutions IBIG Soft')}</h2>
-                            <p className="text-gray-500 max-w-xl mx-auto">{t('IBIG Soft édite plusieurs logiciels de gestion pour différents secteurs en Afrique.')}</p>
-                        </div>
-                    </div>
-                    {/* Marquee défilant */}
-                    <div className="relative" style={{ maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)', WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' }}>
-                        <style>{`
-                            @keyframes marquee-ibig { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-                            .marquee-ibig { display: flex; animation: marquee-ibig 30s linear infinite; width: max-content; }
-                            .marquee-ibig:hover { animation-play-state: paused; }
-                        `}</style>
-                        <div className="marquee-ibig gap-5 py-2">
-                            {[...AUTRES_LOGICIELS, ...AUTRES_LOGICIELS].map((l, i) => (
-                                <div key={i}
-                                    className="flex items-center gap-3 px-6 py-4 rounded-2xl border border-gray-100 bg-white hover:shadow-lg transition-all flex-shrink-0"
-                                    style={{ minWidth: 220, borderLeft: `4px solid ${l.couleur}` }}>
-                                    <span className="text-3xl">{l.emoji}</span>
-                                    <div>
-                                        <div className="font-black text-sm" style={{ color: NAVY }}>{l.nom}</div>
-                                        <div className="text-xs font-semibold uppercase tracking-wider" style={{ color: l.couleur }}>{t(l.secteur)}</div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="text-center mt-10">
-                        <a href="https://ibigsoft.com" target="_blank" rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 text-sm font-bold transition hover:opacity-75"
-                            style={{ color: BRAND }}>
-                            {t('Voir toutes les solutions IBIG Soft →')}
-                        </a>
-                    </div>
-                </section>
+                {/* ── ÉCOSYSTÈME IBIG SOFT — Script universel ──────── */}
+                {/* Carrousel injecté par ibigsoft-universal.js via useEffect */}
+                <div data-ibig="solutions" id="ibigsoft-solutions-mount"></div>
 
                 {/* ── FAQ ─────────────────────────────────────────── */}
                 {faqs.length > 0 && (
@@ -2093,6 +2063,10 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                 </footer>
 
             </div>
+
+            {/* ── FOOTER UNIVERSEL IBIG SOFT ───────────────────── */}
+            {/* Footer cross-produits injecté par ibigsoft-universal.js */}
+            <div data-ibig="footer" id="ibigsoft-footer-mount"></div>
 
             {/* ── FLOTTANTS ────────────────────────────────────── */}
             <SaraFloating />
