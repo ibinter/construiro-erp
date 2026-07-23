@@ -18,16 +18,17 @@ class DemoDataSeeder extends Seeder
 
         // Société de démo : CONSTRUIRO DEMO
         $company = Company::updateOrCreate(
-            ['name' => 'CONSTRUIRO DEMO'],
+            ['slug' => 'construiro-demo'],
             [
-                'is_demo'    => true,
-                'country'    => 'CI',
-                'city'       => 'Abidjan',
+                'name'          => 'CONSTRUIRO DEMO',
+                'is_demo'       => true,
+                'country'       => 'CI',
+                'city'          => 'Abidjan',
                 'base_currency' => 'XOF',
-                'phone'      => '+225 07 00 00 00 00',
-                'email'      => 'demo@construiro.com',
-                'address'    => 'Plateau, Abidjan, Côte d\'Ivoire',
-                'is_active'  => true,
+                'phone'         => '+225 07 00 00 00 00',
+                'email'         => 'demo@construiro.com',
+                'address'       => 'Plateau, Abidjan, Côte d\'Ivoire',
+                'is_active'     => true,
             ]
         );
 
