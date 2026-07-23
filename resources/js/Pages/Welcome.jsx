@@ -903,7 +903,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
         script.src = '/js/ibigsoft-universal.js';
         script.setAttribute('data-solution', 'construiro');
         script.setAttribute('data-accent', '#F58220');
-        script.setAttribute('data-render', 'all');
+        script.setAttribute('data-render', 'solutions');
         script.setAttribute('data-masquer-courante', 'false');
         script.setAttribute('data-speed', '45');
         document.body.appendChild(script);
@@ -1905,7 +1905,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
 
-                            {/* Col 1 — CONSTRUIRO (identité) */}
+                            {/* Col 1 — CONSTRUIRO (identité + réseaux) */}
                             <div>
                                 <ConstruiroLogo size="sm" dark />
                                 <p className="text-sm text-slate-400 mt-4 leading-relaxed">
@@ -1917,6 +1917,29 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                     className="text-xs mt-1 inline-block transition hover:text-[#F58220]" style={{ color: BRAND }}>
                                     ibigsoft.com →
                                 </a>
+                                {/* Réseaux sociaux */}
+                                <div className="flex flex-wrap gap-2 mt-5">
+                                    {[
+                                        { label: 'Facebook',         url: 'https://www.facebook.com/ibigsoft',                             path: 'M14 8h2V5h-2a4 4 0 0 0-4 4v2H8v3h2v7h3v-7h2.2l.8-3H13V9a1 1 0 0 1 1-1Z' },
+                                        { label: 'LinkedIn',         url: 'https://www.linkedin.com/company/ibigsoft/',                    path: 'M6.5 8A1.75 1.75 0 1 0 6.5 4.5 1.75 1.75 0 0 0 6.5 8ZM5 9.5h3V20H5V9.5Zm5 0h2.9v1.4A3.3 3.3 0 0 1 16 9.3c2.4 0 3.9 1.5 3.9 4.3V20h-3v-5.7c0-1.4-.6-2.2-1.8-2.2s-2 .8-2 2.2V20h-3V9.5Z' },
+                                        { label: 'YouTube',          url: 'https://www.youtube.com/@IBIGSOFT',                             path: 'M21.6 8.2a2.5 2.5 0 0 0-1.7-1.8C18.3 6 12 6 12 6s-6.3 0-7.9.4A2.5 2.5 0 0 0 2.4 8.2 26 26 0 0 0 2 12c0 1.3.1 2.6.4 3.8a2.5 2.5 0 0 0 1.7 1.8C5.7 18 12 18 12 18s6.3 0 7.9-.4a2.5 2.5 0 0 0 1.7-1.8c.3-1.2.4-2.5.4-3.8s-.1-2.6-.4-3.8ZM10 15V9l5.2 3L10 15Z' },
+                                        { label: 'TikTok',           url: 'https://www.tiktok.com/@ibigsoft',                              path: 'M14 3h3a5 5 0 0 0 4 4v3a8 8 0 0 1-4-1.2V15a6 6 0 1 1-6-6c.3 0 .7 0 1 .1v3.2A2.8 2.8 0 1 0 14 15V3Z' },
+                                        { label: 'Instagram',        url: 'https://www.instagram.com/ibigsoft/',                           path: 'M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm0 2a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM17 6.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2ZM7.5 3h9A4.5 4.5 0 0 1 21 7.5v9a4.5 4.5 0 0 1-4.5 4.5h-9A4.5 4.5 0 0 1 3 16.5v-9A4.5 4.5 0 0 1 7.5 3Zm0 2A2.5 2.5 0 0 0 5 7.5v9A2.5 2.5 0 0 0 7.5 19h9a2.5 2.5 0 0 0 2.5-2.5v-9A2.5 2.5 0 0 0 16.5 5h-9Z' },
+                                        { label: 'Groupe Facebook',  url: 'https://www.facebook.com/groups/1655325562202049',              path: 'M8.5 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm7.5 0a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM8.5 12.5c-3 0-5.5 1.6-5.5 3.6V19h11v-2.9c0-2-2.5-3.6-5.5-3.6Zm7.5.5c-.7 0-1.3.1-1.9.3 1 .9 1.6 2 1.6 3.3V19h5v-2.4c0-1.9-2.2-3.1-4.7-3.1Z' },
+                                        { label: 'WhatsApp',         url: 'https://whatsapp.com/channel/0029VbD8TIr9xVJmniJ8m81w',        path: 'M12 3a9 9 0 0 0-7.7 13.6L3 21l4.5-1.2A9 9 0 1 0 12 3Zm0 2a7 7 0 1 1-3.6 13l-.3-.2-2.3.6.6-2.2-.2-.3A7 7 0 0 1 12 5Zm-2.6 3.6c-.2 0-.5.1-.7.4-.3.3-.9.9-.9 2.1s.9 2.4 1 2.6c.1.2 1.7 2.7 4.2 3.7 2 .8 2.5.6 2.9.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.6-.3-1.6-.8c-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.1-.2 0-.4.1-.5l.4-.5c.1-.2.2-.3.3-.5v-.5l-.8-1.9c-.2-.4-.4-.4-.6-.4h-.3Z' },
+                                    ].map(s => (
+                                        <a key={s.label} href={s.url} target="_blank" rel="noopener noreferrer"
+                                            aria-label={s.label} title={s.label}
+                                            className="w-8 h-8 rounded-lg border flex items-center justify-center transition-all hover:-translate-y-0.5"
+                                            style={{ borderColor: 'rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.05)' }}
+                                            onMouseEnter={e => { e.currentTarget.style.background = BRAND; e.currentTarget.style.borderColor = BRAND; }}
+                                            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; }}>
+                                            <svg viewBox="0 0 24 24" width="15" height="15" fill="#fff" aria-hidden="true">
+                                                <path d={s.path} />
+                                            </svg>
+                                        </a>
+                                    ))}
+                                </div>
                             </div>
 
                             {/* Col 2 — Contact */}
@@ -1930,20 +1953,32 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                         </a>
                                     </li>
                                     <li>
+                                        <a href="tel:+2250555059901" className="text-slate-400 hover:text-white transition flex items-start gap-2">
+                                            <span className="mt-0.5">📞</span>
+                                            <span>+225 05 55 05 99 01</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="https://wa.me/2250778882592" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition flex items-start gap-2">
+                                            <span className="mt-0.5">💬</span>
+                                            <span>WhatsApp +225 07 78 88 25 92</span>
+                                        </a>
+                                    </li>
+                                    <li>
                                         <a href="mailto:contact@ibigsoft.com" className="text-slate-400 hover:text-white transition flex items-start gap-2">
                                             <span className="mt-0.5">📧</span>
                                             <span>contact@ibigsoft.com</span>
                                         </a>
                                     </li>
+                                    <li>
+                                        <a href="mailto:support@construiro.com" className="text-slate-400 hover:text-white transition flex items-start gap-2">
+                                            <span className="mt-0.5">🛠</span>
+                                            <span>support@construiro.com</span>
+                                        </a>
+                                    </li>
                                     <li className="flex items-start gap-2 text-slate-500">
                                         <span className="mt-0.5">📍</span>
-                                        <span>Abidjan, Côte d'Ivoire<br />Afrique de l'Ouest</span>
-                                    </li>
-                                    <li>
-                                        <a href="#demo" className="text-slate-400 hover:text-white transition flex items-start gap-2">
-                                            <span className="mt-0.5">💬</span>
-                                            <span>{t('Formulaire de contact')}</span>
-                                        </a>
+                                        <span>Abidjan, Côte d'Ivoire<br />Lun – Sam · 8h – 18h</span>
                                     </li>
                                 </ul>
                             </div>
@@ -2000,18 +2035,15 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                 <ul className="space-y-2.5 text-sm">
                                     {[
                                         { label: "À propos d'IBIG Soft", href: 'https://ibigsoft.com', ext: true },
-                                        { label: 'Autres logiciels', href: 'https://ibigsoft.com', ext: true },
                                         { label: 'Devenir partenaire', href: 'https://ibigpartners.com/', ext: true },
-                                        { label: 'IBIG PARTNERS', href: 'https://ibigpartners.com/', ext: true },
-                                        { label: 'Contact', href: '#demo', anchor: true },
-                                        { label: 'Support', href: '/aide' },
+                                        { label: 'IBIG Partners', href: 'https://ibigpartners.com/', ext: true },
+                                        { label: 'Carrières', href: 'https://ibigsoft.com', ext: true },
+                                        { label: 'Support', href: '/aide', ext: false },
                                     ].map(l => (
                                         <li key={l.label}>
                                             {l.ext
                                                 ? <a href={l.href} target="_blank" rel="noopener noreferrer" className="hover:text-[#F58220] transition text-sm">{t(l.label)}</a>
-                                                : l.anchor
-                                                    ? <a href={l.href} className="hover:text-[#F58220] transition text-sm">{t(l.label)}</a>
-                                                    : <Link href={l.href} className="hover:text-[#F58220] transition text-sm">{t(l.label)}</Link>
+                                                : <Link href={l.href} className="hover:text-[#F58220] transition text-sm">{t(l.label)}</Link>
                                             }
                                         </li>
                                     ))}
@@ -2063,10 +2095,6 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                 </footer>
 
             </div>
-
-            {/* ── FOOTER UNIVERSEL IBIG SOFT ───────────────────── */}
-            {/* Footer cross-produits injecté par ibigsoft-universal.js */}
-            <div data-ibig="footer" id="ibigsoft-footer-mount"></div>
 
             {/* ── FLOTTANTS ────────────────────────────────────── */}
             <SaraFloating />
