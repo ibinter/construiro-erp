@@ -17,6 +17,8 @@ const SUPERADMIN_NAV = [
     { key: 'sa-landing',          label: 'Landing page admin',    icon: 'globe',            route: '/superadmin/landing' },
     { key: 'sa-reports',          label: 'Rapports / Stats',      icon: 'bar-chart-2',      route: '/superadmin/reports' },
     { key: 'sa-prospects',        label: 'Prospects / Démos',     icon: 'user-plus',        route: '/superadmin/prospects' },
+    { key: 'sa-payment-config',   label: 'Méthodes de paiement',  icon: 'credit-card',      route: '/superadmin/payment-config' },
+    { key: 'sa-payment-orders',   label: 'Ordres de paiement',    icon: 'file-text',        route: '/superadmin/payment-orders' },
 ];
 
 /**
@@ -25,12 +27,13 @@ const SUPERADMIN_NAV = [
  * - Desktop (≥lg) : sticky dans le flux, largeur w-64 ou w-0
  */
 export default function Sidebar({ open = false, onClose }) {
-    const { auth } = usePage().props;
+    const { auth, subscription, pendingPaymentOrders } = usePage().props;
     const currentPath = usePage().url;
     const { t } = useTrans();
     const portal = auth?.portal;
     const navigation = auth?.navigation ?? [];
     const isSuperAdmin = auth?.user?.roles?.includes('ibig_superadmin');
+    const showPaymentLink = subscription && ['trial', 'grace', 'expired'].includes(subscription.status);
 
     return (
         <aside
@@ -92,6 +95,9 @@ export default function Sidebar({ open = false, onClose }) {
                     <ul className="space-y-0.5">
                         {SUPERADMIN_NAV.map(item => {
                             const active = currentPath === item.route || currentPath.startsWith(item.route + '/');
+                            const badge = item.key === 'sa-payment-orders' && pendingPaymentOrders > 0
+                                ? pendingPaymentOrders
+                                : null;
                             return (
                                 <li key={item.key}>
                                     <Link
@@ -104,7 +110,12 @@ export default function Sidebar({ open = false, onClose }) {
                                         }`}
                                     >
                                         <Icon name={item.icon} className="h-4 w-4 shrink-0" />
-                                        <span className="truncate">{t(item.label)}</span>
+                                        <span className="flex-1 truncate">{t(item.label)}</span>
+                                        {badge && (
+                                            <span className="ml-auto shrink-0 rounded-full bg-orange-500 px-1.5 py-0.5 text-[10px] font-bold text-white leading-none">
+                                                {badge}
+                                            </span>
+                                        )}
                                     </Link>
                                 </li>
                             );
@@ -154,6 +165,31 @@ export default function Sidebar({ open = false, onClose }) {
                         <p className="px-2 text-xs text-slate-500">
                             {t('Aucun module accessible.')}
                         </p>
+                    )}
+
+                    {/* Lien paiement abonnement — affiché si trial / grace / expired */}
+                    {showPaymentLink && (
+                        <div>
+                            <div className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                                {t('Facturation')}
+                            </div>
+                            <ul className="space-y-0.5">
+                                <li>
+                                    <Link
+                                        href={route('billing.payment.index')}
+                                        onClick={onClose}
+                                        className={`flex items-center gap-3 rounded-md px-2 py-2 text-sm transition-colors ${
+                                            currentPath.startsWith('/billing/payment')
+                                                ? 'bg-orange-500 font-medium text-white'
+                                                : 'text-orange-400 hover:bg-slate-800 hover:text-orange-300'
+                                        }`}
+                                    >
+                                        <Icon name="credit-card" className="h-4 w-4 shrink-0" />
+                                        <span className="truncate">{t('Payer mon abonnement')}</span>
+                                    </Link>
+                                </li>
+                            </ul>
+                        </div>
                     )}
                 </nav>
             )}

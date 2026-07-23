@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 
 Schedule::command('construiro:trial-reminders')->dailyAt('08:00');
 Schedule::command('construiro:subscription-reminders')->dailyAt('08:00');
+Schedule::command('construiro:expire-payment-orders')->hourly();

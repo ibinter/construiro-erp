@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             CurrencySeeder::class,
             RolePermissionSeeder::class,
             SubscriptionPlanSeeder::class,
+            PaymentMethodSeeder::class,
             LegalPageSeeder::class,
             LandingSeeder::class,
             EmailTemplateSeeder::class,

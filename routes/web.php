@@ -64,6 +64,8 @@ use App\Http\Controllers\MobileMoneyController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\NotificationPreferenceController;
 use App\Http\Controllers\BillingController;
+use App\Http\Controllers\PaymentGatewayController;
+use App\Http\Controllers\WebhookPaymentController;
 use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboard;
 use App\Http\Controllers\SuperAdmin\ClientController as SuperAdminClientController;
 use App\Http\Controllers\SuperAdmin\CustomOfferController as SuperAdminCustomOfferController;
@@ -272,6 +274,17 @@ Route::middleware(['auth', 'verified', 'subscription', 'two-factor'])->group(fun
         Route::post('/activate', [BillingController::class, 'activate'])->name('billing.activate');
     });
 
+    // --- Billing payment (choix plan, paiement, voucher, retour passerelle) ---
+    Route::prefix('billing')->name('billing.')->group(function () {
+        Route::get('/payment', [PaymentGatewayController::class, 'index'])->name('payment.index');
+        Route::post('/payment/initiate', [PaymentGatewayController::class, 'initiate'])->name('payment.initiate');
+        Route::get('/payment/order/{reference}', [PaymentGatewayController::class, 'showOrder'])->name('payment.order');
+        Route::post('/payment/order/{reference}/proof', [PaymentGatewayController::class, 'uploadProof'])->name('payment.proof');
+        Route::get('/payment/voucher', [PaymentGatewayController::class, 'voucherPage'])->name('payment.voucher');
+        Route::post('/payment/voucher/redeem', [PaymentGatewayController::class, 'redeemVoucher'])->name('payment.voucher.redeem');
+        Route::get('/payment/return/{reference}', [PaymentGatewayController::class, 'gatewayReturn'])->name('payment.return');
+    });
+
     // --- Notifications internes (cloche) ----------------------------------------
     Route::prefix('notifications')->group(function () {
         Route::get('/',                         [NotificationController::class, 'index'])->name('notifications.index');
@@ -472,6 +485,22 @@ Route::middleware(['auth', 'verified', 'subscription', 'two-factor'])->group(fun
         Route::put('/changelogs/{changelog}',                       [SuperAdminChangelogController::class, 'update'])->name('superadmin.changelogs.update');
         Route::delete('/changelogs/{changelog}',                    [SuperAdminChangelogController::class, 'destroy'])->name('superadmin.changelogs.destroy');
         Route::post('/changelogs/{changelog}/publish',              [SuperAdminChangelogController::class, 'publish'])->name('superadmin.changelogs.publish');
+
+        // --- Configuration méthodes de paiement --------------------------------
+        Route::get('/payment-config',                               [\App\Http\Controllers\SuperAdmin\PaymentConfigController::class, 'index'])->name('superadmin.payment-config.index');
+        Route::patch('/payment-config/{type}/toggle',               [\App\Http\Controllers\SuperAdmin\PaymentConfigController::class, 'toggle'])->name('superadmin.payment-config.toggle');
+        Route::put('/payment-config/{type}',                        [\App\Http\Controllers\SuperAdmin\PaymentConfigController::class, 'update'])->name('superadmin.payment-config.update');
+
+        // --- Ordres de paiement (validation preuves) ---------------------------
+        Route::get('/payment-orders',                               [\App\Http\Controllers\SuperAdmin\PaymentOrderController::class, 'index'])->name('superadmin.payment-orders.index');
+        Route::get('/payment-orders/{paymentOrder}/proof',          [\App\Http\Controllers\SuperAdmin\PaymentOrderController::class, 'downloadProof'])->name('superadmin.payment-orders.proof');
+        Route::post('/payment-orders/{paymentOrder}/confirm',       [\App\Http\Controllers\SuperAdmin\PaymentOrderController::class, 'confirm'])->name('superadmin.payment-orders.confirm');
+        Route::post('/payment-orders/{paymentOrder}/reject',        [\App\Http\Controllers\SuperAdmin\PaymentOrderController::class, 'reject'])->name('superadmin.payment-orders.reject');
+
+        // --- Vouchers prépayés -------------------------------------------------
+        Route::get('/vouchers',                    [\App\Http\Controllers\SuperAdmin\VoucherController::class, 'index'])->name('superadmin.vouchers.index');
+        Route::post('/vouchers/generate',          [\App\Http\Controllers\SuperAdmin\VoucherController::class, 'generate'])->name('superadmin.vouchers.generate');
+        Route::get('/vouchers/export/{batchId}',   [\App\Http\Controllers\SuperAdmin\VoucherController::class, 'export'])->name('superadmin.vouchers.export');
     });
 
     // --- Guide utilisateur PDF (auth) --------------------------------------------------
@@ -782,5 +811,10 @@ Route::match(['GET', 'POST'], '/locale/{locale}', [LocaleController::class, 'upd
 Route::post('/webhooks/mobile-money/{operator}', [MobileMoneyController::class, 'webhook'])
     ->name('mobile-money.webhook')
     ->withoutMiddleware(['App\Http\Middleware\VerifyCsrfToken']);
+
+// --- Webhooks paiement (publics, CSRF exempt via bootstrap/app.php) --------
+Route::prefix('webhooks')->name('webhooks.')->group(function () {
+    Route::post('/cinetpay', [WebhookPaymentController::class, 'cinetpay'])->name('cinetpay');
+});
 
 require __DIR__.'/auth.php';

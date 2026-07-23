@@ -38,9 +38,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'two-factor'   => \App\Http\Middleware\RequiresTwoFactorAuthentication::class,
         ]);
 
-        // Exclure les webhooks Mobile Money du CSRF (appelés par les opérateurs)
+        // Exclure tous les webhooks du CSRF (appelés par des services tiers)
         $middleware->validateCsrfTokens(except: [
-            'webhooks/mobile-money/*',
+            'webhooks/*',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
