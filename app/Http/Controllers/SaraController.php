@@ -126,7 +126,7 @@ PROMPT;
         $messages[] = ['role' => 'user', 'content' => $request->input('message')];
 
         try {
-            $reply = $gateway->chat($messages, $this->systemPrompt());
+            $reply = $gateway->chat($messages, $this->systemPrompt(), 'public');
 
             return response()->json(['reply' => $reply]);
 
