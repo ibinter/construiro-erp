@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Setting;
+use App\Services\SaraGateway;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class SaraController extends Controller
@@ -106,53 +106,33 @@ PROMPT;
             'history.*.content' => ['required', 'string', 'max:2000'],
         ]);
 
-        $apiKey = config('services.groq.key');
+        /** @var SaraGateway $gateway */
+        $gateway = app(SaraGateway::class);
 
-        if (empty($apiKey) || !Setting::get('sara_enabled', '1')) {
+        if (! $gateway->isEnabled()) {
             return response()->json([
                 'reply' => 'Je suis temporairement indisponible. Contactez-nous directement : contact@ibigsoft.com ou +225 27 22 27 60 14.',
             ]);
         }
 
-        $model       = Setting::get('sara_model',       'llama-3.1-8b-instant');
-        $maxTokens   = (int)   Setting::get('sara_max_tokens',   self::MAX_TOKENS);
-        $temperature = (float) Setting::get('sara_temperature',  self::TEMPERATURE);
-
-        // Construire les messages
-        $messages = [['role' => 'system', 'content' => $this->systemPrompt()]];
-
         // Historique (tronqué pour ne pas exploser le contexte)
         $history = array_slice($request->input('history', []), -self::MAX_HISTORY);
-        foreach ($history as $msg) {
-            $messages[] = ['role' => $msg['role'], 'content' => $msg['content']];
-        }
 
+        // Construire les messages conversation (sans le system prompt)
+        $messages = array_map(
+            fn ($msg) => ['role' => $msg['role'], 'content' => $msg['content']],
+            $history,
+        );
         $messages[] = ['role' => 'user', 'content' => $request->input('message')];
 
         try {
-            $response = Http::withToken($apiKey)
-                ->timeout(20)
-                ->post('https://api.groq.com/openai/v1/chat/completions', [
-                    'model'       => $model,
-                    'messages'    => $messages,
-                    'max_tokens'  => $maxTokens,
-                    'temperature' => $temperature,
-                    'stream'      => false,
-                ]);
+            $reply = $gateway->chat($messages, $this->systemPrompt());
 
-            if (!$response->successful()) {
-                Log::warning('SARA Groq error', ['status' => $response->status(), 'body' => $response->body()]);
-                return response()->json([
-                    'reply' => 'Je rencontre une difficulté technique. Réessayez dans un instant ou contactez-nous : contact@ibigsoft.com',
-                ]);
-            }
-
-            $reply = $response->json('choices.0.message.content', '');
-
-            return response()->json(['reply' => trim($reply)]);
+            return response()->json(['reply' => $reply]);
 
         } catch (\Exception $e) {
             Log::error('SARA exception', ['error' => $e->getMessage()]);
+
             return response()->json([
                 'reply' => 'Je suis temporairement indisponible. Notre équipe reste joignable : contact@ibigsoft.com | +225 27 22 27 60 14',
             ]);

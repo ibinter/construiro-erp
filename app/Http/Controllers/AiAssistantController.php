@@ -7,6 +7,7 @@ use App\Models\AiSetting;
 use App\Models\Project;
 use App\Models\Site;
 use App\Services\LlmClient;
+use App\Services\SaraGateway;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -89,22 +90,36 @@ class AiAssistantController extends Controller
     {
         $setting = AiSetting::firstWhere('company_id', $companyId);
 
+        $systemPrompt = "Tu es l'assistant IA de CONSTRUIRO ERP, un logiciel de gestion "
+            . "de chantiers et du BTP. Réponds en français, de façon concise et "
+            . "professionnelle, en t'appuyant STRICTEMENT sur les données de "
+            . "l'entreprise fournies ci-dessous. Si l'information manque, dis-le. "
+            . "Montants en FCFA.\n\n=== DONNÉES DE L'ENTREPRISE ===\n"
+            . $this->buildContext($companyId);
+
+        // 1. LLM configuré par l'entreprise (clé propre)
         if ($setting && $setting->isOperational()) {
             try {
-                $system = "Tu es l'assistant IA de CONSTRUIRO ERP, un logiciel de gestion "
-                    . "de chantiers et du BTP. Réponds en français, de façon concise et "
-                    . "professionnelle, en t'appuyant STRICTEMENT sur les données de "
-                    . "l'entreprise fournies ci-dessous. Si l'information manque, dis-le. "
-                    . "Montants en FCFA.\n\n=== DONNÉES DE L'ENTREPRISE ===\n"
-                    . $this->buildContext($companyId);
-
-                return app(LlmClient::class)->chat($setting, $system, $question);
+                return app(LlmClient::class)->chat($setting, $systemPrompt, $question);
             } catch (\Throwable $e) {
-                Log::warning('Assistant IA : repli sur les règles ('.$e->getMessage().')');
-                // On retombe sur le moteur de règles ci-dessous.
+                Log::warning('Assistant IA (LlmClient) : repli ('.$e->getMessage().')');
             }
         }
 
+        // 2. SaraGateway — config plateforme globale (SuperAdmin) comme repli
+        $gateway = app(SaraGateway::class);
+        if ($gateway->isEnabled()) {
+            try {
+                return $gateway->chat(
+                    [['role' => 'user', 'content' => $question]],
+                    $systemPrompt,
+                );
+            } catch (\Throwable $e) {
+                Log::warning('Assistant IA (SaraGateway) : repli ('.$e->getMessage().')');
+            }
+        }
+
+        // 3. Moteur de règles interne (aucune clé requise)
         return $this->answer($question, $companyId);
     }
 

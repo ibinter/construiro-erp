@@ -501,6 +501,10 @@ Route::middleware(['auth', 'verified', 'subscription', 'two-factor'])->group(fun
         Route::get('/vouchers',                    [\App\Http\Controllers\SuperAdmin\VoucherController::class, 'index'])->name('superadmin.vouchers.index');
         Route::post('/vouchers/generate',          [\App\Http\Controllers\SuperAdmin\VoucherController::class, 'generate'])->name('superadmin.vouchers.generate');
         Route::get('/vouchers/export/{batchId}',   [\App\Http\Controllers\SuperAdmin\VoucherController::class, 'export'])->name('superadmin.vouchers.export');
+
+        // --- Configuration IA plateforme (SARA multi-fournisseur) --------------
+        Route::get('/ai-setting',  [\App\Http\Controllers\SuperAdmin\AiSettingController::class, 'edit'])->name('superadmin.ai-setting.edit');
+        Route::put('/ai-setting',  [\App\Http\Controllers\SuperAdmin\AiSettingController::class, 'update'])->name('superadmin.ai-setting.update');
     });
 
     // --- Guide utilisateur PDF (auth) --------------------------------------------------

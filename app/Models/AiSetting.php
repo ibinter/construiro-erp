@@ -8,24 +8,37 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * Paramétrage IA d'une entreprise. La clé API est chiffrée au repos (cast
- * 'encrypted') et n'est jamais renvoyée telle quelle au front.
+ * Paramétrage IA. Deux usages :
+ *  - company_id non nul  : config IA d'une entreprise (assistant interne).
+ *  - company_id null     : config globale de la plateforme (SARA publique).
+ *
+ * La clé API est chiffrée au repos (cast 'encrypted').
  */
 class AiSetting extends Model
 {
     use BelongsToCompany;
-    protected $fillable = [
-        'company_id', 'provider', 'api_key', 'model', 'base_url', 'enabled',
-    ];
 
-    protected $casts = [
-        'api_key' => 'encrypted',
-        'enabled' => 'boolean',
+    // ---------- Constantes fournisseurs ----------------------------------------
+    const PROVIDER_GROQ      = 'groq';
+    const PROVIDER_OPENAI    = 'openai';
+    const PROVIDER_ANTHROPIC = 'anthropic';
+    const PROVIDER_GOOGLE    = 'google';
+    const PROVIDER_MISTRAL   = 'mistral';
+    const PROVIDER_GROK      = 'grok';
+
+    /** Modèles disponibles par fournisseur (pour le Select du SuperAdmin). */
+    const MODELS = [
+        'groq'      => ['llama-3.1-8b-instant', 'llama-3.3-70b-versatile', 'mixtral-8x7b-32768'],
+        'openai'    => ['gpt-4o-mini', 'gpt-4o', 'gpt-3.5-turbo'],
+        'anthropic' => ['claude-haiku-4-5-20251001', 'claude-sonnet-5'],
+        'google'    => ['gemini-1.5-flash', 'gemini-1.5-pro'],
+        'mistral'   => ['mistral-small-latest', 'mistral-medium-latest', 'open-mixtral-8x7b'],
+        'grok'      => ['grok-2-latest', 'grok-beta'],
     ];
 
     /**
      * Fournisseurs supportés + valeurs par défaut (endpoint OpenAI-compatible
-     * sauf Anthropic). L'utilisateur fournit sa propre clé.
+     * sauf Anthropic et Google). L'utilisateur fournit sa propre clé.
      */
     public const PROVIDERS = [
         'none' => [
@@ -58,11 +71,61 @@ class AiSetting extends Model
             'model'    => 'gpt-4o-mini',
             'docs'     => 'https://platform.openai.com',
         ],
+        'google' => [
+            'label'    => 'Google Gemini',
+            'base_url' => 'https://generativelanguage.googleapis.com/v1beta',
+            'model'    => 'gemini-1.5-flash',
+            'docs'     => 'https://aistudio.google.com/app/apikey',
+        ],
+        'mistral' => [
+            'label'    => 'Mistral AI',
+            'base_url' => 'https://api.mistral.ai/v1',
+            'model'    => 'mistral-small-latest',
+            'docs'     => 'https://console.mistral.ai/api-keys',
+        ],
     ];
 
-    public function company(): BelongsTo
+    protected $fillable = [
+        'company_id', 'provider', 'api_key', 'model', 'base_url', 'enabled',
+        'sara_enabled', 'max_tokens', 'temperature', 'config',
+    ];
+
+    protected $casts = [
+        'api_key'      => 'encrypted',
+        'enabled'      => 'boolean',
+        'sara_enabled' => 'boolean',
+        'max_tokens'   => 'integer',
+        'temperature'  => 'float',
+        'config'       => 'array',
+    ];
+
+    // ---------- Méthodes statiques ---------------------------------------------
+
+    /**
+     * Retourne la config globale de la plateforme (company_id = null).
+     * Utilisé par SaraGateway pour le chatbot public.
+     * Bypass le CompanyScope (pas d'utilisateur connecté en contexte public).
+     */
+    public static function current(): static
     {
-        return $this->belongsTo(Company::class);
+        return static::withoutGlobalScopes()
+            ->whereNull('company_id')
+            ->first()
+            ?? static::make([
+                'provider'     => self::PROVIDER_GROQ,
+                'model'        => 'llama-3.1-8b-instant',
+                'sara_enabled' => true,
+                'max_tokens'   => 1024,
+                'temperature'  => 0.7,
+            ]);
+    }
+
+    // ---------- Accesseurs / méthodes d'instance -------------------------------
+
+    /** Lit une valeur dans le champ JSON `config`. */
+    public function getConfigValue(string $key, mixed $default = null): mixed
+    {
+        return data_get($this->config, $key, $default);
     }
 
     /** Le fournisseur est-il opérationnel (activé, connu, clé présente) ? */
@@ -84,5 +147,12 @@ class AiSetting extends Model
     public function effectiveBaseUrl(): ?string
     {
         return $this->base_url ?: (self::PROVIDERS[$this->provider]['base_url'] ?? null);
+    }
+
+    // ---------- Relations ------------------------------------------------------
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
     }
 }
