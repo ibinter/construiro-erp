@@ -1,4 +1,5 @@
 import { useForm } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import { PageHeader, Badge, Card, CardHeader, CardBody } from '@/Components/UI';
 
@@ -63,6 +64,16 @@ export default function BillingIndex({ subscription, plans, invoices }) {
                                     <p className={sub.days_remaining <= 7 ? 'text-orange-600 font-semibold' : ''}>
                                         {sub.days_remaining} jour(s) restant(s)
                                     </p>
+                                )}
+                                {['trial', 'grace', 'expired'].includes(sub.status) && (
+                                    <div className="pt-3">
+                                        <Link
+                                            href={route('billing.payment.index')}
+                                            className="btn btn-primary inline-flex items-center gap-2"
+                                        >
+                                            Payer / Renouveler →
+                                        </Link>
+                                    </div>
                                 )}
                             </div>
                         ) : (

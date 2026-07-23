@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\PaymentOrder;
 use App\Models\Subscription;
 use App\Models\SupportSession;
 use App\Support\Navigation;
@@ -66,6 +67,10 @@ class HandleInertiaRequests extends Middleware
                     ->where('expires_at', '>', now())
                     ->with('company:id,name')
                     ->first()?->only(['id', 'reason', 'expires_at', 'company'])
+                : null,
+            // Badge SuperAdmin : nombre d'ordres de paiement en attente de validation.
+            'pendingPaymentOrders' => fn () => $user?->hasRole('ibig_superadmin')
+                ? PaymentOrder::where('status', 'pending')->count()
                 : null,
             // Modules accessibles selon le plan d'abonnement actif.
             // null = tous les modules inclus. array = slugs autorisés.
