@@ -134,5 +134,6 @@ class DatabaseSeeder extends Seeder
         $this->call(AiSeeder::class);             // historique assistant IA (démo)
         $this->call(AcademySeeder::class);        // catégories + ressources Académie (à venir)
         $this->call(PracticalCasesSeeder::class); // §12.2 cas pratiques guidés (is_published=true)
+        $this->call(KnowledgeBaseSeeder::class);  // §14.4 base de connaissances SARA RAG
     }
 }

@@ -522,6 +522,16 @@ Route::middleware(['auth', 'verified', 'subscription', 'two-factor'])->group(fun
             'destroy' => 'superadmin.academy.destroy',
         ]);
 
+        // --- Base de connaissances SARA (RAG §14.4) ----------------------------
+        Route::resource('knowledge-base', \App\Http\Controllers\SuperAdmin\KnowledgeBaseController::class)->except(['show'])->names([
+            'index'   => 'superadmin.knowledge-base.index',
+            'store'   => 'superadmin.knowledge-base.store',
+            'edit'    => 'superadmin.knowledge-base.edit',
+            'update'  => 'superadmin.knowledge-base.update',
+            'destroy' => 'superadmin.knowledge-base.destroy',
+            'create'  => 'superadmin.knowledge-base.create',
+        ]);
+
         // --- Sauvegardes & Restauration ----------------------------------------
         Route::get('/backups',                      [SuperAdminBackupController::class, 'index'])->name('superadmin.backups.index');
         Route::post('/backups/run',                 [SuperAdminBackupController::class, 'run'])->name('superadmin.backups.run');

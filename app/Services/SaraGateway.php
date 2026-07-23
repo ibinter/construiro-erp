@@ -57,6 +57,26 @@ class SaraGateway
             }
         }
 
+        // --- RAG — Enrichissement du prompt avec la base de connaissances ------
+        $ragContext = '';
+        try {
+            $lastMessage = end($messages)['content'] ?? '';
+            if (strlen($lastMessage) >= 3) {
+                $kbResults = \App\Models\KnowledgeBase::search($lastMessage, 3);
+                if ($kbResults->isNotEmpty()) {
+                    $ragContext = "\n\n--- INFORMATIONS OFFICIELLES CONSTRUIRO (à utiliser en priorité) ---\n";
+                    foreach ($kbResults as $kb) {
+                        $ragContext .= "\n## " . $kb->title_fr . "\n" . $kb->content_fr . "\n";
+                    }
+                    $ragContext .= "--- FIN DES INFORMATIONS ---\n";
+                }
+            }
+        } catch (\Throwable) {
+            // Ne jamais bloquer le chat à cause du RAG
+        }
+
+        $enhancedSystemPrompt = ($systemPrompt ?? '') . $ragContext;
+
         // --- Appel fournisseur avec mesure du temps ----------------------------
         $startTime    = microtime(true);
         $errorMessage = null;
@@ -64,19 +84,19 @@ class SaraGateway
 
         try {
             $response = match ($this->config->provider) {
-                AiSetting::PROVIDER_GROQ      => $this->callGroq($messages, $systemPrompt),
-                AiSetting::PROVIDER_OPENAI    => $this->callOpenAI($messages, $systemPrompt),
-                AiSetting::PROVIDER_ANTHROPIC => $this->callAnthropic($messages, $systemPrompt),
-                AiSetting::PROVIDER_GOOGLE    => $this->callGoogle($messages, $systemPrompt),
-                AiSetting::PROVIDER_MISTRAL   => $this->callMistral($messages, $systemPrompt),
+                AiSetting::PROVIDER_GROQ      => $this->callGroq($messages, $enhancedSystemPrompt),
+                AiSetting::PROVIDER_OPENAI    => $this->callOpenAI($messages, $enhancedSystemPrompt),
+                AiSetting::PROVIDER_ANTHROPIC => $this->callAnthropic($messages, $enhancedSystemPrompt),
+                AiSetting::PROVIDER_GOOGLE    => $this->callGoogle($messages, $enhancedSystemPrompt),
+                AiSetting::PROVIDER_MISTRAL   => $this->callMistral($messages, $enhancedSystemPrompt),
                 // Grok (xAI) : endpoint OpenAI-compatible
                 AiSetting::PROVIDER_GROK      => $this->callOpenAICompatible(
-                    $messages, $systemPrompt,
+                    $messages, $enhancedSystemPrompt,
                     $this->apiKey('GROK_API_KEY'),
                     'https://api.x.ai/v1/chat/completions',
                     $this->config->model ?? 'grok-2-latest',
                 ),
-                default => $this->callGroq($messages, $systemPrompt),
+                default => $this->callGroq($messages, $enhancedSystemPrompt),
             };
         } catch (\Throwable $e) {
             $success      = false;
