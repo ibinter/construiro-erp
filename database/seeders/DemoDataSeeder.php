@@ -67,20 +67,22 @@ class DemoDataSeeder extends Seeder
 
         // Clients fictifs BTP
         $clientsData = [
-            ['name' => 'SOGEFAC SARL',              'email' => 'contact@sogefac.ci',    'phone' => '+225 27 20 31 00 00', 'city' => 'Abidjan', 'country' => 'CI'],
-            ['name' => 'BTP Diallo & Fils',          'email' => 'diallo@btpdf.sn',       'phone' => '+221 77 000 00 00',   'city' => 'Dakar',   'country' => 'SN'],
-            ['name' => 'Groupe Touré Construction',  'email' => 'info@toure-btp.ml',     'phone' => '+223 70 00 00 00',    'city' => 'Bamako',  'country' => 'ML'],
-            ['name' => 'IMMOCAM',                    'email' => 'contact@immocam.cm',    'phone' => '+237 670 000 000',    'city' => 'Yaoundé', 'country' => 'CM'],
-            ['name' => 'Koné Travaux Publics',       'email' => 'kone@ktp.ci',           'phone' => '+225 27 20 00 00 01', 'city' => 'Bouaké',  'country' => 'CI'],
+            ['code' => 'CLI-001', 'name' => 'SOGEFAC SARL',             'email' => 'contact@sogefac.ci',    'phone' => '+225 27 20 31 00 00', 'city' => 'Abidjan', 'country' => 'CI'],
+            ['code' => 'CLI-002', 'name' => 'BTP Diallo & Fils',         'email' => 'diallo@btpdf.sn',       'phone' => '+221 77 000 00 00',   'city' => 'Dakar',   'country' => 'SN'],
+            ['code' => 'CLI-003', 'name' => 'Groupe Touré Construction', 'email' => 'info@toure-btp.ml',     'phone' => '+223 70 00 00 00',    'city' => 'Bamako',  'country' => 'ML'],
+            ['code' => 'CLI-004', 'name' => 'IMMOCAM',                   'email' => 'contact@immocam.cm',    'phone' => '+237 670 000 000',    'city' => 'Yaoundé', 'country' => 'CM'],
+            ['code' => 'CLI-005', 'name' => 'Koné Travaux Publics',      'email' => 'kone@ktp.ci',           'phone' => '+225 27 20 00 00 01', 'city' => 'Bouaké',  'country' => 'CI'],
         ];
 
         $clientModel = 'App\\Models\\Client';
         if (class_exists($clientModel)) {
             foreach ($clientsData as $c) {
-                $clientModel::updateOrCreate(
-                    ['name' => $c['name'], 'company_id' => $company->id],
-                    array_merge($c, ['company_id' => $company->id])
-                );
+                try {
+                    $clientModel::updateOrCreate(
+                        ['code' => $c['code'], 'company_id' => $company->id],
+                        array_merge($c, ['company_id' => $company->id])
+                    );
+                } catch (\Throwable) {}
             }
         }
 
@@ -127,27 +129,31 @@ class DemoDataSeeder extends Seeder
         $projectModel = 'App\\Models\\Project';
         if (class_exists($projectModel)) {
             foreach ($projectsData as $p) {
-                $projectModel::updateOrCreate(
-                    ['reference' => $p['reference'], 'company_id' => $company->id],
-                    array_merge($p, ['company_id' => $company->id])
-                );
+                try {
+                    $projectModel::updateOrCreate(
+                        ['reference' => $p['reference'], 'company_id' => $company->id],
+                        array_merge($p, ['company_id' => $company->id])
+                    );
+                } catch (\Throwable) {}
             }
         }
 
         // Fournisseurs fictifs
         $suppliersData = [
-            ['name' => 'CIMAF Côte d\'Ivoire',          'email' => 'commandes@cimaf.ci', 'phone' => '+225 27 24 00 00 00', 'city' => 'Abidjan', 'category' => 'Matériaux'],
-            ['name' => 'Quincaillerie Centrale Abidjan', 'email' => 'qca@qca.ci',         'phone' => '+225 07 07 07 07 07', 'city' => 'Abidjan', 'category' => 'Quincaillerie'],
-            ['name' => 'Location Engins WEST AFRICA',   'email' => 'info@lewa.ci',        'phone' => '+225 01 01 01 01 01', 'city' => 'Abidjan', 'category' => 'Location'],
+            ['name' => 'CIMAF Côte d\'Ivoire',          'email' => 'commandes@cimaf.ci', 'phone' => '+225 27 24 00 00 00', 'city' => 'Abidjan'],
+            ['name' => 'Quincaillerie Centrale Abidjan', 'email' => 'qca@qca.ci',         'phone' => '+225 07 07 07 07 07', 'city' => 'Abidjan'],
+            ['name' => 'Location Engins WEST AFRICA',   'email' => 'info@lewa.ci',        'phone' => '+225 01 01 01 01 01', 'city' => 'Abidjan'],
         ];
 
         $supplierModel = 'App\\Models\\Supplier';
         if (class_exists($supplierModel)) {
             foreach ($suppliersData as $s) {
-                $supplierModel::updateOrCreate(
-                    ['name' => $s['name'], 'company_id' => $company->id],
-                    array_merge($s, ['company_id' => $company->id])
-                );
+                try {
+                    $supplierModel::updateOrCreate(
+                        ['name' => $s['name'], 'company_id' => $company->id],
+                        array_merge($s, ['company_id' => $company->id])
+                    );
+                } catch (\Throwable) {}
             }
         }
 
