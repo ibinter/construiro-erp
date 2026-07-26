@@ -105,14 +105,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['diag'])) {
         echo "\nDONE\n";
     } elseif ($diag === 'make-superadmin') {
         // Assigne super_admin à un utilisateur via son email : ?diag=make-superadmin&email=xxx
-        $email = $_GET['email'] ?? '';
+        $email = filter_var($_GET['email'] ?? '', FILTER_SANITIZE_EMAIL);
+        $role  = preg_replace('/[^a-z_]/', '', $_GET['role'] ?? 'super_admin');
         if (!$email) { echo "Parametre email manquant.\n"; exit; }
-        $cmd = "cd $dir && php artisan tinker --no-interaction --execute=\""
-             . "\\$u = App\\\\Models\\\\User::where('email','$email')->first();"
-             . "if(!\\$u){echo 'Utilisateur introuvable.';exit;}"
-             . "\\$u->syncRoles(['super_admin']);"
-             . "echo 'super_admin assigne a '.\$u->email;\"  2>&1";
-        echo shell_exec($cmd);
+        $tmp = tempnam(sys_get_temp_dir(), 'ciro_sa_') . '.php';
+        file_put_contents($tmp, "<?php\n"
+            . "require '{$dir}/vendor/autoload.php';\n"
+            . "\$app = require '{$dir}/bootstrap/app.php';\n"
+            . "\$app->make('Illuminate\\Contracts\\Console\\Kernel')->bootstrap();\n"
+            . "\$u = App\\Models\\User::where('email', '{$email}')->first();\n"
+            . "if (!\$u) { echo 'Utilisateur introuvable.'; exit(1); }\n"
+            . "\$u->syncRoles(['{$role}']);\n"
+            . "echo 'Rolle {$role} assigne a ' . \$u->email . ' (id=' . \$u->id . ').';\n"
+        );
+        echo shell_exec("php $tmp 2>&1");
+        unlink($tmp);
     } elseif ($diag === 'artisan-about') {
         echo shell_exec("cd $dir && php artisan about 2>&1");
     } elseif ($diag === 'php-error') {
