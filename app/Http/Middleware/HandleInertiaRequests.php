@@ -50,7 +50,8 @@ class HandleInertiaRequests extends Middleware
                         $user->company->only(['id', 'name', 'base_currency']),
                         ['is_demo' => (bool) $user->company->is_demo]
                     ) : null,
-                    'roles'       => $user->getRoleNames(),
+                    'roles'             => $user->getRoleNames(),
+                    'email_verified_at' => $user->email_verified_at?->toISOString(),
                 ] : null,
                 'portal'     => $user ? Navigation::portal($user, $locale) : null,
                 'navigation' => $user ? Navigation::for($user, $locale) : [],

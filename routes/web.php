@@ -217,7 +217,7 @@ Route::middleware(\App\Http\Middleware\TrackPageView::class)->get('/', function 
     ]);
 });
 
-Route::middleware(['auth', 'verified', 'subscription', 'two-factor'])->group(function () {
+Route::middleware(['auth', 'subscription', 'two-factor'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // --- Intégrations ----------------------------------------------------------

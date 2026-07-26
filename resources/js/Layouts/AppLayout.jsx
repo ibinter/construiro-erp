@@ -113,6 +113,24 @@ export default function AppLayout({ header, title, breadcrumbs = [], children })
                     </div>
                 )}
 
+                {/* Bandeau email non vérifié */}
+                {user && !user.email_verified_at && (
+                    <div
+                        className="flex items-center justify-between gap-3 px-4 py-2 text-sm bg-yellow-50 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300 border-b border-yellow-200 dark:border-yellow-800"
+                        role="alert"
+                    >
+                        <span>
+                            ⚠️ <strong>{t('Compte en attente de validation email')}</strong> — {t('Cliquez sur le lien reçu par email pour activer votre compte.')}
+                        </span>
+                        <Link
+                            href={route('verification.notice')}
+                            className="shrink-0 font-medium underline underline-offset-2 hover:text-yellow-900 dark:hover:text-yellow-100"
+                        >
+                            {t('Renvoyer le lien')}
+                        </Link>
+                    </div>
+                )}
+
                 {/* Bandeau abonnement grâce / expiration imminente */}
                 {subscription && (subscription.is_grace || ((subscription.days_remaining ?? Infinity) <= 7 && subscription.status !== 'expired')) && (
                     <div
