@@ -40,9 +40,10 @@ class RegisteredUserController extends Controller
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'name'               => $request->name,
+            'email'              => $request->email,
+            'password'           => Hash::make($request->password),
+            'email_verified_at'  => now(),  // auto-vérification : accès immédiat au dashboard
         ]);
 
         event(new Registered($user));
