@@ -27,6 +27,7 @@ function StatusBadge({ status }) {
 export default function Index({ orders, filters, statuses, can }) {
     const { t } = useTrans();
     const [search, setSearch] = useState(filters.search ?? '');
+    const items = orders?.data ?? [];
 
     const applyFilters = (next = {}) => {
         router.get('/purchases', { search, status: filters.status, ...next }, {
@@ -95,7 +96,7 @@ export default function Index({ orders, filters, statuses, can }) {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                        {orders.data.map((order) => (
+                        {items.map((order) => (
                             <tr key={order.id} className="text-sm hover:bg-slate-50 dark:hover:bg-slate-800/50">
                                 <td className="px-4 py-3">
                                     <Link href={`/purchases/${order.id}`} className="font-medium text-slate-800 hover:text-orange-600 dark:text-slate-100">
@@ -123,7 +124,7 @@ export default function Index({ orders, filters, statuses, can }) {
                             </tr>
                         ))}
 
-                        {orders.data.length === 0 && (
+                        {items.length === 0 && (
                             <tr>
                                 <td colSpan={6} className="px-4 py-12 text-center text-slate-400">
                                     <Icon name="shopping-cart" className="mx-auto mb-2 h-8 w-8" />
@@ -137,9 +138,9 @@ export default function Index({ orders, filters, statuses, can }) {
             </div>
 
             {/* Pagination */}
-            {orders.last_page > 1 && (
+            {(orders?.last_page ?? 1) > 1 && (
                 <div className="mt-4 flex flex-wrap gap-1">
-                    {orders.links.map((link, i) => (
+                    {(orders?.links ?? []).map((link, i) => (
                         <button
                             key={i}
                             disabled={!link.url}

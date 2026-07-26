@@ -48,8 +48,8 @@ class OpportunityController extends Controller
             'stages'        => Opportunity::STAGES,
             'pipeline'      => collect(Opportunity::STAGES)->map(fn ($stage) => [
                 'stage' => $stage,
-                'count' => (int) ($pipeline[$stage]->count ?? 0),
-                'total' => (float) ($pipeline[$stage]->total ?? 0),
+                'count' => (int) ($pipeline[$stage]?->count ?? 0),
+                'total' => (float) ($pipeline[$stage]?->total ?? 0),
             ])->values(),
             'can' => [
                 'create' => $user->can('crm.create'),

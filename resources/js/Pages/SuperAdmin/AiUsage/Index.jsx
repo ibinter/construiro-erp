@@ -241,7 +241,7 @@ export default function AiUsageIndex({ logs, month_stats, month_totals, companie
                                             {l.model}
                                         </td>
                                         <td className="text-right tabular-nums text-slate-700 dark:text-slate-200">
-                                            {l.tokens.toLocaleString('fr-FR')}
+                                            {(l.tokens ?? 0).toLocaleString('fr-FR')}
                                         </td>
                                         <td className="text-right tabular-nums text-slate-500 text-sm">
                                             {l.ms !== null ? `${l.ms} ms` : '—'}

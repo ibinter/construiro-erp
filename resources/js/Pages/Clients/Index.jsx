@@ -119,7 +119,7 @@ export default function Index({ clients, filters, types, can }) {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                        {clients.data.map((client) => (
+                        {(Array.isArray(clients?.data) ? clients.data : []).map((client) => (
                             <tr key={client.id} className="text-sm hover:bg-slate-50 dark:hover:bg-slate-800/50">
                                 <td className="px-4 py-3">
                                     <Link href={`/clients/${client.id}`} className="font-medium text-slate-800 hover:text-orange-600 dark:text-slate-100">
@@ -144,7 +144,7 @@ export default function Index({ clients, filters, types, can }) {
                             </tr>
                         ))}
 
-                        {clients.data.length === 0 && (
+                        {(Array.isArray(clients?.data) ? clients.data : []).length === 0 && (
                             <tr>
                                 <td colSpan={6} className="px-4 py-12 text-center text-slate-400">
                                     <Icon name="users" className="mx-auto mb-2 h-8 w-8" />
@@ -158,9 +158,9 @@ export default function Index({ clients, filters, types, can }) {
             </div>
 
             {/* Pagination */}
-            {clients.last_page > 1 && (
+            {(clients?.last_page ?? 0) > 1 && (
                 <div className="mt-4 flex flex-wrap gap-1">
-                    {clients.links.map((link, i) => (
+                    {(clients?.links ?? []).map((link, i) => (
                         <button
                             key={i}
                             disabled={!link.url}

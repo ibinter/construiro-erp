@@ -38,7 +38,7 @@ function InfoTile({ icon, label, value }) {
     );
 }
 
-export default function Show({ equipment, types = [], can }) {
+export default function Show({ equipment, maintenance_records_count: maintenanceRecordsCount, types = [], can }) {
     const { t } = useTrans();
     const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
     const [confirmDelete, setConfirmDelete] = useState(false);
@@ -126,7 +126,7 @@ export default function Show({ equipment, types = [], can }) {
                 <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
                     <h3 className="flex items-center gap-2 font-semibold text-slate-800 dark:text-slate-100">
                         <Icon name="wrench" className="h-5 w-5 text-orange-500" />
-                        Historique de maintenance ({records.length})
+                        Historique de maintenance ({maintenanceRecordsCount ?? records.length})
                     </h3>
                     {can.update && (
                         <button

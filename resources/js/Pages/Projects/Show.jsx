@@ -351,7 +351,7 @@ export default function Show({
                     title={t('Tâches récentes')}
                     action={
                         <Link
-                            href={`/planning?project_id=${project.id}`}
+                            href={`/planning?project=${project.id}`}
                             className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
                         >
                             {t('Planning')}
@@ -379,7 +379,7 @@ export default function Show({
                         }
                     </ul>
                     <div className="border-t border-slate-100 px-5 py-3 dark:border-slate-800">
-                        <Link href={`/planning?project_id=${project.id}`} className="text-sm text-orange-600 hover:underline">
+                        <Link href={`/planning?project=${project.id}`} className="text-sm text-orange-600 hover:underline">
                             {t('Voir le planning complet')} →
                         </Link>
                     </div>

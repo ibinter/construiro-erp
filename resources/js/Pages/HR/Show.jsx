@@ -379,7 +379,7 @@ export default function Show({ employee, attendances, payslips, kpis, can }) {
                                             </td>
                                             <td className="px-5 py-3 text-right">
                                                 <a
-                                                    href={`/hr/${employee.id}/payslips/${p.id}/pdf`}
+                                                    href={`/payroll/${p.id}/pdf`}
                                                     target="_blank"
                                                     rel="noopener"
                                                     title={t('Télécharger le bulletin')}

@@ -116,7 +116,7 @@ export default function LabTestForm({
                             id="project_id"
                             className={selectClass}
                             value={data.project_id ?? ''}
-                            onChange={(e) => setData('project_id', e.target.value)}
+                            onChange={(e) => setData('project_id', e.target.value || null)}
                         >
                             <option value="">{t('— Aucun —')}</option>
                             {projects.map((p) => (
@@ -131,7 +131,7 @@ export default function LabTestForm({
                             id="site_id"
                             className={selectClass}
                             value={data.site_id ?? ''}
-                            onChange={(e) => setData('site_id', e.target.value)}
+                            onChange={(e) => setData('site_id', e.target.value || null)}
                         >
                             <option value="">{t('— Aucun —')}</option>
                             {sites.map((s) => (

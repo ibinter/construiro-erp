@@ -103,11 +103,18 @@ class TreasuryController extends Controller
         abort_unless($account->company_id === $user->company_id, 403);
 
         $transactions = $account->transactions()
-            ->with(['project:id,name,code', 'user:id,name'])
+            ->with(['project:id,name,code'])
             ->latest('date')
             ->latest('id')
             ->paginate(15)
             ->withQueryString();
+
+        // Agrégation du flux en une seule requête SQL (anti race-condition) :
+        // même approche que index() — pas d'appel à currentBalance() qui exécute 2 requêtes séparées.
+        $flow = $account->transactions()
+            ->selectRaw("SUM(CASE WHEN type = 'in' THEN amount WHEN type = 'out' THEN -amount ELSE 0 END) as flow")
+            ->value('flow');
+        $balance = (float) $account->opening_balance + (float) ($flow ?? 0);
 
         return Inertia::render('Treasury/Account', [
             'account' => [
@@ -119,7 +126,7 @@ class TreasuryController extends Controller
                 'currency'        => $account->currency,
                 'opening_balance' => (float) $account->opening_balance,
                 'is_active'       => $account->is_active,
-                'balance'         => $account->currentBalance(),
+                'balance'         => $balance,
             ],
             'transactions' => $transactions,
             'types'        => TreasuryTransaction::TYPES,

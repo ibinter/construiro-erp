@@ -58,7 +58,7 @@ class Material extends Model
      */
     public function currentStock($warehouseId = null): float
     {
-        $query = $this->movements();
+        $query = $this->movements()->where('company_id', $this->company_id);
 
         if ($warehouseId) {
             $query->where('warehouse_id', $warehouseId);

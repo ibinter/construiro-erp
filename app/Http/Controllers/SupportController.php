@@ -126,8 +126,8 @@ class SupportController extends Controller
         $ticket->load(['messages.user']);
 
         $user = $request->user();
-        // Un agent est quelqu'un qui a le rôle admin/agent OU qui n'est pas le créateur du ticket
-        $canManage = $user->id !== $ticket->user_id;
+        // Un agent est quelqu'un qui a le rôle admin ou support_agent
+        $canManage = $user->hasRole(['admin', 'support_agent']);
 
         return Inertia::render('Support/Show', [
             'ticket'     => [
@@ -206,7 +206,7 @@ class SupportController extends Controller
         ]);
 
         $user    = $request->user();
-        $isAgent = $user->id !== $ticket->user_id;
+        $isAgent = $user->hasRole(['admin', 'support_agent']);
 
         // Upload pièces jointes
         $attachmentPaths = [];

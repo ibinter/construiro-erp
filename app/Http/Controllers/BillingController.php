@@ -24,7 +24,7 @@ class BillingController extends Controller
                     'id' => $p->id, 'name' => $p->name, 'slug' => $p->slug,
                     'description' => $p->description, 'price_monthly' => $p->price_monthly,
                     'price_yearly' => $p->price_yearly, 'currency' => $p->currency,
-                    'max_users' => $p->max_users, 'trial_days' => $p->trial_days,
+                    'max_users' => $p->max_users, 'max_projects' => $p->max_projects, 'trial_days' => $p->trial_days,
                 ]),
                 'invoices' => [],
             ]);
@@ -67,6 +67,7 @@ class BillingController extends Controller
                 'price_yearly' => $p->price_yearly,
                 'currency' => $p->currency,
                 'max_users' => $p->max_users,
+                'max_projects' => $p->max_projects,
                 'trial_days' => $p->trial_days,
             ]),
             'invoices' => $invoices->map(fn($i) => [
@@ -84,10 +85,16 @@ class BillingController extends Controller
     public function activate(Request $request): \Illuminate\Http\RedirectResponse
     {
         $validated = $request->validate([
-            'activation_key' => 'required|string|size:32',
+            'activation_key' => 'required|string|min:32|max:39',
         ]);
 
-        $subscription = Subscription::where('activation_key', $validated['activation_key'])
+        $cleanKey = str_replace('-', '', $validated['activation_key']);
+
+        if (strlen($cleanKey) !== 32) {
+            return back()->withErrors(['activation_key' => 'La clé d\'activation doit contenir exactement 32 caractères (tirets ignorés).']);
+        }
+
+        $subscription = Subscription::where('activation_key', $cleanKey)
             ->where('company_id', $request->user()->company_id)
             ->first();
 

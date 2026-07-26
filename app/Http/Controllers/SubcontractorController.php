@@ -132,6 +132,6 @@ class SubcontractorController extends Controller
     /** Empêche l'accès à un sous-traitant d'une autre entreprise. */
     private function authorizeCompany(User $user, Subcontractor $subcontractor): void
     {
-        abort_unless($subcontractor->company_id === $user->company_id, 403);
+        abort_unless((int)$subcontractor->company_id === (int)$user->company_id, 403);
     }
 }

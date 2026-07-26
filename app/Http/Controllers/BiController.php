@@ -40,7 +40,7 @@ class BiController extends Controller
 
                 $invAgg = \App\Models\Invoice::where('company_id', $companyId)
                     ->selectRaw("
-                        SUM(CASE WHEN status != 'draft' THEN total ELSE 0 END) as ca_total,
+                        SUM(CASE WHEN status NOT IN ('draft','cancelled') THEN total ELSE 0 END) as ca_total,
                         SUM(CASE WHEN status = 'paid' THEN total ELSE 0 END) as ca_encaisse,
                         SUM(CASE WHEN status IN ('sent','overdue') THEN 1 ELSE 0 END) as impayees
                     ")->first();
@@ -97,6 +97,9 @@ class BiController extends Controller
         $companyId = $user->company_id;
         $currency  = $user->company?->base_currency ?? 'XOF';
         $company   = $user->company;
+        if (!$company) {
+            return redirect()->back()->withErrors(['pdf' => 'Entreprise introuvable.']);
+        }
 
         // --- Projets -----------------------------------------------------------
         $projectsQuery = Project::where('company_id', $companyId);

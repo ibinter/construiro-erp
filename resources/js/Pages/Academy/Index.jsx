@@ -145,7 +145,7 @@ function CategoryCard({ category, completedIds, onMarkViewed }) {
 
 // ─── Page principale ─────────────────────────────────────────────────────────
 
-export default function AcademyIndex({ categories, completed_ids }) {
+export default function AcademyIndex({ categories = [], completed_ids }) {
     const [completedIds, setCompletedIds] = useState(completed_ids ?? []);
 
     // Total de ressources publiées et complétées

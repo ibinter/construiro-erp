@@ -72,6 +72,7 @@ class MaintenanceController extends Controller
         ]);
 
         $data['company_id'] = $user->company_id;
+        $data['user_id']    = $user->id;
 
         MaintenanceRecord::create($data);
 

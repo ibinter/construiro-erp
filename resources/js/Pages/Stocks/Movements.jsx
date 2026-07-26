@@ -14,6 +14,7 @@ const UNIT_SHORT = { u: 'u', kg: 'kg', m: 'm', m2: 'm²', m3: 'm³', ml: 'ml', s
 
 export default function Movements({ movements, warehouses, filters, types }) {
     const { t } = useTrans();
+    const items = movements?.data ?? [];
     const applyFilters = (next = {}) => {
         router.get('/stocks/movements', { ...filters, ...next }, { preserveState: true, replace: true });
     };
@@ -69,7 +70,7 @@ export default function Movements({ movements, warehouses, filters, types }) {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                        {movements.data.map((mv) => {
+                        {items.map((mv) => {
                             const mt = MOVEMENT_TYPE[mv.type] ?? { label: mv.type, color: 'bg-slate-100 text-slate-600' };
                             const unit = UNIT_SHORT[mv.material?.unit] ?? mv.material?.unit;
                             return (
@@ -92,7 +93,7 @@ export default function Movements({ movements, warehouses, filters, types }) {
                             );
                         })}
 
-                        {movements.data.length === 0 && (
+                        {items.length === 0 && (
                             <tr>
                                 <td colSpan={7} className="px-4 py-12 text-center text-slate-400">
                                     <Icon name="arrow-left-right" className="mx-auto mb-2 h-8 w-8" />
@@ -106,9 +107,9 @@ export default function Movements({ movements, warehouses, filters, types }) {
             </div>
 
             {/* Pagination */}
-            {movements.last_page > 1 && (
+            {(movements?.last_page ?? 1) > 1 && (
                 <div className="mt-4 flex flex-wrap gap-1">
-                    {movements.links.map((link, i) => (
+                    {(movements?.links ?? []).map((link, i) => (
                         <button
                             key={i}
                             disabled={!link.url}

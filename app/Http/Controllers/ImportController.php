@@ -298,6 +298,7 @@ class ImportController extends Controller
         ]);
 
         $user      = $request->user();
+        abort_unless($user->company_id, 403, 'Compte non rattaché à une entreprise.');
         $cfg       = self::IMPORTABLE_TYPES[$request->type];
         $model     = $cfg['model'];
         $skipDups  = $request->boolean('skip_dups', true);
@@ -385,6 +386,7 @@ class ImportController extends Controller
         ]);
 
         $user   = $request->user();
+        abort_unless($user->company_id, 403, 'Compte non rattaché à une entreprise.');
         $module = $request->module;
         $cfg    = self::IMPORTABLE_TYPES[$module];
 

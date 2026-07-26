@@ -80,9 +80,10 @@ class EquipmentController extends Controller
         ]);
 
         return Inertia::render('Equipment/Show', [
-            'equipment' => $equipment,
-            'types'     => \App\Models\MaintenanceRecord::TYPES,
-            'can'       => [
+            'equipment'                 => $equipment,
+            'maintenance_records_count' => $equipment->maintenanceRecords()->count(),
+            'types'                     => \App\Models\MaintenanceRecord::TYPES,
+            'can'                       => [
                 'update' => $request->user()->can('equipment.update'),
                 'delete' => $request->user()->can('equipment.delete'),
             ],
@@ -178,6 +179,6 @@ class EquipmentController extends Controller
     /** Empêche l'accès à un équipement d'une autre entreprise. */
     private function authorizeCompany(User $user, Equipment $equipment): void
     {
-        abort_unless($equipment->company_id === $user->company_id, 403);
+        abort_unless((int)$equipment->company_id === (int)$user->company_id, 403);
     }
 }

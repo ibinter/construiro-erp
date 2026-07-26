@@ -23,11 +23,17 @@ export default function Edit({ boq, clients, projects, statuses, unitPrices }) {
         })),
     });
 
-    /** Soumet avec un statut cible (draft ou validated). */
+    /** Soumet avec un statut cible (validated uniquement). */
     const submitWithStatus = (targetStatus) => (e) => {
         if (e && e.preventDefault) e.preventDefault();
         form.transform((data) => ({ ...data, status: targetStatus }))
             .put(`/boq/${boq.id}`);
+    };
+
+    /** Soumet le formulaire tel quel — respecte data.status choisi par l'utilisateur. */
+    const handleSubmit = (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+        form.put(`/boq/${boq.id}`);
     };
 
     return (
@@ -40,7 +46,7 @@ export default function Edit({ boq, clients, projects, statuses, unitPrices }) {
                     projects={projects}
                     statuses={statuses}
                     unitPrices={unitPrices}
-                    onSubmit={submitWithStatus(boq.status ?? 'draft')}
+                    onSubmit={handleSubmit}
                     onSubmitValidate={submitWithStatus('validated')}
                     submitLabel={t('Enregistrer les modifications')}
                 />

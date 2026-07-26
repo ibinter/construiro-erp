@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import AppLayout from '@/Layouts/AppLayout';
 import Icon from '@/Components/Icon';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, router } from '@inertiajs/react';
 import { useTrans } from '@/i18n';
 
 // Styles des tonalités d'insight.
@@ -33,10 +33,8 @@ export default function AiIndex({ conversations = [], insights = [], suggestions
     };
 
     const askSuggestion = (question) => {
-        setData('question', question);
-        post(route('ai.ask'), {
+        router.post(route('ai.ask'), { question }, {
             preserveScroll: true,
-            data: { question },
             onSuccess: () => reset('question'),
         });
     };

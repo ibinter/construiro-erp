@@ -77,14 +77,21 @@ class InvoiceController extends Controller
             return $invoice;
         });
 
-        NotificationService::send(
-            companyId: $request->user()->company_id,
-            userId:    null,
-            type:      'invoice_due',
-            title:     'Nouvelle facture créée',
-            body:      "La facture {$invoice->code} a été enregistrée.",
-            link:      route('invoices.show', $invoice),
-        );
+        try {
+            NotificationService::send(
+                companyId: $request->user()->company_id,
+                userId:    null,
+                type:      'invoice_due',
+                title:     'Nouvelle facture créée',
+                body:      "La facture {$invoice->code} a été enregistrée.",
+                link:      route('invoices.show', $invoice),
+            );
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('InvoiceController: notification failed after store', [
+                'invoice_id' => $invoice->id,
+                'error'      => $e->getMessage(),
+            ]);
+        }
 
         return redirect()->route('invoices.show', $invoice)
             ->with('success', 'Facture créée avec succès.');

@@ -207,6 +207,7 @@ class AccountingController extends Controller
     {
         $user = $request->user();
         abort_unless($entry->company_id === $user->company_id, 403);
+        abort_if((bool) ($entry->locked ?? false), 403, 'Cette écriture appartient à un exercice clôturé.');
 
         $entry->lines()->delete();
         $entry->delete();

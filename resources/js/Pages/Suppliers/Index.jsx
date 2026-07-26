@@ -113,7 +113,7 @@ export default function Index({ suppliers, filters, categories, can }) {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                        {suppliers.data.map((supplier) => (
+                        {(Array.isArray(suppliers?.data) ? suppliers.data : []).map((supplier) => (
                             <tr key={supplier.id} className="text-sm hover:bg-slate-50 dark:hover:bg-slate-800/50">
                                 <td className="px-4 py-3">
                                     <Link href={`/suppliers/${supplier.id}`} className="font-medium text-slate-800 hover:text-orange-600 dark:text-slate-100">
@@ -138,7 +138,7 @@ export default function Index({ suppliers, filters, categories, can }) {
                             </tr>
                         ))}
 
-                        {suppliers.data.length === 0 && (
+                        {(Array.isArray(suppliers?.data) ? suppliers.data : []).length === 0 && (
                             <tr>
                                 <td colSpan={6} className="px-4 py-12 text-center text-slate-400">
                                     <Icon name="truck" className="mx-auto mb-2 h-8 w-8" />
@@ -152,9 +152,9 @@ export default function Index({ suppliers, filters, categories, can }) {
             </div>
 
             {/* Pagination */}
-            {suppliers.last_page > 1 && (
+            {(suppliers?.last_page ?? 1) > 1 && (
                 <div className="mt-4 flex flex-wrap gap-1">
-                    {suppliers.links.map((link, i) => (
+                    {(Array.isArray(suppliers?.links) ? suppliers.links : []).map((link, i) => (
                         <button
                             key={i}
                             disabled={!link.url}
