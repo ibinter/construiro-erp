@@ -106,10 +106,10 @@ use Inertia\Inertia;
 // ─── Aliases / redirects routes courantes ────────────────────────────────────
 Route::redirect('/stock',                    '/stocks',                     301);
 Route::redirect('/employees',               '/hr',                         301);
-Route::redirect('/cgu',                     '/legal/cgu',                  301);
-Route::redirect('/confidentialite',         '/legal/confidentialite',      301);
-Route::redirect('/mentions-legales',        '/legal/mentions-legales',     301);
-Route::redirect('/politique-confidentialite', '/legal/confidentialite',    301);
+Route::redirect('/cgu',                       '/legal/cgu',     301);
+Route::redirect('/confidentialite',          '/legal/privacy',  301);
+Route::redirect('/mentions-legales',         '/legal/legal',    301);
+Route::redirect('/politique-confidentialite', '/legal/privacy', 301);
 
 // ─── Vérification publique de documents (QR) ────────────────────────────────
 Route::get('/verify/{token}', [DocumentVerifyController::class, 'show'])->name('verify.document');
