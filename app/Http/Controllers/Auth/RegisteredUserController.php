@@ -5,14 +5,15 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Jobs\SendMailJob;
 use App\Mail\WelcomeMail;
+use App\Models\Company;
 use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
@@ -28,7 +29,7 @@ class RegisteredUserController extends Controller
 
         return Inertia::render('Auth/Register', [
             'plans'        => $plans,
-            'selectedPlan' => $request->query('plan'), // slug passé depuis le landing
+            'selectedPlan' => $request->query('plan'),
         ]);
     }
 
@@ -52,28 +53,41 @@ class RegisteredUserController extends Controller
             'plan_id'  => 'required|exists:subscription_plans,id',
         ]);
 
-        $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => Hash::make($request->password),
+        // 1. Créer une company provisoire (complétée lors de l'onboarding)
+        $companyName = $request->name . ' — Entreprise';
+        $slug = Str::slug($companyName) . '-' . Str::random(6);
+
+        $company = Company::create([
+            'name'          => $companyName,
+            'slug'          => $slug,
+            'base_currency' => 'XOF',
+            'locale'        => 'fr',
+            'country'       => 'CI',
+            'is_active'     => true,
         ]);
+
+        // 2. Créer l'utilisateur lié à cette company
+        $user = User::create([
+            'name'       => $request->name,
+            'email'      => $request->email,
+            'password'   => Hash::make($request->password),
+            'company_id' => $company->id,
+        ]);
+
+        // 3. Attribuer le rôle admin de l'entreprise
+        if (class_exists(\Spatie\Permission\Models\Role::class)) {
+            $role = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+            $user->assignRole($role);
+        }
 
         event(new Registered($user));
 
-        dispatch(new SendMailJob(
-            $user->email,
-            new WelcomeMail(
-                userName: $user->name,
-                companyName: $user->company?->name ?? '',
-            ),
-        ));
-
-        // Créer la subscription d'essai pour le plan choisi
+        // 4. Subscription d'essai pour le plan choisi
         $plan = SubscriptionPlan::find($request->plan_id);
-        if ($plan && $user->company_id) {
+        if ($plan) {
             $trialDays = $plan->trial_days ?: 14;
             Subscription::create([
-                'company_id'    => $user->company_id,
+                'company_id'    => $company->id,
                 'plan_id'       => $plan->id,
                 'status'        => 'trial',
                 'billing_cycle' => 'monthly',
@@ -82,8 +96,16 @@ class RegisteredUserController extends Controller
             ]);
         }
 
-        // Ne pas appeler Auth::login — l'utilisateur se connecte explicitement
-        // depuis la page de succès via le formulaire de connexion.
+        // 5. Email de bienvenue
+        dispatch(new SendMailJob(
+            $user->email,
+            new WelcomeMail(
+                userName: $user->name,
+                companyName: $company->name,
+            ),
+        ));
+
+        // 6. L'utilisateur se connecte explicitement depuis la page de succès
         $request->session()->put('registered_email', $user->email);
 
         return redirect(route('register.success'));

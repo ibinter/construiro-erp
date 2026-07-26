@@ -16,7 +16,9 @@ class OnboardingController extends Controller
         $company = $user->company;
 
         if (!$company) {
-            return redirect()->route('dashboard');
+            // Nouveau compte sans company — rediriger vers l'inscription
+            // (ne devrait plus arriver après le fix RegisteredUserController)
+            return redirect()->route('register');
         }
 
         // Determine completed steps
