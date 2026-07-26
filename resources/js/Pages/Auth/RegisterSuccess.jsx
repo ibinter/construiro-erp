@@ -44,6 +44,7 @@ export default function RegisterSuccess({ email = '' }) {
             {/* Bouton Se connecter → formulaire inline */}
             {!showForm ? (
                 <button
+                    type="button"
                     onClick={() => setShowForm(true)}
                     className="w-full py-3 rounded-xl font-bold text-white transition hover:opacity-90 mb-4"
                     style={{ background: BRAND }}

@@ -1,6 +1,6 @@
-/* CONSTRUIRO ERP — Service Worker v2.0 */
+/* CONSTRUIRO ERP — Service Worker v3.0 */
 
-const CACHE_NAME    = 'construiro-v2';
+const CACHE_NAME    = 'construiro-v3';
 const OFFLINE_URL   = '/offline.html';
 
 // Assets à mettre en cache immédiatement

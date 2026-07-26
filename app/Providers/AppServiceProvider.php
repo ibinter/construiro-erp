@@ -23,9 +23,12 @@ class AppServiceProvider extends ServiceProvider
     {
         Vite::prefetch(concurrency: 3);
 
-        // Le super-administrateur possède implicitement toutes les permissions.
+        // super_admin (tenant) et admin (inscrit) ont toutes les permissions de leur société.
         Gate::before(function ($user, string $ability) {
-            return $user->hasRole('super_admin') ? true : null;
+            if ($user->hasRole('super_admin') || $user->hasRole('admin')) {
+                return true;
+            }
+            return null;
         });
 
         \Illuminate\Support\Facades\Event::listen(
