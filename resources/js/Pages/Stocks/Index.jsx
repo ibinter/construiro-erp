@@ -25,6 +25,8 @@ const today = () => new Date().toISOString().slice(0, 10);
 export default function Index({ stocks, warehouses, materials, filters, movements, types, can }) {
     const { t } = useTrans();
     const [showModal, setShowModal] = useState(false);
+    // stocks may arrive as a Laravel paginator object ({data:[...], total:...}) or plain array
+    const stockItems = Array.isArray(stocks) ? stocks : (stocks?.data ?? []);
 
     const form = useForm({
         type: 'in',
@@ -109,7 +111,7 @@ export default function Index({ stocks, warehouses, materials, filters, movement
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                        {stocks.map((s) => {
+                        {stockItems.map((s) => {
                             const unit = UNIT_SHORT[s.unit] ?? s.unit;
                             return (
                                 <tr key={s.id} className="text-sm hover:bg-slate-50 dark:hover:bg-slate-800/50">
@@ -139,7 +141,7 @@ export default function Index({ stocks, warehouses, materials, filters, movement
                             );
                         })}
 
-                        {stocks.length === 0 && (
+                        {stockItems.length === 0 && (
                             <tr>
                                 <td colSpan={4} className="px-4 py-12 text-center text-slate-400">
                                     <Icon name="boxes" className="mx-auto mb-2 h-8 w-8" />

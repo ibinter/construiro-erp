@@ -22,7 +22,7 @@ return new class extends Migration
             $table->json('old_values')->nullable();
             $table->json('new_values')->nullable();
             $table->string('ip_address', 45)->nullable();
-            $table->string('user_agent')->nullable();
+            $table->string('user_agent', 500)->nullable();
             $table->string('url')->nullable();
             $table->string('method', 10)->nullable();
             $table->boolean('is_support_session')->default(false); // prise en main superadmin
