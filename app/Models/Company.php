@@ -41,4 +41,9 @@ class Company extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
 }

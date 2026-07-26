@@ -110,6 +110,17 @@ Route::redirect('/cgu',                       '/legal/cgu',     301);
 Route::redirect('/confidentialite',          '/legal/privacy',  301);
 Route::redirect('/mentions-legales',         '/legal/legal',    301);
 Route::redirect('/politique-confidentialite', '/legal/privacy', 301);
+// Aliases pratiques (URLs mémorisables → vraies routes)
+Route::redirect('/payslips',      '/payroll',        301);
+Route::redirect('/takeoffs',      '/takeoff',        301);
+Route::redirect('/studies',       '/design-office',  301);
+Route::redirect('/signatures',    '/e-signature',    301);
+Route::redirect('/ai-assistant',  '/ai',             301);
+Route::redirect('/ai-settings',   '/admin/ai-settings', 301);
+Route::redirect('/audit-logs',    '/admin/audit-logs',  301);
+Route::redirect('/backups',       '/backup',         301);
+Route::redirect('/mobile-money',  '/treasury',       301);
+Route::redirect('/opportunities', '/crm',            301);
 
 // ─── Vérification publique de documents (QR) ────────────────────────────────
 Route::get('/verify/{token}', [DocumentVerifyController::class, 'show'])->name('verify.document');
@@ -245,6 +256,7 @@ Route::middleware(['auth', 'subscription', 'two-factor'])->group(function () {
     });
 
     // --- Préférences utilisateur -----------------------------------------------
+    Route::get('/preferences', fn () => redirect()->route('profile.edit'))->name('preferences.index');
     Route::put('/preferences', [PreferencesController::class, 'update'])->name('preferences.update');
 
     // --- Académie / Formation --------------------------------------------------
