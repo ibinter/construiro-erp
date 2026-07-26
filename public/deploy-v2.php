@@ -96,6 +96,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['diag'])) {
     } elseif ($diag === 'seed-practical-cases') {
         // §12.2 Cas pratiques Académie (is_published=true, type=document)
         echo shell_exec("cd $dir && php artisan db:seed --class='Database\\Seeders\\PracticalCasesSeeder' --force 2>&1");
+    } elseif ($diag === 'verify-all-users') {
+        // Auto-vérifie tous les utilisateurs qui n'ont pas encore vérifié leur email
+        $out = shell_exec("cd $dir && php artisan tinker --no-interaction --execute=\""
+            . "\\$count = App\\\\Models\\\\User::whereNull('email_verified_at')->update(['email_verified_at' => now()]);"
+            . "echo \\$count . ' utilisateur(s) verifie(s).';\" 2>&1");
+        echo $out;
+        echo "\nDONE\n";
     } elseif ($diag === 'make-superadmin') {
         // Assigne super_admin à un utilisateur via son email : ?diag=make-superadmin&email=xxx
         $email = $_GET['email'] ?? '';
