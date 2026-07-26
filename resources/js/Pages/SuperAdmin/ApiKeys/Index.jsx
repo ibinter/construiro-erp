@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { router } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import { PageHeader, Badge } from '@/Components/UI';
 
@@ -62,7 +63,7 @@ function TokenRow({ token, onRevoke }) {
             </td>
             <td className="py-3 px-4">
                 <button
-                    onClick={() => onRevoke(token.id, token.user_id)}
+                    onClick={() => onRevoke(token.id)}
                     className="inline-flex items-center gap-1 text-red-400 hover:text-red-300 text-xs transition-colors"
                     title="Révoquer ce token"
                 >
@@ -148,35 +149,28 @@ export default function ApiKeysIndex({ companies = [], stats = {} }) {
     const activeTokens       = stats.active_tokens            ?? totalTokens;
     const companiesWithTokens = stats.companies_with_tokens   ?? localCompanies.length;
 
-    const handleRevoke = async (tokenId, userId) => {
+    const handleRevoke = (tokenId) => {
         if (!confirm('Révoquer ce token API ? Cette action est irréversible.')) return;
 
         setRevoking(tokenId);
-        try {
-            const res = await fetch(`/api/v1/tokens/${tokenId}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
-                    'Accept': 'application/json',
-                },
-            });
-
-            if (res.ok || res.status === 404) {
+        router.delete(route('superadmin.api-tokens.destroy', tokenId), {
+            preserveScroll: true,
+            onSuccess: () => {
                 setLocalCompanies(prev =>
                     prev
                         .map(c => ({ ...c, tokens: c.tokens.filter(t => t.id !== tokenId) }))
                         .filter(c => c.tokens.length > 0)
                 );
                 setNotice({ type: 'success', msg: 'Token révoqué avec succès.' });
-            } else {
+            },
+            onError: () => {
                 setNotice({ type: 'error', msg: 'Erreur lors de la révocation.' });
-            }
-        } catch {
-            setNotice({ type: 'error', msg: 'Erreur réseau.' });
-        } finally {
-            setRevoking(null);
-            setTimeout(() => setNotice(null), 4000);
-        }
+            },
+            onFinish: () => {
+                setRevoking(null);
+                setTimeout(() => setNotice(null), 4000);
+            },
+        });
     };
 
     return (

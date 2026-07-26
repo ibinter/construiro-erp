@@ -14,7 +14,7 @@ export default function AppLayout({ header, title, breadcrumbs = [], children })
     const { auth, subscription } = usePage().props;
     const user = auth?.user;
     const { t } = useTrans();
-    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState(typeof window !== 'undefined' && window.innerWidth >= 1024);
 
     const pageTitle = title || header;
 
@@ -114,7 +114,7 @@ export default function AppLayout({ header, title, breadcrumbs = [], children })
                 )}
 
                 {/* Bandeau abonnement grâce / expiration imminente */}
-                {subscription && (subscription.is_grace || (subscription.days_remaining <= 7 && subscription.status !== 'expired')) && (
+                {subscription && (subscription.is_grace || ((subscription.days_remaining ?? Infinity) <= 7 && subscription.status !== 'expired')) && (
                     <div
                         className={`flex items-center justify-between gap-3 px-4 py-2 text-sm ${
                         subscription.is_grace

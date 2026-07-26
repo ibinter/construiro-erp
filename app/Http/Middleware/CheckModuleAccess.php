@@ -19,7 +19,7 @@ class CheckModuleAccess
         }
 
         $subscription = Subscription::where('company_id', $user->company_id)
-            ->whereIn('status', ['active', 'trial'])
+            ->whereIn('status', ['active', 'trial', 'grace'])
             ->latest()
             ->first();
 

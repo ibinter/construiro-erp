@@ -38,7 +38,7 @@ class WebhookDispatcher
                     'Content-Type'              => 'application/json',
                     'X-Construiro-Signature'    => $signature,
                     'X-Construiro-Event'        => $event,
-                ])->timeout(5)->post($webhook->url, json_decode($payload, true));
+                ])->timeout(5)->withBody($payload, 'application/json')->post($webhook->url);
 
                 WebhookDelivery::create([
                     'webhook_id'      => $webhook->id,

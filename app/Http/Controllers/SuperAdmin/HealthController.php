@@ -84,7 +84,10 @@ class HealthController extends Controller
     {
         try {
             Cache::put('health_check', true, 5);
-            Cache::get('health_check');
+            $val = Cache::get('health_check');
+            if ($val !== true) {
+                throw new \RuntimeException('Cache read/write mismatch');
+            }
 
             return ['status' => 'ok', 'label' => 'Cache', 'detail' => config('cache.default')];
         } catch (\Exception $e) {

@@ -91,7 +91,7 @@ class PayslipController extends Controller
 
         // Un seul bulletin par employé et par période.
         Payslip::updateOrCreate(
-            ['employee_id' => $data['employee_id'], 'period' => $data['period']],
+            ['company_id' => $companyId, 'employee_id' => $data['employee_id'], 'period' => $data['period']],
             array_merge($data, [
                 'company_id' => $companyId,
                 'deductions' => $data['deductions'] ?? 0,

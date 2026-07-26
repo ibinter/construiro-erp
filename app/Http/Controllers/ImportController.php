@@ -304,7 +304,12 @@ class ImportController extends Controller
         $uniqueOn  = $cfg['unique_on'] ?? null;
 
         // Re-lire le fichier depuis le stockage temporaire
-        $path = storage_path('app/' . $request->tmp_path);
+        $safeName = basename((string) $request->input('tmp_path', ''));
+        $path = storage_path('app/imports_tmp/' . $safeName);
+        abort_unless(
+            $safeName !== '' && file_exists($path) && str_starts_with(realpath($path), realpath(storage_path('app/imports_tmp'))),
+            422, 'Fichier temporaire invalide ou introuvable.'
+        );
         $ext  = pathinfo($path, PATHINFO_EXTENSION);
 
         $rows = match (true) {
@@ -589,7 +594,12 @@ class ImportController extends Controller
         $companyId = $user->company_id;
         $skipDups  = $request->boolean('skip_dups', true);
 
-        $path = storage_path('app/' . $request->tmp_path);
+        $safeName = basename((string) $request->input('tmp_path', ''));
+        $path = storage_path('app/imports_tmp/' . $safeName);
+        abort_unless(
+            $safeName !== '' && file_exists($path) && str_starts_with(realpath($path), realpath(storage_path('app/imports_tmp'))),
+            422, 'Fichier temporaire invalide ou introuvable.'
+        );
         $ext  = pathinfo($path, PATHINFO_EXTENSION);
         $rows = in_array($ext, ['xlsx', 'xls']) ? $this->readExcel($path) : $this->readCsv($path);
         array_shift($rows);
@@ -669,7 +679,12 @@ class ImportController extends Controller
         $companyId = $user->company_id;
         $skipDups  = $request->boolean('skip_dups', true);
 
-        $path = storage_path('app/' . $request->tmp_path);
+        $safeName = basename((string) $request->input('tmp_path', ''));
+        $path = storage_path('app/imports_tmp/' . $safeName);
+        abort_unless(
+            $safeName !== '' && file_exists($path) && str_starts_with(realpath($path), realpath(storage_path('app/imports_tmp'))),
+            422, 'Fichier temporaire invalide ou introuvable.'
+        );
         $ext  = pathinfo($path, PATHINFO_EXTENSION);
         $rows = in_array($ext, ['xlsx', 'xls']) ? $this->readExcel($path) : $this->readCsv($path);
         array_shift($rows);
@@ -748,7 +763,12 @@ class ImportController extends Controller
         $companyId = $user->company_id;
         $skipDups  = $request->boolean('skip_dups', true);
 
-        $path = storage_path('app/' . $request->tmp_path);
+        $safeName = basename((string) $request->input('tmp_path', ''));
+        $path = storage_path('app/imports_tmp/' . $safeName);
+        abort_unless(
+            $safeName !== '' && file_exists($path) && str_starts_with(realpath($path), realpath(storage_path('app/imports_tmp'))),
+            422, 'Fichier temporaire invalide ou introuvable.'
+        );
         $ext  = pathinfo($path, PATHINFO_EXTENSION);
         $rows = in_array($ext, ['xlsx', 'xls']) ? $this->readExcel($path) : $this->readCsv($path);
         array_shift($rows);
@@ -823,7 +843,12 @@ class ImportController extends Controller
         $user      = $request->user();
         $companyId = $user->company_id;
 
-        $path = storage_path('app/' . $request->tmp_path);
+        $safeName = basename((string) $request->input('tmp_path', ''));
+        $path = storage_path('app/imports_tmp/' . $safeName);
+        abort_unless(
+            $safeName !== '' && file_exists($path) && str_starts_with(realpath($path), realpath(storage_path('app/imports_tmp'))),
+            422, 'Fichier temporaire invalide ou introuvable.'
+        );
         $ext  = pathinfo($path, PATHINFO_EXTENSION);
         $rows = in_array($ext, ['xlsx', 'xls']) ? $this->readExcel($path) : $this->readCsv($path);
         array_shift($rows);
@@ -922,7 +947,12 @@ class ImportController extends Controller
         $companyId = $user->company_id;
         $skipDups  = $request->boolean('skip_dups', true);
 
-        $path = storage_path('app/' . $request->tmp_path);
+        $safeName = basename((string) $request->input('tmp_path', ''));
+        $path = storage_path('app/imports_tmp/' . $safeName);
+        abort_unless(
+            $safeName !== '' && file_exists($path) && str_starts_with(realpath($path), realpath(storage_path('app/imports_tmp'))),
+            422, 'Fichier temporaire invalide ou introuvable.'
+        );
         $ext  = pathinfo($path, PATHINFO_EXTENSION);
         $rows = in_array($ext, ['xlsx', 'xls']) ? $this->readExcel($path) : $this->readCsv($path);
         array_shift($rows);

@@ -141,8 +141,7 @@ class PdfController extends Controller
 
         return Pdf::loadView($view, $data)
             ->setPaper('a4', 'portrait')
-            ->set_option('defaultFont', 'DejaVu Sans')
-            ->set_option('isRemoteEnabled', false)
+            ->setOptions(['defaultFont' => 'DejaVu Sans', 'isRemoteEnabled' => false])
             ->stream($filename);
     }
 

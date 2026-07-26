@@ -18,6 +18,7 @@ class WelcomeMail extends Mailable
         public bool $isTrial = true,
         public ?string $trialEndsAt = null,
         public string $loginUrl = '',
+        public ?string $tempPassword = null,
     ) {
         $this->loginUrl = $loginUrl ?: url('/login');
     }

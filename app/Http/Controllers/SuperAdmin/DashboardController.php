@@ -20,9 +20,12 @@ class DashboardController extends Controller
             $start = $month->copy()->startOfMonth();
             $end   = $month->copy()->endOfMonth();
 
-            // MRR = somme des abonnements actifs créés ce mois × prix mensuel normalisé
-            $mrr = Subscription::where('status', 'active')
-                ->whereBetween('starts_at', [$start, $end])
+            // MRR = somme des abonnements actifs pendant ce mois × prix mensuel normalisé
+            $mrr = Subscription::where('starts_at', '<=', $end)
+                ->where(function ($q) use ($start) {
+                    $q->whereNull('ends_at')->orWhere('ends_at', '>=', $start);
+                })
+                ->where('status', 'active')
                 ->with('plan:id,price_monthly,price_yearly')
                 ->get()
                 ->sum(function ($sub) {

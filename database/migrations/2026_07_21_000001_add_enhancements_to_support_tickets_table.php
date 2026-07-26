@@ -11,10 +11,17 @@ return new class extends Migration
     {
         // 1. Colonne status : la colonne est varchar — on la convertit en ENUM
         //    avec tous les anciens statuts + les nouveaux.
-        DB::statement("ALTER TABLE support_tickets MODIFY COLUMN status ENUM(
-            'new','open','pending','resolved','closed',
-            'assigned','in_progress','waiting_client','waiting_tech','escalated','reopened'
-        ) NOT NULL DEFAULT 'new'");
+        //    MySQL-only : la clause MODIFY COLUMN / ENUM n'existe pas en SQLite.
+        if (DB::getDriverName() === 'mysql') {
+            try {
+                DB::statement("ALTER TABLE support_tickets MODIFY COLUMN status ENUM(
+                    'new','open','pending','resolved','closed',
+                    'assigned','in_progress','waiting_client','waiting_tech','escalated','reopened'
+                ) NOT NULL DEFAULT 'new'");
+            } catch (\Throwable $e) {
+                // Ignore si la colonne est déjà un ENUM ou si la DB ne supporte pas MODIFY.
+            }
+        }
 
         // 2. Pièces jointes (JSON) + champs SLA sur les tickets
         Schema::table('support_tickets', function (Blueprint $table) {
@@ -40,7 +47,13 @@ return new class extends Migration
             $table->dropColumn(['attachments', 'first_response_target_at', 'resolved_target_at', 'sla_breached']);
         });
 
-        // Revient au varchar simple
-        DB::statement("ALTER TABLE support_tickets MODIFY COLUMN status VARCHAR(255) NOT NULL DEFAULT 'new'");
+        // Revient au varchar simple (MySQL uniquement)
+        if (DB::getDriverName() === 'mysql') {
+            try {
+                DB::statement("ALTER TABLE support_tickets MODIFY COLUMN status VARCHAR(255) NOT NULL DEFAULT 'new'");
+            } catch (\Throwable $e) {
+                //
+            }
+        }
     }
 };

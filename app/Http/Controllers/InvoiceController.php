@@ -208,6 +208,8 @@ class InvoiceController extends Controller
     {
         $this->authorizeCompany($request->user(), $invoice);
 
+        abort_if((float) $invoice->amount_paid >= (float) $invoice->total, 422, 'La facture est déjà intégralement soldée.');
+
         $balance = (float) $invoice->total - (float) $invoice->amount_paid;
 
         $data = $request->validate([

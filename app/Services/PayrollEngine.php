@@ -94,7 +94,7 @@ class PayrollEngine
         // ----- Présence -----
         $workingDays = $this->workingDaysInMonth($date);
         [$daysWorked, $overtimeHours] = $employee->id
-            ? $this->attendanceSummary($employee->id, $date, $monthEnd)
+            ? $this->attendanceSummary($employee->id, $employee->company_id, $date, $monthEnd)
             : [$workingDays, 0.0];
 
         // ----- Rémunération de base -----
@@ -108,7 +108,10 @@ class PayrollEngine
         };
 
         // ----- Heures supplémentaires -----
-        $dailyRate    = $workingDays > 0 ? $baseSalary / $workingDays : 0;
+        $dailyRate = match ($employee->contract_type) {
+            'journalier' => $baseSalary,
+            default      => $workingDays > 0 ? $baseSalary / $workingDays : 0,
+        };
         $hourlyRate   = $dailyRate / 8;
         $overtimeAmt  = $hourlyRate * $overtimeHours * $rates['overtime_rate'];
 
@@ -222,9 +225,10 @@ class PayrollEngine
     }
 
     /** Agrège les pointages : [jours_travaillés, heures_supp]. */
-    private function attendanceSummary(int $employeeId, Carbon $from, Carbon $to): array
+    private function attendanceSummary(int $employeeId, int $companyId, Carbon $from, Carbon $to): array
     {
         $rows = Attendance::where('employee_id', $employeeId)
+            ->where('company_id', $companyId)
             ->whereBetween('date', [$from->toDateString(), $to->toDateString()])
             ->get(['status', 'hours_worked', 'overtime_hours']);
 

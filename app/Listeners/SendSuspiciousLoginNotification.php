@@ -12,20 +12,25 @@ class SendSuspiciousLoginNotification
     {
         $user = $event->user;
 
-        // Envoie uniquement si ce n'est pas le tout premier login
-        if ($user->last_login_at !== null) {
-            $request = request();
+        $previousLogin = $user->last_login_at;
+        $user->updateQuietly(['last_login_at' => now()]);
 
-            dispatch(new SendMailJob(
-                $user->email,
-                new SuspiciousLoginMail(
-                    userName:  $user->name,
-                    loginAt:   now()->format('d/m/Y à H:i'),
-                    ipAddress: $request->ip() ?? 'inconnue',
-                    device:    $request->userAgent() ?? 'inconnu',
-                    location:  'inconnue',
-                ),
-            ));
+        // Premier login : pas de mail suspicieux, GuidedTour peut s'afficher une seule fois
+        if ($previousLogin === null) {
+            return;
         }
+
+        $request = request();
+
+        dispatch(new SendMailJob(
+            $user->email,
+            new SuspiciousLoginMail(
+                userName:  $user->name,
+                loginAt:   now()->format('d/m/Y à H:i'),
+                ipAddress: $request->ip() ?? 'inconnue',
+                device:    $request->userAgent() ?? 'inconnu',
+                location:  'inconnue',
+            ),
+        ));
     }
 }

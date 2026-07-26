@@ -64,7 +64,7 @@ class Payslip extends Model
                 + (float) $payslip->its_amount
                 + (float) $payslip->advance_deductions;
 
-            if ($detailed > 0) {
+            if ($payslip->isDirty(['cnps_employee', 'its_amount', 'advance_deductions']) && $detailed > 0) {
                 $payslip->deductions = $detailed;
             }
 

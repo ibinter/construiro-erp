@@ -13,6 +13,6 @@ class DemoRequest extends Model
 
     public function demoSession(): HasOne
     {
-        return $this->hasOne(DemoSession::class);
+        return $this->hasOne(DemoSession::class, 'demo_request_id');
     }
 }

@@ -83,11 +83,11 @@ class DocumentVerifier
                 'status'     => $doc->status,
             ],
             str_contains($class, 'Quote') => [
-                'code'       => $doc->code,
-                'client_id'  => $doc->client_id,
-                'total'      => (string) $doc->total,
-                'issue_date' => (string) $doc->issue_date,
-                'status'     => $doc->status,
+                'code'      => $doc->code,
+                'client_id' => $doc->client_id,
+                'total'     => (string) $doc->total,
+                'date'      => (string) $doc->date,
+                'status'    => $doc->status,
             ],
             str_contains($class, 'Contract') => [
                 'reference'  => $doc->reference ?? $doc->id,

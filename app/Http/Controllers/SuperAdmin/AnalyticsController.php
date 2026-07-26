@@ -5,6 +5,7 @@ namespace App\Http\Controllers\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Models\AnalyticsEvent;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -27,7 +28,7 @@ class AnalyticsController extends Controller
         $visitsByDay = AnalyticsEvent::where('event_type', 'page_view')
             ->where('occurred_at', '>=', $from)
             ->selectRaw('DATE(occurred_at) as date, COUNT(*) as count')
-            ->groupBy('date')
+            ->groupBy(DB::raw('DATE(occurred_at)'))
             ->orderBy('date')
             ->get();
 

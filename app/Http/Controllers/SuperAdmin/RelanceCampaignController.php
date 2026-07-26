@@ -13,6 +13,7 @@ use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -137,44 +138,53 @@ class RelanceCampaignController extends Controller
     // -----------------------------------------------------------------------
     public function launch(RelanceCampaign $relance): RedirectResponse
     {
-        if (!in_array($relance->status, ['draft', 'paused', 'scheduled'])) {
+        // BUG C3 — verrou pessimiste + transaction pour éviter les double-envois
+        $sentCount = DB::transaction(function () use ($relance) {
+            // Recharger la campagne avec verrou exclusif
+            $relance = RelanceCampaign::lockForUpdate()->findOrFail($relance->id);
+
+            if (!in_array($relance->status, ['draft', 'paused', 'scheduled'])) {
+                return null; // signal d'annulation
+            }
+
+            $relance->update(['status' => 'running']);
+
+            $pendingRecipients = $relance->recipients()->where('status', 'pending')->get();
+
+            foreach ($pendingRecipients as $recipient) {
+                try {
+                    dispatch(new SendMailJob(
+                        $recipient->email,
+                        new RelanceCampaignMail(
+                            recipientName:   $recipient->name ?? $recipient->email,
+                            campaignSubject: $relance->subject,
+                            bodyHtml:        $relance->body_html,
+                            trackingToken:   $recipient->tracking_token ?? '',
+                            unsubscribeUrl:  url('/unsubscribe/' . $recipient->tracking_token),
+                        )
+                    ));
+
+                    $recipient->update([
+                        'status'  => 'sent',
+                        'sent_at' => now(),
+                    ]);
+                } catch (\Exception $e) {
+                    Log::warning("RelanceCampaignMail failed for {$recipient->email}: " . $e->getMessage());
+                    $recipient->update(['status' => 'bounced']);
+                }
+            }
+
+            // BUG M5 — ne pas marquer 'completed' ici ; c'est le job SendRelanceMail
+            // qui effectuera la transition après le dernier envoi
+            $count = $relance->recipients()->where('status', 'sent')->count();
+            $relance->update(['sent_count' => $count]);
+
+            return $count;
+        });
+
+        if ($sentCount === null) {
             return back()->with('error', 'Cette campagne ne peut pas être lancée dans son état actuel.');
         }
-
-        $relance->update(['status' => 'running']);
-
-        $pendingRecipients = $relance->recipients()->where('status', 'pending')->get();
-
-        foreach ($pendingRecipients as $recipient) {
-            try {
-                dispatch(new SendMailJob(
-                    $recipient->email,
-                    new RelanceCampaignMail(
-                        recipientName:   $recipient->name ?? $recipient->email,
-                        campaignSubject: $relance->subject,
-                        bodyHtml:        $relance->body_html,
-                        trackingToken:   $recipient->tracking_token ?? '',
-                        unsubscribeUrl:  url('/unsubscribe/' . $recipient->tracking_token),
-                    )
-                ));
-
-                $recipient->update([
-                    'status'  => 'sent',
-                    'sent_at' => now(),
-                ]);
-            } catch (\Exception $e) {
-                Log::warning("RelanceCampaignMail failed for {$recipient->email}: " . $e->getMessage());
-                $recipient->update(['status' => 'bounced']);
-            }
-        }
-
-        // Rafraîchir les compteurs
-        $sentCount = $relance->recipients()->where('status', 'sent')->count();
-        $relance->update([
-            'sent_count'   => $sentCount,
-            'status'       => 'completed',
-            'completed_at' => now(),
-        ]);
 
         return back()->with('success', "Campagne lancée : {$sentCount} email(s) envoyé(s).");
     }

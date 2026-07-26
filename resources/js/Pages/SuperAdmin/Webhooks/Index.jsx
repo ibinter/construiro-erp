@@ -485,6 +485,7 @@ export default function WebhooksIndex({
 
             {/* Modal création/édition */}
             <WebhookModal
+                key={editTarget?.id ?? 'new'}
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}
                 webhook={editTarget}

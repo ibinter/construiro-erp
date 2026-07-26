@@ -26,7 +26,7 @@ class QuoteController extends Controller
         $user = $request->user();
 
         $quotes = Quote::forUser($user)
-            ->with('project:id,name')
+            ->with(['project:id,name', 'client:id,name'])
             ->when($request->string('search')->toString(), function ($query, $search) {
                 $query->where(fn ($q) => $q
                     ->where('code', 'like', "%{$search}%")

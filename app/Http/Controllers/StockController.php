@@ -43,8 +43,9 @@ class StockController extends Controller
         // Tous les matériaux actifs de l'entreprise, avec leur stock calculé.
         $stocks = Material::forUser($user)
             ->orderBy('name')
-            ->get(['id', 'code', 'name', 'category', 'unit', 'min_stock'])
-            ->map(function ($material) use ($levels) {
+            ->paginate(50, ['id', 'code', 'name', 'category', 'unit', 'min_stock'])
+            ->withQueryString()
+            ->through(function ($material) use ($levels) {
                 $stock = (float) ($levels[$material->id] ?? 0);
 
                 return [

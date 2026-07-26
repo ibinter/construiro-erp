@@ -206,7 +206,7 @@ class SaraGateway
                 'status'   => $response->status(),
             ]);
 
-            return 'Je rencontre une difficulté technique. Contactez-nous : contact@ibigsoft.com';
+            throw new \RuntimeException('Provider error ' . $response->status());
         }
 
         return trim($response->json('choices.0.message.content') ?? 'Erreur de réponse.');
@@ -237,7 +237,7 @@ class SaraGateway
         if ($response->failed()) {
             Log::warning('SaraGateway: erreur Anthropic', ['status' => $response->status()]);
 
-            return 'Je rencontre une difficulté technique. Contactez-nous : contact@ibigsoft.com';
+            throw new \RuntimeException('Provider error ' . $response->status());
         }
 
         return trim($response->json('content.0.text') ?? 'Erreur de réponse.');
@@ -279,7 +279,7 @@ class SaraGateway
         if ($response->failed()) {
             Log::warning('SaraGateway: erreur Google Gemini', ['status' => $response->status()]);
 
-            return 'Je rencontre une difficulté technique. Contactez-nous : contact@ibigsoft.com';
+            throw new \RuntimeException('Provider error ' . $response->status());
         }
 
         return trim($response->json('candidates.0.content.parts.0.text') ?? 'Erreur de réponse.');
@@ -288,25 +288,48 @@ class SaraGateway
     // ---------- Helpers --------------------------------------------------------
 
     /**
-     * Résout la clé API dans l'ordre : config BDD → variable d'env → config Laravel.
+     * Résout la clé API dans l'ordre :
+     *   1. config JSON  → clé spécifique au provider : {provider}_key
+     *      (ex. groq_key, openai_key, anthropic_key…)
+     *   2. config JSON  → rétrocompat : api_key pour groq, {provider}_api_key sinon
+     *   3. Champ api_key chiffré directement sur le modèle AiSetting
+     *   4. Config service Laravel  (services.{configKey})
+     *   5. Variable d'environnement {envKey}
+     *
+     * Cela garantit que chaque provider lit sa propre clé et non celle d'un
+     * autre fournisseur stockée sous 'api_key'.
      */
     private function apiKey(string $envKey, ?string $configKey = null): string
     {
-        $fromDb = $this->config->getConfigValue('api_key');
-        if (! empty($fromDb)) {
-            return $fromDb;
+        $provider = $this->config->provider ?? 'groq';
+
+        // 1. Clé spécifique au provider dans le JSON config
+        $providerSpecific = $this->config->getConfigValue($provider . '_key');
+        if (! empty($providerSpecific)) {
+            return $providerSpecific;
         }
 
-        // Clé directement sur le modèle (champ api_key chiffré)
+        // 2. Rétrocompat : groq utilisait le champ global api_key ;
+        //    les autres providers ont leur propre champ {provider}_api_key
+        $legacyKey = $provider === 'groq'
+            ? $this->config->getConfigValue('api_key')
+            : $this->config->getConfigValue($provider . '_api_key');
+
+        if (! empty($legacyKey)) {
+            return $legacyKey;
+        }
+
+        // 3. Champ api_key chiffré directement sur le modèle AiSetting
         if (! empty($this->config->api_key)) {
             return $this->config->api_key;
         }
 
-        // Fallback variable d'environnement
+        // 4. Config service Laravel
         if ($configKey && config("services.{$configKey}")) {
             return config("services.{$configKey}");
         }
 
+        // 5. Variable d'environnement
         return (string) env($envKey, '');
     }
 }

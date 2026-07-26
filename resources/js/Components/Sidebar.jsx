@@ -162,7 +162,7 @@ export default function Sidebar({ open = false, onClose }) {
                             </div>
                             <ul className="space-y-0.5">
                                 {section.items.map((item) => {
-                                    const active = currentPath.startsWith(item.route);
+                                    const active = currentPath === item.route || currentPath.startsWith(item.route + '/');
                                     return (
                                         <li key={item.key}>
                                             <Link

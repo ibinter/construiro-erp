@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\WelcomeMail;
 use App\Models\Agency;
 use App\Models\User;
 use App\Services\LicenseGuard;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -68,6 +71,8 @@ class UserController extends Controller
 
         $data = $this->validateData($request);
 
+        $tempPassword = Str::random(16);
+
         $user = User::create([
             'company_id'           => $request->user()->company_id,
             'agency_id'            => $data['agency_id'] ?? null,
@@ -76,14 +81,21 @@ class UserController extends Controller
             'phone'                => $data['phone'] ?? null,
             'job_title'            => $data['job_title'] ?? null,
             'is_active'            => $data['is_active'] ?? true,
-            'password'             => Hash::make('password'),
+            'password'             => Hash::make($tempPassword),
             'must_change_password' => true,
         ]);
 
         $user->syncRoles([$data['role']]);
 
+        Mail::to($user->email)->send(new WelcomeMail(
+            userName:     $user->name,
+            companyName:  $user->company->name ?? '',
+            isTrial:      false,
+            tempPassword: $tempPassword,
+        ));
+
         return redirect()->route('admin.users.index')
-            ->with('success', 'Utilisateur créé avec succès. Mot de passe initial : « password ».');
+            ->with('success', "Compte créé. Identifiants envoyés par email à {$user->email}.");
     }
 
     public function edit(Request $request, User $user): Response

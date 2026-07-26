@@ -103,6 +103,14 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+// ─── Aliases / redirects routes courantes ────────────────────────────────────
+Route::redirect('/stock',                    '/stocks',                     301);
+Route::redirect('/employees',               '/hr',                         301);
+Route::redirect('/cgu',                     '/legal/cgu',                  301);
+Route::redirect('/confidentialite',         '/legal/confidentialite',      301);
+Route::redirect('/mentions-legales',        '/legal/mentions-legales',     301);
+Route::redirect('/politique-confidentialite', '/legal/confidentialite',    301);
+
 // ─── Vérification publique de documents (QR) ────────────────────────────────
 Route::get('/verify/{token}', [DocumentVerifyController::class, 'show'])->name('verify.document');
 
@@ -554,6 +562,7 @@ Route::middleware(['auth', 'verified', 'subscription', 'two-factor'])->group(fun
 
         // --- §19.5 Clés API Sanctum -------------------------------------------
         Route::get('/api-keys', [\App\Http\Controllers\SuperAdmin\ApiKeysController::class, 'index'])->name('superadmin.api-keys.index');
+        Route::delete('/api-tokens/{tokenId}', [\App\Http\Controllers\SuperAdmin\ApiTokenAdminController::class, 'destroy'])->name('superadmin.api-tokens.destroy');
 
         // --- §38 Checklist Recette formelle ------------------------------------
         Route::get('/recette', fn () => \Inertia\Inertia::render('SuperAdmin/Recette/Index'))->name('superadmin.recette');

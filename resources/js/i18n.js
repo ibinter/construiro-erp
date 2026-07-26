@@ -9,6 +9,6 @@ import { usePage } from '@inertiajs/react';
  */
 export function useTrans() {
     const { translations = {}, locale = 'fr' } = usePage().props;
-    const t = (key) => (translations && translations[key]) || key;
+    const t = (key) => translations[key] ?? key;
     return { t, locale };
 }

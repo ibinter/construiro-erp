@@ -28,9 +28,12 @@ class Project extends Model
 
     protected static function booted(): void
     {
-        $flush = fn (self $m) => Cache::forget("dashboard_stats_{$m->company_id}")
-            + Cache::forget("dashboard_recent_{$m->company_id}")
-            + Cache::forget("bi_dashboard_{$m->company_id}");
+        $flush = function (self $m): void {
+            Cache::forget("dashboard_kpis_{$m->company_id}");
+            Cache::forget("dashboard_chart_{$m->company_id}");
+            Cache::forget("dashboard_projects_budget_{$m->company_id}");
+            Cache::forget("dashboard_overdue_{$m->company_id}");
+        };
 
         static::saved($flush);
         static::deleted($flush);
