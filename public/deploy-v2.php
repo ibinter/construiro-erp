@@ -83,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['diag'])) {
         echo shell_exec("cd $dir && php artisan db:seed --class='Database\\Seeders\\DemoDataSeeder' --force 2>&1");
     } elseif ($diag === 'seed-permissions') {
         // Lance UNIQUEMENT RolePermissionSeeder (namespace complet pour éviter fallback sur DatabaseSeeder)
-        echo shell_exec("cd $dir && php artisan db:seed --class='Database\\\\Seeders\\\\RolePermissionSeeder' --force 2>&1");
+        echo shell_exec("cd $dir && php artisan db:seed --class='Database\\Seeders\\RolePermissionSeeder' --force 2>&1");
     } elseif ($diag === 'seed-payment') {
         // Initialise les 11 méthodes de paiement (idempotent via updateOrCreate)
         echo shell_exec("cd $dir && php artisan db:seed --class='Database\\Seeders\\PaymentMethodSeeder' --force 2>&1");

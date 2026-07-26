@@ -17,6 +17,19 @@ class BillingController extends Controller
     {
         $company = $request->user()->company;
 
+        if (! $company) {
+            return Inertia::render('Billing/Index', [
+                'subscription' => null,
+                'plans'        => SubscriptionPlan::where('is_active', true)->orderBy('sort_order')->get()->map(fn($p) => [
+                    'id' => $p->id, 'name' => $p->name, 'slug' => $p->slug,
+                    'description' => $p->description, 'price_monthly' => $p->price_monthly,
+                    'price_yearly' => $p->price_yearly, 'currency' => $p->currency,
+                    'max_users' => $p->max_users, 'trial_days' => $p->trial_days,
+                ]),
+                'invoices' => [],
+            ]);
+        }
+
         $subscription = Subscription::where('company_id', $company->id)
             ->with('plan')
             ->latest()
