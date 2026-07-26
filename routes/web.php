@@ -209,14 +209,6 @@ Route::middleware(\App\Http\Middleware\TrackPageView::class)->get('/', function 
     ]);
 });
 
-// --- Changelog public (sans authentification) ----------------------------------
-Route::get('/changelog', function () {
-    $entries = \App\Models\Changelog::where('is_published', true)
-        ->orderByDesc('published_at')
-        ->get();
-    return inertia('Changelog', ['entries' => $entries]);
-})->name('changelog');
-
 Route::middleware(['auth', 'verified', 'subscription', 'two-factor'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
