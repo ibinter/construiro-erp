@@ -320,26 +320,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['diag'])) {
             '2026_07_26_100000_create_demo_sessions_table'
                 => '2026_07_26_100001_create_demo_sessions_table',
         ];
-        // Utiliser PDO directement pour mettre à jour la table migrations
-        $envPath  = $dir . '/.env';
-        $envVars  = parse_ini_file($envPath);
-        $dsn      = 'mysql:host=' . ($envVars['DB_HOST'] ?? '127.0.0.1') . ';port=' . ($envVars['DB_PORT'] ?? '3306') . ';dbname=' . ($envVars['DB_DATABASE'] ?? '');
-        try {
-            $pdo = new PDO($dsn, $envVars['DB_USERNAME'] ?? '', $envVars['DB_PASSWORD'] ?? '');
-            foreach ($renames as $old => $new) {
-                $exists    = $pdo->query("SELECT COUNT(*) FROM migrations WHERE migration = " . $pdo->quote($old))->fetchColumn();
-                $newExists = $pdo->query("SELECT COUNT(*) FROM migrations WHERE migration = " . $pdo->quote($new))->fetchColumn();
-                if ($exists && !$newExists) {
-                    $pdo->exec("UPDATE migrations SET migration = " . $pdo->quote($new) . " WHERE migration = " . $pdo->quote($old));
-                    echo "Renommé : $old -> $new\n";
-                } elseif (!$exists && !$newExists) {
-                    echo "Introuvable : $old\n";
-                } else {
-                    echo "Ignoré (déjà fait) : $old\n";
-                }
-            }
-        } catch (Exception $e) {
-            echo 'Erreur PDO : ' . $e->getMessage() . "\n";
+        // Mettre à jour la table migrations via artisan db:query
+        foreach ($renames as $old => $new) {
+            $sql = "UPDATE migrations SET migration = '$new' WHERE migration = '$old' AND NOT EXISTS (SELECT 1 FROM (SELECT migration FROM migrations WHERE migration = '$new') tmp)";
+            $out = shell_exec("cd $dir && php artisan db:query \"$sql\" 2>&1");
+            echo "Rename $old -> $new : " . ($out ?: "OK") . "\n";
         }
         echo shell_exec("cd $dir && php artisan migrate --force 2>&1");
         echo "DONE\n";
