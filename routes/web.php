@@ -195,6 +195,7 @@ Route::middleware(\App\Http\Middleware\TrackPageView::class)->get('/', function 
     );
 
     $whatsappNumber = Setting::get('footer_whatsapp', '2252722276014');
+    $videoUrl       = Setting::get('landing_video_url', '');
 
     return Inertia::render('Welcome', [
         'canLogin'        => Route::has('login'),
@@ -204,6 +205,7 @@ Route::middleware(\App\Http\Middleware\TrackPageView::class)->get('/', function 
         'faqs'            => $faqs,
         'temoignages'     => $temoignages,
         'whatsapp_number' => preg_replace('/\D/', '', $whatsappNumber),
+        'video_url'       => (string) ($videoUrl ?? ''),
     ]);
 });
 
@@ -563,6 +565,25 @@ Route::middleware(['auth', 'verified', 'subscription', 'two-factor'])->group(fun
 
         // --- §38 Checklist Recette formelle ------------------------------------
         Route::get('/recette', fn () => \Inertia\Inertia::render('SuperAdmin/Recette/Index'))->name('superadmin.recette');
+
+        // --- §15.4 Relances & Campagnes commerciales ---------------------------
+        Route::resource('relances', \App\Http\Controllers\SuperAdmin\RelanceCampaignController::class)
+            ->except(['edit', 'create'])
+            ->names([
+                'index'   => 'superadmin.relances.index',
+                'store'   => 'superadmin.relances.store',
+                'show'    => 'superadmin.relances.show',
+                'update'  => 'superadmin.relances.update',
+                'destroy' => 'superadmin.relances.destroy',
+            ]);
+        Route::post('relances/{relance}/launch', [\App\Http\Controllers\SuperAdmin\RelanceCampaignController::class, 'launch'])
+            ->name('superadmin.relances.launch');
+        Route::post('relances/{relance}/pause', [\App\Http\Controllers\SuperAdmin\RelanceCampaignController::class, 'pause'])
+            ->name('superadmin.relances.pause');
+
+        // --- §43 Module Features (propagation automatique) ----------------------
+        Route::get('/module-features', [\App\Http\Controllers\SuperAdmin\ModuleFeatureController::class, 'index'])->name('superadmin.module-features.index');
+        Route::patch('/module-features/{feature}', [\App\Http\Controllers\SuperAdmin\ModuleFeatureController::class, 'update'])->name('superadmin.module-features.update');
     });
 
     // --- Guide utilisateur PDF (auth) --------------------------------------------------

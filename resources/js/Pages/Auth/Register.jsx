@@ -3,10 +3,12 @@ import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 const BRAND = '#F58220';
 
 export default function Register() {
+    const { t } = useTrans();
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
         email: '',
@@ -23,12 +25,12 @@ export default function Register() {
         <GuestLayout>
             <Head title="Créer un compte — CONSTRUIRO ERP" />
 
-            <h1 className="text-2xl font-black mb-1" style={{ color: '#1E1E1E' }}>Créer votre compte</h1>
-            <p className="text-sm text-gray-500 mb-6">Essai gratuit 14 jours · Sans carte bancaire</p>
+            <h1 className="text-2xl font-black mb-1" style={{ color: '#1E1E1E' }}>{t('Créer votre compte')}</h1>
+            <p className="text-sm text-gray-500 mb-6">{t('Essai gratuit 14 jours · Sans carte bancaire')}</p>
 
             <form onSubmit={submit} className="space-y-5">
                 <div>
-                    <InputLabel htmlFor="name" value="Nom complet" />
+                    <InputLabel htmlFor="name" value={t('Nom complet')} />
                     <TextInput
                         id="name"
                         name="name"
@@ -43,7 +45,7 @@ export default function Register() {
                 </div>
 
                 <div>
-                    <InputLabel htmlFor="email" value="Adresse email professionnelle" />
+                    <InputLabel htmlFor="email" value={t('Adresse email professionnelle')} />
                     <TextInput
                         id="email"
                         type="email"
@@ -58,7 +60,7 @@ export default function Register() {
                 </div>
 
                 <div>
-                    <InputLabel htmlFor="password" value="Mot de passe" />
+                    <InputLabel htmlFor="password" value={t('Mot de passe')} />
                     <TextInput
                         id="password"
                         type="password"
@@ -73,7 +75,7 @@ export default function Register() {
                 </div>
 
                 <div>
-                    <InputLabel htmlFor="password_confirmation" value="Confirmer le mot de passe" />
+                    <InputLabel htmlFor="password_confirmation" value={t('Confirmer le mot de passe')} />
                     <TextInput
                         id="password_confirmation"
                         type="password"
@@ -92,21 +94,21 @@ export default function Register() {
                     disabled={processing}
                     className="w-full py-3 rounded-xl font-bold text-white transition hover:opacity-90 disabled:opacity-60"
                     style={{ background: BRAND }}>
-                    {processing ? 'Création...' : 'Créer mon compte gratuit →'}
+                    {processing ? t('Création...') : t('Créer mon compte gratuit →')}
                 </button>
 
                 <p className="text-center text-sm text-gray-500">
-                    Déjà inscrit ?{' '}
+                    {t('Déjà inscrit ?')}{' '}
                     <Link href={route('login')} className="font-semibold hover:underline" style={{ color: BRAND }}>
-                        Se connecter
+                        {t('Se connecter')}
                     </Link>
                 </p>
 
                 <p className="text-center text-xs text-gray-400">
-                    En créant un compte, vous acceptez nos{' '}
+                    {t('En créant un compte, vous acceptez nos')}{' '}
                     <a href="/legal/cgu" className="hover:underline" style={{ color: BRAND }}>CGU</a>
-                    {' '}et notre{' '}
-                    <a href="/legal/confidentialite" className="hover:underline" style={{ color: BRAND }}>politique de confidentialité</a>.
+                    {' '}{t('et notre')}{' '}
+                    <a href="/legal/confidentialite" className="hover:underline" style={{ color: BRAND }}>{t('politique de confidentialité')}</a>.
                 </p>
             </form>
         </GuestLayout>

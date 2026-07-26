@@ -4,10 +4,12 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
 
 const BRAND = '#F58220';
 
 export default function Login({ status, canResetPassword }) {
+    const { t } = useTrans();
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
         password: '',
@@ -23,8 +25,8 @@ export default function Login({ status, canResetPassword }) {
         <GuestLayout>
             <Head title="Connexion — CONSTRUIRO ERP" />
 
-            <h1 className="text-2xl font-black mb-1" style={{ color: '#1E1E1E' }}>Connexion</h1>
-            <p className="text-sm text-gray-500 mb-6">Accédez à votre espace CONSTRUIRO ERP</p>
+            <h1 className="text-2xl font-black mb-1" style={{ color: '#1E1E1E' }}>{t('Connexion')}</h1>
+            <p className="text-sm text-gray-500 mb-6">{t('Accédez à votre espace CONSTRUIRO ERP')}</p>
 
             {status && (
                 <div className="mb-4 text-sm font-medium text-green-600 bg-green-50 rounded-lg px-4 py-2">
@@ -34,7 +36,7 @@ export default function Login({ status, canResetPassword }) {
 
             <form onSubmit={submit} className="space-y-5">
                 <div>
-                    <InputLabel htmlFor="email" value="Adresse email" />
+                    <InputLabel htmlFor="email" value={t('Adresse email')} />
                     <TextInput
                         id="email"
                         type="email"
@@ -49,7 +51,7 @@ export default function Login({ status, canResetPassword }) {
                 </div>
 
                 <div>
-                    <InputLabel htmlFor="password" value="Mot de passe" />
+                    <InputLabel htmlFor="password" value={t('Mot de passe')} />
                     <TextInput
                         id="password"
                         type="password"
@@ -71,12 +73,12 @@ export default function Login({ status, canResetPassword }) {
                             onChange={(e) => setData('remember', e.target.checked)}
                             className="rounded border-gray-300"
                         />
-                        Se souvenir de moi
+                        {t('Se souvenir de moi')}
                     </label>
                     {canResetPassword && (
                         <Link href={route('password.request')}
                             className="text-sm hover:underline" style={{ color: BRAND }}>
-                            Mot de passe oublié ?
+                            {t('Mot de passe oublié ?')}
                         </Link>
                     )}
                 </div>
@@ -86,13 +88,13 @@ export default function Login({ status, canResetPassword }) {
                     disabled={processing}
                     className="w-full py-3 rounded-xl font-bold text-white transition hover:opacity-90 disabled:opacity-60"
                     style={{ background: BRAND }}>
-                    {processing ? 'Connexion...' : 'Se connecter →'}
+                    {processing ? t('Connexion...') : t('Se connecter →')}
                 </button>
 
                 <p className="text-center text-sm text-gray-500">
-                    Pas encore de compte ?{' '}
+                    {t('Pas encore de compte ?')}{' '}
                     <Link href={route('register')} className="font-semibold hover:underline" style={{ color: BRAND }}>
-                        Essai gratuit 14 jours
+                        {t('Essai gratuit 14 jours')}
                     </Link>
                 </p>
             </form>

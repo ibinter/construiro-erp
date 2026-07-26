@@ -33,6 +33,20 @@ class AppServiceProvider extends ServiceProvider
             \App\Listeners\SendSuspiciousLoginNotification::class,
         );
 
+        // §43 — Propagation automatique quand un module/feature change de plan
+        \Illuminate\Support\Facades\Event::listen(
+            \App\Events\EvolutionPublished::class,
+            \App\Listeners\PropagateEvolutionToLanding::class,
+        );
+        \Illuminate\Support\Facades\Event::listen(
+            \App\Events\EvolutionPublished::class,
+            \App\Listeners\MarkGuideForRevision::class,
+        );
+        \Illuminate\Support\Facades\Event::listen(
+            \App\Events\EvolutionPublished::class,
+            \App\Listeners\InvalidatePwaCache::class,
+        );
+
         // Charger la config SMTP depuis la base de données si disponible
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('smtp_settings')) {

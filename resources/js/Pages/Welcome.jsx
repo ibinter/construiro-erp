@@ -870,7 +870,7 @@ function TopBar() {
 }
 
 /* ── Page principale ─────────────────────────────────────────── */
-export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs = [], temoignages: temoignagesProp = null }) {
+export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs = [], temoignages: temoignagesProp = null, video_url: videoUrl = '' }) {
     const { t } = useTrans();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [billingCycle, setBillingCycle] = useState('monthly');
@@ -1256,7 +1256,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                 <GalerieCaptures />
 
                 {/* ── VIDÉO DE PRÉSENTATION ───────────────────────── */}
-                <VideoPresentation />
+                <VideoPresentation videoUrl={videoUrl} />
 
                 {/* ── COMMENT ÇA MARCHE ───────────────────────────── */}
                 <section className="py-20 bg-white">

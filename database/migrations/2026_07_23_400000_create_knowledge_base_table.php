@@ -22,9 +22,13 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Index FULLTEXT pour la recherche plein-texte
-        DB::statement('ALTER TABLE knowledge_base ADD FULLTEXT ft_kb_fr (title_fr, content_fr)');
-        DB::statement('ALTER TABLE knowledge_base ADD FULLTEXT ft_kb_en (title_en, content_en)');
+        // Index FULLTEXT pour la recherche plein-texte (MySQL uniquement — ignoré sous SQLite)
+        try {
+            DB::statement('ALTER TABLE knowledge_base ADD FULLTEXT ft_kb_fr (title_fr, content_fr)');
+            DB::statement('ALTER TABLE knowledge_base ADD FULLTEXT ft_kb_en (title_en, content_en)');
+        } catch (\Throwable) {
+            // SQLite (tests) ne supporte pas FULLTEXT — KnowledgeBase::search() bascule sur LIKE
+        }
     }
 
     public function down(): void

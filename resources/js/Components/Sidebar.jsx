@@ -27,9 +27,11 @@ const SUPERADMIN_NAV = [
     { key: 'sa-health',           label: 'Santé système',         icon: 'activity',         route: '/superadmin/health' },
     { key: 'sa-analytics',        label: 'Analytics',             icon: 'bar-chart-2',      route: '/superadmin/analytics' },
     { key: 'sa-demos',            label: 'Démonstrations',        icon: 'calendar',         route: '/superadmin/demos' },
+    { key: 'sa-relances',         label: 'Relances',              icon: 'send',             route: '/superadmin/relances' },
     { key: 'sa-webhooks',         label: 'Webhooks',              icon: 'zap',              route: '/superadmin/webhooks' },
     { key: 'sa-api-keys',         label: 'Clés API',              icon: 'key',              route: '/superadmin/api-keys' },
     { key: 'sa-recette',          label: 'Checklist Recette §38', icon: 'clipboard-check',  route: '/superadmin/recette' },
+    { key: 'sa-module-features', label: 'Fonctionnalités plans', icon: 'layers',           route: '/superadmin/module-features' },
 ];
 
 /**
