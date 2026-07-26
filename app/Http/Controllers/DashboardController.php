@@ -205,16 +205,71 @@ class DashboardController extends Controller
             return $count;
         });
 
+        // ── Dépenses 6 derniers mois (pour graphique comparatif) ────────────
+        $expenseData = Cache::remember("dashboard_expenses_{$companyId}", 300, function () use ($companyId) {
+            $data = [];
+            for ($i = 5; $i >= 0; $i--) {
+                $date     = Carbon::now()->subMonths($i);
+                $expenses = (float) CostEntry::where('company_id', $companyId)
+                    ->where('type', 'charge')
+                    ->whereYear('date', $date->year)
+                    ->whereMonth('date', $date->month)
+                    ->sum('amount');
+
+                $data[] = [
+                    'label' => $date->translatedFormat('M'),
+                    'month' => $date->month,
+                    'year'  => $date->year,
+                    'value' => $expenses,
+                ];
+            }
+            return $data;
+        });
+
+        // ── Statistiques factures par statut ─────────────────────────────────
+        $invoiceStats = Cache::remember("dashboard_invoice_stats_{$companyId}", 180, function () use ($companyId) {
+            $rows   = Invoice::where('company_id', $companyId)
+                ->selectRaw('status, COUNT(*) as cnt, SUM(total) as amount')
+                ->groupBy('status')
+                ->get();
+            $result = [];
+            foreach ($rows as $row) {
+                $result[$row->status] = ['count' => (int) $row->cnt, 'amount' => (float) $row->amount];
+            }
+            return $result;
+        });
+
+        // ── 5 dernières factures ─────────────────────────────────────────────
+        $recentInvoices = Cache::remember("dashboard_recent_invoices_{$companyId}", 120, function () use ($companyId) {
+            return Invoice::where('company_id', $companyId)
+                ->with('client:id,name')
+                ->orderByDesc('issue_date')
+                ->limit(5)
+                ->get(['id', 'code', 'client_id', 'total', 'status', 'issue_date', 'currency'])
+                ->map(fn ($inv) => [
+                    'id'         => $inv->id,
+                    'code'       => $inv->code,
+                    'client'     => $inv->client?->name ?? '—',
+                    'total'      => $inv->total,
+                    'currency'   => $inv->currency,
+                    'status'     => $inv->status,
+                    'issue_date' => $inv->issue_date?->format('d/m/Y'),
+                ])->toArray();
+        });
+
         // Visite guidée : true si c'est le tout premier accès au dashboard.
         $isFirstLogin = $user->last_login_at === null;
 
         return Inertia::render('Dashboard', [
-            'kpis'          => $kpis,
-            'chartData'     => $chartData,
+            'kpis'           => $kpis,
+            'chartData'      => $chartData,
+            'expenseData'    => $expenseData,
             'projectsBudget' => $projectsBudget,
-            'overdueAlert'  => $overdueAlert,
-            'isFirstLogin'  => $isFirstLogin,
-            // Compatibilité ascendante avec les composants qui utilisent encore `stats`.
+            'overdueAlert'   => $overdueAlert,
+            'invoiceStats'   => $invoiceStats,
+            'recentInvoices' => $recentInvoices,
+            'isFirstLogin'   => $isFirstLogin,
+            // Compatibilité ascendante.
             'stats'          => $kpis,
             'recentProjects' => array_map(fn ($p) => [
                 'id'            => $p['id'],
