@@ -122,6 +122,19 @@ Route::redirect('/backups',       '/backup',         301);
 Route::redirect('/mobile-money',  '/treasury',       301);
 Route::redirect('/opportunities', '/crm',            301);
 
+// ─── QR code public (web + PWA — évite Google Charts déprécié) ──────────────
+Route::get('/qr', function (\Illuminate\Http\Request $request) {
+    $token = preg_replace('/[^a-zA-Z0-9_\-]/', '', $request->get('token', ''));
+    if (! $token) {
+        return response('', 400);
+    }
+    $url = url('/verify/' . $token);
+    $png = (new \SimpleSoftwareIO\QrCode\Generator())->format('png')->size(200)->generate($url);
+    return response($png)
+        ->header('Content-Type', 'image/png')
+        ->header('Cache-Control', 'public, max-age=86400');
+})->name('qr.code');
+
 // ─── Vérification publique de documents (QR) ────────────────────────────────
 Route::get('/verify/{token}', [DocumentVerifyController::class, 'show'])->name('verify.document');
 

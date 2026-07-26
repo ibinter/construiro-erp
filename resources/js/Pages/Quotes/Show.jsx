@@ -326,7 +326,7 @@ export default function Show({ quote, can }) {
                 <div className="mt-6 rounded-xl border border-green-200 bg-green-50 p-5 dark:border-green-800 dark:bg-green-900/10">
                     <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
                         <img
-                            src={`https://chart.googleapis.com/chart?chs=100x100&cht=qr&chl=${encodeURIComponent(window.location.origin + '/verify/' + quote.verify_token)}`}
+                            src={`/qr?token=${encodeURIComponent(quote.verify_token)}`}
                             width={100}
                             height={100}
                             alt="QR code de vérification"

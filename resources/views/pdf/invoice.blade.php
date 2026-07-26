@@ -70,7 +70,7 @@
         </div>
         @if(!empty($qr_svg))
         <div style="text-align:center;flex-shrink:0;margin-left:16px;">
-            <div style="width:80px;height:80px;">{!! $qr_svg !!}</div>
+            <img src="{{ $qr_svg }}" width="80" height="80" style="display:block;" alt="QR">
             <div style="font-size:8px;color:#64748b;margin-top:3px;">Vérifier l'authenticité</div>
         </div>
         @endif
