@@ -24,6 +24,10 @@ const SUPERADMIN_NAV = [
     { key: 'sa-ai-setting',       label: 'Configuration IA',      icon: 'cpu',              route: '/superadmin/ai-setting' },
     { key: 'sa-ai-usage',         label: 'Journal IA',            icon: 'activity',         route: '/superadmin/ai-usage' },
     { key: 'sa-backups',          label: 'Sauvegardes',           icon: 'database',         route: '/superadmin/backups' },
+    { key: 'sa-health',           label: 'Santé système',         icon: 'activity',         route: '/superadmin/health' },
+    { key: 'sa-analytics',        label: 'Analytics',             icon: 'bar-chart-2',      route: '/superadmin/analytics' },
+    { key: 'sa-demos',            label: 'Démonstrations',        icon: 'calendar',         route: '/superadmin/demos' },
+    { key: 'sa-webhooks',         label: 'Webhooks',              icon: 'zap',              route: '/superadmin/webhooks' },
     { key: 'sa-recette',          label: 'Checklist Recette §38', icon: 'clipboard-check',  route: '/superadmin/recette' },
 ];
 
@@ -33,7 +37,7 @@ const SUPERADMIN_NAV = [
  * - Desktop (≥lg) : sticky dans le flux, largeur w-64 ou w-0
  */
 export default function Sidebar({ open = false, onClose }) {
-    const { auth, subscription, pendingPaymentOrders } = usePage().props;
+    const { auth, subscription, pendingPaymentOrders, appVersion } = usePage().props;
     const currentPath = usePage().url;
     const { t } = useTrans();
     const portal = auth?.portal;
@@ -204,8 +208,11 @@ export default function Sidebar({ open = false, onClose }) {
             )}
 
             {/* Pied */}
-            <div className="border-t border-slate-800 px-4 py-3 text-[10px] text-slate-500">
-                © {new Date().getFullYear()} IBIG Soft
+            <div className="border-t border-slate-800 px-4 py-3 text-[10px] text-slate-500 flex items-center justify-between">
+                <span>© {new Date().getFullYear()} IBIG Soft</span>
+                {appVersion && (
+                    <span className="text-slate-600">v{appVersion}</span>
+                )}
             </div>
         </aside>
     );

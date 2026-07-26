@@ -92,6 +92,7 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\PreferencesController;
 use App\Http\Controllers\AcademyController;
 use App\Http\Controllers\SuperAdmin\AcademyController as SuperAdminAcademyController;
+use App\Http\Controllers\SuperAdmin\AnalyticsController as SuperAdminAnalyticsController;
 use App\Http\Controllers\ChangelogController;
 use App\Http\Controllers\GlobalSearchController;
 use App\Models\LandingFaq;
@@ -158,7 +159,7 @@ Route::get('/guide/{locale}', [UserGuideController::class, 'download'])->name('g
 Route::redirect('/blog',   'https://ibigsoft.com', 301);
 Route::redirect('/statut', 'https://ibigsoft.com', 301);
 
-Route::get('/', function () {
+Route::middleware(\App\Http\Middleware\TrackPageView::class)->get('/', function () {
     $locale = app()->getLocale();
 
     // Données statiques mises en cache 10 min — elles changent rarement
@@ -537,6 +538,25 @@ Route::middleware(['auth', 'verified', 'subscription', 'two-factor'])->group(fun
         Route::post('/backups/run',                 [SuperAdminBackupController::class, 'run'])->name('superadmin.backups.run');
         Route::get('/backups/{backup}/download',    [SuperAdminBackupController::class, 'download'])->name('superadmin.backups.download');
         Route::delete('/backups/{backup}',          [SuperAdminBackupController::class, 'destroy'])->name('superadmin.backups.destroy');
+
+        // --- §33 Analytics Marketing -------------------------------------------
+        Route::get('/analytics', [SuperAdminAnalyticsController::class, 'index'])->name('superadmin.analytics.index');
+
+        // --- §29.2 Santé système -----------------------------------------------
+        Route::get('/health', [\App\Http\Controllers\SuperAdmin\HealthController::class, 'index'])->name('superadmin.health.index');
+
+        // --- §15.2 Démonstrations ----------------------------------------------
+        Route::get('/demos', [\App\Http\Controllers\SuperAdmin\DemoController::class, 'index'])->name('superadmin.demos.index');
+        Route::post('/demos', [\App\Http\Controllers\SuperAdmin\DemoController::class, 'store'])->name('superadmin.demos.store');
+        Route::patch('/demos/{demo}', [\App\Http\Controllers\SuperAdmin\DemoController::class, 'update'])->name('superadmin.demos.update');
+        Route::delete('/demos/{demo}', [\App\Http\Controllers\SuperAdmin\DemoController::class, 'destroy'])->name('superadmin.demos.destroy');
+
+        // --- §25 Webhooks sortants ---------------------------------------------
+        Route::get('/webhooks', [\App\Http\Controllers\SuperAdmin\WebhookController::class, 'index'])->name('superadmin.webhooks.index');
+        Route::post('/webhooks', [\App\Http\Controllers\SuperAdmin\WebhookController::class, 'store'])->name('superadmin.webhooks.store');
+        Route::patch('/webhooks/{webhook}', [\App\Http\Controllers\SuperAdmin\WebhookController::class, 'update'])->name('superadmin.webhooks.update');
+        Route::delete('/webhooks/{webhook}', [\App\Http\Controllers\SuperAdmin\WebhookController::class, 'destroy'])->name('superadmin.webhooks.destroy');
+        Route::post('/webhooks/{webhook}/regenerate-secret', [\App\Http\Controllers\SuperAdmin\WebhookController::class, 'regenerateSecret'])->name('superadmin.webhooks.regenerate');
 
         // --- §38 Checklist Recette formelle ------------------------------------
         Route::get('/recette', fn () => \Inertia\Inertia::render('SuperAdmin/Recette/Index'))->name('superadmin.recette');
