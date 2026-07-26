@@ -40,10 +40,15 @@ class EmailTriggersTest extends TestCase
             'password_confirmation' => 'Password123!',
         ]);
 
+        // Vérifie qu'au moins un SendMailJob a été mis en queue pour cette adresse.
+        // Les propriétés $to / $mailable sont private → on utilise la réflexion.
         Queue::assertPushed(SendMailJob::class, function (SendMailJob $job) {
-            // Vérifie que le mailable encapsulé est bien un WelcomeMail
-            return $job->mailable instanceof WelcomeMail
-                && $job->to === 'koffi@construiro-test.com';
+            $r = new \ReflectionObject($job);
+            $to       = $r->getProperty('to');       $to->setAccessible(true);
+            $mailable = $r->getProperty('mailable'); $mailable->setAccessible(true);
+
+            return $to->getValue($job) === 'koffi@construiro-test.com'
+                && $mailable->getValue($job) instanceof WelcomeMail;
         });
     }
 

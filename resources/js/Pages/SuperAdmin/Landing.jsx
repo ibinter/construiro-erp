@@ -307,6 +307,7 @@ function SettingsTab({ settings, flash }) {
         sara_model: 'Modèle Groq', sara_temperature: 'Température (0.0–1.0)', sara_max_tokens: 'Max tokens',
         sara_enabled: 'SARA activée (1=oui, 0=non)', sara_prompt_suffix: 'Complément système (optionnel)',
         landing_topbar_msg: 'Message barre supérieure',
+        landing_video_url:  'URL vidéo de présentation (YouTube)',
     };
 
     return (

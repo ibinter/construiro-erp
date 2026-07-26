@@ -691,9 +691,30 @@ function GalerieCaptures() {
 }
 
 /* ── Vidéo de présentation ───────────────────────────────────── */
-function VideoPresentation() {
+
+/**
+ * Extrait l'ID vidéo YouTube depuis les formats d'URL courants :
+ *   https://www.youtube.com/watch?v=XXXX
+ *   https://youtu.be/XXXX
+ *   https://www.youtube.com/embed/XXXX
+ * Retourne null si l'URL n'est pas reconnue ou est vide.
+ */
+function extractYoutubeId(url) {
+    if (!url) return null;
+    const patterns = [
+        /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([A-Za-z0-9_-]{11})/,
+    ];
+    for (const re of patterns) {
+        const m = url.match(re);
+        if (m) return m[1];
+    }
+    return null;
+}
+
+function VideoPresentation({ videoUrl = '' }) {
     const { t } = useTrans();
-    const [playing, setPlaying] = useState(false);
+    const youtubeId = extractYoutubeId(videoUrl);
+
     return (
         <section className="py-20" style={{ background: NAVY }}>
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -702,38 +723,52 @@ function VideoPresentation() {
                     <h2 className="text-3xl sm:text-4xl font-black text-white mb-4">{t('CONSTRUIRO en 3 minutes')}</h2>
                     <p className="text-gray-400 max-w-xl mx-auto">{t('Découvrez comment les entreprises BTP africaines pilotent leurs chantiers avec CONSTRUIRO ERP.')}</p>
                 </div>
-                <div className="relative rounded-3xl overflow-hidden cursor-pointer group"
-                    style={{ background: '#111', aspectRatio: '16/9', boxShadow: '0 32px 80px rgba(0,0,0,0.5)' }}
-                    onClick={() => setPlaying(true)}>
-                    {/* Placeholder thumbnail */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center"
-                        style={{ background: `linear-gradient(135deg, #0a1628 0%, #1E1E1E 100%)` }}>
-                        {/* Mock screenshot lines */}
-                        <div className="absolute inset-0 opacity-10">
-                            {[...Array(8)].map((_, i) => (
-                                <div key={i} className="absolute h-px w-full" style={{ top: `${12.5 * (i + 0.5)}%`, background: 'white' }} />
-                            ))}
-                        </div>
-                        {/* Overlay brand */}
-                        <div className="relative z-10 text-center">
-                            <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 transition-transform group-hover:scale-110"
-                                style={{ background: BRAND, boxShadow: `0 0 60px rgba(245,130,32,0.5)` }}>
-                                <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M8 5v14l11-7z"/>
-                                </svg>
+
+                <div className="relative rounded-3xl overflow-hidden"
+                    style={{ aspectRatio: '16/9', boxShadow: '0 32px 80px rgba(0,0,0,0.5)' }}>
+
+                    {youtubeId ? (
+                        /* ── Embed YouTube ── */
+                        <iframe
+                            className="absolute inset-0 w-full h-full"
+                            src={`https://www.youtube.com/embed/${youtubeId}?autoplay=0&rel=0&modestbranding=1`}
+                            title={t('CONSTRUIRO ERP — Présentation officielle')}
+                            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                        />
+                    ) : (
+                        /* ── Placeholder — vidéo non encore configurée ── */
+                        <div className="absolute inset-0 flex flex-col items-center justify-center group"
+                            style={{ background: `linear-gradient(135deg, #0a1628 0%, #1E1E1E 100%)` }}>
+                            {/* Lignes décoratives */}
+                            <div className="absolute inset-0 opacity-10">
+                                {[...Array(8)].map((_, i) => (
+                                    <div key={i} className="absolute h-px w-full"
+                                        style={{ top: `${12.5 * (i + 0.5)}%`, background: 'white' }} />
+                                ))}
                             </div>
-                            <p className="text-white font-bold text-lg mb-1">{t('CONSTRUIRO ERP — Présentation officielle')}</p>
-                            <p className="text-gray-500 text-sm">{t('Durée estimée : 3 minutes · Disponible prochainement')}</p>
-                        </div>
-                    </div>
-                    {playing && (
-                        <div className="absolute inset-0 flex items-center justify-center" style={{ background: '#000' }}>
-                            <p className="text-white text-sm">{t('Vidéo disponible prochainement sur YouTube')}</p>
+                            {/* Icône et texte */}
+                            <div className="relative z-10 text-center">
+                                <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4"
+                                    style={{ background: BRAND, boxShadow: `0 0 60px rgba(245,130,32,0.4)` }}>
+                                    <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z"/>
+                                    </svg>
+                                </div>
+                                <p className="text-white font-bold text-lg mb-1">
+                                    {t('CONSTRUIRO ERP — Présentation officielle')}
+                                </p>
+                                <p className="text-gray-500 text-sm">
+                                    {t('Vidéo de présentation — À venir')}
+                                </p>
+                            </div>
+                            {/* Barre de couleur bas */}
+                            <div className="absolute bottom-0 left-0 right-0 h-1.5"
+                                style={{ background: `linear-gradient(to right, ${BRAND}, transparent)` }} />
                         </div>
                     )}
-                    {/* Bottom bar */}
-                    <div className="absolute bottom-0 left-0 right-0 h-1.5" style={{ background: `linear-gradient(to right, ${BRAND}, transparent)` }} />
                 </div>
+
                 <p className="text-center text-gray-600 text-sm mt-6">
                     {t('Préférez une démo en live ?')}{' '}
                     <a href="#demo" className="font-semibold transition hover:opacity-75" style={{ color: BRAND }}>
