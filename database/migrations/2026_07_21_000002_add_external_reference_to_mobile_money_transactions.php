@@ -9,11 +9,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('mobile_money_transactions', function (Blueprint $table) {
-            // Référence externe retournée par l'opérateur (pay_token Orange, referenceId MTN, checkout id Wave)
-            $table->string('external_reference', 255)->nullable()->after('reference');
-
-            // Statut brut renvoyé par l'opérateur (SUCCESS, SUCCESSFUL, complete, etc.)
-            $table->string('provider_status', 64)->nullable()->after('status');
+            if (! Schema::hasColumn('mobile_money_transactions', 'external_reference')) {
+                $table->string('external_reference', 255)->nullable()->after('reference');
+            }
+            if (! Schema::hasColumn('mobile_money_transactions', 'provider_status')) {
+                $table->string('provider_status', 64)->nullable()->after('status');
+            }
         });
     }
 

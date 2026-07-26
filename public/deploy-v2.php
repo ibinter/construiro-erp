@@ -312,6 +312,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['diag'])) {
     } elseif ($diag === 'sanctum-setup') {
         echo shell_exec('cd ' . escapeshellarg(dirname(__DIR__)) . ' && php artisan vendor:publish --provider="Laravel\\Sanctum\\SanctumServiceProvider" --force 2>&1');
         echo shell_exec('cd ' . escapeshellarg(dirname(__DIR__)) . ' && php artisan migrate --force 2>&1');
+    } elseif ($diag === 'fix-migrations-rename') {
+        // Met à jour la table migrations pour les fichiers renommés (timestamps dupliqués corrigés)
+        $renames = [
+            '2026_07_21_000001_add_external_reference_to_mobile_money_transactions' =>
+                '2026_07_21_000002_add_external_reference_to_mobile_money_transactions',
+            '2026_07_26_100000_create_demo_sessions_table' =>
+                '2026_07_26_100001_create_demo_sessions_table',
+        ];
+        echo shell_exec("cd $dir && php artisan tinker --no-interaction --execute=\"
+            \\\$renames = " . json_encode($renames) . ";
+            foreach (\\\$renames as \\\$old => \\\$new) {
+                \\\$exists = DB::table('migrations')->where('migration', \\\$old)->exists();
+                \\\$newExists = DB::table('migrations')->where('migration', \\\$new)->exists();
+                if (\\\$exists && !\\\$newExists) {
+                    DB::table('migrations')->where('migration', \\\$old)->update(['migration' => \\\$new]);
+                    echo 'Renamed: ' . \\\$old . ' -> ' . \\\$new . PHP_EOL;
+                } elseif (!\\\$exists && !\\\$newExists) {
+                    echo 'Not found: ' . \\\$old . PHP_EOL;
+                } else {
+                    echo 'Skip (already done or conflict): ' . \\\$old . PHP_EOL;
+                }
+            }
+        \" 2>&1");
+        echo shell_exec("cd $dir && php artisan migrate --force 2>&1");
+        echo \"DONE\n\";
     } elseif ($diag === 'fix-drivers') {
         // SESSION_DRIVER=file + CACHE_STORE=file → supprime les requêtes SQL de session/cache sur chaque requête
         $envPath = $dir . '/.env';
