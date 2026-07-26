@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Changelog;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ChangelogController extends Controller
 {
+    /**
+     * Données de secours utilisées quand la table changelogs est vide.
+     * Permet une expérience cohérente même sans entrées publiées en BDD.
+     */
     private const ENTRIES = [
         [
             'version'     => '1.5.0',
@@ -99,8 +104,29 @@ class ChangelogController extends Controller
 
     public function index(): Response
     {
+        // Lecture depuis la BDD : entrées publiées, plus récentes en premier.
+        $dbEntries = Changelog::where('is_published', true)
+            ->orderByDesc('published_at')
+            ->orderByDesc('created_at')
+            ->get();
+
+        if ($dbEntries->isNotEmpty()) {
+            // Convertit les modèles BDD dans le même format que le fallback hardcodé,
+            // garantissant la compatibilité avec le composant Changelog/Index.
+            $entries = $dbEntries->map(fn (Changelog $c) => [
+                'version'     => $c->version,
+                'released_at' => ($c->published_at ?? $c->created_at)->format('Y-m-d'),
+                'is_major'    => $c->type === 'feature',
+                'title'       => $c->title,
+                'changes'     => [['type' => $c->type, 'text' => $c->body]],
+            ])->toArray();
+        } else {
+            // Fallback statique quand la table est vide (ex. : premier déploiement).
+            $entries = self::ENTRIES;
+        }
+
         return Inertia::render('Changelog/Index', [
-            'entries' => self::ENTRIES,
+            'entries' => $entries,
         ]);
     }
 }

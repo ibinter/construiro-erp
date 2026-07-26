@@ -17,6 +17,9 @@
 
 return [
 
+    // Version courante de l'application (synchronisée avec APP_VERSION dans .env).
+    'version' => env('APP_VERSION', '1.5.0'),
+
     // Devise et langue par défaut de la plateforme (réalités africaines).
     'default_currency' => 'XOF',
     'default_locale'   => 'fr',

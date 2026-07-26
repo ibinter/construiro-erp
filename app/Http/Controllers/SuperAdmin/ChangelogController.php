@@ -84,6 +84,14 @@ class ChangelogController extends Controller
     {
         $changelog->publish();
 
+        // Trace in-app : visible dans les logs Laravel (storage/logs).
+        // Pas d'email pour éviter le spam aux super-admins.
+        \Log::info('[Changelog] Version publiée', [
+            'version'      => $changelog->version,
+            'title'        => $changelog->title,
+            'published_at' => $changelog->published_at,
+        ]);
+
         return back()->with('success', "Version {$changelog->version} publiée.");
     }
 

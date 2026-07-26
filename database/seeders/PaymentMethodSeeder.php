@@ -12,12 +12,12 @@ class PaymentMethodSeeder extends Seeder
         $methods = [
             [
                 'type'            => 'mobile_money',
-                'name'            => 'Mobile Money (Orange, MTN, Wave)',
+                'name'            => 'Mobile Money (Orange, MTN, Wave, Moov)',
                 'is_active'       => true,
                 'sort_order'      => 1,
-                'instructions_fr' => "Effectuez votre paiement via :\n- 🟠 Orange Money : Tapez #144# → Paiement → Marchand → Code : {NUMERO}\n- 🟡 MTN MoMo : Tapez *136# → Payer → Code : {NUMERO}\n- 🔵 Wave : Ouvrez Wave → Payer → Entrez le numéro : {NUMERO}\n\nMontant exact : {MONTANT} {DEVISE}\nRéférence : {REFERENCE}\n\n✅ Après paiement, uploadez la capture d'écran ou le reçu.",
-                'instructions_en' => "Make your payment via:\n- 🟠 Orange Money : Dial #144# → Payment → Merchant → Code: {NUMERO}\n- 🟡 MTN MoMo : Dial *136# → Pay → Code: {NUMERO}\n- 🔵 Wave : Open Wave → Pay → Enter number: {NUMERO}\n\nExact amount: {MONTANT} {DEVISE}\nReference: {REFERENCE}\n\n✅ After payment, upload your screenshot or receipt.",
-                'config'          => ['orange_number' => '', 'mtn_number' => '', 'wave_number' => '', 'account_name' => 'IBIG Soft'],
+                'instructions_fr' => "Effectuez votre paiement via :\n- 🟠 Orange Money : Tapez #144# → Paiement → Marchand → Numéro : +225 07 78 88 25 92\n- 🟡 MTN MoMo : Tapez *136# → Payer → Numéro : +225 05 55 05 99 01\n- 🔵 Wave : Ouvrez Wave → Payer → Entrez le numéro : +225 07 78 88 25 92\n- 🟢 Moov Money : Tapez #155# → Paiement → Numéro : +225 01 53 59 55 44\n\nBénéficiaire : IBIG SARL\nMontant exact : {MONTANT} {DEVISE}\nRéférence : {REFERENCE}\n\n✅ Après paiement, uploadez la capture d'écran ou le reçu.",
+                'instructions_en' => "Make your payment via:\n- 🟠 Orange Money : Dial #144# → Payment → Merchant → Number: +225 07 78 88 25 92\n- 🟡 MTN MoMo : Dial *136# → Pay → Number: +225 05 55 05 99 01\n- 🔵 Wave : Open Wave → Pay → Enter number: +225 07 78 88 25 92\n- 🟢 Moov Money : Dial #155# → Payment → Number: +225 01 53 59 55 44\n\nBeneficiary: IBIG SARL\nExact amount: {MONTANT} {DEVISE}\nReference: {REFERENCE}\n\n✅ After payment, upload your screenshot or receipt.",
+                'config'          => ['orange_number' => '+225 07 78 88 25 92', 'mtn_number' => '+225 05 55 05 99 01', 'wave_number' => '+225 07 78 88 25 92', 'moov_number' => '+225 01 53 59 55 44', 'account_name' => 'IBIG SARL'],
                 'currency'        => 'XOF',
                 'min_amount'      => 1000,
                 'max_amount'      => null,

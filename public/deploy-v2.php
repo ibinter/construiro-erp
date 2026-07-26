@@ -306,6 +306,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['diag'])) {
     } elseif ($diag === 'seed-kb') {
         // Initialise/met à jour les 25 entrées de la base de connaissances SARA (RAG)
         echo shell_exec("cd $dir && php artisan db:seed --class='Database\\Seeders\\KnowledgeBaseSeeder' --force 2>&1");
+    } elseif ($diag === 'sanctum-setup') {
+        echo shell_exec('cd ' . escapeshellarg(dirname(__DIR__)) . ' && php artisan vendor:publish --provider="Laravel\\Sanctum\\SanctumServiceProvider" --force 2>&1');
+        echo shell_exec('cd ' . escapeshellarg(dirname(__DIR__)) . ' && php artisan migrate --force 2>&1');
     } elseif ($diag === 'fix-drivers') {
         // SESSION_DRIVER=file + CACHE_STORE=file → supprime les requêtes SQL de session/cache sur chaque requête
         $envPath = $dir . '/.env';

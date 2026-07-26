@@ -58,6 +58,8 @@ class HandleInertiaRequests extends Middleware
             'locale' => $locale,
             // Dictionnaire de traduction de la langue courante (FR = identité).
             'translations' => $this->translations($locale),
+            // Version de l'application (depuis config/construiro.php → APP_VERSION).
+            'appVersion' => config('construiro.version', '1.0.0'),
             // Messages flash (notifications toast côté client).
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),

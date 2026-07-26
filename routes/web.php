@@ -558,6 +558,9 @@ Route::middleware(['auth', 'verified', 'subscription', 'two-factor'])->group(fun
         Route::delete('/webhooks/{webhook}', [\App\Http\Controllers\SuperAdmin\WebhookController::class, 'destroy'])->name('superadmin.webhooks.destroy');
         Route::post('/webhooks/{webhook}/regenerate-secret', [\App\Http\Controllers\SuperAdmin\WebhookController::class, 'regenerateSecret'])->name('superadmin.webhooks.regenerate');
 
+        // --- §19.5 Clés API Sanctum -------------------------------------------
+        Route::get('/api-keys', [\App\Http\Controllers\SuperAdmin\ApiKeysController::class, 'index'])->name('superadmin.api-keys.index');
+
         // --- §38 Checklist Recette formelle ------------------------------------
         Route::get('/recette', fn () => \Inertia\Inertia::render('SuperAdmin/Recette/Index'))->name('superadmin.recette');
     });
