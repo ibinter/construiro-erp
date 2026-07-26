@@ -64,17 +64,21 @@
 
     @if($doc->notes)<div class="notes">{{ $doc->notes }}</div>@endif
 
-    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:16px;">
-        <div class="foot" style="margin-top:0;">
-            {{ $company->name ?? 'CONSTRUIRO' }} — Facture générée par CONSTRUIRO ERP le {{ now()->format('d/m/Y à H:i') }}
-        </div>
-        @if(!empty($qr_svg))
-        <div style="text-align:center;flex-shrink:0;margin-left:16px;">
-            <img src="{{ $qr_svg }}" width="80" height="80" style="display:block;" alt="QR">
-            <div style="font-size:8px;color:#64748b;margin-top:3px;">Vérifier l'authenticité</div>
-        </div>
-        @endif
-    </div>
+    <table style="width:100%;margin-top:16px;" cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="vertical-align:bottom;">
+                <div class="foot" style="margin-top:0;">
+                    {{ $company->name ?? 'CONSTRUIRO' }} — Facture générée par CONSTRUIRO ERP le {{ now()->format('d/m/Y à H:i') }}
+                </div>
+            </td>
+            @if(!empty($qr_svg))
+            <td style="text-align:center;vertical-align:bottom;width:96px;">
+                {!! $qr_svg !!}
+                <div style="font-size:8px;color:#64748b;margin-top:2px;">Vérifier l'authenticité</div>
+            </td>
+            @endif
+        </tr>
+    </table>
 </div>
 </body>
 </html>

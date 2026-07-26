@@ -129,9 +129,9 @@ Route::get('/qr', function (\Illuminate\Http\Request $request) {
         return response('', 400);
     }
     $url = url('/verify/' . $token);
-    $png = (new \SimpleSoftwareIO\QrCode\Generator())->format('png')->size(200)->generate($url);
-    return response($png)
-        ->header('Content-Type', 'image/png')
+    $svg = (new \SimpleSoftwareIO\QrCode\Generator())->format('svg')->size(200)->generate($url);
+    return response($svg)
+        ->header('Content-Type', 'image/svg+xml')
         ->header('Cache-Control', 'public, max-age=86400');
 })->name('qr.code');
 

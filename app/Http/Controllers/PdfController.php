@@ -127,11 +127,10 @@ class PdfController extends Controller
         ], "Contrat-{$contract->code}.pdf");
     }
 
-    /** Génère un QR code PNG encodé en data URI (DomPDF supporte PNG, pas SVG complexe). */
+    /** Génère un QR code SVG inline (pure PHP, sans imagick). */
     private function makeQrSvg(string $url): string
     {
-        $png = (new QrGenerator())->format('png')->size(150)->generate($url);
-        return 'data:image/png;base64,' . base64_encode((string) $png);
+        return (string) (new QrGenerator())->format('svg')->size(120)->generate($url);
     }
 
     /** Charge le gabarit, applique le format A4 et renvoie le flux PDF (aperçu inline). */
