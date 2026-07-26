@@ -13,6 +13,7 @@ export default function PrimaryButton({
                 } ` + className
             }
             disabled={disabled}
+            aria-disabled={disabled || undefined}
         >
             {children}
         </button>

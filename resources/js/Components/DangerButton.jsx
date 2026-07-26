@@ -13,6 +13,7 @@ export default function DangerButton({
                 } ` + className
             }
             disabled={disabled}
+            aria-disabled={disabled || undefined}
         >
             {children}
         </button>

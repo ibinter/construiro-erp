@@ -38,7 +38,9 @@ export default function Toast() {
                         className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-white shadow-lg ${
                             success ? 'bg-green-600' : 'bg-red-600'
                         }`}
-                        role="status"
+                        role={success ? 'status' : 'alert'}
+                        aria-live={success ? 'polite' : 'assertive'}
+                        aria-atomic="true"
                     >
                         <Icon name={success ? 'check-circle-2' : 'alert-circle'} className="h-5 w-5 shrink-0" />
                         <span>{toast.message}</span>

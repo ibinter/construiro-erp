@@ -250,3 +250,37 @@ html {
         min-width: 44px;
     }
 }
+
+/* ── §32 Accessibilité ARIA ─────────────────────────────────────────── */
+
+/* Screen-reader only — fallback si Tailwind sr-only non chargé */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Focus-visible déjà défini globalement via *:focus-visible, mais
+   on surcharge ici pour le lien d'évitement qui a besoin d'être
+   visible et positionné quand il reçoit le focus clavier. */
+.skip-to-main:focus {
+    position: fixed !important;
+    top: 1rem;
+    left: 1rem;
+    z-index: 9999;
+    padding: 0.5rem 1rem;
+    background: var(--color-brand);
+    color: #fff;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+    box-shadow: 0 4px 16px rgba(245,130,32,0.4);
+    outline: none;
+}

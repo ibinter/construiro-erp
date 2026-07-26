@@ -7,9 +7,13 @@ const variantMap = {
     brand:   'badge-brand',
 };
 
-export default function Badge({ variant = 'neutral', children, className = '' }) {
+export default function Badge({ variant = 'neutral', children, className = '', 'aria-label': ariaLabel, ...props }) {
     return (
-        <span className={`${variantMap[variant] ?? 'badge-neutral'} ${className}`}>
+        <span
+            className={`${variantMap[variant] ?? 'badge-neutral'} ${className}`}
+            aria-label={ariaLabel}
+            {...props}
+        >
             {children}
         </span>
     );

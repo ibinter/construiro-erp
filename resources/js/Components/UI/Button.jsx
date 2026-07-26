@@ -19,14 +19,21 @@ export default function Button({
     className = '',
     ...props
 }) {
+    const isDisabled = disabled || loading;
     return (
         <button
             className={`${variantMap[variant] ?? 'btn-primary'} ${sizeMap[size] ?? ''} ${className}`}
-            disabled={disabled || loading}
+            disabled={isDisabled}
+            aria-disabled={isDisabled || undefined}
+            aria-busy={loading || undefined}
             {...props}
         >
-            {loading && <span className="spinner" />}
-            {children}
+            {loading ? (
+                <>
+                    <span className="spinner" aria-hidden="true" />
+                    <span className="sr-only">Chargement...</span>
+                </>
+            ) : children}
         </button>
     );
 }

@@ -48,6 +48,7 @@ export default function Sidebar({ open = false, onClose }) {
 
     return (
         <aside
+            id="sidebar"
             className={[
                 'flex flex-col bg-slate-900 text-slate-200 border-r border-slate-800 overflow-hidden transition-all duration-200',
                 'fixed inset-y-0 left-0 z-50 h-full w-64',
@@ -55,6 +56,8 @@ export default function Sidebar({ open = false, onClose }) {
                 'lg:relative lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 lg:shrink-0',
                 open ? 'lg:w-64' : 'lg:w-0',
             ].join(' ')}
+            aria-label="Navigation principale"
+            aria-expanded={open}
         >
             {/* Bouton fermer (mobile uniquement) */}
             <button
@@ -99,7 +102,7 @@ export default function Sidebar({ open = false, onClose }) {
 
             {/* Navigation SuperAdmin */}
             {isSuperAdmin ? (
-                <nav className="flex-1 overflow-y-auto px-3 py-2">
+                <nav className="flex-1 overflow-y-auto px-3 py-2" role="navigation" aria-label="Console SuperAdmin">
                     <div className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
                         Console Admin
                     </div>
@@ -122,11 +125,15 @@ export default function Sidebar({ open = false, onClose }) {
                                                 ? 'bg-orange-500 font-medium text-white'
                                                 : 'text-slate-300 hover:bg-slate-800 hover:text-white'
                                         }`}
+                                        aria-current={active ? 'page' : undefined}
                                     >
-                                        <Icon name={item.icon} className="h-4 w-4 shrink-0" />
+                                        <Icon name={item.icon} className="h-4 w-4 shrink-0" aria-hidden="true" />
                                         <span className="flex-1 truncate">{t(item.label)}</span>
                                         {badge && (
-                                            <span className="ml-auto shrink-0 rounded-full bg-orange-500 px-1.5 py-0.5 text-[10px] font-bold text-white leading-none">
+                                            <span
+                                                className="ml-auto shrink-0 rounded-full bg-orange-500 px-1.5 py-0.5 text-[10px] font-bold text-white leading-none"
+                                                aria-label={`${badge} en attente`}
+                                            >
                                                 {badge}
                                             </span>
                                         )}
@@ -145,7 +152,7 @@ export default function Sidebar({ open = false, onClose }) {
                 </nav>
             ) : (
                 /* Navigation normale par groupes */
-                <nav className="flex-1 space-y-4 overflow-y-auto px-3 py-2">
+                <nav className="flex-1 space-y-4 overflow-y-auto px-3 py-2" role="navigation" aria-label="Navigation principale">
                     {navigation.map((section) => (
                         <div key={section.key}>
                             <div className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
@@ -164,8 +171,9 @@ export default function Sidebar({ open = false, onClose }) {
                                                         ? 'bg-orange-500 font-medium text-white'
                                                         : 'text-slate-300 hover:bg-slate-800 hover:text-white'
                                                 }`}
+                                                aria-current={active ? 'page' : undefined}
                                             >
-                                                <Icon name={item.icon} className="h-4 w-4 shrink-0" />
+                                                <Icon name={item.icon} className="h-4 w-4 shrink-0" aria-hidden="true" />
                                                 <span className="truncate">{item.label}</span>
                                             </Link>
                                         </li>
@@ -197,8 +205,9 @@ export default function Sidebar({ open = false, onClose }) {
                                                 ? 'bg-orange-500 font-medium text-white'
                                                 : 'text-orange-400 hover:bg-slate-800 hover:text-orange-300'
                                         }`}
+                                        aria-current={currentPath.startsWith('/billing/payment') ? 'page' : undefined}
                                     >
-                                        <Icon name="credit-card" className="h-4 w-4 shrink-0" />
+                                        <Icon name="credit-card" className="h-4 w-4 shrink-0" aria-hidden="true" />
                                         <span className="truncate">{t('Payer mon abonnement')}</span>
                                     </Link>
                                 </li>

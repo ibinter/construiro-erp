@@ -20,6 +20,14 @@ export default function AppLayout({ header, title, breadcrumbs = [], children })
 
     return (
         <div className="flex min-h-screen bg-slate-100 dark:bg-slate-950">
+            {/* Lien d'évitement — accessible au clavier, invisible sinon */}
+            <a
+                href="#main-content"
+                className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[9999] focus:rounded focus:bg-orange-500 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:outline-none focus:shadow-lg"
+            >
+                Aller au contenu principal
+            </a>
+
             {/* Backdrop mobile */}
             {sidebarOpen && (
                 <div
@@ -38,7 +46,9 @@ export default function AppLayout({ header, title, breadcrumbs = [], children })
                         <button
                             onClick={() => setSidebarOpen((v) => !v)}
                             className="shrink-0 rounded-md p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
-                            aria-label={t('Ouvrir le menu')}
+                            aria-label={sidebarOpen ? t('Fermer le menu') : t('Ouvrir le menu')}
+                            aria-expanded={sidebarOpen}
+                            aria-controls="sidebar"
                         >
                             <Icon name="menu" className="h-5 w-5" />
                         </button>
@@ -93,18 +103,27 @@ export default function AppLayout({ header, title, breadcrumbs = [], children })
 
                 {/* Bannière environnement de démonstration */}
                 {auth?.user?.company?.is_demo && (
-                    <div className="text-center text-xs font-bold py-2 px-4 text-white" style={{ background: '#ef4444' }}>
+                    <div
+                        className="text-center text-xs font-bold py-2 px-4 text-white"
+                        style={{ background: '#ef4444' }}
+                        role="status"
+                        aria-live="polite"
+                    >
                         🎭 {t('ENVIRONNEMENT DE DÉMONSTRATION — Les données sont fictives et réinitialisées régulièrement')}
                     </div>
                 )}
 
                 {/* Bandeau abonnement grâce / expiration imminente */}
                 {subscription && (subscription.is_grace || (subscription.days_remaining <= 7 && subscription.status !== 'expired')) && (
-                    <div className={`flex items-center justify-between gap-3 px-4 py-2 text-sm ${
+                    <div
+                        className={`flex items-center justify-between gap-3 px-4 py-2 text-sm ${
                         subscription.is_grace
                             ? 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300'
                             : 'bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300'
-                    }`}>
+                    }`}
+                        role="alert"
+                        aria-live="assertive"
+                    >
                         <span>
                             <Icon name={subscription.is_grace ? 'alert-triangle' : 'clock'} className="mr-1.5 inline h-4 w-4" />
                             {subscription.is_grace
@@ -121,8 +140,8 @@ export default function AppLayout({ header, title, breadcrumbs = [], children })
                 {/* Breadcrumbs */}
                 {breadcrumbs.length > 0 && (
                     <nav aria-label="Fil d'Ariane" className="flex items-center gap-1.5 border-b border-slate-200 bg-white px-4 py-2 text-xs text-slate-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
-                        <Link href="/dashboard" className="hover:text-orange-500">
-                            <Icon name="home" className="h-3.5 w-3.5" />
+                        <Link href="/dashboard" className="hover:text-orange-500" aria-label={t('Accueil')}>
+                            <Icon name="home" className="h-3.5 w-3.5" aria-hidden="true" />
                         </Link>
                         {breadcrumbs.map((crumb, i) => (
                             <span key={i} className="flex items-center gap-1.5">
@@ -142,7 +161,7 @@ export default function AppLayout({ header, title, breadcrumbs = [], children })
                 )}
 
                 {/* Contenu principal — pb-20 sur mobile pour la bottom nav */}
-                <main className="flex-1 p-4 pb-24 sm:p-6 lg:pb-6">{children}</main>
+                <main id="main-content" className="flex-1 p-4 pb-24 sm:p-6 lg:pb-6" tabIndex="-1">{children}</main>
             </div>
 
             {/* Bottom navigation mobile */}
