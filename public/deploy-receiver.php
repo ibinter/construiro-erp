@@ -12,13 +12,25 @@ if (function_exists('opcache_invalidate')) {
     opcache_invalidate(__FILE__, true);
 }
 
-if (($_POST['secret'] ?? '') !== 'construiro_deploy_2026') {
+$recv_secret = $_POST['secret'] ?? '';
+if (!$recv_secret || !hash_equals('construiro_deploy_2026', $recv_secret)) {
     http_response_code(403);
     die('Accès refusé');
 }
 
 $dir = dirname(__DIR__);
 $log = "$dir/storage/logs/deploy.log";
+
+// Persiste DEPLOY_SECRET dans .env pour que deploy-v2.php
+// puisse le lire après le git pull (migration vers lecture .env).
+$envPath = $dir . '/.env';
+if (file_exists($envPath)) {
+    $envContent = file_get_contents($envPath);
+    if (!preg_match('/^DEPLOY_SECRET=/m', $envContent)) {
+        $envContent .= "\nDEPLOY_SECRET=" . $recv_secret . "\n";
+        file_put_contents($envPath, $envContent);
+    }
+}
 
 function logMsg(string $msg): void {
     global $log;

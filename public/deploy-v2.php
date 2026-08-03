@@ -26,9 +26,10 @@ if (function_exists('opcache_invalidate')) {
 
 $secret = $_POST['secret'] ?? $_GET['secret'] ?? '';
 
-// Lit DEPLOY_SECRET depuis .env (ne jamais hardcoder le secret dans ce fichier)
-$expected_secret = '';
+// Lit DEPLOY_SECRET depuis .env (écrit par deploy-receiver.php lors du premier déploiement)
+// ou depuis la variable d'environnement PHP-FPM / Apache SetEnv.
 $envFile = dirname(__DIR__) . '/.env';
+$expected_secret = '';
 if (file_exists($envFile)) {
     foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
         if (str_starts_with(trim($line), 'DEPLOY_SECRET=')) {
@@ -36,6 +37,9 @@ if (file_exists($envFile)) {
             break;
         }
     }
+}
+if (!$expected_secret) {
+    $expected_secret = getenv('DEPLOY_SECRET') ?: '';
 }
 
 if (!$expected_secret || !hash_equals($expected_secret, $secret)) {
