@@ -188,6 +188,9 @@ Route::get('/aide/{section}',   [AideController::class, 'index'])->name('aide.se
 
 // ─── Guide utilisateur PDF (public) ─────────────────────────────────────────
 Route::get('/guide/{locale}', [UserGuideController::class, 'download'])->name('guide.download')->where('locale', 'fr|en');
+
+// ─── Lexique métier BTP (public) ────────────────────────────────────────────
+Route::get('/lexique', fn () => inertia('Lexique'))->name('lexique');
 Route::redirect('/blog',   'https://ibigsoft.com', 301);
 Route::redirect('/statut', 'https://ibigsoft.com', 301);
 

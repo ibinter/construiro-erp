@@ -1,6 +1,9 @@
 *.log
 .DS_Store
 .env
+/public/deploy-v2.php
+/public/deploy-receiver.php
+/public/deploy-log.php
 .env.backup
 .env.production
 .phpactor.json

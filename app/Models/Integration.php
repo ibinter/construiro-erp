@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Integration extends Model
 {
+    use BelongsToCompany;
     protected $fillable = [
         'company_id', 'type', 'provider', 'is_enabled',
         'config', 'webhook_url', 'webhook_secret',
