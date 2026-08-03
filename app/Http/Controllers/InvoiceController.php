@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\InvoiceMail;
 use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\Project;
@@ -10,6 +11,7 @@ use App\Services\NotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -200,7 +202,9 @@ class InvoiceController extends Controller
             $invoice->save();
         }
 
-        // TODO: Mail::to($invoice->client?->email)->send(new \App\Mail\InvoiceMail($invoice));
+        if ($invoice->client?->email) {
+            Mail::to($invoice->client->email)->send(new InvoiceMail($invoice));
+        }
 
         return redirect()->route('invoices.show', $invoice)
             ->with('success', 'Facture marquée comme envoyée. Configurez le SMTP pour activer l\'envoi réel.');
