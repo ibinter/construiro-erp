@@ -349,10 +349,11 @@ class InvoiceTest extends TestCase
         $userB->assignRole('super_admin');
 
         // L'utilisateur B tente d'accéder à la facture de l'entreprise A
+        // Le global scope company_id filtre la facture → 404 (plus sécurisé que 403)
         $response = $this->actingAs($userB)
             ->get("/invoices/{$invoiceA->id}");
 
-        $response->assertStatus(403);
+        $response->assertStatus(404);
     }
 
     public function test_scope_for_user_ne_renvoie_que_les_factures_de_la_meme_company(): void

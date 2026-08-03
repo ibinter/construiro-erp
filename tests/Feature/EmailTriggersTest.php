@@ -6,6 +6,7 @@ use App\Jobs\SendMailJob;
 use App\Mail\DemoRequestedMail;
 use App\Mail\PaymentConfirmedMail;
 use App\Mail\WelcomeMail;
+use App\Models\SubscriptionPlan;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
@@ -33,11 +34,14 @@ class EmailTriggersTest extends TestCase
     {
         Queue::fake();
 
+        $plan = SubscriptionPlan::factory()->create(['is_active' => true]);
+
         $this->post('/register', [
             'name'                  => 'Koffi Mensah',
             'email'                 => 'koffi@construiro-test.com',
             'password'              => 'Password123!',
             'password_confirmation' => 'Password123!',
+            'plan_id'               => $plan->id,
         ]);
 
         // Vérifie qu'au moins un SendMailJob a été mis en queue pour cette adresse.

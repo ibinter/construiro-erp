@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Subscription extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'company_id', 'plan_id', 'status', 'billing_cycle',
         'trial_ends_at', 'starts_at', 'ends_at', 'grace_ends_at',

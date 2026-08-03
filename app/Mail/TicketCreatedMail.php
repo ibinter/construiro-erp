@@ -15,7 +15,7 @@ class TicketCreatedMail extends Mailable
     public function __construct(
         public string $userName,
         public string $ticketNumber,
-        public string $subject,
+        public string $ticketSubject,
         public string $priority,
         public string $ticketUrl = '',
     ) {

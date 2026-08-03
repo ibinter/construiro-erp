@@ -33,7 +33,7 @@
         <table style="width:100%;border-collapse:collapse;font-size:14px;">
             <tr style="border-bottom:1px solid #f1f5f9;">
                 <td style="padding:12px 0;color:#64748b;font-weight:600;width:35%;">Objet</td>
-                <td style="padding:12px 0;font-weight:700;color:#0f172a;">{{ $subject }}</td>
+                <td style="padding:12px 0;font-weight:700;color:#0f172a;">{{ $ticketSubject }}</td>
             </tr>
             <tr style="border-bottom:1px solid #f1f5f9;">
                 <td style="padding:12px 0;color:#64748b;font-weight:600;">Statut</td>

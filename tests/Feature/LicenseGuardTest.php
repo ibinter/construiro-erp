@@ -8,6 +8,7 @@ use App\Models\SubscriptionPlan;
 use App\Models\User;
 use App\Services\LicenseGuard;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class LicenseGuardTest extends TestCase
@@ -23,6 +24,7 @@ class LicenseGuardTest extends TestCase
 
         $this->company = Company::factory()->create();
         $this->admin   = User::factory()->create(['company_id' => $this->company->id]);
+        Role::findOrCreate('admin', 'web');
         $this->admin->assignRole('admin');
     }
 
@@ -97,8 +99,10 @@ class LicenseGuardTest extends TestCase
 
         $usage = LicenseGuard::usage($this->company->id);
 
-        $this->assertArrayHasKey('users_count', $usage);
-        $this->assertArrayHasKey('max_users', $usage);
-        $this->assertEquals(5, $usage['max_users']);
+        // Structure: ['users' => ['used' => N, 'max' => M, 'unlimited' => bool], ...]
+        $this->assertArrayHasKey('users', $usage);
+        $this->assertArrayHasKey('used', $usage['users']);
+        $this->assertArrayHasKey('max', $usage['users']);
+        $this->assertEquals(5, $usage['users']['max']);
     }
 }

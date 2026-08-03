@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Models\SubscriptionPlan;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -18,14 +19,19 @@ class RegistrationTest extends TestCase
 
     public function test_new_users_can_register(): void
     {
+        // Le flux d'inscription requiert un plan_id valide
+        $plan = SubscriptionPlan::factory()->create(['is_active' => true]);
+
         $response = $this->post('/register', [
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => 'password',
+            'name'                  => 'Test User',
+            'email'                 => 'test@example.com',
+            'password'              => 'password',
             'password_confirmation' => 'password',
+            'plan_id'               => $plan->id,
         ]);
 
-        $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        // L'inscription redirige vers la page de succès (pas auto-login)
+        $response->assertRedirect(route('register.success'));
+        $this->assertDatabaseHas('users', ['email' => 'test@example.com']);
     }
 }

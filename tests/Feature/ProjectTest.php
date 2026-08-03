@@ -259,7 +259,8 @@ class ProjectTest extends TestCase
         $response = $this->actingAs($userB)
             ->get("/projects/{$projectCompanyA->id}");
 
-        $response->assertStatus(403);
+        // Le global scope company_id filtre le projet → 404 (plus sécurisé que 403)
+        $response->assertStatus(404);
     }
 
     public function test_liste_projets_ne_renvoie_que_les_projets_de_la_meme_company(): void

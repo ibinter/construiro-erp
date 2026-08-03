@@ -150,7 +150,7 @@ class DashboardController extends Controller
         $projectsBudget = Cache::remember("dashboard_projects_budget_{$companyId}", 180, function () use ($companyId) {
             $projects = Project::where('company_id', $companyId)
                 ->whereIn('status', ['in_progress', 'on_hold'])
-                ->orderByRaw("FIELD(status,'in_progress','on_hold')")
+                ->orderByRaw("CASE status WHEN 'in_progress' THEN 0 WHEN 'on_hold' THEN 1 ELSE 2 END")
                 ->orderBy('name')
                 ->take(5)
                 ->get(['id', 'code', 'name', 'status', 'progress', 'budget_amount', 'currency']);

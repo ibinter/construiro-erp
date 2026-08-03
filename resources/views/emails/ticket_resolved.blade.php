@@ -27,7 +27,7 @@
         <table style="width:100%;border-collapse:collapse;font-size:14px;">
             <tr style="border-bottom:1px solid #f8fafc;">
                 <td style="padding:12px 0;color:#64748b;font-weight:600;width:30%;">Objet</td>
-                <td style="padding:12px 0;font-weight:600;color:#0f172a;">{{ $subject }}</td>
+                <td style="padding:12px 0;font-weight:600;color:#0f172a;">{{ $ticketSubject }}</td>
             </tr>
         </table>
     </div>

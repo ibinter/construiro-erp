@@ -107,7 +107,7 @@ class SupportController extends Controller
             new TicketCreatedMail(
                 userName:     $request->user()->name,
                 ticketNumber: $ticket->number,
-                subject:      $ticket->subject,
+                ticketSubject: $ticket->subject,
                 priority:     $ticket->priority,
             ),
         ));
@@ -335,7 +335,7 @@ class SupportController extends Controller
             new TicketResolvedMail(
                 userName:     $recipientName,
                 ticketNumber: $ticket->number,
-                subject:      $ticket->subject,
+                ticketSubject: $ticket->subject,
                 resolution:   'Votre ticket a été fermé par notre équipe.',
                 ticketUrl:    route('support.show', $ticket),
             ),

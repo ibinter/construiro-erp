@@ -15,7 +15,7 @@ class TicketResolvedMail extends Mailable
     public function __construct(
         public string $userName,
         public string $ticketNumber,
-        public string $subject,
+        public string $ticketSubject,
         public string $resolution,
         public string $ticketUrl = '',
     ) {

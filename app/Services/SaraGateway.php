@@ -127,7 +127,7 @@ class SaraGateway
             ]);
         } catch (\Throwable $e) {
             // Ne jamais bloquer l'utilisateur à cause du journal
-            Log::warning('SaraGateway: impossible d'enregistrer le log IA', ['error' => $e->getMessage()]);
+            Log::warning("SaraGateway: impossible d'enregistrer le log IA", ['error' => $e->getMessage()]);
         }
 
         return $response;
