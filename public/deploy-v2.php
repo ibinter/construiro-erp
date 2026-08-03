@@ -39,7 +39,10 @@ if (file_exists($envFile)) {
     }
 }
 if (!$expected_secret) {
-    $expected_secret = getenv('DEPLOY_SECRET') ?: '';
+    // Fallback : variable d'environnement PHP-FPM / Apache SetEnv, puis secret statique
+    // Le secret statique est conservé pour le premier déploiement avant que deploy-receiver.php
+    // n'ait écrit DEPLOY_SECRET dans .env.
+    $expected_secret = getenv('DEPLOY_SECRET') ?: 'construiro_deploy_2026';
 }
 
 if (!$expected_secret || !hash_equals($expected_secret, $secret)) {
