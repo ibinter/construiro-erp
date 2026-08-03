@@ -1,11 +1,16 @@
 import { useForm } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import { PageHeader } from '@/Components/UI';
-
-const CHANNEL_LABELS = { app: 'Notifications in-app', email: 'Notifications email' };
+import { useTrans } from '@/i18n';
 
 export default function Preferences({ preferences, types, typeLabels }) {
+    const { t } = useTrans();
     const { data, setData, put, processing, recentlySuccessful } = useForm({ preferences });
+
+    const CHANNEL_LABELS = {
+        app: t('Notifications in-app'),
+        email: t('Notifications email'),
+    };
 
     const toggle = (channel, type) => {
         setData('preferences', {
@@ -23,11 +28,11 @@ export default function Preferences({ preferences, types, typeLabels }) {
     };
 
     return (
-        <AppLayout title="Préférences de notifications">
+        <AppLayout title={t('Préférences de notifications')}>
             <div className="mx-auto max-w-3xl px-4 py-6 space-y-6">
                 <PageHeader
-                    title="Préférences de notifications"
-                    subtitle="Choisissez les notifications que vous souhaitez recevoir"
+                    title={t('Préférences de notifications')}
+                    subtitle={t('Choisissez les notifications que vous souhaitez recevoir')}
                 />
 
                 <form onSubmit={submit} className="space-y-6">
@@ -69,10 +74,10 @@ export default function Preferences({ preferences, types, typeLabels }) {
 
                     <div className="flex items-center gap-4">
                         <button type="submit" className="btn btn-primary" disabled={processing}>
-                            {processing ? 'Enregistrement…' : 'Enregistrer les préférences'}
+                            {processing ? t('Enregistrement…') : t('Enregistrer les préférences')}
                         </button>
                         {recentlySuccessful && (
-                            <span className="text-sm text-green-600 dark:text-green-400">Préférences enregistrées ✓</span>
+                            <span className="text-sm text-green-600 dark:text-green-400">{t('Préférences enregistrées')} ✓</span>
                         )}
                     </div>
                 </form>

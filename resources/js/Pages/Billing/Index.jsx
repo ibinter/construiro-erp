@@ -2,19 +2,20 @@ import { useForm } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import { PageHeader, Badge, Card, CardHeader, CardBody } from '@/Components/UI';
+import { useTrans } from '@/i18n';
 
 const STATUS_LABELS = {
-    trial: { label: 'Essai gratuit', variant: 'info' },
-    active: { label: 'Actif', variant: 'success' },
-    grace: { label: 'Période de grâce', variant: 'warning' },
-    expired: { label: 'Expiré', variant: 'danger' },
-    cancelled: { label: 'Annulé', variant: 'neutral' },
+    trial:     { label: 'Essai gratuit',       variant: 'info' },
+    active:    { label: 'Actif',               variant: 'success' },
+    grace:     { label: 'Période de grâce',    variant: 'warning' },
+    expired:   { label: 'Expiré',              variant: 'danger' },
+    cancelled: { label: 'Annulé',              variant: 'neutral' },
 };
 
 const INVOICE_STATUS = {
-    paid: { label: 'Payée', variant: 'success' },
+    paid:    { label: 'Payée',      variant: 'success' },
     pending: { label: 'En attente', variant: 'warning' },
-    failed: { label: 'Échouée', variant: 'danger' },
+    failed:  { label: 'Échouée',    variant: 'danger' },
 };
 
 function formatPrice(amount, currency) {
@@ -22,6 +23,7 @@ function formatPrice(amount, currency) {
 }
 
 export default function BillingIndex({ subscription, plans, invoices }) {
+    const { t } = useTrans();
     const { data, setData, post, processing, errors } = useForm({ activation_key: '' });
 
     const submit = (e) => {
@@ -33,36 +35,36 @@ export default function BillingIndex({ subscription, plans, invoices }) {
     const statusInfo = sub ? STATUS_LABELS[sub.status] : null;
 
     return (
-        <AppLayout title="Abonnement & Facturation">
+        <AppLayout title={t('Abonnement & Facturation')}>
             <div className="mx-auto max-w-4xl px-4 py-6 space-y-8">
                 <PageHeader
-                    title="Abonnement & Facturation"
-                    subtitle="Gérez votre plan CONSTRUIRO"
+                    title={t('Abonnement & Facturation')}
+                    subtitle={t('Gérez votre plan CONSTRUIRO')}
                 />
 
                 {/* Abonnement actuel */}
                 <Card>
                     <CardHeader>
                         <div className="flex items-center justify-between">
-                            <h3 className="font-semibold text-slate-800 dark:text-slate-100">Abonnement actuel</h3>
-                            {statusInfo && <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>}
+                            <h3 className="font-semibold text-slate-800 dark:text-slate-100">{t('Abonnement actuel')}</h3>
+                            {statusInfo && <Badge variant={statusInfo.variant}>{t(statusInfo.label)}</Badge>}
                         </div>
                     </CardHeader>
                     <CardBody>
                         {sub ? (
                             <div className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
-                                <p><span className="font-medium">Plan :</span> {sub.plan?.name ?? '—'}</p>
-                                <p><span className="font-medium">Cycle :</span> {sub.billing_cycle === 'yearly' ? 'Annuel' : 'Mensuel'}</p>
-                                {sub.trial_ends_at && <p><span className="font-medium">Fin d'essai :</span> {sub.trial_ends_at}</p>}
-                                {sub.ends_at && <p><span className="font-medium">Expiration :</span> {sub.ends_at}</p>}
+                                <p><span className="font-medium">{t('Plan')} :</span> {sub.plan?.name ?? '—'}</p>
+                                <p><span className="font-medium">{t('Cycle')} :</span> {sub.billing_cycle === 'yearly' ? t('Annuel') : t('Mensuel')}</p>
+                                {sub.trial_ends_at && <p><span className="font-medium">{t("Fin d'essai")} :</span> {sub.trial_ends_at}</p>}
+                                {sub.ends_at && <p><span className="font-medium">{t('Expiration')} :</span> {sub.ends_at}</p>}
                                 {sub.grace_ends_at && (
                                     <p className="text-orange-600 font-medium">
-                                        Période de grâce jusqu'au : {sub.grace_ends_at}
+                                        {t("Période de grâce jusqu'au")} : {sub.grace_ends_at}
                                     </p>
                                 )}
                                 {sub.days_remaining > 0 && (
                                     <p className={sub.days_remaining <= 7 ? 'text-orange-600 font-semibold' : ''}>
-                                        {sub.days_remaining} jour(s) restant(s)
+                                        {sub.days_remaining} {t('jour(s) restant(s)')}
                                     </p>
                                 )}
                                 {['trial', 'grace', 'expired'].includes(sub.status) && (
@@ -71,13 +73,13 @@ export default function BillingIndex({ subscription, plans, invoices }) {
                                             href={route('billing.payment.index')}
                                             className="btn btn-primary inline-flex items-center gap-2"
                                         >
-                                            Payer / Renouveler →
+                                            {t('Payer / Renouveler')} →
                                         </Link>
                                     </div>
                                 )}
                             </div>
                         ) : (
-                            <p className="text-sm text-slate-400">Aucun abonnement actif.</p>
+                            <p className="text-sm text-slate-400">{t('Aucun abonnement actif.')}</p>
                         )}
                     </CardBody>
                 </Card>
@@ -85,11 +87,11 @@ export default function BillingIndex({ subscription, plans, invoices }) {
                 {/* Activation par clé */}
                 <Card>
                     <CardHeader>
-                        <h3 className="font-semibold text-slate-800 dark:text-slate-100">Activer un abonnement</h3>
+                        <h3 className="font-semibold text-slate-800 dark:text-slate-100">{t('Activer un abonnement')}</h3>
                     </CardHeader>
                     <CardBody>
                         <p className="text-sm text-slate-500 mb-4">
-                            Entrez la clé d'activation reçue après votre paiement.
+                            {t("Entrez la clé d'activation reçue après votre paiement.")}
                         </p>
                         <form onSubmit={submit} className="flex gap-3">
                             <input
@@ -101,7 +103,7 @@ export default function BillingIndex({ subscription, plans, invoices }) {
                                 maxLength={32}
                             />
                             <button type="submit" className="btn btn-primary" disabled={processing}>
-                                {processing ? '…' : 'Activer'}
+                                {processing ? '…' : t('Activer')}
                             </button>
                         </form>
                         {errors.activation_key && (
@@ -112,7 +114,7 @@ export default function BillingIndex({ subscription, plans, invoices }) {
 
                 {/* Plans disponibles */}
                 <div>
-                    <h3 className="section-title mb-4">Nos plans</h3>
+                    <h3 className="section-title mb-4">{t('Nos plans')}</h3>
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         {plans.map((plan) => (
                             <div key={plan.id} className="card flex flex-col">
@@ -125,17 +127,17 @@ export default function BillingIndex({ subscription, plans, invoices }) {
                                 <div className="card-body flex-1 space-y-2">
                                     <p className="text-2xl font-bold text-orange-500">
                                         {formatPrice(plan.price_monthly, plan.currency)}
-                                        <span className="text-sm font-normal text-slate-400">/mois</span>
+                                        <span className="text-sm font-normal text-slate-400">/{t('mois')}</span>
                                     </p>
                                     {plan.price_yearly > 0 && (
                                         <p className="text-sm text-slate-500">
-                                            ou {formatPrice(plan.price_yearly, plan.currency)}/an
+                                            {t('ou')} {formatPrice(plan.price_yearly, plan.currency)}/{t('an')}
                                         </p>
                                     )}
                                     <ul className="space-y-1 text-sm text-slate-600 dark:text-slate-300">
-                                        <li>👥 {plan.max_users} utilisateurs</li>
-                                        <li>🏗 {plan.max_projects} projets</li>
-                                        {plan.trial_days > 0 && <li>🎁 {plan.trial_days} jours d'essai gratuit</li>}
+                                        <li>👥 {plan.max_users} {t('utilisateurs')}</li>
+                                        <li>🏗 {plan.max_projects} {t('projets')}</li>
+                                        {plan.trial_days > 0 && <li>🎁 {plan.trial_days} {t("jours d'essai gratuit")}</li>}
                                     </ul>
                                 </div>
                                 <div className="card-footer">
@@ -143,7 +145,7 @@ export default function BillingIndex({ subscription, plans, invoices }) {
                                         href="mailto:sales@construiro.com"
                                         className="btn btn-primary w-full text-center"
                                     >
-                                        Contacter pour souscrire
+                                        {t('Contacter pour souscrire')}
                                     </a>
                                 </div>
                             </div>
@@ -155,17 +157,17 @@ export default function BillingIndex({ subscription, plans, invoices }) {
                 {invoices.length > 0 && (
                     <Card>
                         <CardHeader>
-                            <h3 className="font-semibold text-slate-800 dark:text-slate-100">Historique de facturation</h3>
+                            <h3 className="font-semibold text-slate-800 dark:text-slate-100">{t('Historique de facturation')}</h3>
                         </CardHeader>
                         <CardBody>
                             <div className="overflow-x-auto">
                                 <table className="table-construiro w-full">
                                     <thead>
                                         <tr>
-                                            <th>Référence</th>
-                                            <th>Montant</th>
-                                            <th>Statut</th>
-                                            <th>Date de paiement</th>
+                                            <th>{t('Référence')}</th>
+                                            <th>{t('Montant')}</th>
+                                            <th>{t('Statut')}</th>
+                                            <th>{t('Date de paiement')}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -175,7 +177,7 @@ export default function BillingIndex({ subscription, plans, invoices }) {
                                                 <tr key={inv.id}>
                                                     <td className="font-mono text-sm">{inv.reference}</td>
                                                     <td>{formatPrice(inv.amount, inv.currency)}</td>
-                                                    <td><Badge variant={s.variant}>{s.label}</Badge></td>
+                                                    <td><Badge variant={s.variant}>{t(s.label)}</Badge></td>
                                                     <td>{inv.paid_at ?? '—'}</td>
                                                 </tr>
                                             );

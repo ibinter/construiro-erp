@@ -1,27 +1,29 @@
 import AppLayout from '@/Layouts/AppLayout';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { useState } from 'react';
-
-const TABS = [
-    { id: 'organization', label: 'Organisation', icon: '🏢' },
-    { id: 'documents',    label: 'Documents',    icon: '📄' },
-    { id: 'notifications',label: 'Notifications',icon: '🔔' },
-    { id: 'integrations', label: 'Intégrations', icon: '🔌' },
-    { id: 'data',         label: 'Données',       icon: '💾' },
-    { id: 'subscription', label: 'Abonnement',    icon: '⭐' },
-];
+import { useTrans } from '@/i18n';
 
 const CURRENCIES = ['XOF','XAF','USD','EUR','GHS','NGN','KES','MAD','TND','DZD'];
 const TIMEZONES  = ['Africa/Abidjan','Africa/Lagos','Africa/Dakar','Africa/Douala','Africa/Nairobi','Africa/Casablanca','Europe/Paris','UTC'];
 
 export default function SettingsIndex({ company, usage, can }) {
+    const { t } = useTrans();
     const [tab, setTab] = useState('organization');
     const { props } = usePage();
     const flash = props.flash ?? {};
 
+    const TABS = [
+        { id: 'organization', label: t('Organisation'),  icon: '🏢' },
+        { id: 'documents',    label: t('Documents'),     icon: '📄' },
+        { id: 'notifications',label: t('Notifications'), icon: '🔔' },
+        { id: 'integrations', label: t('Intégrations'),  icon: '🔌' },
+        { id: 'data',         label: t('Données'),        icon: '💾' },
+        { id: 'subscription', label: t('Abonnement'),    icon: '⭐' },
+    ];
+
     return (
-        <AppLayout title="Paramètres" breadcrumbs={[{ label: 'Paramètres' }]}>
-            <Head title="Paramètres" />
+        <AppLayout title={t('Paramètres')} breadcrumbs={[{ label: t('Paramètres') }]}>
+            <Head title={t('Paramètres')} />
 
             {flash.success && (
                 <div className="mb-4 rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700 dark:bg-green-900/20 dark:border-green-800 dark:text-green-300">
@@ -33,17 +35,17 @@ export default function SettingsIndex({ company, usage, can }) {
                 {/* Sidebar */}
                 <nav className="lg:w-56 shrink-0">
                     <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden">
-                        {TABS.map(t => (
+                        {TABS.map(tabItem => (
                             <button
-                                key={t.id}
-                                onClick={() => setTab(t.id)}
+                                key={tabItem.id}
+                                onClick={() => setTab(tabItem.id)}
                                 className={`w-full flex items-center gap-3 px-4 py-3 text-sm text-left transition-colors
-                                    ${tab === t.id
+                                    ${tab === tabItem.id
                                         ? 'bg-orange-50 text-orange-600 font-semibold dark:bg-orange-900/20 dark:text-orange-400'
                                         : 'text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800'}`}
                             >
-                                <span>{t.icon}</span>
-                                {t.label}
+                                <span>{tabItem.icon}</span>
+                                {tabItem.label}
                             </button>
                         ))}
                     </div>
@@ -65,6 +67,7 @@ export default function SettingsIndex({ company, usage, can }) {
 
 /* ─── Onglet Organisation ─────────────────────────────────────────────────── */
 function OrgTab({ company, can }) {
+    const { t } = useTrans();
     const { data, setData, post, processing, errors } = useForm({
         _method:       'PUT',
         name:          company.name,
@@ -87,54 +90,54 @@ function OrgTab({ company, can }) {
     };
 
     return (
-        <Card title="Informations de l'entreprise">
+        <Card title={t("Informations de l'entreprise")}>
             <form onSubmit={submit} className="space-y-5">
                 <div className="grid sm:grid-cols-2 gap-4">
-                    <Field label="Nom de l'entreprise *" error={errors.name}>
+                    <Field label={t("Nom de l'entreprise *")} error={errors.name}>
                         <input value={data.name} onChange={e => setData('name', e.target.value)} className={inp(errors.name)} />
                     </Field>
-                    <Field label="Email" error={errors.email}>
+                    <Field label={t('Email')} error={errors.email}>
                         <input type="email" value={data.email} onChange={e => setData('email', e.target.value)} className={inp(errors.email)} />
                     </Field>
-                    <Field label="Téléphone" error={errors.phone}>
+                    <Field label={t('Téléphone')} error={errors.phone}>
                         <input value={data.phone} onChange={e => setData('phone', e.target.value)} className={inp(errors.phone)} />
                     </Field>
-                    <Field label="N° SIRET / RCCM" error={errors.siret}>
+                    <Field label={t('N° SIRET / RCCM')} error={errors.siret}>
                         <input value={data.siret} onChange={e => setData('siret', e.target.value)} className={inp(errors.siret)} />
                     </Field>
-                    <Field label="N° TVA" error={errors.vat_number}>
+                    <Field label={t('N° TVA')} error={errors.vat_number}>
                         <input value={data.vat_number} onChange={e => setData('vat_number', e.target.value)} className={inp(errors.vat_number)} />
                     </Field>
-                    <Field label="Devise" error={errors.base_currency}>
+                    <Field label={t('Devise')} error={errors.base_currency}>
                         <select value={data.base_currency} onChange={e => setData('base_currency', e.target.value)} className={inp()}>
                             {CURRENCIES.map(c => <option key={c}>{c}</option>)}
                         </select>
                     </Field>
-                    <Field label="Langue" error={errors.locale}>
+                    <Field label={t('Langue')} error={errors.locale}>
                         <select value={data.locale} onChange={e => setData('locale', e.target.value)} className={inp()}>
-                            <option value="fr">Français</option>
+                            <option value="fr">{t('Français')}</option>
                             <option value="en">English</option>
                         </select>
                     </Field>
-                    <Field label="Fuseau horaire" error={errors.timezone}>
+                    <Field label={t('Fuseau horaire')} error={errors.timezone}>
                         <select value={data.timezone} onChange={e => setData('timezone', e.target.value)} className={inp()}>
-                            {TIMEZONES.map(t => <option key={t}>{t}</option>)}
+                            {TIMEZONES.map(tz => <option key={tz}>{tz}</option>)}
                         </select>
                     </Field>
-                    <Field label="Format de date" error={errors.date_format}>
+                    <Field label={t('Format de date')} error={errors.date_format}>
                         <select value={data.date_format} onChange={e => setData('date_format', e.target.value)} className={inp()}>
-                            <option value="d/m/Y">JJ/MM/AAAA</option>
+                            <option value="d/m/Y">{t('JJ/MM/AAAA')}</option>
                             <option value="m/d/Y">MM/DD/YYYY</option>
-                            <option value="Y-m-d">AAAA-MM-JJ</option>
+                            <option value="Y-m-d">{t('AAAA-MM-JJ')}</option>
                         </select>
                     </Field>
-                    <Field label="Adresse" error={errors.address} className="sm:col-span-2">
+                    <Field label={t('Adresse')} error={errors.address} className="sm:col-span-2">
                         <input value={data.address} onChange={e => setData('address', e.target.value)} className={inp(errors.address)} />
                     </Field>
-                    <Field label="Ville" error={errors.city}>
+                    <Field label={t('Ville')} error={errors.city}>
                         <input value={data.city} onChange={e => setData('city', e.target.value)} className={inp(errors.city)} />
                     </Field>
-                    <Field label="Pays (ISO 2)" error={errors.country}>
+                    <Field label={t('Pays (ISO 2)')} error={errors.country}>
                         <input value={data.country} maxLength={2} onChange={e => setData('country', e.target.value.toUpperCase())} className={inp(errors.country)} placeholder="CI" />
                     </Field>
                 </div>
@@ -142,7 +145,7 @@ function OrgTab({ company, can }) {
                 {can.manage && (
                     <div className="flex justify-end pt-2">
                         <button type="submit" disabled={processing} className="btn-primary">
-                            {processing ? 'Enregistrement…' : 'Enregistrer'}
+                            {processing ? t('Enregistrement…') : t('Enregistrer')}
                         </button>
                     </div>
                 )}
@@ -153,6 +156,7 @@ function OrgTab({ company, can }) {
 
 /* ─── Onglet Documents ───────────────────────────────────────────────────── */
 function DocsTab({ company, can }) {
+    const { t } = useTrans();
     const { data, setData, put, processing, errors } = useForm({
         invoice_prefix: company.invoice_prefix,
         quote_prefix:   company.quote_prefix,
@@ -163,26 +167,26 @@ function DocsTab({ company, can }) {
     const submit = e => { e.preventDefault(); put(route('settings.documents')); };
 
     return (
-        <Card title="Paramètres des documents">
+        <Card title={t('Paramètres des documents')}>
             <form onSubmit={submit} className="space-y-5">
                 <div className="grid sm:grid-cols-2 gap-4">
-                    <Field label="Préfixe factures" error={errors.invoice_prefix}>
+                    <Field label={t('Préfixe factures')} error={errors.invoice_prefix}>
                         <input value={data.invoice_prefix} onChange={e => setData('invoice_prefix', e.target.value)} className={inp(errors.invoice_prefix)} placeholder="FAC" />
                     </Field>
-                    <Field label="Préfixe devis" error={errors.quote_prefix}>
+                    <Field label={t('Préfixe devis')} error={errors.quote_prefix}>
                         <input value={data.quote_prefix} onChange={e => setData('quote_prefix', e.target.value)} className={inp(errors.quote_prefix)} placeholder="DEV" />
                     </Field>
                 </div>
-                <Field label="Pied de page des documents" error={errors.invoice_footer}>
+                <Field label={t('Pied de page des documents')} error={errors.invoice_footer}>
                     <textarea rows={3} value={data.invoice_footer} onChange={e => setData('invoice_footer', e.target.value)} className={inp(errors.invoice_footer)} />
                 </Field>
-                <Field label="Notes par défaut" error={errors.invoice_notes}>
+                <Field label={t('Notes par défaut')} error={errors.invoice_notes}>
                     <textarea rows={3} value={data.invoice_notes} onChange={e => setData('invoice_notes', e.target.value)} className={inp(errors.invoice_notes)} />
                 </Field>
                 {can.manage && (
                     <div className="flex justify-end">
                         <button type="submit" disabled={processing} className="btn-primary">
-                            {processing ? 'Enregistrement…' : 'Enregistrer'}
+                            {processing ? t('Enregistrement…') : t('Enregistrer')}
                         </button>
                     </div>
                 )}
@@ -193,6 +197,7 @@ function DocsTab({ company, can }) {
 
 /* ─── Onglet Notifications ───────────────────────────────────────────────── */
 function NotifsTab({ company, can }) {
+    const { t } = useTrans();
     const defaults = company.notification_settings ?? {};
     const { data, setData, put, processing } = useForm({
         notif_invoice_due:  defaults.notif_invoice_due  ?? true,
@@ -212,16 +217,16 @@ function NotifsTab({ company, can }) {
     );
 
     return (
-        <Card title="Préférences de notifications">
+        <Card title={t('Préférences de notifications')}>
             <form onSubmit={submit} className="space-y-1">
-                <Toggle k="notif_invoice_due"   label="Factures en retard de paiement" />
-                <Toggle k="notif_payment"       label="Paiements reçus" />
-                <Toggle k="notif_support"       label="Nouveaux tickets support" />
-                <Toggle k="notif_subscription"  label="Expiration d'abonnement" />
+                <Toggle k="notif_invoice_due"   label={t('Factures en retard de paiement')} />
+                <Toggle k="notif_payment"       label={t('Paiements reçus')} />
+                <Toggle k="notif_support"       label={t('Nouveaux tickets support')} />
+                <Toggle k="notif_subscription"  label={t("Expiration d'abonnement")} />
                 {can.manage && (
                     <div className="flex justify-end pt-4">
                         <button type="submit" disabled={processing} className="btn-primary">
-                            {processing ? 'Enregistrement…' : 'Enregistrer'}
+                            {processing ? t('Enregistrement…') : t('Enregistrer')}
                         </button>
                     </div>
                 )}
@@ -232,13 +237,14 @@ function NotifsTab({ company, can }) {
 
 /* ─── Onglet Intégrations (lien vers page dédiée) ───────────────────────── */
 function IntegTab() {
+    const { t } = useTrans();
     return (
-        <Card title="Intégrations">
+        <Card title={t('Intégrations')}>
             <p className="text-sm text-slate-500 mb-4">
-                Gérez vos connexions à des services tiers (paiements mobiles, WhatsApp, SMTP…).
+                {t('Gérez vos connexions à des services tiers (paiements mobiles, WhatsApp, SMTP…).')}
             </p>
             <a href={route('integrations.index')} className="btn-primary inline-block">
-                Accéder aux intégrations
+                {t('Accéder aux intégrations')}
             </a>
         </Card>
     );
@@ -246,18 +252,19 @@ function IntegTab() {
 
 /* ─── Onglet Données ─────────────────────────────────────────────────────── */
 function DataTab({ usage }) {
+    const { t } = useTrans();
     return (
-        <Card title="Données & Sauvegardes">
+        <Card title={t('Données & Sauvegardes')}>
             <div className="space-y-4">
-                <UsageLine label="Utilisateurs" used={usage?.users_count} max={usage?.max_users} />
-                <UsageLine label="Projets"      used={usage?.projects_count} max={usage?.max_projects} />
+                <UsageLine label={t('Utilisateurs')} used={usage?.users_count} max={usage?.max_users} />
+                <UsageLine label={t('Projets')}      used={usage?.projects_count} max={usage?.max_projects} />
             </div>
             <div className="mt-6 flex gap-3 flex-wrap">
                 <a href={route('backups.index')} className="btn-secondary text-sm">
-                    💾 Gérer les sauvegardes
+                    💾 {t('Gérer les sauvegardes')}
                 </a>
                 <a href={route('import.index')} className="btn-secondary text-sm">
-                    📥 Importer des données
+                    📥 {t('Importer des données')}
                 </a>
             </div>
         </Card>
@@ -266,17 +273,18 @@ function DataTab({ usage }) {
 
 /* ─── Onglet Abonnement ──────────────────────────────────────────────────── */
 function SubTab({ usage }) {
+    const { t } = useTrans();
     return (
-        <Card title="Mon abonnement">
+        <Card title={t('Mon abonnement')}>
             <div className="space-y-3 text-sm">
-                <Row label="Plan actuel"   value={<span className="font-semibold text-orange-600">{usage?.plan_name ?? '—'}</span>} />
-                <Row label="Utilisateurs"  value={`${usage?.users_count ?? 0} / ${usage?.max_users === 9999 ? '∞' : (usage?.max_users ?? '?')}`} />
-                <Row label="Projets"       value={`${usage?.projects_count ?? 0} / ${usage?.max_projects === 9999 ? '∞' : (usage?.max_projects ?? '?')}`} />
-                <Row label="Expiration"    value={usage?.expires_at ? new Date(usage.expires_at).toLocaleDateString('fr-FR') : '—'} />
+                <Row label={t('Plan actuel')}   value={<span className="font-semibold text-orange-600">{usage?.plan_name ?? '—'}</span>} />
+                <Row label={t('Utilisateurs')}  value={`${usage?.users_count ?? 0} / ${usage?.max_users === 9999 ? '∞' : (usage?.max_users ?? '?')}`} />
+                <Row label={t('Projets')}       value={`${usage?.projects_count ?? 0} / ${usage?.max_projects === 9999 ? '∞' : (usage?.max_projects ?? '?')}`} />
+                <Row label={t('Expiration')}    value={usage?.expires_at ? new Date(usage.expires_at).toLocaleDateString('fr-FR') : '—'} />
             </div>
             <div className="mt-6">
                 <a href={route('subscriptions.index')} className="btn-primary text-sm">
-                    Gérer mon abonnement
+                    {t('Gérer mon abonnement')}
                 </a>
             </div>
         </Card>

@@ -4,10 +4,12 @@ import GuestLayout from '@/Layouts/GuestLayout';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
+import { useTrans } from '@/i18n';
 
 const BRAND = '#F58220';
 
 export default function RegisterSuccess({ email = '' }) {
+    const { t } = useTrans();
     const [showForm, setShowForm] = useState(false);
 
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -23,22 +25,22 @@ export default function RegisterSuccess({ email = '' }) {
 
     return (
         <GuestLayout>
-            <Head title="Compte créé — CONSTRUIRO ERP" />
+            <Head title={t('Compte créé — CONSTRUIRO ERP')} />
 
             {/* Message de succès */}
             <div className="mb-5 rounded-xl bg-green-50 border border-green-200 p-4 dark:bg-green-900/20 dark:border-green-800">
                 <p className="font-bold text-green-800 dark:text-green-300 mb-1">
-                    ✅ Votre compte a été créé avec succès !
+                    ✅ {t('Votre compte a été créé avec succès !')}
                 </p>
                 <p className="text-sm text-green-700 dark:text-green-400">
-                    Un email de vérification a été envoyé à <strong>{email || 'votre adresse'}</strong>.
-                    Cliquez sur le lien dans cet email pour activer votre compte.
+                    {t('Un email de vérification a été envoyé à')} <strong>{email || t('votre adresse')}</strong>.{' '}
+                    {t('Cliquez sur le lien dans cet email pour activer votre compte.')}
                 </p>
             </div>
 
             {/* Bandeau "en attente" */}
             <div className="mb-5 rounded-lg bg-amber-50 border border-amber-200 p-3 text-xs text-amber-700 dark:bg-amber-900/20 dark:border-amber-700 dark:text-amber-300">
-                ⚠️ <strong>Compte en attente de validation.</strong> Vous pouvez vous connecter maintenant et accéder à l'application. Votre compte sera pleinement activé après vérification de votre email.
+                ⚠️ <strong>{t('Compte en attente de validation.')}</strong> {t("Vous pouvez vous connecter maintenant et accéder à l'application. Votre compte sera pleinement activé après vérification de votre email.")}
             </div>
 
             {/* Bouton Se connecter → formulaire inline */}
@@ -49,17 +51,17 @@ export default function RegisterSuccess({ email = '' }) {
                     className="w-full py-3 rounded-xl font-bold text-white transition hover:opacity-90 mb-4"
                     style={{ background: BRAND }}
                 >
-                    Se connecter →
+                    {t('Se connecter')} →
                 </button>
             ) : (
                 <div className="mb-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
                     <h3 className="font-semibold text-slate-800 dark:text-slate-100 mb-4">
-                        Connexion à votre compte
+                        {t('Connexion à votre compte')}
                     </h3>
 
                     <form onSubmit={submit} className="space-y-4">
                         <div>
-                            <InputLabel htmlFor="email" value="Adresse email" />
+                            <InputLabel htmlFor="email" value={t('Adresse email')} />
                             <TextInput
                                 id="email"
                                 type="email"
@@ -75,7 +77,7 @@ export default function RegisterSuccess({ email = '' }) {
                         </div>
 
                         <div>
-                            <InputLabel htmlFor="password" value="Mot de passe" />
+                            <InputLabel htmlFor="password" value={t('Mot de passe')} />
                             <TextInput
                                 id="password"
                                 type="password"
@@ -97,14 +99,14 @@ export default function RegisterSuccess({ email = '' }) {
                                 className="flex-1 py-3 rounded-xl font-bold text-white transition hover:opacity-90 disabled:opacity-60"
                                 style={{ background: BRAND }}
                             >
-                                {processing ? 'Connexion...' : 'Accéder à mon compte →'}
+                                {processing ? t('Connexion...') : t('Accéder à mon compte →')}
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setShowForm(false)}
                                 className="px-4 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-400 dark:hover:bg-slate-800 text-sm"
                             >
-                                Annuler
+                                {t('Annuler')}
                             </button>
                         </div>
                     </form>
@@ -114,7 +116,7 @@ export default function RegisterSuccess({ email = '' }) {
             {/* Lien mot de passe oublié */}
             <p className="text-center text-sm text-slate-500">
                 <Link href={route('password.request')} className="underline underline-offset-2 hover:text-orange-500">
-                    Mot de passe oublié ?
+                    {t('Mot de passe oublié ?')}
                 </Link>
             </p>
         </GuestLayout>
