@@ -169,6 +169,34 @@ class ImportController extends Controller
         ],
     ];
 
+    /** Permission métier requise pour importer chaque type d'entité. */
+    private const IMPORT_PERMISSIONS = [
+        'clients'   => 'clients.create',
+        'employees' => 'hr.create',
+        'products'  => 'materials.create',
+        'projects'  => 'projects.create',
+        'quotes'    => 'quotes.create',
+        'invoices'  => 'invoicing.create',
+        'stocks'    => 'stocks.edit',
+        'equipment' => 'equipment.create',
+    ];
+
+    /**
+     * Vérifie que l'utilisateur détient la permission de création du module ciblé.
+     * L'import universel créait des enregistrements sans contrôle de permission
+     * (contournement du modèle RBAC) — ce garde-fou ferme la brèche.
+     */
+    private function authorizeImportType(Request $request, ?string $type): void
+    {
+        $permission = self::IMPORT_PERMISSIONS[$type] ?? null;
+        abort_if($permission === null, 404, "Type d'import inconnu.");
+        abort_unless(
+            $request->user()?->can($permission),
+            403,
+            "Vous n'avez pas la permission d'importer des « {$type} »."
+        );
+    }
+
     // ── 1. Sélection du type ─────────────────────────────────────────────────
 
     public function index(): Response
@@ -216,6 +244,8 @@ class ImportController extends Controller
             'file' => 'required|file|mimes:csv,txt,xlsx,xls|max:10240',
             'type' => 'required|in:' . implode(',', array_keys(self::IMPORTABLE_TYPES)),
         ]);
+
+        $this->authorizeImportType($request, $request->type);
 
         $file = $request->file('file');
         $ext  = strtolower($file->getClientOriginalExtension());
@@ -271,6 +301,8 @@ class ImportController extends Controller
             'rows'    => 'required|array|max:200',
         ]);
 
+        $this->authorizeImportType($request, $request->type);
+
         $cfg    = self::IMPORTABLE_TYPES[$request->type];
         $errors = [];
 
@@ -299,6 +331,7 @@ class ImportController extends Controller
 
         $user      = $request->user();
         abort_unless($user->company_id, 403, 'Compte non rattaché à une entreprise.');
+        $this->authorizeImportType($request, $request->type);
         $cfg       = self::IMPORTABLE_TYPES[$request->type];
         $model     = $cfg['model'];
         $skipDups  = $request->boolean('skip_dups', true);
@@ -388,6 +421,7 @@ class ImportController extends Controller
         $user   = $request->user();
         abort_unless($user->company_id, 403, 'Compte non rattaché à une entreprise.');
         $module = $request->module;
+        $this->authorizeImportType($request, $module);
         $cfg    = self::IMPORTABLE_TYPES[$module];
 
         $log = ImportLog::create([
