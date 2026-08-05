@@ -50,6 +50,31 @@ if (!$expected_secret || !hash_equals($expected_secret, $secret)) {
     die('Accès refusé');
 }
 
+// ── Rotation du secret de déploiement (POST authentifié) ───────────
+// Écrit le nouveau DEPLOY_SECRET dans .env. Le nouveau secret transite
+// par le corps POST (absent des logs d'accès), jamais par le code.
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'set-deploy-secret') {
+    $new = $_POST['value'] ?? '';
+    if (!preg_match('/^[A-Za-z0-9_\-]{16,128}$/', $new)) {
+        http_response_code(422);
+        die('Valeur de secret invalide (16-128 caractères alphanumériques, _ ou -).');
+    }
+    $envPath = dirname(__DIR__) . '/.env';
+    if (!file_exists($envPath)) {
+        http_response_code(500);
+        die('.env introuvable');
+    }
+    $env = ltrim(file_get_contents($envPath), "\xEF\xBB\xBF");
+    if (preg_match('/^DEPLOY_SECRET=/m', $env)) {
+        $env = preg_replace('/^DEPLOY_SECRET=.*/m', 'DEPLOY_SECRET=' . $new, $env);
+    } else {
+        $env .= "\nDEPLOY_SECRET=" . $new . "\n";
+    }
+    file_put_contents($envPath, $env);
+    echo 'SECRET_ROTATED';
+    exit;
+}
+
 // Mode diagnostic (GET uniquement)
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['diag'])) {
     header('Content-Type: text/plain; charset=utf-8');

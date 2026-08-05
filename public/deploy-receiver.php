@@ -13,13 +13,29 @@ if (function_exists('opcache_invalidate')) {
 }
 
 $recv_secret = $_POST['secret'] ?? '';
-if (!$recv_secret || !hash_equals('construiro_deploy_2026', $recv_secret)) {
-    http_response_code(403);
-    die('Accès refusé');
-}
 
 $dir = dirname(__DIR__);
 $log = "$dir/storage/logs/deploy.log";
+
+// Secret attendu : lu depuis .env (source de vérité après rotation).
+// Transition : l'ancien secret statique reste accepté jusqu'au retrait
+// (commit de nettoyage post-rotation) pour ne pas couper le pipeline.
+$envSecret  = '';
+$envPathchk = $dir . '/.env';
+if (file_exists($envPathchk)) {
+    foreach (file($envPathchk, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+        if (str_starts_with(trim($line), 'DEPLOY_SECRET=')) {
+            $envSecret = trim(substr(trim($line), strlen('DEPLOY_SECRET=')), " \t\"'");
+            break;
+        }
+    }
+}
+$valid = ($envSecret !== '' && hash_equals($envSecret, $recv_secret))
+      || hash_equals('construiro_deploy_2026', $recv_secret);
+if (!$recv_secret || !$valid) {
+    http_response_code(403);
+    die('Accès refusé');
+}
 
 // Persiste DEPLOY_SECRET dans .env pour que deploy-v2.php
 // puisse le lire après le git pull (migration vers lecture .env).
