@@ -30,8 +30,8 @@ if (file_exists($envPathchk)) {
         }
     }
 }
-$valid = ($envSecret !== '' && hash_equals($envSecret, $recv_secret))
-      || hash_equals('construiro_deploy_2026', $recv_secret);
+// Rotation terminée : seul le secret .env est accepté (source de vérité unique).
+$valid = ($envSecret !== '' && hash_equals($envSecret, $recv_secret));
 if (!$recv_secret || !$valid) {
     http_response_code(403);
     die('Accès refusé');

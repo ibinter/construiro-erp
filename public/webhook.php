@@ -5,10 +5,25 @@
  * Configurer dans GitHub : Settings → Webhooks → Add webhook
  */
 
-$secret = 'construiro_deploy_2026'; // même valeur dans GitHub
-$root   = dirname(__DIR__);
-$php    = PHP_BINARY ?: 'php';
-$log    = $root . '/storage/logs/deploy.log';
+$root = dirname(__DIR__);
+$php  = PHP_BINARY ?: 'php';
+$log  = $root . '/storage/logs/deploy.log';
+
+// Secret lu depuis .env (source de vérité unique — même valeur que le secret GitHub)
+$secret    = '';
+$__envFile = $root . '/.env';
+if (is_readable($__envFile)) {
+    foreach (file($__envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $__l) {
+        if (str_starts_with(trim($__l), 'DEPLOY_SECRET=')) {
+            $secret = trim(substr(trim($__l), strlen('DEPLOY_SECRET=')), " \t\"'");
+            break;
+        }
+    }
+}
+if ($secret === '') {
+    http_response_code(500);
+    die('Secret de déploiement non configuré');
+}
 
 // Vérifier la signature GitHub
 $payload   = file_get_contents('php://input');

@@ -89,7 +89,7 @@ php artisan tinker --no-interaction --execute="
 
 Le script `public/deploy-v2.php` expose des diagnostics accessibles via GET (authentifié par le paramètre `secret`).
 
-> Secret de production : défini dans le script (`construiro_deploy_2026` par défaut — à changer en production).
+> Secret de production : lu depuis `DEPLOY_SECRET` dans le fichier `.env` du VPS (jamais en dur dans le code). Doit correspondre au secret GitHub `DEPLOY_SECRET`.
 
 | Paramètre `diag` | Description |
 |---|---|
