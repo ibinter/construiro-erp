@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Vite;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -15,7 +16,9 @@ class SecurityHeaders
     public function handle(Request $request, Closure $next): Response
     {
         // Générer le nonce AVANT le rendu Blade pour qu'il soit disponible dans les vues.
-        $nonce = base64_encode(random_bytes(16));
+        // Vite::useCspNonce() applique automatiquement ce nonce à TOUTES les balises
+        // générées par Vite (@vite, script de prefetch inclus) — évite les blocages CSP.
+        $nonce = Vite::useCspNonce();
         app()->instance('csp-nonce', $nonce);
 
         /** @var Response $response */
