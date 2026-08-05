@@ -968,18 +968,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                 <title>CONSTRUIRO — ERP BTP pour l'Afrique | Gérez vos chantiers</title>
                 <meta name="description" content="CONSTRUIRO est l'ERP BTP conçu pour les entreprises africaines. Gérez projets, RH, stocks, équipements et finance depuis une seule plateforme. Essai gratuit 14 jours." />
                 <meta name="keywords" content="ERP BTP Afrique, logiciel chantier, gestion construction, ERP Côte d'Ivoire, CONSTRUIRO, IBIG Soft" />
-                <meta property="og:title" content="CONSTRUIRO — ERP BTP pour l'Afrique" />
-                <meta property="og:description" content="15+ modules intégrés pour les entreprises BTP africaines. Projets, RH, finances, matériaux, équipements. Essai gratuit 14 jours." />
-                <meta property="og:type" content="website" />
-                <meta property="og:url" content="https://construiro.com" />
-                <meta property="og:image" content="https://construiro.com/og-image.png" />
-                <meta property="og:image:width" content="1200" />
-                <meta property="og:image:height" content="630" />
-                <meta property="og:image:alt" content="CONSTRUIRO — ERP BTP pour l'Afrique" />
-                <meta name="twitter:card" content="summary_large_image" />
-                <meta name="twitter:title" content="CONSTRUIRO — ERP BTP pour l'Afrique" />
-                <meta name="twitter:description" content="L'ERP BTP pensé pour les réalités africaines. Essai gratuit 14 jours." />
-                <meta name="twitter:image" content="https://construiro.com/og-image.png" />
+                {/* Open Graph / Twitter rendus côté serveur dans app.blade.php (visibles des crawlers sociaux). */}
                 <meta name="robots" content="index, follow" />
                 <link rel="canonical" href="https://construiro.com" />
                 <script type="application/ld+json">{JSON.stringify([
