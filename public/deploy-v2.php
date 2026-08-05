@@ -39,13 +39,15 @@ if (file_exists($envFile)) {
     }
 }
 if (!$expected_secret) {
-    // Fallback : variable d'environnement PHP-FPM / Apache SetEnv, puis secret statique
-    // Le secret statique est conservé pour le premier déploiement avant que deploy-receiver.php
-    // n'ait écrit DEPLOY_SECRET dans .env.
-    $expected_secret = getenv('DEPLOY_SECRET') ?: 'construiro_deploy_2026';
+    $expected_secret = getenv('DEPLOY_SECRET') ?: '';
 }
 
-if (!$expected_secret || !hash_equals($expected_secret, $secret)) {
+// Transition rotation : accepte le secret .env (source de vérité) OU l'ancien
+// secret statique. La double acceptation évite toute fenêtre de coupure pendant
+// la bascule du secret GitHub. L'ancien statique sera retiré en phase finale.
+$valid = ($expected_secret !== '' && hash_equals($expected_secret, $secret))
+      || hash_equals('construiro_deploy_2026', $secret);
+if (!$secret || !$valid) {
     http_response_code(403);
     die('Accès refusé');
 }
