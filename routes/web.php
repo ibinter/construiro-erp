@@ -613,6 +613,14 @@ Route::middleware(['auth', 'subscription', 'two-factor'])->group(function () {
         // --- §43 Module Features (propagation automatique) ----------------------
         Route::get('/module-features', [\App\Http\Controllers\SuperAdmin\ModuleFeatureController::class, 'index'])->name('superadmin.module-features.index');
         Route::patch('/module-features/{feature}', [\App\Http\Controllers\SuperAdmin\ModuleFeatureController::class, 'update'])->name('superadmin.module-features.update');
+        // Résolution rapide d'un flag depuis le widget inline (route manquante — bouton cassé corrigé)
+        Route::post('/module-features/resolve-flag/{moduleKey}', [\App\Http\Controllers\SuperAdmin\ModuleFeatureController::class, 'resolveFlag'])->name('superadmin.module-features.resolve-flag');
+
+        // --- Révisions du guide utilisateur (flags auto via EvolutionPublished) --
+        Route::get('/guide-revisions', [\App\Http\Controllers\SuperAdmin\GuideRevisionFlagController::class, 'index'])->name('superadmin.guide-revisions.index');
+        Route::post('/guide-revisions/{guideRevisionFlag}/resolve', [\App\Http\Controllers\SuperAdmin\GuideRevisionFlagController::class, 'resolve'])->name('superadmin.guide-revisions.resolve');
+        Route::post('/guide-revisions/{guideRevisionFlag}/reopen', [\App\Http\Controllers\SuperAdmin\GuideRevisionFlagController::class, 'reopen'])->name('superadmin.guide-revisions.reopen');
+        Route::delete('/guide-revisions/{guideRevisionFlag}', [\App\Http\Controllers\SuperAdmin\GuideRevisionFlagController::class, 'destroy'])->name('superadmin.guide-revisions.destroy');
     });
 
     // --- Guide utilisateur PDF (auth) --------------------------------------------------

@@ -32,6 +32,7 @@ const SUPERADMIN_NAV = [
     { key: 'sa-api-keys',         label: 'Clés API',              icon: 'key',              route: '/superadmin/api-keys' },
     { key: 'sa-recette',          label: 'Checklist Recette §38', icon: 'clipboard-check',  route: '/superadmin/recette' },
     { key: 'sa-module-features', label: 'Fonctionnalités plans', icon: 'layers',           route: '/superadmin/module-features' },
+    { key: 'sa-guide-revisions', label: 'Révisions du guide',    icon: 'book-open',        route: '/superadmin/guide-revisions' },
 ];
 
 /**
