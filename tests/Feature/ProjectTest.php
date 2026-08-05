@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\Company;
 use App\Models\Project;
+use App\Models\Subscription;
+use App\Models\SubscriptionPlan;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Permission;
@@ -53,6 +55,20 @@ class ProjectTest extends TestCase
             'company_id' => $this->company->id,
         ]);
         $this->superAdmin->assignRole('super_admin');
+
+        // Abonnement actif (plan illimité) — requis par LicenseGuard fail-closed
+        // pour autoriser la création de projets, comme une entreprise cliente réelle.
+        $plan = SubscriptionPlan::factory()->create([
+            'max_users'    => 9999,
+            'max_projects' => 9999,
+        ]);
+        Subscription::factory()->create([
+            'company_id' => $this->company->id,
+            'plan_id'    => $plan->id,
+            'status'     => 'active',
+            'starts_at'  => now()->subDay(),
+            'ends_at'    => now()->addMonth(),
+        ]);
     }
 
     // -------------------------------------------------------------------------

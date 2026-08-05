@@ -84,6 +84,38 @@ class LicenseGuardTest extends TestCase
         $this->assertTrue(true);
     }
 
+    public function test_user_creation_blocked_without_active_subscription(): void
+    {
+        // Aucune souscription active → fail-closed : création refusée (402)
+        $this->expectException(\Symfony\Component\HttpKernel\Exception\HttpException::class);
+
+        LicenseGuard::checkUserLimit($this->company->id);
+    }
+
+    public function test_project_creation_blocked_without_active_subscription(): void
+    {
+        $this->expectException(\Symfony\Component\HttpKernel\Exception\HttpException::class);
+
+        LicenseGuard::checkProjectLimit($this->company->id);
+    }
+
+    public function test_expired_subscription_blocks_creation(): void
+    {
+        $plan = SubscriptionPlan::factory()->create(['max_projects' => 10]);
+        Subscription::factory()->create([
+            'company_id' => $this->company->id,
+            'plan_id'    => $plan->id,
+            'status'     => 'expired',
+            'starts_at'  => now()->subMonths(2),
+            'ends_at'    => now()->subMonth(),
+        ]);
+
+        // Abonnement expiré → non compté comme actif → fail-closed
+        $this->expectException(\Symfony\Component\HttpKernel\Exception\HttpException::class);
+
+        LicenseGuard::checkProjectLimit($this->company->id);
+    }
+
     public function test_usage_returns_correct_counts(): void
     {
         $plan = SubscriptionPlan::factory()->create(['max_users' => 5, 'max_projects' => 10]);

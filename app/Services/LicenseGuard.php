@@ -19,9 +19,15 @@ class LicenseGuard
      */
     public static function checkUserLimit(int $companyId): void
     {
-        $limit = self::getLimit($companyId, 'max_users');
+        $plan = self::activePlan($companyId);
+        if (!$plan) {
+            // Fail-closed : aucune licence active ⇒ aucune création (anti-fuite de licence).
+            abort(402, "Aucun abonnement actif. Régularisez votre abonnement pour ajouter des utilisateurs.");
+        }
+
+        $limit = self::normalizeLimit($plan->max_users);
         if ($limit === null) {
-            return; // illimité
+            return; // plan illimité
         }
 
         $current = User::where('company_id', $companyId)->where('is_active', true)->count();
@@ -38,9 +44,15 @@ class LicenseGuard
      */
     public static function checkProjectLimit(int $companyId): void
     {
-        $limit = self::getLimit($companyId, 'max_projects');
+        $plan = self::activePlan($companyId);
+        if (!$plan) {
+            // Fail-closed : aucune licence active ⇒ aucune création (anti-fuite de licence).
+            abort(402, "Aucun abonnement actif. Régularisez votre abonnement pour créer un projet.");
+        }
+
+        $limit = self::normalizeLimit($plan->max_projects);
         if ($limit === null) {
-            return;
+            return; // plan illimité
         }
 
         // On compare à tous les projets (pas seulement actifs) pour éviter la création sans fin
@@ -74,20 +86,26 @@ class LicenseGuard
 
     // ── Helpers ────────────────────────────────────────────────────────────────
 
-    private static function getLimit(int $companyId, string $field): ?int
+    /**
+     * Retourne le plan de l'abonnement actif (trial/active/grace), ou null
+     * si la société n'a aucune licence en cours de validité.
+     */
+    private static function activePlan(int $companyId): ?\App\Models\SubscriptionPlan
     {
         $subscription = Subscription::where('company_id', $companyId)
             ->whereIn('status', ['trial', 'active', 'grace'])
             ->latest()
             ->first();
 
-        if (!$subscription || !$subscription->plan) {
-            return null; // pas de plan actif → pas de limite imposée
-        }
+        return $subscription?->plan;
+    }
 
-        $value = $subscription->plan->{$field};
-
-        // 9999 = illimité (convention CONSTRUIRO)
+    /**
+     * Normalise une limite de plan : null ou ≥ 9999 (convention CONSTRUIRO)
+     * signifie « illimité » ⇒ retourne null. Sinon la valeur entière.
+     */
+    private static function normalizeLimit($value): ?int
+    {
         if ($value === null || $value >= 9999) {
             return null;
         }
