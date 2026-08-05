@@ -79,8 +79,10 @@ class SupportTicketTest extends TestCase
         ]);
 
         $user = $this->makeUser('me@test.com');
+        // Isolation par CompanyScope global : le ticket d'une autre société est
+        // introuvable (404), comportement cohérent avec le reste de l'application.
         $this->actingAs($user)
             ->get("/support/{$ticket->id}")
-            ->assertForbidden();
+            ->assertNotFound();
     }
 }

@@ -77,8 +77,9 @@ class DashboardController extends Controller
                 return $price * 12;
             });
 
-        // KPI 3 — Tickets ouverts sans réponse depuis > 24h
-        $overdueTickets = SupportTicket::whereIn('status', [
+        // KPI 3 — Tickets ouverts sans réponse depuis > 24h (toutes sociétés — vue globale IBIG)
+        $overdueTickets = SupportTicket::withoutGlobalScope(\App\Scopes\CompanyScope::class)
+            ->whereIn('status', [
                 SupportTicket::STATUS_NEW,
                 SupportTicket::STATUS_OPEN,
                 SupportTicket::STATUS_WAITING_TECH,

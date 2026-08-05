@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SupportTicket extends Model
 {
+    use BelongsToCompany;
+
     // -----------------------------------------------------------------------
     // Statuts
     // -----------------------------------------------------------------------
@@ -66,7 +69,8 @@ class SupportTicket extends Model
         parent::boot();
 
         static::creating(function (self $ticket) {
-            $last = static::max('id') ?? 0;
+            // Numérotation globale (hors scope company) pour éviter les collisions inter-sociétés.
+            $last = static::withoutGlobalScope(\App\Scopes\CompanyScope::class)->max('id') ?? 0;
             $ticket->number = 'TICK-' . str_pad($last + 1, 6, '0', STR_PAD_LEFT);
         });
     }
