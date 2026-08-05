@@ -25,11 +25,11 @@ class SecurityHeaders
         $cspDirectives = app()->isProduction()
             ? implode('; ', [
                 "default-src 'self'",
-                "script-src 'self' 'nonce-{$nonce}'",
-                "style-src 'self' 'unsafe-inline'",  // Tailwind injecte du CSS inline
+                "script-src 'self' 'nonce-{$nonce}' https://plausible.io",
+                "style-src 'self' 'unsafe-inline' https://fonts.bunny.net",  // Tailwind injecte du CSS inline + police Figtree
                 "img-src 'self' data: blob: https:",
-                "font-src 'self' data:",
-                "connect-src 'self' https://api.groq.com wss:",
+                "font-src 'self' data: https://fonts.bunny.net",
+                "connect-src 'self' https://api.groq.com https://plausible.io wss:",
                 "media-src 'none'",
                 "object-src 'none'",
                 "frame-ancestors 'none'",
