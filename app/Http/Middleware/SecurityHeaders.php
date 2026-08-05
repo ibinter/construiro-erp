@@ -26,9 +26,9 @@ class SecurityHeaders
             ? implode('; ', [
                 "default-src 'self'",
                 "script-src 'self' 'nonce-{$nonce}' https://plausible.io",
-                "style-src 'self' 'unsafe-inline' https://fonts.bunny.net",  // Tailwind injecte du CSS inline + police Figtree
+                "style-src 'self' 'unsafe-inline' https://fonts.bunny.net https://fonts.googleapis.com",  // Tailwind CSS inline + Figtree (Bunny) + Space Grotesk/Inter (widget IBIG Soft)
                 "img-src 'self' data: blob: https:",
-                "font-src 'self' data: https://fonts.bunny.net",
+                "font-src 'self' data: https://fonts.bunny.net https://fonts.gstatic.com",
                 "connect-src 'self' https://api.groq.com https://plausible.io wss:",
                 "media-src 'none'",
                 "object-src 'none'",
