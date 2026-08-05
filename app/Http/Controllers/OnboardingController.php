@@ -66,7 +66,8 @@ class OnboardingController extends Controller
 
     public function saveLogo(Request $request): RedirectResponse
     {
-        $request->validate(['logo' => 'required|image|max:2048|mimes:png,jpg,jpeg,svg,webp']);
+        // svg exclu volontairement (vecteur XSS : servi inline via /storage/...)
+        $request->validate(['logo' => 'required|image|max:2048|mimes:png,jpg,jpeg,webp']);
 
         $path = $request->file('logo')->store('logos', 'public');
 

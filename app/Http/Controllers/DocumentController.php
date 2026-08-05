@@ -154,7 +154,9 @@ class DocumentController extends Controller
             'code'        => ['required', 'string', 'max:50', Rule::unique('documents')->where('company_id', $companyId)->ignore($document?->id)],
             'title'       => ['required', 'string', 'max:255'],
             'category'    => ['required', Rule::in(Document::CATEGORIES)],
-            'file'        => ['nullable', 'file', 'max:20480'], // 20 Mo — upload réel optionnel
+            // 20 Mo max + whitelist de types sûrs (exclut html/svg/php/js → anti stored-XSS/RCE,
+            // les fichiers du disque public sont servis inline via /storage/...).
+            'file'        => ['nullable', 'file', 'max:20480', 'mimes:pdf,jpg,jpeg,png,gif,webp,doc,docx,xls,xlsx,ppt,pptx,csv,txt,zip,dwg,dxf'],
             'file_name'   => ['nullable', 'string', 'max:255'],
             'file_path'   => ['nullable', 'string', 'max:2048'],
             'mime_type'   => ['nullable', 'string', 'max:120'],

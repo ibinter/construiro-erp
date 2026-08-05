@@ -18,8 +18,19 @@ const WELCOME_MSG = {
     content: 'Bonjour ! Je suis **SARA**, l\'assistante intelligente de CONSTRUIRO ERP. Je peux vous présenter la solution, vous aider à choisir une formule ou organiser une démonstration. Comment puis-je vous aider ?',
 };
 
+// Échappe le HTML AVANT toute mise en forme markdown pour empêcher l'injection
+// de balises actives (XSS) via un message utilisateur ou une réponse IA manipulée.
+function escapeHtml(text) {
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 function renderMarkdown(text) {
-    return text
+    return escapeHtml(text)
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.*?)\*/g, '<em>$1</em>')
         .replace(/\n/g, '<br/>');

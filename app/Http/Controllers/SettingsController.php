@@ -70,7 +70,8 @@ class SettingsController extends Controller
 
         // Logo upload
         if ($request->hasFile('logo')) {
-            $request->validate(['logo' => 'image|max:2048|mimes:png,jpg,jpeg,svg,webp']);
+            // svg exclu volontairement (vecteur XSS : servi inline via /storage/...)
+            $request->validate(['logo' => 'image|max:2048|mimes:png,jpg,jpeg,webp']);
             $company = $request->user()->company;
             if ($company->logo_path) {
                 Storage::disk('public')->delete($company->logo_path);
