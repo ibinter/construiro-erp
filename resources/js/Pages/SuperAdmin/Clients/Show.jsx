@@ -69,8 +69,17 @@ function SuspendModal({ company, onClose }) {
     );
 }
 
-export default function ClientShow({ company, subscriptions, plans }) {
+export default function ClientShow({ company, subscriptions, plans, transitions = [] }) {
     const [showSuspendModal, setShowSuspendModal] = useState(false);
+
+    const graceForm = useForm({ reason: '' });
+    const extendGrace = (e) => {
+        e.preventDefault();
+        if (!graceForm.data.reason.trim()) return;
+        graceForm.post(`/superadmin/clients/${company.id}/extend-grace`, {
+            onSuccess: () => graceForm.reset('reason'),
+        });
+    };
 
     const { data, setData, post, processing, errors, recentlySuccessful } = useForm({
         plan_id: plans[0]?.id ?? '',
@@ -251,6 +260,62 @@ export default function ClientShow({ company, subscriptions, plans }) {
                             </button>
                             {recentlySuccessful && <span className="text-sm text-green-600">Abonnement accordé</span>}
                         </form>
+                    </CardBody>
+                </Card>
+
+                {/* Prolonger la grâce (15 j, une seule fois, motif obligatoire) */}
+                <Card>
+                    <CardHeader><h3 className="font-semibold">Prolonger la période de grâce (15 jours, une fois)</h3></CardHeader>
+                    <CardBody>
+                        <form onSubmit={extendGrace} className="flex flex-col sm:flex-row gap-3 sm:items-end">
+                            <div className="flex-1">
+                                <label className="form-label">Motif (obligatoire)</label>
+                                <input type="text" className="form-input w-full" maxLength={500}
+                                    placeholder="Ex. négociation commerciale en cours"
+                                    value={graceForm.data.reason}
+                                    onChange={(e) => graceForm.setData('reason', e.target.value)} />
+                                {graceForm.errors.reason && <p className="text-xs text-red-500 mt-1">{graceForm.errors.reason}</p>}
+                            </div>
+                            <button type="submit" className="btn btn-secondary shrink-0"
+                                disabled={graceForm.processing || !graceForm.data.reason.trim()}>
+                                {graceForm.processing ? 'Traitement…' : 'Prolonger de 15 jours'}
+                            </button>
+                        </form>
+                    </CardBody>
+                </Card>
+
+                {/* Journal des transitions de licence (append-only) */}
+                <Card>
+                    <CardHeader><h3 className="font-semibold">Journal des transitions de licence</h3></CardHeader>
+                    <CardBody>
+                        {transitions.length === 0 ? (
+                            <p className="text-sm text-slate-500">Aucune transition enregistrée.</p>
+                        ) : (
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full text-sm">
+                                    <thead className="text-left text-xs uppercase tracking-wide text-slate-500">
+                                        <tr>
+                                            <th className="px-3 py-2">Date</th>
+                                            <th className="px-3 py-2">Transition</th>
+                                            <th className="px-3 py-2">Cause</th>
+                                            <th className="px-3 py-2">Acteur</th>
+                                            <th className="px-3 py-2">Motif</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                                        {transitions.map((tr, i) => (
+                                            <tr key={i} className="text-slate-700 dark:text-slate-300">
+                                                <td className="px-3 py-2 whitespace-nowrap">{tr.at}</td>
+                                                <td className="px-3 py-2 whitespace-nowrap">{tr.from} → <strong>{tr.to}</strong></td>
+                                                <td className="px-3 py-2">{tr.cause}</td>
+                                                <td className="px-3 py-2">{tr.actor}</td>
+                                                <td className="px-3 py-2 text-slate-500">{tr.reason ?? '—'}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
                     </CardBody>
                 </Card>
             </div>

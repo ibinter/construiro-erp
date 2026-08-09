@@ -29,6 +29,9 @@ class RecalculateLicenseStates extends Command
                     if ($attrs !== []) {
                         $old = $sub->status;
                         $sub->update($attrs);
+                        \App\Models\LicenseTransition::log(
+                            $sub, $old, $attrs['status'], \App\Models\LicenseTransition::CAUSE_SYSTEME
+                        );
                         $count++;
                         $this->line("  #{$sub->id} {$old} -> {$attrs['status']}");
                     }

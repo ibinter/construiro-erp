@@ -48,7 +48,11 @@ class CheckSubscription
         // pour que l'état reste correct même sans passage du scheduler.
         $effective = $this->resolver->resolve($subscription);
         if ($effective !== $subscription->status) {
+            $from = $subscription->status;
             $subscription->update($this->resolver->transitionAttributes($subscription));
+            \App\Models\LicenseTransition::log(
+                $subscription, $from, $subscription->status, \App\Models\LicenseTransition::CAUSE_SYSTEME
+            );
         }
 
         // Partage l'état pour les bannières (toutes routes)

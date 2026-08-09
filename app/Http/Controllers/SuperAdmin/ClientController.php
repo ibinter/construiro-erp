@@ -96,6 +96,19 @@ class ClientController extends Controller
                 'created_at' => $s->created_at->format('d/m/Y'),
             ]),
             'plans' => SubscriptionPlan::where('is_active', true)->get(['id', 'name', 'slug']),
+            // Journal des transitions (append-only) — cahier §12.6.
+            'transitions' => \App\Models\LicenseTransition::where('company_id', $company->id)
+                ->orderByDesc('created_at')
+                ->limit(50)
+                ->get()
+                ->map(fn ($t) => [
+                    'from'   => $t->from_state ? \App\Services\LicenseConfig::libelleEtat($t->from_state) : '—',
+                    'to'     => \App\Services\LicenseConfig::libelleEtat($t->to_state),
+                    'cause'  => $t->cause,
+                    'actor'  => $t->actor,
+                    'reason' => $t->reason,
+                    'at'     => $t->created_at?->format('d/m/Y H:i'),
+                ]),
         ]);
     }
 
@@ -111,18 +124,89 @@ class ClientController extends Controller
         $isTrial = $validated['is_trial'] ?? false;
         $months = $validated['duration_months'];
 
-        Subscription::create([
+        $sub = Subscription::create([
             'company_id' => $company->id,
             'plan_id' => $validated['plan_id'],
-            'status' => $isTrial ? 'trial' : 'active',
+            'status' => $isTrial ? Subscription::TRIAL : Subscription::ACTIVE,
             'billing_cycle' => $validated['billing_cycle'],
-            'starts_at' => $isTrial ? null : now(),
+            'starts_at' => now(),
             'ends_at' => $isTrial ? null : now()->addMonths($months),
-            'trial_ends_at' => $isTrial ? now()->addDays(14) : null,
+            // Durée d'essai imposée par la source unique (jamais modifiable — cahier §12.6).
+            'trial_ends_at' => $isTrial ? now()->addDays(\App\Services\LicenseConfig::essaiJours()) : null,
             'activation_key' => Str::random(32),
         ]);
 
+        \App\Models\LicenseTransition::log(
+            $sub, null, $sub->status,
+            \App\Models\LicenseTransition::CAUSE_SUPERADMIN,
+            $request->user()->email
+        );
+
         return back()->with('success', "Abonnement accordé à {$company->name}.");
+    }
+
+    /**
+     * Prolonge la période de grâce de 15 jours — UNE SEULE FOIS, motif obligatoire
+     * (cahier §12.6 : vaut prise de contact commerciale).
+     */
+    public function extendGrace(Request $request, Company $company): RedirectResponse
+    {
+        $validated = $request->validate([
+            'reason' => 'required|string|max:500',
+        ]);
+
+        $sub = Subscription::where('company_id', $company->id)->latest()->first();
+        if (!$sub) {
+            return back()->with('error', 'Aucun abonnement pour cette entreprise.');
+        }
+        if ($sub->trial_extended_at) {
+            return back()->with('error', 'La prolongation a déjà été accordée (une seule fois autorisée).');
+        }
+
+        $days = \App\Services\LicenseConfig::prolongationJours();
+        $base = $sub->grace_ends_at && $sub->grace_ends_at->isFuture() ? $sub->grace_ends_at : now();
+        $from = $sub->status;
+
+        $sub->update([
+            'status'            => Subscription::GRACE,
+            'grace_ends_at'     => $base->copy()->addDays($days),
+            'trial_extended_at' => now(),
+            'extension_reason'  => $validated['reason'],
+        ]);
+
+        \App\Models\LicenseTransition::log(
+            $sub, $from, Subscription::GRACE,
+            \App\Models\LicenseTransition::CAUSE_SUPERADMIN,
+            $request->user()->email,
+            "Prolongation {$days} j : " . $validated['reason']
+        );
+
+        return back()->with('success', "Grâce prolongée de {$days} jours pour {$company->name}.");
+    }
+
+    /** Démarre un essai (durée imposée par la config, non modifiable — cahier §12.6). */
+    public function startTrial(Request $request, Company $company): RedirectResponse
+    {
+        $validated = $request->validate([
+            'plan_id' => 'required|exists:subscription_plans,id',
+        ]);
+
+        $sub = Subscription::create([
+            'company_id'    => $company->id,
+            'plan_id'       => $validated['plan_id'],
+            'status'        => Subscription::TRIAL,
+            'billing_cycle' => 'monthly',
+            'starts_at'     => now(),
+            'trial_ends_at' => now()->addDays(\App\Services\LicenseConfig::essaiJours()),
+        ]);
+
+        \App\Models\LicenseTransition::log(
+            $sub, null, Subscription::TRIAL,
+            \App\Models\LicenseTransition::CAUSE_SUPERADMIN,
+            $request->user()->email
+        );
+
+        return back()->with('success', "Essai démarré pour {$company->name}.");
     }
 
     public function toggleActive(Company $company): RedirectResponse

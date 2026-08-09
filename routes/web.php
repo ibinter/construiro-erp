@@ -480,6 +480,9 @@ Route::middleware(['auth', 'subscription', 'two-factor'])->group(function () {
         Route::patch('/clients/{company}/toggle',           [SuperAdminClientController::class, 'toggleActive'])->name('superadmin.clients.toggle');
         Route::post('/clients/{company}/suspend',           [SuperAdminClientController::class, 'suspend'])->name('superadmin.clients.suspend');
         Route::post('/clients/{company}/reactivate',        [SuperAdminClientController::class, 'reactivate'])->name('superadmin.clients.reactivate');
+        // Actions de licence (cahier §12.6) — journal LicenseTransition
+        Route::post('/clients/{company}/start-trial',       [SuperAdminClientController::class, 'startTrial'])->name('superadmin.clients.start-trial');
+        Route::post('/clients/{company}/extend-grace',      [SuperAdminClientController::class, 'extendGrace'])->name('superadmin.clients.extend-grace');
         // Offres personnalisées
         Route::get('/offers',                               [SuperAdminCustomOfferController::class, 'index'])->name('superadmin.offers.index');
         Route::post('/offers',                              [SuperAdminCustomOfferController::class, 'store'])->name('superadmin.offers.store');
