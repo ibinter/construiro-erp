@@ -82,14 +82,15 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        // 4. Subscription d'essai pour le plan choisi
+        // 4. Subscription d'essai pour le plan choisi.
+        // Durée = source unique licence.config.json (jamais de valeur en dur — cahier §12.1).
         $plan = SubscriptionPlan::find($request->plan_id);
         if ($plan) {
-            $trialDays = $plan->trial_days ?: 14;
+            $trialDays = \App\Services\LicenseConfig::essaiJours();
             Subscription::create([
                 'company_id'    => $company->id,
                 'plan_id'       => $plan->id,
-                'status'        => 'trial',
+                'status'        => Subscription::TRIAL,
                 'billing_cycle' => 'monthly',
                 'trial_ends_at' => now()->addDays($trialDays),
                 'starts_at'     => now(),

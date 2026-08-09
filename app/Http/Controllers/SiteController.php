@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use App\Models\Site;
 use App\Models\User;
+use App\Services\LicenseGuard;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -18,6 +19,9 @@ class SiteController extends Controller
     public function store(Request $request, Project $project): RedirectResponse
     {
         $this->authorizeCompany($request->user(), $project);
+
+        // Compteur métier CONSTRUIRO : plafond de chantiers (Découverte = 1) — cahier §6.
+        LicenseGuard::checkChantierLimit($project->company_id);
 
         $data = $this->validateData($request, $project);
         $data['company_id'] = $project->company_id;

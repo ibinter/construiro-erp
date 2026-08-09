@@ -1,0 +1,115 @@
+{
+    "$schema": "ibig-licence-universel/v1.1",
+    "solution": {
+        "id": "construiro",
+        "nom": "CONSTRUIRO ERP",
+        "editeur": "ibigsoft.com",
+        "secteur": "BTP",
+        "compteur": "chantiers",
+        "compteur_modele": "App\\Models\\Site",
+        "devise": "XOF"
+    },
+    "durees": {
+        "essai_jours": 30,
+        "grace_jours": 7,
+        "retention_jours": 90,
+        "prolongation_jours": 15,
+        "prolongation_max": 1,
+        "demo_purge_heure": "02:00",
+        "lifecycle_emails_heure": "03:30"
+    },
+    "etats": ["demo", "free", "trial", "active", "grace", "expired"],
+    "libelles_etats": {
+        "demo": "Demo publique",
+        "free": "Découverte",
+        "trial": "Essai",
+        "active": "Abonnement actif",
+        "grace": "Période de grâce",
+        "expired": "Lecture seule"
+    },
+    "illimite": {
+        "convention_valeur": 9999
+    },
+    "demo": {
+        "actif": false,
+        "url": null,
+        "inscription": false,
+        "donnees": "fictives",
+        "purge": "chaque_nuit",
+        "export": false,
+        "sara_visible": false,
+        "paiement": false,
+        "bandeau_permanent": true
+    },
+    "gratuit": {
+        "nom": "Découverte",
+        "prix": 0,
+        "a_vie": true,
+        "inscription": "otp_email",
+        "quotas": {
+            "chantiers": 1,
+            "utilisateurs": 1,
+            "pieces_jointes_mo": 50
+        },
+        "exclusions": [
+            "export",
+            "multi_utilisateur",
+            "api",
+            "relances_whatsapp",
+            "relances_sms",
+            "sara",
+            "support_prioritaire",
+            "logo_perso"
+        ],
+        "couts_variables_fermes": {
+            "otp_canal": "email",
+            "whatsapp": false,
+            "sms": false,
+            "tokens_ia": false
+        },
+        "excedent": "lecture_seule",
+        "filigrane": true
+    },
+    "essai": {
+        "nom": "Essai",
+        "duree_jours": 30,
+        "formule": "pro",
+        "carte_bancaire": false,
+        "export": true,
+        "bascule_fin": "free",
+        "bascule_sans_coupure": true
+    },
+    "filigrane": {
+        "texte": "Généré avec CONSTRUIRO — ibigsoft.com",
+        "applique_etat": ["demo", "free"],
+        "retire_des_premier_paiement": true
+    },
+    "cle_licence": {
+        "perpetuelle": false,
+        "date_fin_obligatoire_hors": ["demo", "free"]
+    },
+    "formules": {
+        "_source": "grille FCFA existante (database/seeders/SubscriptionPlanSeeder.php) — inchangée (règle D1)",
+        "decouverte": { "nom": "Découverte", "slug": "decouverte", "prix_mensuel": 0, "prix_annuel": 0, "max_utilisateurs": 1, "max_projets": 1, "max_chantiers": 1, "storage_gb": 1, "export": false, "sort_order": 0 },
+        "solo":       { "nom": "Solo",       "slug": "solo",       "prix_mensuel": 15000,  "prix_annuel": 150000,  "max_utilisateurs": 3,    "max_projets": 5,    "max_chantiers": 5,    "storage_gb": 2,   "export": true, "sort_order": 1 },
+        "starter":    { "nom": "Starter",    "slug": "starter",    "prix_mensuel": 39000,  "prix_annuel": 390000,  "max_utilisateurs": 10,   "max_projets": 20,   "max_chantiers": 20,   "storage_gb": 10,  "export": true, "sort_order": 2 },
+        "pro":        { "nom": "Pro",        "slug": "pro",        "prix_mensuel": 89000,  "prix_annuel": 890000,  "max_utilisateurs": 20,   "max_projets": 50,   "max_chantiers": 50,   "storage_gb": 20,  "export": true, "sort_order": 3 },
+        "enterprise": { "nom": "Entreprise", "slug": "enterprise", "prix_mensuel": 189000, "prix_annuel": 1890000, "max_utilisateurs": 9999, "max_projets": 9999, "max_chantiers": 9999, "storage_gb": 100, "export": true, "sort_order": 4 }
+    },
+    "glossaire": {
+        "demo": "Demo publique",
+        "gratuit": "Découverte",
+        "trial": "Essai",
+        "plan": "Formule",
+        "grace": "Période de grâce",
+        "readonly": "Lecture seule",
+        "cap": "Plafond",
+        "tenant": "Espace",
+        "watermark": "Filigrane"
+    },
+    "termes_bannis": [
+        "version d'évaluation", "période test", "mode gratuit", "compte free",
+        "licence à vie", "perpétuelle", "compte suspendu", "compte bloqué",
+        "accès révoqué"
+    ]
+}

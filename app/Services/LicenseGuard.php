@@ -64,6 +64,37 @@ class LicenseGuard
     }
 
     /**
+     * Vérifie que la société peut créer un chantier (modèle Site) supplémentaire.
+     * C'est le COMPTEUR MÉTIER de CONSTRUIRO (cahier §6 : plafond Découverte = 1 chantier).
+     * Le plafond vient de licence.config.json via Subscription::chantierCap().
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\HttpException (402)
+     */
+    public static function checkChantierLimit(int $companyId): void
+    {
+        $subscription = Subscription::where('company_id', $companyId)->latest()->first();
+
+        // Aucune licence, ou espace en lecture seule (EXPIRED) : création bloquée (fail-closed).
+        if (!$subscription || $subscription->status === Subscription::EXPIRED) {
+            abort(402, "Aucun abonnement actif. Régularisez votre abonnement pour créer un chantier.");
+        }
+
+        $cap = $subscription->chantierCap(); // null = illimité
+        if ($cap === null) {
+            return;
+        }
+
+        $current = \App\Models\Site::where('company_id', $companyId)->count();
+
+        if ($current >= $cap) {
+            $mot = $cap > 1 ? 'chantiers' : 'chantier';
+            abort(402, "Limite du palier Découverte atteinte ({$current}/{$cap} {$mot}). "
+                . "Vos données restent accessibles et modifiables. "
+                . "Passez à une formule payante pour ajouter des chantiers.");
+        }
+    }
+
+    /**
      * Retourne les infos de consommation pour la page Billing.
      */
     public static function usage(int $companyId): array
@@ -71,16 +102,19 @@ class LicenseGuard
         $subscription = Subscription::where('company_id', $companyId)->latest()->first();
         $plan = $subscription?->plan;
 
-        $userCount    = User::where('company_id', $companyId)->where('is_active', true)->count();
-        $projectCount = \App\Models\Project::where('company_id', $companyId)->count();
+        $userCount     = User::where('company_id', $companyId)->where('is_active', true)->count();
+        $projectCount  = \App\Models\Project::where('company_id', $companyId)->count();
+        $chantierCount = \App\Models\Site::where('company_id', $companyId)->count();
 
         $maxUsers    = $plan?->max_users;
         $maxProjects = $plan?->max_projects;
+        $maxChantier = $subscription?->chantierCap();
 
         return [
-            'users'    => ['used' => $userCount,    'max' => $maxUsers,    'unlimited' => $maxUsers    === null || $maxUsers    >= 9999],
-            'projects' => ['used' => $projectCount, 'max' => $maxProjects, 'unlimited' => $maxProjects === null || $maxProjects >= 9999],
-            'plan'     => $plan?->name,
+            'users'     => ['used' => $userCount,     'max' => $maxUsers,    'unlimited' => $maxUsers    === null || $maxUsers    >= 9999],
+            'projects'  => ['used' => $projectCount,  'max' => $maxProjects, 'unlimited' => $maxProjects === null || $maxProjects >= 9999],
+            'chantiers' => ['used' => $chantierCount, 'max' => $maxChantier, 'unlimited' => $maxChantier === null],
+            'plan'      => $plan?->name ?? ($subscription?->isDecouverte() ? 'Découverte' : null),
         ];
     }
 

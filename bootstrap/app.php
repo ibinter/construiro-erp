@@ -4,6 +4,7 @@ use App\Console\Commands\SendTrialExpirationReminders;
 use App\Console\Commands\SendSubscriptionExpirationReminders;
 use App\Console\Commands\CleanExpiredSupportSessions;
 use App\Console\Commands\BackupDatabase;
+use App\Console\Commands\RecalculateLicenseStates;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -15,6 +16,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command(SendSubscriptionExpirationReminders::class)->dailyAt('08:05');
         $schedule->command(CleanExpiredSupportSessions::class)->hourly();
         $schedule->command(BackupDatabase::class)->dailyAt('02:00');
+        // Cahier IBIG §9.6 — transitions d'état hors trafic HTTP (TRIAL→Découverte, ACTIVE→grâce→expiré)
+        $schedule->command(RecalculateLicenseStates::class)->dailyAt('03:00');
     })
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
