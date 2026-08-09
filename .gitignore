@@ -25,3 +25,6 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Worktrees d'agents (checkouts jetables — ne pas suivre)
+/.claude/worktrees/
