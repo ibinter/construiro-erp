@@ -6,6 +6,7 @@ use App\Console\Commands\BackupDatabase;
 use App\Console\Commands\RecalculateLicenseStates;
 use App\Console\Commands\PurgeExpiredData;
 use App\Console\Commands\SendLifecycleEmails;
+use App\Console\Commands\ResetDemoData;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -24,6 +25,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command(RecalculateLicenseStates::class)->dailyAt('03:00');
         // Rapport des espaces à purger (J+90). Sans --force : rapport seul (purge réelle = décision ops/RGPD).
         $schedule->command(PurgeExpiredData::class)->dailyAt('04:00');
+        // Démo publique : réinitialisation nocturne des données fictives (cahier §4.4). Inerte si demo.actif=false.
+        $schedule->command(ResetDemoData::class)->dailyAt('02:00');
     })
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
@@ -39,6 +42,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
             \App\Http\Middleware\SetCacheHeaders::class,
+            \App\Http\Middleware\DemoGuard::class,
         ]);
 
         $middleware->alias([

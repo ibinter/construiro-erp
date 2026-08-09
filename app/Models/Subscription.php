@@ -96,7 +96,12 @@ class Subscription extends Model
      */
     public function chantierCap(): ?int
     {
-        if ($this->isDecouverte() || $this->isDemo()) {
+        // La démo publique présente le produit complet (données fictives réinitialisées
+        // chaque nuit) — aucun plafond. Le palier gratuit Découverte, lui, est plafonné.
+        if ($this->isDemo()) {
+            return null;
+        }
+        if ($this->isDecouverte()) {
             return LicenseConfig::quotaChantiersGratuit();
         }
 

@@ -26,8 +26,12 @@ class LicenseGuard
             abort(402, "Aucun abonnement actif. Régularisez votre abonnement pour ajouter des utilisateurs.");
         }
 
-        // Découverte / Demo : plafond gratuit (mono-utilisateur — cahier §3.2).
-        if ($sub->isDecouverte() || $sub->isDemo()) {
+        // Démo publique : produit complet, aucun plafond (données réinitialisées chaque nuit).
+        if ($sub->isDemo()) {
+            return;
+        }
+        // Découverte : plafond gratuit (mono-utilisateur — cahier §3.2).
+        if ($sub->isDecouverte()) {
             $limit = LicenseConfig::quotaGratuit('utilisateurs') ?? 1;
         } else {
             $plan = $sub->plan;

@@ -50,20 +50,17 @@ class DemoDataSeeder extends Seeder
             }
         }
 
-        // Abonnement démo actif
-        if ($plan) {
-            Subscription::updateOrCreate(
-                ['company_id' => $company->id],
-                [
-                    'plan_id'       => $plan->id,
-                    'status'        => 'active',
-                    'billing_cycle' => 'yearly',
-                    'starts_at'     => now()->subMonths(2),
-                    'ends_at'       => now()->addMonths(10),
-                    'grace_ends_at' => now()->addMonths(10)->addDays(7),
-                ]
-            );
-        }
+        // Abonnement en état DEMO (données fictives, purgées chaque nuit — cahier §2, §4).
+        Subscription::updateOrCreate(
+            ['company_id' => $company->id],
+            [
+                'plan_id'       => $plan?->id,
+                'status'        => Subscription::DEMO,
+                'billing_cycle' => 'yearly',
+                'starts_at'     => now(),
+                'ends_at'       => null, // la démo n'expire pas
+            ]
+        );
 
         // Clients fictifs BTP
         $clientsData = [

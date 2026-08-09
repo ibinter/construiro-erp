@@ -191,6 +191,9 @@ Route::get('/guide/{locale}', [UserGuideController::class, 'download'])->name('g
 
 // ─── Lexique métier BTP (public) ────────────────────────────────────────────
 Route::get('/lexique', fn () => inertia('Lexique'))->name('lexique');
+
+// ─── Démo publique (cahier §4) — inerte tant que demo.actif=false ────────────
+Route::get('/demo', [\App\Http\Controllers\DemoAccessController::class, 'enter'])->name('demo.enter');
 Route::redirect('/blog',   'https://ibigsoft.com', 301);
 Route::redirect('/statut', 'https://ibigsoft.com', 301);
 
