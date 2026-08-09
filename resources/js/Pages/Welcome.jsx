@@ -63,7 +63,7 @@ const SLIDES = [
         badge: '🌍 Conçu pour les entreprises BTP africaines',
         h1a: 'Pilotez toute votre', h1b: 'activité BTP', h1c: 'depuis un seul endroit',
         sub: 'Une solution complète, moderne et adaptée aux réalités africaines. Projets, RH, finances, équipements — tout centralisé.',
-        cta1Label: 'Demander une démo gratuite', cta1Href: '#demo', cta2Label: 'Essai 14 jours gratuit →', cta2IsRegister: true,
+        cta1Label: 'Demander une démo gratuite', cta1Href: '#demo', cta2Label: 'Essai 30 jours gratuit →', cta2IsRegister: true,
         visual: 'dashboard',
     },
     {
@@ -120,7 +120,7 @@ const BENEFICES = [
 
 /* ── Comment ça marche ──────────────────────────────────────── */
 const ETAPES = [
-    { num: '01', titre: 'Créez votre compte', desc: 'Inscription en 2 minutes. Votre espace CONSTRUIRO est prêt immédiatement. 14 jours d\'essai gratuit, sans carte bancaire.' },
+    { num: '01', titre: 'Créez votre compte', desc: 'Inscription en 2 minutes. Votre espace CONSTRUIRO est prêt immédiatement. 30 jours d\'essai gratuit, sans carte bancaire.' },
     { num: '02', titre: 'Configurez votre organisation', desc: 'Renseignez vos informations, importez vos projets, configurez vos modules selon vos besoins métier.' },
     { num: '03', titre: 'Invitez vos collaborateurs', desc: 'Ajoutez vos chefs de chantier, RH, comptables et directeurs. Attribuez les rôles et droits d\'accès.' },
     { num: '04', titre: 'Pilotez depuis le tableau de bord', desc: 'Suivez vos chantiers, vos finances et vos équipes en temps réel. Exportez vos rapports en PDF et Excel.' },
@@ -447,7 +447,7 @@ function HeroSlider({ canRegister }) {
                         </div>
                         <div className="flex flex-wrap gap-6 text-sm text-gray-500">
                             <span className="flex items-center gap-1.5"><span style={{ color: BRAND }}>✓</span> {t('15+ modules intégrés')}</span>
-                            <span className="flex items-center gap-1.5"><span style={{ color: BRAND }}>✓</span> {t('Essai 14 jours gratuit')}</span>
+                            <span className="flex items-center gap-1.5"><span style={{ color: BRAND }}>✓</span> {t('Essai 30 jours gratuit')}</span>
                             <span className="flex items-center gap-1.5"><span style={{ color: BRAND }}>✓</span> {t('Déployé en 48h')}</span>
                         </div>
                     </div>
@@ -881,7 +881,7 @@ function TopBar() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-4 text-gray-400">
                     <span className="flex items-center gap-1.5">
-                        <span style={{ color: BRAND }}>✓</span> {t('Essai gratuit 14 jours')}
+                        <span style={{ color: BRAND }}>✓</span> {t('Essai gratuit 30 jours')}
                     </span>
                     <span className="hidden sm:flex items-center gap-1.5">
                         <span style={{ color: BRAND }}>📞</span>
@@ -966,7 +966,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
         <>
             <Head>
                 <title>CONSTRUIRO — ERP BTP pour l'Afrique | Gérez vos chantiers</title>
-                <meta name="description" content="CONSTRUIRO est l'ERP BTP conçu pour les entreprises africaines. Gérez projets, RH, stocks, équipements et finance depuis une seule plateforme. Essai gratuit 14 jours." />
+                <meta name="description" content="CONSTRUIRO est l'ERP BTP conçu pour les entreprises africaines. Gérez projets, RH, stocks, équipements et finance depuis une seule plateforme. Essai gratuit 30 jours." />
                 <meta name="keywords" content="ERP BTP Afrique, logiciel chantier, gestion construction, ERP Côte d'Ivoire, CONSTRUIRO, IBIG Soft" />
                 {/* Open Graph / Twitter rendus côté serveur dans app.blade.php (visibles des crawlers sociaux). */}
                 <meta name="robots" content="index, follow" />
@@ -981,7 +981,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                         "operatingSystem": "Web, Android, iOS",
                         "url": "https://construiro.com",
                         "screenshot": "https://construiro.com/og-image.png",
-                        "offers": { "@type": "Offer", "priceCurrency": "XOF", "price": "0", "description": "Essai gratuit 14 jours sans carte bancaire", "availability": "https://schema.org/InStock" },
+                        "offers": { "@type": "Offer", "priceCurrency": "XOF", "price": "0", "description": "Essai gratuit 30 jours sans carte bancaire", "availability": "https://schema.org/InStock" },
                         "publisher": { "@type": "Organization", "name": "IBIG Soft", "url": "https://ibigsoft.com" },
                         "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "reviewCount": "3" }
                     },
@@ -1172,7 +1172,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                             <Link href={route('register')} onClick={() => setMobileMenuOpen(false)}
                                                 className="block text-center py-3.5 rounded-xl font-bold text-white text-sm hover:opacity-90 transition"
                                                 style={{ background: BRAND }}>
-                                                {t('Essai gratuit 14 jours')}
+                                                {t('Essai gratuit 30 jours')}
                                             </Link>
                                         )}
                                     </>
@@ -1310,7 +1310,7 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                 <Link href={route('register')}
                                     className="inline-flex items-center gap-2 px-10 py-4 rounded-xl font-bold text-white text-base transition-all hover:opacity-90"
                                     style={{ background: BRAND, boxShadow: `0 8px 32px rgba(245,130,32,0.3)` }}>
-                                    {t('Commencer gratuitement — 14 jours offerts')}
+                                    {t('Commencer gratuitement — 30 jours offerts')}
                                 </Link>
                             )}
                         </div>

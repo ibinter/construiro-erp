@@ -64,7 +64,7 @@
 </div>
 
 <p style="font-size:14px;color:#475569;">
-    Vos données sont conservées <strong>30 jours</strong> apres l'expiration.
+    Vos données sont conservées <strong> 90 jours</strong> apres l'expiration.
     Activez votre abonnement maintenant pour ne subir aucune interruption.
 </p>
 

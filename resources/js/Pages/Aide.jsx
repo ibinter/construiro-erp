@@ -24,7 +24,7 @@ const CAT_ICONS = {
 // Fallback FAQ statiques si la table n'est pas encore seedée
 const FALLBACK_FAQS = {
     demarrage: [
-        { question: 'Comment démarrer mon essai gratuit ?', answer: "Cliquez sur « Essai gratuit » depuis la page d'accueil. Votre espace est créé instantanément, sans carte bancaire requise. Vous disposez de 14 jours pour tester toutes les fonctionnalités." },
+        { question: 'Comment démarrer mon essai gratuit ?', answer: "Cliquez sur « Essai gratuit » depuis la page d'accueil. Votre espace est créé instantanément, sans carte bancaire requise. Vous disposez de 30 jours pour tester toutes les fonctionnalités." },
         { question: "Quels modules sont inclus dans l'essai ?", answer: "Tous les modules sont inclus dans l'essai : Projets, RH, Finance, Stocks, Équipements, Devis, HSE, Bureau d'études, BI et SARA l'assistante IA." },
         { question: 'Comment importer mes données existantes ?', answer: "CONSTRUIRO propose des imports CSV/Excel pour les projets, clients, fournisseurs, employés et matériaux. Notre équipe vous accompagne lors de l'onboarding." },
     ],

@@ -244,6 +244,11 @@ Route::middleware(\App\Http\Middleware\TrackPageView::class)->get('/', function 
     ]);
 });
 
+// État de licence (calculé serveur) — hors middleware subscription pour rester
+// interrogeable même en lecture seule / expiré (cahier §9.4).
+Route::middleware('auth')->get('/api/licence/etat', [\App\Http\Controllers\Api\LicenceController::class, 'etat'])
+    ->name('api.licence.etat');
+
 Route::middleware(['auth', 'subscription', 'two-factor'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 

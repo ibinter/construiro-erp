@@ -50,7 +50,7 @@ class SendSubscriptionExpirationReminders extends Command
                     try {
                         Mail::to($user->email)->send(new TrialExpiringMail(
                             userName: $user->name,
-                            daysRemaining: $days,
+                            daysLeft: $days,
                             expiresAt: $subscription->ends_at->format('d/m/Y'),
                         ));
                         EmailLog::record('subscription_expiring', $user->email, "Abonnement expire dans {$days} jour(s)", $user->id, $key);

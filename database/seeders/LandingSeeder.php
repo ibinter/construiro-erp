@@ -113,7 +113,7 @@ class LandingSeeder extends Seeder
             ['key' => 'sara_enabled',       'value' => '1',                           'group' => 'sara',     'label' => 'SARA activée'],
             ['key' => 'sara_prompt_suffix', 'value' => '',                            'group' => 'sara',     'label' => 'Complément système (optionnel)'],
             // Landing général
-            ['key' => 'landing_topbar_msg', 'value' => 'Essai gratuit 14 jours — Sans carte bancaire', 'group' => 'landing', 'label' => 'Message barre supérieure'],
+            ['key' => 'landing_topbar_msg', 'value' => 'Essai gratuit 30 jours — Sans carte bancaire', 'group' => 'landing', 'label' => 'Message barre supérieure'],
             ['key' => 'landing_video_url',  'value' => '',                                              'group' => 'landing', 'label' => 'URL vidéo de présentation (YouTube)'],
         ];
 

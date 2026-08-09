@@ -21,7 +21,7 @@ class KnowledgeBaseSeeder extends Seeder
                 'category'   => 'general',
                 'priority'   => 10,
                 'title_fr'   => 'Essai gratuit CONSTRUIRO — comment démarrer ?',
-                'content_fr' => 'CONSTRUIRO offre 14 jours d\'essai gratuit sans carte bancaire. Pour démarrer : allez sur construiro.com, cliquez sur "Essai gratuit 14 jours", créez votre compte avec votre email professionnel. Vous aurez accès à tous les modules pendant 14 jours. À la fin de l\'essai, choisissez un plan tarifaire pour continuer. Déploiement en moins de 48h.',
+                'content_fr' => 'CONSTRUIRO offre 30 jours d\'essai gratuit sans carte bancaire. Pour démarrer : allez sur construiro.com, cliquez sur "Essai gratuit 30 jours", créez votre compte avec votre email professionnel. Vous aurez accès à tous les modules pendant 30 jours. À la fin de l\'essai, choisissez un plan tarifaire pour continuer. Déploiement en moins de 48h.',
             ],
             [
                 'category'   => 'general',

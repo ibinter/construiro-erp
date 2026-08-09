@@ -51,7 +51,7 @@ class SendTrialExpirationReminders extends Command
                     try {
                         Mail::to($user->email)->send(new TrialExpiringMail(
                             userName: $user->name,
-                            daysRemaining: $days,
+                            daysLeft: $days,
                             expiresAt: $subscription->trial_ends_at->format('d/m/Y'),
                         ));
                         EmailLog::record('trial_expiring', $user->email, "Essai expire dans {$days} jour(s)", $user->id, $key);

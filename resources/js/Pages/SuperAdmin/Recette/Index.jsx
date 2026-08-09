@@ -37,7 +37,7 @@ const SECTIONS = [
         title: 'Licences & Paiements',
         icon: 'credit-card',
         items: [
-            { key: 'lic-1', label: 'Essai gratuit 14 jours se crée à l\'inscription' },
+            { key: 'lic-1', label: 'Essai gratuit 30 jours se crée à l\'inscription' },
             { key: 'lic-2', label: 'Email de bienvenue reçu' },
             { key: 'lic-3', label: 'Page facturation affiche le statut' },
             { key: 'lic-4', label: 'Mobile Money activé dans le SuperAdmin' },

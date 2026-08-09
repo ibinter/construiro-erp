@@ -815,7 +815,7 @@ IBIG Soft se réserve le droit de suspendre ou résilier immédiatement l'accès
 
 À la date de résiliation :
 - L'accès au logiciel est désactivé
-- Les données sont conservées 30 jours supplémentaires pour permettre l'export
+- Les données sont conservées  90 jours supplémentaires pour permettre l'export
 - Au-delà de 30 jours, les données sont supprimées définitivement
 
 ## 5. Export des données avant résiliation
@@ -873,7 +873,7 @@ IBIG Soft s'engage à fournir un service de qualité. Si le service ne correspon
 
 ## 2. Période d'essai gratuit
 
-Un essai gratuit de **14 jours** est proposé sans engagement. Aucune carte bancaire n'est requise pendant l'essai. À l'issue de l'essai, la facturation commence uniquement si le client souscrit activement.
+Un essai gratuit de **30 jours** est proposé sans engagement. Aucune carte bancaire n'est requise pendant l'essai. À l'issue de l'essai, la facturation commence uniquement si le client souscrit activement.
 
 ## 3. Garantie de remboursement
 
@@ -913,7 +913,7 @@ IBIG Soft is committed to providing quality service. If the service does not mee
 
 ## 2. Free Trial Period
 
-A **14-day free trial** is offered with no commitment. No credit card is required during the trial. After the trial, billing only begins if the client actively subscribes.
+A **30-day free trial** is offered with no commitment. No credit card is required during the trial. After the trial, billing only begins if the client actively subscribes.
 
 ## 3. Refund Guarantee
 
@@ -1169,15 +1169,15 @@ MD;
         return <<<MD
 ## 1. Durée et portée de l'essai
 
-CONSTRUIRO propose un essai gratuit de **14 jours** donnant accès à l'ensemble des fonctionnalités du plan souscrit sans limitation.
+CONSTRUIRO propose un essai gratuit de **30 jours** donnant accès à l'ensemble des fonctionnalités du plan souscrit sans limitation.
 
 ## 2. Sans engagement
 
-Aucune carte bancaire n'est requise pour démarrer l'essai. À l'issue des 14 jours, le compte est automatiquement suspendu (non supprimé) si aucun abonnement n'est souscrit.
+Aucune carte bancaire n'est requise pour démarrer l'essai. À l'issue des 30 jours, l'espace bascule automatiquement vers le palier gratuit « Découverte » (aucune donnée supprimée) : les fonctions avancées se ferment et l'usage au-delà du plafond passe en lecture seule.
 
 ## 3. Données pendant l'essai
 
-Les données saisies pendant l'essai sont conservées **30 jours** après la fin de la période d'essai. Le client peut exporter ses données à tout moment.
+Les données saisies pendant l'essai sont conservées ** 90 jours** après la fin de la période d'essai. Le client peut exporter ses données à tout moment.
 
 ## 4. Conversion en abonnement
 
@@ -1204,11 +1204,11 @@ MD;
         return <<<MD
 ## 1. Trial Duration and Scope
 
-CONSTRUIRO offers a **14-day free trial** giving access to all features of the subscribed plan without limitation.
+CONSTRUIRO offers a **30-day free trial** giving access to all features of the subscribed plan without limitation.
 
 ## 2. No Commitment
 
-No credit card is required to start the trial. After 14 days, the account is automatically suspended (not deleted) if no subscription is taken out.
+No credit card is required to start the trial. After 30 days, the workspace automatically switches to the free "Découverte" tier (no data deleted): advanced features close and usage beyond the cap becomes read-only.
 
 ## 3. Data During Trial
 
@@ -1425,7 +1425,7 @@ Le client s'engage à :
 
 ## 4. Comptes inactifs
 
-Les comptes sans activité pendant **6 mois consécutifs** sur un abonnement expiré peuvent être archivés. Les données sont conservées 30 jours avant suppression définitive.
+Les comptes sans activité pendant **6 mois consécutifs** sur un abonnement expiré peuvent être archivés. Les données sont conservées  90 jours avant suppression définitive.
 
 ## 5. Transfert de compte
 

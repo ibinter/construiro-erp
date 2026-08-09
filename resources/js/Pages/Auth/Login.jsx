@@ -94,7 +94,7 @@ export default function Login({ status, canResetPassword }) {
                 <p className="text-center text-sm text-gray-500">
                     {t('Pas encore de compte ?')}{' '}
                     <Link href={route('register')} className="font-semibold hover:underline" style={{ color: BRAND }}>
-                        {t('Essai gratuit 14 jours')}
+                        {t('Essai gratuit 30 jours')}
                     </Link>
                 </p>
             </form>

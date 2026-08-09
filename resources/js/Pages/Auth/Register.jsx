@@ -48,7 +48,7 @@ export default function Register({ plans = [], selectedPlan = null }) {
                 {t('Créer votre compte')}
             </h1>
             <p className="text-sm text-gray-500 mb-6">
-                {t('Essai gratuit 14 jours · Sans carte bancaire')}
+                {t('Essai gratuit 30 jours · Sans carte bancaire')}
             </p>
 
             <form onSubmit={submit} className="space-y-5">

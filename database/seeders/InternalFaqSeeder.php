@@ -24,9 +24,9 @@ class InternalFaqSeeder extends Seeder
             [
                 'category'   => 'demarrage',
                 'sort_order' => 2,
-                'question'   => 'Comment activer et prolonger mon essai gratuit de 14 jours ?',
-                'answer'     => "Votre essai de 14 jours démarre automatiquement à l'inscription, sans carte bancaire. Tous les modules sont actifs (Projets, RH, Facturation, Stocks, SARA, etc.). À J-3, un email vous propose de choisir un plan. Aucune interruption n'a lieu à la fin de l'essai : vos données sont conservées 30 jours supplémentaires.",
-                'keywords'   => 'essai, gratuit, 14 jours, trial, activer, prolonger',
+                'question'   => 'Comment activer et prolonger mon essai gratuit de 30 jours ?',
+                'answer'     => "Votre essai de 30 jours démarre automatiquement à l'inscription, sans carte bancaire. Tous les modules sont actifs (Projets, RH, Facturation, Stocks, SARA, etc.). À J-3, un email vous propose de choisir un plan. Aucune interruption n'a lieu à la fin de l'essai : vos données sont conservées  90 jours supplémentaires.",
+                'keywords'   => 'essai, gratuit, 30 jours, trial, activer, prolonger',
             ],
             [
                 'category'   => 'demarrage',
