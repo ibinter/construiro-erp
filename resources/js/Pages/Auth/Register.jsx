@@ -148,9 +148,15 @@ export default function Register({ plans = [], selectedPlan = null }) {
                                                 <span className="font-semibold text-slate-800 dark:text-slate-100 text-sm">
                                                     {plan.name}
                                                 </span>
-                                                <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/30 dark:text-green-300">
-                                                    {plan.trial_days || 14}j gratuits
-                                                </span>
+                                                {plan.price_monthly > 0 ? (
+                                                    <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/30 dark:text-green-300">
+                                                        {t('Essai')} {plan.trial_days}j
+                                                    </span>
+                                                ) : (
+                                                    <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+                                                        {t('Gratuit à vie')}
+                                                    </span>
+                                                )}
                                             </div>
                                             {plan.description && (
                                                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">

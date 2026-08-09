@@ -19,21 +19,32 @@ class LicenseGuard
      */
     public static function checkUserLimit(int $companyId): void
     {
-        $plan = self::activePlan($companyId);
-        if (!$plan) {
-            // Fail-closed : aucune licence active ⇒ aucune création (anti-fuite de licence).
+        $sub = Subscription::where('company_id', $companyId)->latest()->first();
+
+        // Fail-closed : aucune licence, ou espace en lecture seule (EXPIRED).
+        if (!$sub || $sub->status === Subscription::EXPIRED) {
             abort(402, "Aucun abonnement actif. Régularisez votre abonnement pour ajouter des utilisateurs.");
         }
 
-        $limit = self::normalizeLimit($plan->max_users);
+        // Découverte / Demo : plafond gratuit (mono-utilisateur — cahier §3.2).
+        if ($sub->isDecouverte() || $sub->isDemo()) {
+            $limit = LicenseConfig::quotaGratuit('utilisateurs') ?? 1;
+        } else {
+            $plan = $sub->plan;
+            if (!$plan) {
+                abort(402, "Aucune formule active. Régularisez votre abonnement pour ajouter des utilisateurs.");
+            }
+            $limit = self::normalizeLimit($plan->max_users);
+        }
+
         if ($limit === null) {
-            return; // plan illimité
+            return; // illimité
         }
 
         $current = User::where('company_id', $companyId)->where('is_active', true)->count();
 
         if ($current >= $limit) {
-            abort(402, "Limite d'utilisateurs atteinte ({$current}/{$limit}). Passez à un plan supérieur.");
+            abort(402, "Limite d'utilisateurs atteinte ({$current}/{$limit}). Passez à une formule supérieure.");
         }
     }
 

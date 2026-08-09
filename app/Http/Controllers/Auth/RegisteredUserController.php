@@ -50,7 +50,8 @@ class RegisteredUserController extends Controller
             'name'     => 'required|string|max:255',
             'email'    => 'required|string|lowercase|email|max:255|unique:' . User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'plan_id'  => 'required|exists:subscription_plans,id',
+            // Optionnel : sans formule (ou formule « Découverte ») ⇒ palier gratuit.
+            'plan_id'  => 'nullable|exists:subscription_plans,id',
         ]);
 
         // 1. Créer une company provisoire (complétée lors de l'onboarding)
@@ -82,17 +83,32 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        // 4. Subscription d'essai pour le plan choisi.
-        // Durée = source unique licence.config.json (jamais de valeur en dur — cahier §12.1).
-        $plan = SubscriptionPlan::find($request->plan_id);
-        if ($plan) {
-            $trialDays = \App\Services\LicenseConfig::essaiJours();
+        // 4. Abonnement initial (cahier §2) :
+        //    - formule payante choisie  ⇒ ESSAI de N jours (N depuis licence.config.json)
+        //    - aucune formule / Découverte ⇒ palier gratuit « Découverte » à vie
+        $plan = $request->plan_id ? SubscriptionPlan::find($request->plan_id) : null;
+        $estDecouverte = !$plan || $plan->slug === 'decouverte';
+
+        if ($estDecouverte) {
+            $decouverte = ($plan && $plan->slug === 'decouverte')
+                ? $plan
+                : SubscriptionPlan::where('slug', 'decouverte')->first();
+
+            Subscription::create([
+                'company_id'    => $company->id,
+                'plan_id'       => $decouverte?->id,   // peut être null (FREE n'exige pas de formule)
+                'status'        => Subscription::FREE,
+                'billing_cycle' => 'monthly',
+                'starts_at'     => now(),
+                // Pas de date de fin : gratuit à vie (cahier §2, §3).
+            ]);
+        } else {
             Subscription::create([
                 'company_id'    => $company->id,
                 'plan_id'       => $plan->id,
                 'status'        => Subscription::TRIAL,
                 'billing_cycle' => 'monthly',
-                'trial_ends_at' => now()->addDays($trialDays),
+                'trial_ends_at' => now()->addDays(\App\Services\LicenseConfig::essaiJours()),
                 'starts_at'     => now(),
             ]);
         }
