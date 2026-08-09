@@ -41,6 +41,12 @@ class DemoPubliqueTest extends TestCase
         $this->assertDatabaseHas('companies', ['slug' => 'construiro-demo', 'is_demo' => true]);
         $company = Company::where('is_demo', true)->first();
         $this->assertSame(Subscription::DEMO, Subscription::where('company_id', $company->id)->first()->status);
+
+        // Données fictives riches (dashboard crédible — cahier §4.3)
+        $this->assertGreaterThan(0, \App\Models\Project::where('company_id', $company->id)->count());
+        $this->assertGreaterThan(0, \App\Models\Site::where('company_id', $company->id)->count());
+        $this->assertGreaterThan(0, \App\Models\Employee::where('company_id', $company->id)->count());
+        $this->assertGreaterThan(0, \App\Models\Invoice::where('company_id', $company->id)->count());
     }
 
     public function test_demo_guard_bloque_les_actions_sensibles(): void

@@ -77,69 +77,97 @@ class DemoDataSeeder extends Seeder
                 try {
                     $clientModel::updateOrCreate(
                         ['code' => $c['code'], 'company_id' => $company->id],
-                        array_merge($c, ['company_id' => $company->id])
+                        array_merge($c, ['company_id' => $company->id, 'type' => 'entreprise', 'is_active' => true])
                     );
                 } catch (\Throwable) {}
             }
         }
 
-        // Projets fictifs BTP
+        // Projets fictifs BTP (colonnes réelles du modèle : code, type, budget_amount, progress)
         $projectsData = [
-            [
-                'name'        => 'Construction Résidence Les Palmiers',
-                'reference'   => 'PROJ-2026-001',
-                'description' => 'Résidence de 24 appartements à Cocody, Abidjan',
-                'status'      => 'in_progress',
-                'budget'      => 450000000,
-                'start_date'  => '2026-01-15',
-                'end_date'    => '2026-12-31',
-            ],
-            [
-                'name'        => 'Réhabilitation Route N6',
-                'reference'   => 'PROJ-2026-002',
-                'description' => 'Réhabilitation de 12 km de route bitumée',
-                'status'      => 'in_progress',
-                'budget'      => 180000000,
-                'start_date'  => '2026-03-01',
-                'end_date'    => '2026-09-30',
-            ],
-            [
-                'name'        => 'Siège Social BCEAO Annexe',
-                'reference'   => 'PROJ-2025-015',
-                'description' => 'Construction d\'un immeuble R+5 à usage de bureaux',
-                'status'      => 'completed',
-                'budget'      => 820000000,
-                'start_date'  => '2025-04-01',
-                'end_date'    => '2026-03-31',
-            ],
-            [
-                'name'        => 'Lotissement Yopougon Extension',
-                'reference'   => 'PROJ-2026-003',
-                'description' => 'Viabilisation de 150 parcelles',
-                'status'      => 'planning',
-                'budget'      => 95000000,
-                'start_date'  => '2026-08-01',
-                'end_date'    => '2027-02-28',
-            ],
+            ['code' => 'PRJ-2026-001', 'name' => 'Construction Résidence Les Palmiers', 'type' => 'batiment',       'status' => 'in_progress', 'budget_amount' => 450000000, 'currency' => 'XOF', 'progress' => 45, 'client_name' => 'SCI Les Palmiers',    'city' => 'Abidjan', 'description' => 'Résidence de 24 appartements à Cocody', 'start_date' => '2026-01-15', 'end_date' => '2026-12-31'],
+            ['code' => 'PRJ-2026-002', 'name' => 'Réhabilitation Route N6',            'type' => 'travaux_publics', 'status' => 'in_progress', 'budget_amount' => 180000000, 'currency' => 'XOF', 'progress' => 60, 'client_name' => 'Koné Travaux Publics', 'city' => 'Bouaké',  'description' => 'Réhabilitation de 12 km de route bitumée', 'start_date' => '2026-03-01', 'end_date' => '2026-09-30'],
+            ['code' => 'PRJ-2026-003', 'name' => 'Extension Usine SIVOP',              'type' => 'batiment',       'status' => 'on_hold',     'budget_amount' => 260000000, 'currency' => 'XOF', 'progress' => 30, 'client_name' => 'SIVOP',               'city' => 'Abidjan', 'description' => 'Extension d\'une unité de production',      'start_date' => '2026-02-01', 'end_date' => '2026-11-30'],
+            ['code' => 'PRJ-2025-015', 'name' => 'Siège Social BCEAO Annexe',          'type' => 'batiment',       'status' => 'completed',   'budget_amount' => 820000000, 'currency' => 'XOF', 'progress' => 100,'client_name' => 'BCEAO',               'city' => 'Abidjan', 'description' => 'Immeuble R+5 à usage de bureaux',          'start_date' => '2025-04-01', 'end_date' => '2026-03-31'],
         ];
 
-        $projectModel = 'App\\Models\\Project';
-        if (class_exists($projectModel)) {
-            foreach ($projectsData as $p) {
-                try {
-                    $projectModel::updateOrCreate(
-                        ['reference' => $p['reference'], 'company_id' => $company->id],
-                        array_merge($p, ['company_id' => $company->id])
-                    );
-                } catch (\Throwable) {}
+        $projects = [];
+        foreach ($projectsData as $p) {
+            $projects[$p['code']] = \App\Models\Project::updateOrCreate(
+                ['code' => $p['code'], 'company_id' => $company->id],
+                array_merge($p, ['company_id' => $company->id])
+            );
+        }
+
+        // Chantiers (Site) rattachés aux projets actifs
+        $sitesData = [
+            ['project' => 'PRJ-2026-001', 'code' => 'CH-001', 'name' => 'Résidence Les Palmiers — Bloc A', 'status' => 'in_progress', 'progress' => 50, 'city' => 'Abidjan'],
+            ['project' => 'PRJ-2026-001', 'code' => 'CH-002', 'name' => 'Résidence Les Palmiers — Bloc B', 'status' => 'in_progress', 'progress' => 35, 'city' => 'Abidjan'],
+            ['project' => 'PRJ-2026-002', 'code' => 'CH-003', 'name' => 'Route N6 — PK0 à PK6',            'status' => 'in_progress', 'progress' => 65, 'city' => 'Bouaké'],
+        ];
+        foreach ($sitesData as $s) {
+            $proj = $projects[$s['project']] ?? null;
+            if ($proj) {
+                \App\Models\Site::updateOrCreate(
+                    ['code' => $s['code'], 'project_id' => $proj->id],
+                    ['company_id' => $company->id, 'project_id' => $proj->id, 'name' => $s['name'], 'status' => $s['status'], 'progress' => $s['progress'], 'city' => $s['city']]
+                );
             }
         }
 
-        // Fournisseurs fictifs
+        // Employés fictifs (actifs)
+        $employeesData = [
+            ['matricule' => 'EMP-001', 'first_name' => 'Kouassi',  'last_name' => 'Yao',    'job_title' => 'Conducteur de travaux',      'department' => 'Technique', 'base_salary' => 450000],
+            ['matricule' => 'EMP-002', 'first_name' => 'Awa',      'last_name' => 'Traoré', 'job_title' => 'Ingénieure BTP',             'department' => 'Études',    'base_salary' => 650000],
+            ['matricule' => 'EMP-003', 'first_name' => 'Ibrahim',  'last_name' => 'Cissé',  'job_title' => 'Chef de chantier',           'department' => 'Travaux',   'base_salary' => 380000],
+            ['matricule' => 'EMP-004', 'first_name' => 'Fatou',    'last_name' => 'Bamba',  'job_title' => 'Comptable',                  'department' => 'Finances',  'base_salary' => 420000],
+            ['matricule' => 'EMP-005', 'first_name' => 'Serge',    'last_name' => 'Koffi',  'job_title' => 'Chef d\'équipe maçonnerie',  'department' => 'Travaux',   'base_salary' => 250000],
+            ['matricule' => 'EMP-006', 'first_name' => 'Mariam',   'last_name' => 'Sanogo', 'job_title' => 'Assistante RH',              'department' => 'RH',        'base_salary' => 300000],
+        ];
+        foreach ($employeesData as $e) {
+            \App\Models\Employee::updateOrCreate(
+                ['matricule' => $e['matricule'], 'company_id' => $company->id],
+                array_merge($e, ['company_id' => $company->id, 'currency' => 'XOF', 'status' => 'active', 'is_active' => true, 'hire_date' => '2025-06-01', 'contract_type' => 'cdi'])
+            );
+        }
+
+        // Factures fictives : CA du mois (payées) + impayés (envoyées / en retard)
+        $clientIds = \App\Models\Client::where('company_id', $company->id)->pluck('id', 'code');
+        $invoicesData = [
+            ['code' => 'FAC-2026-051', 'client' => 'CLI-001', 'project' => 'PRJ-2026-001', 'status' => 'paid',    'subtotal' => 25000000, 'issue' => now()->startOfMonth()->addDays(3),  'paid' => true],
+            ['code' => 'FAC-2026-052', 'client' => 'CLI-005', 'project' => 'PRJ-2026-002', 'status' => 'paid',    'subtotal' => 18000000, 'issue' => now()->startOfMonth()->addDays(9),  'paid' => true],
+            ['code' => 'FAC-2026-053', 'client' => 'CLI-002', 'project' => 'PRJ-2026-001', 'status' => 'sent',    'subtotal' => 12000000, 'issue' => now()->subDays(18),                 'paid' => false],
+            ['code' => 'FAC-2026-048', 'client' => 'CLI-004', 'project' => null,           'status' => 'overdue', 'subtotal' => 9500000,  'issue' => now()->subDays(55),                 'paid' => false],
+        ];
+        foreach ($invoicesData as $inv) {
+            $sub = $inv['subtotal'];
+            $tax = $sub * 0.18;
+            $total = $sub + $tax;
+            \App\Models\Invoice::updateOrCreate(
+                ['code' => $inv['code'], 'company_id' => $company->id],
+                [
+                    'company_id'  => $company->id,
+                    'client_id'   => $clientIds[$inv['client']] ?? null,
+                    'project_id'  => $inv['project'] ? ($projects[$inv['project']]->id ?? null) : null,
+                    'status'      => $inv['status'],
+                    'currency'    => 'XOF',
+                    'issue_date'  => $inv['issue'],
+                    'due_date'    => $inv['issue']->copy()->addDays(30),
+                    'tax_rate'    => 18,
+                    'subtotal'    => $sub,
+                    'tax_amount'  => $tax,
+                    'total'       => $total,
+                    'amount_paid' => $inv['paid'] ? $total : 0,
+                    'verify_token' => \Illuminate\Support\Str::random(40),
+                ]
+            );
+        }
+
+        // Fournisseurs fictifs (colonnes réelles : code, category requis)
         $suppliersData = [
-            ['name' => 'CIMAF Côte d\'Ivoire',          'email' => 'commandes@cimaf.ci', 'phone' => '+225 27 24 00 00 00', 'city' => 'Abidjan'],
-            ['name' => 'Quincaillerie Centrale Abidjan', 'email' => 'qca@qca.ci',         'phone' => '+225 07 07 07 07 07', 'city' => 'Abidjan'],
-            ['name' => 'Location Engins WEST AFRICA',   'email' => 'info@lewa.ci',        'phone' => '+225 01 01 01 01 01', 'city' => 'Abidjan'],
+            ['code' => 'FRN-001', 'category' => 'materiaux', 'name' => 'CIMAF Côte d\'Ivoire',           'email' => 'commandes@cimaf.ci', 'phone' => '+225 27 24 00 00 00', 'city' => 'Abidjan'],
+            ['code' => 'FRN-002', 'category' => 'materiaux', 'name' => 'Quincaillerie Centrale Abidjan', 'email' => 'qca@qca.ci',         'phone' => '+225 07 07 07 07 07', 'city' => 'Abidjan'],
+            ['code' => 'FRN-003', 'category' => 'services',  'name' => 'Location Engins WEST AFRICA',    'email' => 'info@lewa.ci',        'phone' => '+225 01 01 01 01 01', 'city' => 'Abidjan'],
         ];
 
         $supplierModel = 'App\\Models\\Supplier';
@@ -147,8 +175,8 @@ class DemoDataSeeder extends Seeder
             foreach ($suppliersData as $s) {
                 try {
                     $supplierModel::updateOrCreate(
-                        ['name' => $s['name'], 'company_id' => $company->id],
-                        array_merge($s, ['company_id' => $company->id])
+                        ['code' => $s['code'], 'company_id' => $company->id],
+                        array_merge($s, ['company_id' => $company->id, 'is_active' => true])
                     );
                 } catch (\Throwable) {}
             }
