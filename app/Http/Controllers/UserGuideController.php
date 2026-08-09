@@ -14,7 +14,14 @@ class UserGuideController extends Controller
 
         $pdf = Pdf::loadView('pdf.user_guide', [
             'locale'  => $locale,
-            'version' => '1.0',
+            'version' => '1.1',
+            'lic'     => [
+                'essai'     => \App\Services\LicenseConfig::essaiJours(),
+                'grace'     => \App\Services\LicenseConfig::graceJours(),
+                'retention' => \App\Services\LicenseConfig::retentionJours(),
+                'quota'     => \App\Services\LicenseConfig::quotaChantiersGratuit(),
+                'filigrane' => \App\Services\LicenseConfig::filigraneTexte(),
+            ],
         ])
         ->setPaper('a4')
         ->setOption('isHtml5ParserEnabled', true)

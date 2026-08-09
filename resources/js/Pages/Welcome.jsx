@@ -905,7 +905,7 @@ function TopBar() {
 }
 
 /* ── Page principale ─────────────────────────────────────────── */
-export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs = [], temoignages: temoignagesProp = null, video_url: videoUrl = '' }) {
+export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs = [], temoignages: temoignagesProp = null, video_url: videoUrl = '', licence = {} }) {
     const { t } = useTrans();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [billingCycle, setBillingCycle] = useState('monthly');
@@ -1714,6 +1714,25 @@ export default function Welcome({ auth, canLogin, canRegister, plans = [], faqs 
                                     🎁 {t('2 mois offerts avec le forfait annuel')}
                                 </p>
                             )}
+                        </div>
+                        {/* Mentions licence (cahier §C7/§8.2) — source unique licence.config.json */}
+                        <div data-ibig-tarifs className="max-w-4xl mx-auto mb-10 grid gap-3 sm:grid-cols-2 text-sm text-gray-600">
+                            <div className="flex items-start gap-2 rounded-xl bg-orange-50 border border-orange-100 p-3">
+                                <span style={{ color: BRAND }}>✓</span>
+                                <span>{t('Essai de')} {licence.essai ?? 30} {t('jours, sans carte bancaire, sans engagement.')}</span>
+                            </div>
+                            <div className="flex items-start gap-2 rounded-xl bg-orange-50 border border-orange-100 p-3">
+                                <span style={{ color: BRAND }}>✓</span>
+                                <span>{t('À la fin de l\'essai, votre espace bascule automatiquement en Découverte. Aucune donnée n\'est supprimée.')}</span>
+                            </div>
+                            <div className="flex items-start gap-2 rounded-xl bg-orange-50 border border-orange-100 p-3">
+                                <span style={{ color: BRAND }}>✓</span>
+                                <span>{licence.grace ?? 7} {t('jours de grâce après échéance, puis lecture seule. Données conservées')} {licence.retention ?? 90} {t('jours.')}</span>
+                            </div>
+                            <div className="flex items-start gap-2 rounded-xl bg-orange-50 border border-orange-100 p-3">
+                                <span style={{ color: BRAND }}>✓</span>
+                                <span>{t('Les documents générés au palier Découverte portent la mention « Généré avec CONSTRUIRO — ibigsoft.com ».')}</span>
+                            </div>
                         </div>
                         {plans.length > 0 ? (
                             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto">

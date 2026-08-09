@@ -250,6 +250,14 @@ Route::middleware(\App\Http\Middleware\TrackPageView::class)->get('/', function 
         'temoignages'     => $temoignages,
         'whatsapp_number' => preg_replace('/\D/', '', $whatsappNumber),
         'video_url'       => (string) ($videoUrl ?? ''),
+        // Valeurs licence (source unique) pour les mentions tarifs — cahier §C7/§8.2
+        'licence'         => [
+            'essai'          => \App\Services\LicenseConfig::essaiJours(),
+            'grace'          => \App\Services\LicenseConfig::graceJours(),
+            'retention'      => \App\Services\LicenseConfig::retentionJours(),
+            'quota_gratuit'  => \App\Services\LicenseConfig::quotaChantiersGratuit(),
+            'filigrane'      => \App\Services\LicenseConfig::filigraneTexte(),
+        ],
     ]);
 });
 

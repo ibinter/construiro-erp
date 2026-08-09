@@ -12,6 +12,31 @@ class InternalFaqSeeder extends Seeder
         $faqs = [
 
             // ══════════════════════════════════════════════════════════════
+            // LICENCE, ESSAI & PALIER DÉCOUVERTE (cahier §12.9)
+            // ══════════════════════════════════════════════════════════════
+            [
+                'category'   => 'licence',
+                'sort_order' => 1,
+                'question'   => 'Combien de temps dure l\'essai et sur quelle formule ?',
+                'answer'     => "L'essai dure 30 jours sur la formule Pro complète, sans carte bancaire. À la fin, votre espace bascule automatiquement en palier Découverte, sans perte de données.",
+                'keywords'   => 'essai, 30 jours, pro, carte bancaire, durée',
+            ],
+            [
+                'category'   => 'licence',
+                'sort_order' => 2,
+                'question'   => 'Qu\'inclut le palier gratuit Découverte ?',
+                'answer'     => "Découverte est gratuit à vie, plafonné à 1 chantier, avec les fonctions de base. Sont exclus : export, multi-utilisateur, API, relances WhatsApp/SMS, assistant IA SARA et support prioritaire. Les documents portent le filigrane « Généré avec CONSTRUIRO — ibigsoft.com ».",
+                'keywords'   => 'découverte, gratuit, plafond, chantier, filigrane, export',
+            ],
+            [
+                'category'   => 'licence',
+                'sort_order' => 3,
+                'question'   => 'Que deviennent mes données après expiration de l\'abonnement ?',
+                'answer'     => "Après l'échéance : 7 jours de grâce (accès complet), puis lecture seule. Vos données sont conservées 90 jours avant purge, avec deux avertissements par e-mail. Aucune licence n'est perpétuelle. Une prolongation d'essai de 15 jours peut être accordée une seule fois sur demande.",
+                'keywords'   => 'grâce, expiration, lecture seule, 90 jours, conservation, prolongation, perpétuelle',
+            ],
+
+            // ══════════════════════════════════════════════════════════════
             // DÉMARRAGE RAPIDE (9 FAQ)
             // ══════════════════════════════════════════════════════════════
             [

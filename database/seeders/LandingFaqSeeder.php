@@ -11,6 +11,31 @@ class LandingFaqSeeder extends Seeder
     {
         // Utiliser updateOrCreate pour ne pas dupliquer en cas de re-seed
         $faqs = [
+            // ── Licence, essai & palier gratuit (cahier §12.9) ───────────────
+            ['category' => 'tarifs', 'sort_order' => 0,
+                'question_fr' => "Existe-t-il un palier gratuit ?",
+                'answer_fr'   => "Oui : le palier « Découverte » est gratuit à vie, sans carte bancaire, plafonné à 1 chantier. Il inclut les fonctions de base ; l'export, le multi-utilisateur, l'API et l'assistant IA sont réservés aux formules payantes.",
+                'question_en' => "Is there a free plan?",
+                'answer_en'   => "Yes: the \"Discover\" plan is free forever, no credit card, capped at 1 project site. It includes core features; export, multi-user, API and the AI assistant are reserved for paid plans.",
+            ],
+            ['category' => 'tarifs', 'sort_order' => 0,
+                'question_fr' => "Que se passe-t-il à la fin de l'essai ?",
+                'answer_fr'   => "À la fin de l'essai de 30 jours, votre espace bascule automatiquement en palier Découverte : aucune donnée n'est supprimée. Ce qui dépasse le plafond (1 chantier) passe simplement en lecture seule.",
+                'question_en' => "What happens at the end of the trial?",
+                'answer_en'   => "At the end of the 30-day trial, your workspace automatically switches to the Discover plan: no data is deleted. Anything beyond the cap (1 project site) simply becomes read-only.",
+            ],
+            ['category' => 'tarifs', 'sort_order' => 0,
+                'question_fr' => "Combien de temps mes données sont-elles conservées après expiration ?",
+                'answer_fr'   => "Après l'échéance, vous bénéficiez de 7 jours de grâce avec accès complet, puis l'espace passe en lecture seule. Vos données sont conservées 90 jours avant purge, avec deux avertissements par e-mail. Aucune licence n'est perpétuelle.",
+                'question_en' => "How long is my data kept after expiry?",
+                'answer_en'   => "After expiry you get a 7-day grace period with full access, then the workspace becomes read-only. Your data is kept for 90 days before purge, with two email warnings. There is no perpetual license.",
+            ],
+            ['category' => 'tarifs', 'sort_order' => 0,
+                'question_fr' => "Peut-on exporter ses données au palier Découverte ?",
+                'answer_fr'   => "Non : l'export (CSV, Excel, PDF) est réservé à l'essai et aux formules payantes. Les documents générés au palier Découverte portent la mention « Généré avec CONSTRUIRO — ibigsoft.com », retirée dès le premier paiement.",
+                'question_en' => "Can I export data on the Discover plan?",
+                'answer_en'   => "No: export (CSV, Excel, PDF) is reserved for the trial and paid plans. Documents generated on the Discover plan carry the notice \"Generated with CONSTRUIRO — ibigsoft.com\", removed on first payment.",
+            ],
             // ── Général ──────────────────────────────────────────────────────
             ['category' => 'general', 'sort_order' => 1,
                 'question_fr' => "Qu'est-ce que CONSTRUIRO ?",
