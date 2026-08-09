@@ -135,6 +135,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['diag'])) {
     } elseif ($diag === 'demo-reset') {
         // Initialise / réinitialise le tenant de la démo publique (données fictives).
         echo shell_exec("cd $dir && php artisan construiro:demo-reset --force 2>&1");
+    } elseif ($diag === 'cron-check') {
+        // Diagnostic (lecture seule) : le scheduler Laravel est-il déclenché par le cron OS ?
+        echo "=== crontab (" . trim(shell_exec('whoami 2>&1')) . ") ===\n";
+        echo shell_exec('crontab -l 2>&1') ?: "(vide)\n";
+        echo "\n=== /etc/crontab (lignes artisan) ===\n";
+        echo shell_exec('grep -i "artisan\|schedule:run" /etc/crontab 2>&1') ?: "(aucune)\n";
+        echo "\n=== /etc/cron.d ===\n";
+        echo shell_exec('ls /etc/cron.d/ 2>&1') . "\n";
+        echo shell_exec('grep -ri "artisan\|schedule:run" /etc/cron.d/ 2>&1') ?: "(aucune entrée artisan)\n";
+        echo "\n=== schedule:list (tâches enregistrées + prochaines exécutions) ===\n";
+        echo shell_exec("cd $dir && php artisan schedule:list 2>&1");
+        echo "\n=== Preuve d'exécution : derniers backups (scheduler 02:00) ===\n";
+        echo shell_exec("ls -lt $dir/storage/app/backups 2>&1 | head -6") ?: "(dossier backups absent)\n";
     } elseif ($diag === 'seed-payment') {
         // Initialise les 11 méthodes de paiement (idempotent via updateOrCreate)
         echo shell_exec("cd $dir && php artisan db:seed --class='Database\\Seeders\\PaymentMethodSeeder' --force 2>&1");
