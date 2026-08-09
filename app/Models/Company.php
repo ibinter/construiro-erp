@@ -46,4 +46,10 @@ class Company extends Model
     {
         return $this->hasMany(Subscription::class);
     }
+
+    /** Chantiers (compteur métier CONSTRUIRO — cahier §6). */
+    public function sites(): HasMany
+    {
+        return $this->hasMany(Site::class);
+    }
 }

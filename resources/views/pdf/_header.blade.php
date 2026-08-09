@@ -1,4 +1,7 @@
 {{-- En-tête commun : marque + coordonnées entreprise + titre du document. --}}
+@if(!empty($filigrane))
+<div class="ibig-watermark">{{ $filigrane }}</div>
+@endif
 <table class="head">
     <tr>
         <td>

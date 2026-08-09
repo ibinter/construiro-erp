@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
@@ -22,6 +23,13 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Vite::prefetch(concurrency: 3);
+
+        // Filigrane licence sur tous les PDF générés (Découverte/Demo) — cahier §3.5.
+        View::composer('pdf.*', function ($view) {
+            if (!array_key_exists('filigrane', $view->getData())) {
+                $view->with('filigrane', \App\Services\DocumentWatermark::forCompany(auth()->user()?->company_id));
+            }
+        });
 
         // super_admin (tenant) et admin (inscrit) ont toutes les permissions de leur société.
         Gate::before(function ($user, string $ability) {

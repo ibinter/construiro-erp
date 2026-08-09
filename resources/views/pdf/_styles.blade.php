@@ -54,4 +54,6 @@
     /* Notes & pied */
     .notes { margin-top: 20px; font-size: 10px; color: #64748b; border-left: 3px solid #f97316; padding: 6px 12px; background: #fff7ed; }
     .foot { position: fixed; bottom: 20px; left: 36px; right: 36px; border-top: 1px solid #e2e8f0; padding-top: 8px; font-size: 9px; color: #94a3b8; text-align: center; }
+    /* Filigrane palier Découverte/Demo (cahier §3.5) — pied de page fixe, toutes pages */
+    .ibig-watermark { position: fixed; bottom: 4px; left: 0; right: 0; text-align: center; font-size: 8px; color: #cbd5e1; letter-spacing: 0.3px; }
 </style>

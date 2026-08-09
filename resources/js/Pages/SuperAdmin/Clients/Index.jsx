@@ -57,11 +57,18 @@ export default function ClientsIndex({ companies, filters }) {
                                         <td>{c.country} — {c.city}</td>
                                         <td>
                                             <Badge variant={STATUS_COLORS[c.subscription_status] ?? 'neutral'}>
-                                                {c.subscription_status}
+                                                {c.subscription_libelle ?? c.subscription_status}
                                             </Badge>
-                                            {!c.is_active && <Badge variant="danger" className="ml-1">Bloqué</Badge>}
+                                            {!c.is_active && <Badge variant="danger" className="ml-1">Inactif</Badge>}
                                         </td>
-                                        <td>{c.plan_name}</td>
+                                        <td>
+                                            {c.plan_name}
+                                            {c.chantiers && (
+                                                <p className="text-xs text-slate-400">
+                                                    {c.chantiers.used}{c.chantiers.cap !== null && c.chantiers.cap !== undefined ? `/${c.chantiers.cap}` : ''} chantier(s)
+                                                </p>
+                                            )}
+                                        </td>
                                         <td className="text-slate-500">{c.created_at}</td>
                                         <td>
                                             <Link href={`/superadmin/clients/${c.id}`} className="text-sm text-orange-500 hover:underline">

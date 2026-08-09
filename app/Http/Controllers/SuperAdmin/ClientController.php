@@ -21,7 +21,8 @@ class ClientController extends Controller
 {
     public function index(Request $request): Response
     {
-        $query = Company::with(['subscriptions' => fn($q) => $q->with('plan')->latest()->limit(1)]);
+        $query = Company::with(['subscriptions' => fn($q) => $q->with('plan')->latest()->limit(1)])
+            ->withCount('sites');
 
         if ($search = $request->get('search')) {
             $query->where(function ($q) use ($search) {
@@ -46,10 +47,20 @@ class ClientController extends Controller
                 'email' => $c->email,
                 'is_active' => $c->is_active,
                 'subscription_status' => $c->subscriptions->first()?->status ?? 'none',
+                'subscription_libelle' => ($s = $c->subscriptions->first())
+                    ? \App\Services\LicenseConfig::libelleEtat($s->status)
+                    : '—',
                 'plan_name' => $c->subscriptions->first()?->plan?->name ?? '—',
+                'chantiers' => [
+                    'used' => $c->sites_count,
+                    'cap'  => $c->subscriptions->first()?->chantierCap(),
+                ],
                 'created_at' => $c->created_at->format('d/m/Y'),
             ]),
             'plans' => SubscriptionPlan::where('is_active', true)->get(['id', 'name', 'slug']),
+            // Les 6 états officiels pour le filtre (cahier §12.6).
+            'etats' => collect(\App\Services\LicenseConfig::etats())
+                ->map(fn ($e) => ['value' => $e, 'label' => \App\Services\LicenseConfig::libelleEtat($e)]),
             'filters' => $request->only(['search', 'status']),
         ]);
     }
