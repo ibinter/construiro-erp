@@ -32,7 +32,7 @@
     },
     "demo": {
         "actif": true,
-        "url": "https://construiro.com/demo",
+        "url": "https://demo.construiro.com",
         "inscription": false,
         "donnees": "fictives",
         "purge": "chaque_nuit",
