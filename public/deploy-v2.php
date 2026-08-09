@@ -132,6 +132,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['diag'])) {
         // Formules d'abonnement + palier Découverte (idempotent via updateOrCreate).
         // Met aussi à jour la durée d'essai (30 j) depuis licence.config.json.
         echo shell_exec("cd $dir && php artisan db:seed --class='Database\\Seeders\\SubscriptionPlanSeeder' --force 2>&1");
+    } elseif ($diag === 'demo-reset') {
+        // Initialise / réinitialise le tenant de la démo publique (données fictives).
+        echo shell_exec("cd $dir && php artisan construiro:demo-reset --force 2>&1");
     } elseif ($diag === 'seed-payment') {
         // Initialise les 11 méthodes de paiement (idempotent via updateOrCreate)
         echo shell_exec("cd $dir && php artisan db:seed --class='Database\\Seeders\\PaymentMethodSeeder' --force 2>&1");

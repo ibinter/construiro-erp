@@ -31,8 +31,8 @@
         "convention_valeur": 9999
     },
     "demo": {
-        "actif": false,
-        "url": null,
+        "actif": true,
+        "url": "https://construiro.com/demo",
         "inscription": false,
         "donnees": "fictives",
         "purge": "chaque_nuit",
