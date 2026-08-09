@@ -59,6 +59,11 @@ class CheckSubscription
             'is_decouverte'  => $subscription->isDecouverte(),
             'can_export'     => $subscription->canExport(),
             'chantier_cap'   => $subscription->chantierCap(),
+            'plan'           => $subscription->plan?->name,
+            'grace_days'     => $subscription->isInGrace()
+                ? (int) ceil(now()->floatDiffInDays($subscription->grace_ends_at))
+                : null,
+            'until'          => ($subscription->purge_at ?? $subscription->ends_at)?->format('d/m/Y'),
         ]);
 
         // Routes exemptées : toujours accessibles (facturation, tableau de bord, support…)

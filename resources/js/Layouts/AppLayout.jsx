@@ -8,10 +8,11 @@ import Toast from '@/Components/Toast';
 import LanguageSwitcher from '@/Components/LanguageSwitcher';
 import NotificationBell from '@/Components/NotificationBell';
 import GlobalSearch from '@/Components/GlobalSearch';
+import LicenseBanner from '@/Components/LicenseBanner';
 import { useTrans } from '@/i18n';
 
 export default function AppLayout({ header, title, breadcrumbs = [], children }) {
-    const { auth, subscription } = usePage().props;
+    const { auth } = usePage().props;
     const user = auth?.user;
     const { t } = useTrans();
     const [sidebarOpen, setSidebarOpen] = useState(typeof window !== 'undefined' && window.innerWidth >= 1024);
@@ -131,29 +132,8 @@ export default function AppLayout({ header, title, breadcrumbs = [], children })
                     </div>
                 )}
 
-                {/* Bandeau abonnement grâce / expiration imminente */}
-                {subscription && (subscription.is_grace || ((subscription.days_remaining ?? Infinity) <= 7 && subscription.status !== 'expired')) && (
-                    <div
-                        className={`flex items-center justify-between gap-3 px-4 py-2 text-sm ${
-                        subscription.is_grace
-                            ? 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300'
-                            : 'bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300'
-                    }`}
-                        role="alert"
-                        aria-live="assertive"
-                    >
-                        <span>
-                            <Icon name={subscription.is_grace ? 'alert-triangle' : 'clock'} className="mr-1.5 inline h-4 w-4" />
-                            {subscription.is_grace
-                                ? t('Période de grâce — renouvelez votre abonnement pour conserver l\'accès.')
-                                : `${t('Votre abonnement expire dans')} ${subscription.days_remaining} ${t('jour(s)')}.`
-                            }
-                        </span>
-                        <Link href={route('billing.index')} className="shrink-0 font-medium underline underline-offset-2">
-                            {t('Renouveler')}
-                        </Link>
-                    </div>
-                )}
+                {/* Bandeau d'état de licence — 6 états (cahier §8.4) */}
+                <LicenseBanner />
 
                 {/* Breadcrumbs */}
                 {breadcrumbs.length > 0 && (
