@@ -27,8 +27,10 @@ class ResetDemoData extends Command
         }
 
         DB::transaction(function () {
-            // Supprime le(s) tenant(s) démo — les FK en cascade nettoient les données liées.
-            Company::where('is_demo', true)->get()->each->delete();
+            // Supprime DÉFINITIVEMENT le(s) tenant(s) démo (Company utilise SoftDeletes ;
+            // un simple delete() laisserait le slug unique et bloquerait la régénération).
+            // Les FK en cascade nettoient les données liées.
+            Company::withTrashed()->where('is_demo', true)->get()->each->forceDelete();
             // Régénère l'entreprise démo + données fictives crédibles (FR).
             $seeder = new DemoDataSeeder();
             $seeder->setContainer(app());

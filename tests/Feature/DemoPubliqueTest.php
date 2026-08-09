@@ -18,16 +18,20 @@ class DemoPubliqueTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_route_demo_404_quand_inactive(): void
+    public function test_route_demo_redirige_quand_active(): void
     {
-        // demo.actif=false par défaut → la démo n'est pas publiée.
-        $this->get('/demo')->assertNotFound();
+        // Démo active (licence.config.json demo.actif=true) : /demo connecte au compte démo.
+        $this->artisan('construiro:demo-reset --force')->assertSuccessful();
+
+        $this->get('/demo')->assertRedirect('/dashboard');
+        $this->assertTrue(auth()->check()); // auto-login effectué
     }
 
-    public function test_reset_ignore_quand_inactif(): void
+    public function test_reset_sans_force_execute_quand_active(): void
     {
+        // Démo active : le reset planifié régénère bien le tenant démo.
         $this->artisan('construiro:demo-reset')->assertSuccessful();
-        $this->assertDatabaseMissing('companies', ['is_demo' => true]);
+        $this->assertDatabaseHas('companies', ['is_demo' => true]);
     }
 
     public function test_reset_force_cree_le_tenant_demo(): void

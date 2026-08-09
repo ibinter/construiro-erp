@@ -198,6 +198,12 @@ Route::redirect('/blog',   'https://ibigsoft.com', 301);
 Route::redirect('/statut', 'https://ibigsoft.com', 301);
 
 Route::middleware(\App\Http\Middleware\TrackPageView::class)->get('/', function () {
+    // Sous-domaine démo : demo.construiro.com/ entre directement dans la démonstration
+    // (actif dès que le certificat SSL du sous-domaine est en place — cahier §4).
+    if (str_starts_with(request()->getHost(), 'demo.') && \App\Services\LicenseConfig::demoActive()) {
+        return redirect()->route('demo.enter');
+    }
+
     $locale = app()->getLocale();
 
     // Données statiques mises en cache 10 min — elles changent rarement
