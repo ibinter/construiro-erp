@@ -1,11 +1,11 @@
 <?php
 
-use App\Console\Commands\SendTrialExpirationReminders;
 use App\Console\Commands\SendSubscriptionExpirationReminders;
 use App\Console\Commands\CleanExpiredSupportSessions;
 use App\Console\Commands\BackupDatabase;
 use App\Console\Commands\RecalculateLicenseStates;
 use App\Console\Commands\PurgeExpiredData;
+use App\Console\Commands\SendLifecycleEmails;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -13,7 +13,10 @@ use Illuminate\Console\Scheduling\Schedule;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withSchedule(function (Schedule $schedule): void {
-        $schedule->command(SendTrialExpirationReminders::class)->dailyAt('08:00');
+        // Séquence cycle de vie essai → Découverte → purge (cahier §5.4, §9.6). Remplace
+        // construiro:trial-reminders (l'essai ne « expire » plus, il bascule en Découverte).
+        $schedule->command(SendLifecycleEmails::class)->dailyAt('03:30');
+        // Rappels de renouvellement des abonnements PAYANTS (avant échéance + grâce).
         $schedule->command(SendSubscriptionExpirationReminders::class)->dailyAt('08:05');
         $schedule->command(CleanExpiredSupportSessions::class)->hourly();
         $schedule->command(BackupDatabase::class)->dailyAt('02:00');
