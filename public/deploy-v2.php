@@ -135,6 +135,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['diag'])) {
     } elseif ($diag === 'demo-reset') {
         // Initialise / réinitialise le tenant de la démo publique (données fictives).
         echo shell_exec("cd $dir && php artisan construiro:demo-reset --force 2>&1");
+    } elseif ($diag === 'set-admin-email') {
+        // Définit ADMIN_NOTIFICATION_EMAIL dans .env (adresse de notification d'inscription).
+        $value = trim($_GET['value'] ?? '');
+        if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
+            echo "Adresse e-mail invalide.\n";
+            exit;
+        }
+        $envPath = $dir . '/.env';
+        $env = ltrim(file_get_contents($envPath), "\xEF\xBB\xBF");
+        if (preg_match('/^ADMIN_NOTIFICATION_EMAIL=/m', $env)) {
+            $env = preg_replace('/^ADMIN_NOTIFICATION_EMAIL=.*/m', 'ADMIN_NOTIFICATION_EMAIL=' . $value, $env);
+        } else {
+            $env .= "\nADMIN_NOTIFICATION_EMAIL=" . $value . "\n";
+        }
+        file_put_contents($envPath, $env);
+        echo shell_exec("cd $dir && php artisan config:clear 2>&1");
+        echo shell_exec("cd $dir && php artisan config:cache 2>&1");
+        echo "\nADMIN_NOTIFICATION_EMAIL = {$value}\nDONE\n";
     } elseif ($diag === 'cron-check') {
         // Diagnostic (lecture seule) : le scheduler Laravel est-il déclenché par le cron OS ?
         echo "=== crontab (" . trim(shell_exec('whoami 2>&1')) . ") ===\n";
