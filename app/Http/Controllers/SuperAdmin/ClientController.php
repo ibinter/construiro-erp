@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ClientController extends Controller
 {
@@ -110,6 +111,95 @@ class ClientController extends Controller
                     'at'     => $t->created_at?->format('d/m/Y H:i'),
                 ]),
         ]);
+    }
+
+    /**
+     * Export CSV complet de la base clients (entreprises + contact + abonnement).
+     * N'exclut AUCUN statut. Réservé aux administrateurs (groupe superadmin).
+     * Filtre optionnel ?status= : demo|free|trial|active|grace|expired|suspended|inactive.
+     */
+    public function export(Request $request): StreamedResponse
+    {
+        $filter = $request->query('status');
+
+        $companies = Company::with([
+                'users'         => fn ($q) => $q->orderBy('id'),
+                'subscriptions' => fn ($q) => $q->with('plan')->latest(),
+            ])
+            ->orderBy('created_at')
+            ->get()
+            ->filter(function (Company $c) use ($filter) {
+                if (!$filter) {
+                    return true;
+                }
+                $sub = $c->subscriptions->first();
+
+                return match ($filter) {
+                    'suspended' => ($c->status ?? null) === 'suspended',
+                    'inactive'  => !$c->is_active,
+                    'demo'      => $c->is_demo || ($sub && $sub->status === Subscription::DEMO),
+                    default     => $sub && $sub->status === $filter,
+                };
+            });
+
+        $filename = 'clients_construiro_' . ($filter ?: 'tous') . '_' . now()->format('Ymd_His') . '.csv';
+
+        return response()->streamDownload(function () use ($companies) {
+            $out = fopen('php://output', 'w');
+            fwrite($out, "\xEF\xBB\xBF"); // BOM UTF-8 → accents corrects sous Excel
+
+            fputcsv($out, [
+                'ID', 'Entreprise', 'Nom du contact', 'E-mail', 'WhatsApp', 'Téléphone',
+                'Adresse', 'Ville', 'Pays', 'Statut', 'Statut abonnement', 'Actif', 'Démo',
+                'Offre / Formule', 'Date d\'inscription', 'Date d\'expiration',
+            ], ';');
+
+            foreach ($companies as $c) {
+                $user   = $c->users->first();
+                $sub    = $c->subscriptions->first();
+                $expire = $sub?->ends_at ?? $sub?->trial_ends_at ?? $sub?->purge_at;
+
+                fputcsv($out, [
+                    $c->id,
+                    $c->name,
+                    $user?->name ?? '',
+                    $user?->email ?? $c->email ?? '',
+                    $c->phone ?: ($user?->phone ?? ''),   // pas de champ WhatsApp dédié → téléphone entreprise
+                    $user?->phone ?? $c->phone ?? '',
+                    $c->address ?? '',
+                    $c->city ?? '',
+                    $c->country ?? '',
+                    $this->statutLibelle($c, $sub),
+                    $sub?->status ?? '',
+                    $c->is_active ? 'Oui' : 'Non',
+                    $c->is_demo ? 'Oui' : 'Non',
+                    $sub?->plan?->name ?? ($sub && $sub->status === Subscription::FREE ? 'Découverte' : ''),
+                    optional($c->created_at)->format('d/m/Y H:i'),
+                    $expire ? $expire->format('d/m/Y') : '',
+                ], ';');
+            }
+
+            fclose($out);
+        }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);
+    }
+
+    /** Libellé de statut lisible, priorisant l'état de l'entreprise puis de l'abonnement. */
+    private function statutLibelle(Company $c, ?Subscription $sub): string
+    {
+        if (($c->status ?? null) === 'suspended') {
+            return 'Suspendu';
+        }
+        if (!$c->is_active) {
+            return 'Inactif';
+        }
+        if ($c->is_demo) {
+            return 'Démo';
+        }
+        if ($sub) {
+            return \App\Services\LicenseConfig::libelleEtat($sub->status);
+        }
+
+        return 'Sans abonnement';
     }
 
     public function grantSubscription(Request $request, Company $company): RedirectResponse

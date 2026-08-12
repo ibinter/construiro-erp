@@ -10,6 +10,7 @@ const STATUS_COLORS = {
 
 export default function ClientsIndex({ companies, filters }) {
     const [search, setSearch] = useState(filters.search ?? '');
+    const [exportStatus, setExportStatus] = useState('active');
 
     const doSearch = (e) => {
         e.preventDefault();
@@ -20,6 +21,28 @@ export default function ClientsIndex({ companies, filters }) {
         <AppLayout title="SuperAdmin — Clients">
             <div className="mx-auto max-w-6xl px-4 py-6 space-y-6">
                 <PageHeader title="Gestion des clients" subtitle="Toutes les entreprises CONSTRUIRO" />
+
+                {/* Export CSV — tous les clients / par statut (aucun statut exclu) */}
+                <div className="flex flex-wrap items-center gap-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 p-3">
+                    <a href="/superadmin/clients/export" className="btn btn-secondary">⬇ Exporter tous les clients (CSV)</a>
+                    <span className="text-slate-400 text-sm">ou</span>
+                    <select
+                        value={exportStatus}
+                        onChange={(e) => setExportStatus(e.target.value)}
+                        className="form-select"
+                        aria-label="Statut à exporter"
+                    >
+                        <option value="demo">Démo</option>
+                        <option value="free">Découverte (gratuit)</option>
+                        <option value="trial">Essai</option>
+                        <option value="active">Actif</option>
+                        <option value="grace">Période de grâce</option>
+                        <option value="expired">Expiré</option>
+                        <option value="suspended">Suspendu</option>
+                        <option value="inactive">Inactif</option>
+                    </select>
+                    <a href={`/superadmin/clients/export?status=${exportStatus}`} className="btn btn-ghost">Exporter ce statut</a>
+                </div>
 
                 <form onSubmit={doSearch} className="flex gap-3">
                     <input

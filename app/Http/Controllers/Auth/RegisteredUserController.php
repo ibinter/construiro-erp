@@ -122,6 +122,33 @@ class RegisteredUserController extends Controller
             ),
         ));
 
+        // 5b. Notification interne d'inscription (une inscription = une notification).
+        //     Réutilise le système d'e-mail existant. L'inscription reste valide
+        //     même si l'envoi échoue (dispatch en file + try/catch).
+        try {
+            $adminEmail = config('construiro.admin_notification_email');
+            if ($adminEmail) {
+                $sub = Subscription::where('company_id', $company->id)->latest()->first();
+                dispatch(new SendMailJob(
+                    $adminEmail,
+                    new \App\Mail\NewRegistrationMail([
+                        'nom'        => $user->name,
+                        'email'      => $user->email,
+                        'whatsapp'   => $user->phone ?? $company->phone,
+                        'phone'      => $user->phone ?? $company->phone,
+                        'statut'     => $sub ? \App\Services\LicenseConfig::libelleEtat($sub->status) : '—',
+                        'offre'      => $sub?->plan?->name
+                            ?? ($sub && $sub->status === Subscription::FREE ? 'Découverte' : '—'),
+                        'date'       => now()->format('d/m/Y H:i'),
+                        'company_id' => $company->id,
+                        'user_id'    => $user->id,
+                    ]),
+                ));
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Notification d\'inscription non envoyée : ' . $e->getMessage());
+        }
+
         // 6. L'utilisateur se connecte explicitement depuis la page de succès
         $request->session()->put('registered_email', $user->email);
 

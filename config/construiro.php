@@ -25,6 +25,11 @@ return [
     'default_locale'   => 'fr',
     'locales'          => ['fr', 'en'], // pt, ar à venir
 
+    // Adresse e-mail principale qui reçoit les notifications d'administration
+    // (ex. nouvelle inscription). CONFIGURABLE À UN SEUL ENDROIT : la variable
+    // d'environnement ADMIN_NOTIFICATION_EMAIL (repli sur l'expéditeur MAIL_FROM).
+    'admin_notification_email' => env('ADMIN_NOTIFICATION_EMAIL', env('MAIL_FROM_ADDRESS', 'contact@ibigsoft.com')),
+
     /*
     |--------------------------------------------------------------------------
     | PORTAILS (29)

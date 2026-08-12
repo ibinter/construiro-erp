@@ -492,6 +492,8 @@ Route::middleware(['auth', 'subscription', 'two-factor'])->group(function () {
     Route::prefix('superadmin')->middleware('superadmin')->group(function () {
         Route::get('/',                                     [SuperAdminDashboard::class, 'index'])->name('superadmin.dashboard');
         Route::get('/clients',                              [SuperAdminClientController::class, 'index'])->name('superadmin.clients.index');
+        // Export CSV complet / par statut (avant la route {company} pour éviter la capture)
+        Route::get('/clients/export',                       [SuperAdminClientController::class, 'export'])->name('superadmin.clients.export');
         Route::get('/clients/{company}',                    [SuperAdminClientController::class, 'show'])->name('superadmin.clients.show');
         Route::post('/clients/{company}/subscription',      [SuperAdminClientController::class, 'grantSubscription'])->name('superadmin.clients.grant');
         Route::patch('/clients/{company}/toggle',           [SuperAdminClientController::class, 'toggleActive'])->name('superadmin.clients.toggle');
